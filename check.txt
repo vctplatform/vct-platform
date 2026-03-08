@@ -1,0 +1,26 @@
+packages/app/features/home/screen.tsx(54,60): error TS2769: No overload matches this call.
+  Overload 1 of 2, '(props: TextProps): Text', gave the following error.
+    Type 'React.ReactNode' is not assignable to type 'import("D:/VCT PLATFORM/vct-platform/node_modules/@types/react/index").ReactNode'.
+      Type 'ReactElement<unknown, string | JSXElementConstructor<any>>' is not assignable to type 'ReactNode'.
+        Property 'children' is missing in type 'ReactElement<unknown, string | JSXElementConstructor<any>>' but required in type 'ReactPortal'.
+  Overload 2 of 2, '(props: TextProps, context: any): Text', gave the following error.
+    Type 'React.ReactNode' is not assignable to type 'import("D:/VCT PLATFORM/vct-platform/node_modules/@types/react/index").ReactNode'.
+      Type 'ReactElement<unknown, string | JSXElementConstructor<any>>' is not assignable to type 'ReactNode'.
+        Property 'children' is missing in type 'ReactElement<unknown, string | JSXElementConstructor<any>>' but required in type 'ReactPortal'.
+packages/app/features/home/screen.tsx(58,48): error TS2769: No overload matches this call.
+  Overload 1 of 2, '(props: TextProps): Text', gave the following error.
+    Type 'React.ReactNode' is not assignable to type 'import("D:/VCT PLATFORM/vct-platform/node_modules/@types/react/index").ReactNode'.
+      Type 'ReactElement<unknown, string | JSXElementConstructor<any>>' is not assignable to type 'ReactNode'.
+        Property 'children' is missing in type 'ReactElement<unknown, string | JSXElementConstructor<any>>' but required in type 'ReactPortal'.
+  Overload 2 of 2, '(props: TextProps, context: any): Text', gave the following error.
+    Type 'React.ReactNode' is not assignable to type 'import("D:/VCT PLATFORM/vct-platform/node_modules/@types/react/index").ReactNode'.
+      Type 'ReactElement<unknown, string | JSXElementConstructor<any>>' is not assignable to type 'ReactNode'.
+        Property 'children' is missing in type 'ReactElement<unknown, string | JSXElementConstructor<any>>' but required in type 'ReactPortal'.
+packages/app/provider/index.tsx(7,27): error TS2322: Type 'ReactNode' is not assignable to type 'ReactElement<unknown, string | JSXElementConstructor<any>>'.
+  Type 'undefined' is not assignable to type 'ReactElement<unknown, string | JSXElementConstructor<any>>'.
+packages/app/provider/navigation/index.native.tsx(12,7): error TS2322: Type '{ prefixes: string[]; config: { initialRouteName: string; screens: { home: string; 'user-detail': string; }; }; }' is not assignable to type 'LinkingOptions<{ home: unknown; 'user-detail': unknown; }>'.
+  The types of 'config.initialRouteName' are incompatible between these types.
+    Type 'string' is not assignable to type '"home" | "user-detail" | undefined'.
+packages/app/provider/navigation/index.native.tsx(26,7): error TS2322: Type 'React.ReactNode' is not assignable to type 'import("D:/VCT PLATFORM/vct-platform/node_modules/@types/react/index").ReactNode'.
+  Type 'ReactElement<unknown, string | JSXElementConstructor<any>>' is not assignable to type 'ReactNode'.
+    Property 'children' is missing in type 'ReactElement<unknown, string | JSXElementConstructor<any>>' but required in type 'ReactPortal'.

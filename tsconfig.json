@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "strictNullChecks": true,
+    "noUncheckedIndexedAccess": true,
+    "paths": {
+      "app/*": [
+        "./packages/app/*"
+      ]
+    },
+    "baseUrl": ".",
+    "jsx": "react-jsx"
+  }
+}

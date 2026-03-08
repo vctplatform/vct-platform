@@ -1,0 +1,169 @@
+node_modules/@react-navigation/core/lib/typescript/src/useNavigationBuilder.d.ts(86,136): error TS2344: Type 'Omit<{ dispatch(action: Readonly<{ type: string; payload?: object | undefined; source?: string | undefined; target?: string | undefined; }> | ((state: Readonly<State>) => Readonly<...>)): void; ... 9 more ...; getState(): State; } & PrivateValueStore<...>, "getParent"> & ... 4 more ... & ActionHelpers' does not satisfy the constraint 'NavigationProp<any, any, any, any, any, any>'.
+  Type 'Omit<{ dispatch(action: Readonly<{ type: string; payload?: object | undefined; source?: string | undefined; target?: string | undefined; }> | ((state: Readonly<State>) => Readonly<...>)): void; ... 9 more ...; getState(): State; } & PrivateValueStore<...>, "getParent"> & ... 4 more ... & ActionHelpers' is not assignable to type 'Omit<NavigationHelpersCommon<any, any>, "getParent">'.
+    Types of property 'preload' are incompatible.
+      Type '<RouteName extends string>(...args: RouteName extends unknown ? [screen: RouteName, params?: object | undefined] : never) => void' is not assignable to type '<RouteName extends string | number | symbol>(...args: RouteName extends unknown ? [screen: RouteName, params?: any] : never) => void'.
+        Types of parameters 'screen' and 'args' are incompatible.
+          Type 'RouteName extends unknown ? [screen: RouteName, params?: any] : never' is not assignable to type '[screen: string, params?: object | undefined]'.
+            Type '[screen: string, params?: any] | [screen: number, params?: any] | [screen: symbol, params?: any]' is not assignable to type '[screen: string, params?: object | undefined]'.
+              Type '[screen: number, params?: any]' is not assignable to type '[screen: string, params?: object | undefined]'.
+                Type at position 0 in source is not compatible with type at position 0 in target.
+                  Type 'number' is not assignable to type 'string'.
+node_modules/@react-navigation/core/lib/typescript/src/useNavigationBuilder.d.ts(138,77): error TS2344: Type 'Omit<{ dispatch(action: Readonly<{ type: string; payload?: object | undefined; source?: string | undefined; target?: string | undefined; }> | ((state: Readonly<State>) => Readonly<...>)): void; ... 9 more ...; getState(): State; } & PrivateValueStore<...>, "getParent"> & ... 4 more ... & ActionHelpers' does not satisfy the constraint 'NavigationProp<any, any, any, any, any, any>'.
+  Type 'Omit<{ dispatch(action: Readonly<{ type: string; payload?: object | undefined; source?: string | undefined; target?: string | undefined; }> | ((state: Readonly<State>) => Readonly<...>)): void; ... 9 more ...; getState(): State; } & PrivateValueStore<...>, "getParent"> & ... 4 more ... & ActionHelpers' is not assignable to type 'Omit<NavigationHelpersCommon<any, any>, "getParent">'.
+    Types of property 'preload' are incompatible.
+      Type '<RouteName extends string>(...args: RouteName extends unknown ? [screen: RouteName, params?: object | undefined] : never) => void' is not assignable to type '<RouteName extends string | number | symbol>(...args: RouteName extends unknown ? [screen: RouteName, params?: any] : never) => void'.
+        Types of parameters 'screen' and 'args' are incompatible.
+          Type 'RouteName extends unknown ? [screen: RouteName, params?: any] : never' is not assignable to type '[screen: string, params?: object | undefined]'.
+            Type '[screen: string, params?: any] | [screen: number, params?: any] | [screen: symbol, params?: any]' is not assignable to type '[screen: string, params?: object | undefined]'.
+              Type '[screen: number, params?: any]' is not assignable to type '[screen: string, params?: object | undefined]'.
+                Type at position 0 in source is not compatible with type at position 0 in target.
+                  Type 'number' is not assignable to type 'string'.
+node_modules/@react-navigation/native-stack/lib/typescript/src/types.d.ts(3,58): error TS2305: Module '"react-native-screens"' has no exported member 'ScrollEdgeEffect'.
+node_modules/@types/node/buffer.d.ts(531,19): error TS2430: Interface 'Buffer' incorrectly extends interface 'Uint8Array<ArrayBufferLike>'.
+  The types of 'slice(...).buffer' are incompatible between these types.
+    Type 'ArrayBufferLike' is not assignable to type 'ArrayBuffer'.
+      Type 'SharedArrayBuffer' is not assignable to type 'ArrayBuffer'.
+        Types of property '[Symbol.toStringTag]' are incompatible.
+          Type '"SharedArrayBuffer"' is not assignable to type '"ArrayBuffer"'.
+node_modules/@types/node/fs/promises.d.ts(49,66): error TS2344: Type 'Buffer' does not satisfy the constraint 'ArrayBufferView'.
+  Type 'Buffer' is not assignable to type 'Uint8Array<ArrayBufferLike> | DataView<ArrayBufferLike>'.
+    Type 'Buffer' is not assignable to type 'Uint8Array<ArrayBufferLike>'.
+      The types of 'slice(...).buffer' are incompatible between these types.
+        Type 'ArrayBufferLike' is not assignable to type 'ArrayBuffer'.
+          Type 'SharedArrayBuffer' is not assignable to type 'ArrayBuffer'.
+            Types of property '[Symbol.toStringTag]' are incompatible.
+              Type '"SharedArrayBuffer"' is not assignable to type '"ArrayBuffer"'.
+node_modules/@types/node/fs/promises.d.ts(211,49): error TS2344: Type 'Buffer' does not satisfy the constraint 'ArrayBufferView'.
+  Type 'Buffer' is not assignable to type 'Uint8Array<ArrayBufferLike> | DataView<ArrayBufferLike>'.
+    Type 'Buffer' is not assignable to type 'Uint8Array<ArrayBufferLike>'.
+      The types of 'slice(...).buffer' are incompatible between these types.
+        Type 'ArrayBufferLike' is not assignable to type 'ArrayBuffer'.
+          Type 'SharedArrayBuffer' is not assignable to type 'ArrayBuffer'.
+            Types of property '[Symbol.toStringTag]' are incompatible.
+              Type '"SharedArrayBuffer"' is not assignable to type '"ArrayBuffer"'.
+node_modules/@types/node/globals.d.ts(72,13): error TS2403: Subsequent variable declarations must have the same type.  Variable 'AbortSignal' must be of type '{ new (): AbortSignal; prototype: AbortSignal; abort(reason?: any): AbortSignal; any(signals: AbortSignal[]): AbortSignal; timeout(milliseconds: number): AbortSignal; }', but here has type '{ new (): AbortSignal; prototype: AbortSignal; }'.
+node_modules/@types/node/module.d.ts(106,13): error TS2386: Overload signatures must all be optional or required.
+node_modules/next/dist/build/webpack/loaders/next-app-loader/index.d.ts(1,13): error TS2613: Module '"next/dist/compiled/webpack/webpack"' has no default export. Did you mean to use 'import { webpack } from "next/dist/compiled/webpack/webpack"' instead?
+node_modules/next/dist/client/components/error-boundary.d.ts(1,8): error TS1259: Module '"D:/VCT PLATFORM/vct-platform/node_modules/@types/react/index"' can only be default-imported using the 'esModuleInterop' flag
+node_modules/next/dist/client/components/http-access-fallback/error-boundary.d.ts(11,8): error TS1259: Module '"D:/VCT PLATFORM/vct-platform/node_modules/@types/react/index"' can only be default-imported using the 'esModuleInterop' flag
+node_modules/next/dist/client/components/layout-router.d.ts(2,8): error TS1259: Module '"D:/VCT PLATFORM/vct-platform/node_modules/@types/react/index"' can only be default-imported using the 'esModuleInterop' flag
+node_modules/next/dist/client/image-component.d.ts(1,8): error TS1259: Module '"D:/VCT PLATFORM/vct-platform/node_modules/@types/react/index"' can only be default-imported using the 'esModuleInterop' flag
+node_modules/next/dist/client/link.d.ts(1,8): error TS1259: Module '"D:/VCT PLATFORM/vct-platform/node_modules/@types/react/index"' can only be default-imported using the 'esModuleInterop' flag
+node_modules/next/dist/client/script.d.ts(1,8): error TS1259: Module '"D:/VCT PLATFORM/vct-platform/node_modules/@types/react/index"' can only be default-imported using the 'esModuleInterop' flag
+node_modules/next/dist/client/with-router.d.ts(1,8): error TS1259: Module '"D:/VCT PLATFORM/vct-platform/node_modules/@types/react/index"' can only be default-imported using the 'esModuleInterop' flag
+node_modules/next/dist/lib/metadata/metadata.d.ts(1,8): error TS1259: Module '"D:/VCT PLATFORM/vct-platform/node_modules/@types/react/index"' can only be default-imported using the 'esModuleInterop' flag
+node_modules/next/dist/next-devtools/dev-overlay/shared.d.ts(186,247): error TS2694: Namespace 'React' has no exported member 'ActionDispatch'.
+node_modules/next/dist/next-devtools/userspace/pages/pages-dev-overlay-setup.d.ts(1,8): error TS1259: Module '"D:/VCT PLATFORM/vct-platform/node_modules/@types/react/index"' can only be default-imported using the 'esModuleInterop' flag
+node_modules/next/dist/pages/_app.d.ts(1,8): error TS1259: Module '"D:/VCT PLATFORM/vct-platform/node_modules/@types/react/index"' can only be default-imported using the 'esModuleInterop' flag
+node_modules/next/dist/pages/_document.d.ts(1,8): error TS1259: Module '"D:/VCT PLATFORM/vct-platform/node_modules/@types/react/index"' can only be default-imported using the 'esModuleInterop' flag
+node_modules/next/dist/pages/_error.d.ts(1,8): error TS1259: Module '"D:/VCT PLATFORM/vct-platform/node_modules/@types/react/index"' can only be default-imported using the 'esModuleInterop' flag
+node_modules/next/dist/server/app-render/types.d.ts(10,8): error TS1192: Module '"next/dist/compiled/superstruct"' has no default export.
+node_modules/next/dist/server/base-http/node.d.ts(28,29): error TS2315: Type 'ServerResponse' is not generic.
+node_modules/next/dist/server/web/spec-extension/adapters/headers.d.ts(39,16): error TS2304: Cannot find name 'HeadersIterator'.
+node_modules/next/dist/server/web/spec-extension/adapters/headers.d.ts(40,13): error TS2304: Cannot find name 'HeadersIterator'.
+node_modules/next/dist/server/web/spec-extension/adapters/headers.d.ts(41,15): error TS2304: Cannot find name 'HeadersIterator'.
+node_modules/next/dist/server/web/spec-extension/adapters/headers.d.ts(42,26): error TS2304: Cannot find name 'HeadersIterator'.
+node_modules/next/dist/shared/lib/app-router-context.shared-runtime.d.ts(4,8): error TS1259: Module '"D:/VCT PLATFORM/vct-platform/node_modules/@types/react/index"' can only be default-imported using the 'esModuleInterop' flag
+node_modules/next/dist/shared/lib/app-router-types.d.ts(7,13): error TS1259: Module '"D:/VCT PLATFORM/vct-platform/node_modules/@types/react/index"' can only be default-imported using the 'esModuleInterop' flag
+node_modules/next/dist/shared/lib/dynamic.d.ts(1,8): error TS1259: Module '"D:/VCT PLATFORM/vct-platform/node_modules/@types/react/index"' can only be default-imported using the 'esModuleInterop' flag
+node_modules/next/dist/shared/lib/head-manager-context.shared-runtime.d.ts(1,8): error TS1259: Module '"D:/VCT PLATFORM/vct-platform/node_modules/@types/react/index"' can only be default-imported using the 'esModuleInterop' flag
+node_modules/next/dist/shared/lib/head.d.ts(1,8): error TS1259: Module '"D:/VCT PLATFORM/vct-platform/node_modules/@types/react/index"' can only be default-imported using the 'esModuleInterop' flag
+node_modules/next/dist/shared/lib/image-config-context.shared-runtime.d.ts(1,8): error TS1259: Module '"D:/VCT PLATFORM/vct-platform/node_modules/@types/react/index"' can only be default-imported using the 'esModuleInterop' flag
+node_modules/next/dist/shared/lib/loadable-context.shared-runtime.d.ts(1,8): error TS1259: Module '"D:/VCT PLATFORM/vct-platform/node_modules/@types/react/index"' can only be default-imported using the 'esModuleInterop' flag
+node_modules/next/dist/shared/lib/loadable.shared-runtime.d.ts(21,8): error TS1259: Module '"D:/VCT PLATFORM/vct-platform/node_modules/@types/react/index"' can only be default-imported using the 'esModuleInterop' flag
+node_modules/next/dist/shared/lib/router-context.shared-runtime.d.ts(1,8): error TS1259: Module '"D:/VCT PLATFORM/vct-platform/node_modules/@types/react/index"' can only be default-imported using the 'esModuleInterop' flag
+node_modules/next/dist/shared/lib/server-inserted-html.shared-runtime.d.ts(1,8): error TS1259: Module '"D:/VCT PLATFORM/vct-platform/node_modules/@types/react/index"' can only be default-imported using the 'esModuleInterop' flag
+node_modules/next/dist/shared/lib/utils.d.ts(10,13): error TS1192: Module '"fs"' has no default export.
+node_modules/next/dist/styled-jsx/types/global.d.ts(1,8): error TS1259: Module '"D:/VCT PLATFORM/vct-platform/node_modules/@types/react/index"' can only be default-imported using the 'esModuleInterop' flag
+node_modules/next/dist/types.d.ts(4,23): error TS2688: Cannot find type definition file for 'react-dom'.
+node_modules/next/dist/types.d.ts(5,23): error TS2688: Cannot find type definition file for 'react-dom/experimental'.
+node_modules/react-native-screens/lib/typescript/components/bottom-tabs/BottomTabs.d.ts(1,8): error TS1259: Module '"D:/VCT PLATFORM/vct-platform/node_modules/@types/react/index"' can only be default-imported using the 'esModuleInterop' flag
+node_modules/react-native-screens/lib/typescript/components/bottom-tabs/BottomTabsScreen.d.ts(1,8): error TS1259: Module '"D:/VCT PLATFORM/vct-platform/node_modules/@types/react/index"' can only be default-imported using the 'esModuleInterop' flag
+node_modules/react-native-screens/lib/typescript/components/FullWindowOverlay.d.ts(1,8): error TS1259: Module '"D:/VCT PLATFORM/vct-platform/node_modules/@types/react/index"' can only be default-imported using the 'esModuleInterop' flag
+node_modules/react-native-screens/lib/typescript/components/gamma/ScreenStackHost.d.ts(1,8): error TS1259: Module '"D:/VCT PLATFORM/vct-platform/node_modules/@types/react/index"' can only be default-imported using the 'esModuleInterop' flag
+node_modules/react-native-screens/lib/typescript/components/gamma/SplitViewHost.d.ts(1,8): error TS1259: Module '"D:/VCT PLATFORM/vct-platform/node_modules/@types/react/index"' can only be default-imported using the 'esModuleInterop' flag
+node_modules/react-native-screens/lib/typescript/components/gamma/SplitViewHost.types.d.ts(90,18): error TS2430: Interface 'SplitViewHostProps' incorrectly extends interface 'ViewProps'.
+  Types of property 'children' are incompatible.
+    Type 'React.ReactNode' is not assignable to type 'import("D:/VCT PLATFORM/vct-platform/node_modules/@types/react/index").ReactNode'.
+      Type 'ReactElement<unknown, string | JSXElementConstructor<any>>' is not assignable to type 'ReactNode'.
+        Property 'children' is missing in type 'ReactElement<unknown, string | JSXElementConstructor<any>>' but required in type 'ReactPortal'.
+node_modules/react-native-screens/lib/typescript/components/gamma/SplitViewScreen.d.ts(1,8): error TS1259: Module '"D:/VCT PLATFORM/vct-platform/node_modules/@types/react/index"' can only be default-imported using the 'esModuleInterop' flag
+node_modules/react-native-screens/lib/typescript/components/gamma/SplitViewScreen.types.d.ts(4,18): error TS2430: Interface 'SplitViewScreenProps' incorrectly extends interface 'ViewProps'.
+  Types of property 'children' are incompatible.
+    Type 'React.ReactNode' is not assignable to type 'import("D:/VCT PLATFORM/vct-platform/node_modules/@types/react/index").ReactNode'.
+      Type 'ReactElement<unknown, string | JSXElementConstructor<any>>' is not assignable to type 'ReactNode'.
+        Property 'children' is missing in type 'ReactElement<unknown, string | JSXElementConstructor<any>>' but required in type 'ReactPortal'.
+node_modules/react-native-screens/lib/typescript/components/gamma/StackScreen.d.ts(1,8): error TS1259: Module '"D:/VCT PLATFORM/vct-platform/node_modules/@types/react/index"' can only be default-imported using the 'esModuleInterop' flag
+node_modules/react-native-screens/lib/typescript/components/Screen.d.ts(1,8): error TS1259: Module '"D:/VCT PLATFORM/vct-platform/node_modules/@types/react/index"' can only be default-imported using the 'esModuleInterop' flag
+node_modules/react-native-screens/lib/typescript/components/ScreenContainer.d.ts(1,8): error TS1259: Module '"D:/VCT PLATFORM/vct-platform/node_modules/@types/react/index"' can only be default-imported using the 'esModuleInterop' flag
+node_modules/react-native-screens/lib/typescript/components/ScreenContentWrapper.d.ts(1,8): error TS1259: Module '"D:/VCT PLATFORM/vct-platform/node_modules/@types/react/index"' can only be default-imported using the 'esModuleInterop' flag
+node_modules/react-native-screens/lib/typescript/components/ScreenFooter.d.ts(1,8): error TS1259: Module '"D:/VCT PLATFORM/vct-platform/node_modules/@types/react/index"' can only be default-imported using the 'esModuleInterop' flag
+node_modules/react-native-screens/lib/typescript/components/ScreenStack.d.ts(1,8): error TS1259: Module '"D:/VCT PLATFORM/vct-platform/node_modules/@types/react/index"' can only be default-imported using the 'esModuleInterop' flag
+node_modules/react-native-screens/lib/typescript/components/ScreenStackHeaderConfig.d.ts(1,8): error TS1259: Module '"D:/VCT PLATFORM/vct-platform/node_modules/@types/react/index"' can only be default-imported using the 'esModuleInterop' flag
+node_modules/react-native-screens/lib/typescript/components/SearchBar.d.ts(1,8): error TS1259: Module '"D:/VCT PLATFORM/vct-platform/node_modules/@types/react/index"' can only be default-imported using the 'esModuleInterop' flag
+node_modules/react-native-screens/lib/typescript/native-stack/types.d.ts(72,155): error TS2344: Type 'StackNavigationState<ParamList>' does not satisfy the constraint 'string | undefined'.
+node_modules/react-native-screens/lib/typescript/native-stack/types.d.ts(537,41): error TS2314: Generic type 'DefaultNavigatorOptions' requires 6 type argument(s).
+node_modules/react-native-screens/lib/typescript/native-stack/types.d.ts(541,37): error TS2314: Generic type 'Descriptor' requires 3 type argument(s).
+node_modules/react-native-screens/lib/typescript/types.d.ts(1,8): error TS1259: Module '"D:/VCT PLATFORM/vct-platform/node_modules/@types/react/index"' can only be default-imported using the 'esModuleInterop' flag
+node_modules/react-native/Libraries/Components/Pressable/Pressable.d.ts(35,18): error TS2320: Interface 'PressableProps' cannot simultaneously extend types 'AccessibilityProps' and 'Omit<ViewProps, "style" | "children" | "hitSlop">'.
+  Named property 'accessibilityRole' of types 'AccessibilityProps' and 'Omit<ViewProps, "style" | "children" | "hitSlop">' are not identical.
+node_modules/react-native/Libraries/Components/TextInput/TextInput.d.ts(571,18): error TS2320: Interface 'TextInputProps' cannot simultaneously extend types 'ViewProps' and 'AccessibilityProps'.
+  Named property 'accessibilityRole' of types 'ViewProps' and 'AccessibilityProps' are not identical.
+node_modules/react-native/Libraries/Components/View/ViewPropTypes.d.ts(131,18): error TS2430: Interface 'ViewProps' incorrectly extends interface 'AccessibilityProps'.
+  Types of property 'accessibilityRole' are incompatible.
+    Type 'string | undefined' is not assignable to type 'AccessibilityRole | undefined'.
+      Type 'string' is not assignable to type 'AccessibilityRole | undefined'.
+node_modules/react-native/src/types/globals.d.ts(10,1): error TS6200: Definitions of the following identifiers conflict with those in another file: EndingType, BlobPart, BufferSource, FormData, RequestInfo, XMLHttpRequestResponseType, AbortSignal, AbortController
+node_modules/react-native/src/types/globals.d.ts(166,7): error TS2403: Subsequent variable declarations must have the same type.  Variable 'Blob' must be of type '{ new (blobParts?: BlobPart[] | undefined, options?: BlobPropertyBag | undefined): Blob; prototype: Blob; }', but here has type '{ new (blobParts?: (string | Blob)[] | undefined, options?: BlobOptions | undefined): Blob; prototype: Blob; }'.
+node_modules/react-native/src/types/globals.d.ts(180,7): error TS2403: Subsequent variable declarations must have the same type.  Variable 'File' must be of type '{ new (fileBits: BlobPart[], fileName: string, options?: FilePropertyBag | undefined): File; prototype: File; }', but here has type '{ new (fileParts: BlobPart[], name: string, options?: FilePropertyBag | undefined): File; prototype: File; }'.
+node_modules/react-native/src/types/globals.d.ts(266,5): error TS2717: Subsequent property declarations must have the same type.  Property 'body' must be of type 'BodyInit | null | undefined', but here has type 'BodyInit_ | undefined'.
+node_modules/react-native/src/types/globals.d.ts(275,5): error TS2717: Subsequent property declarations must have the same type.  Property 'signal' must be of type 'AbortSignal | null | undefined', but here has type 'AbortSignal | undefined'.
+node_modules/react-native/src/types/globals.d.ts(285,14): error TS2717: Subsequent property declarations must have the same type.  Property 'signal' must be of type 'AbortSignal', but here has type 'AbortSignal'.
+node_modules/react-native/src/types/globals.d.ts(289,7): error TS2403: Subsequent variable declarations must have the same type.  Variable 'Request' must be of type '{ new (input: RequestInfo | URL, init?: RequestInit | undefined): Request; prototype: Request; }', but here has type '{ new (input: string | Request, init?: RequestInit | undefined): Request; prototype: Request; }'.
+node_modules/react-native/src/types/globals.d.ts(313,7): error TS2403: Subsequent variable declarations must have the same type.  Variable 'Response' must be of type '{ new (body?: BodyInit | null | undefined, init?: ResponseInit | undefined): Response; prototype: Response; error(): Response; json(data: any, init?: ResponseInit | undefined): Response; redirect(url: string | URL, status?: number | undefined): Response; }', but here has type '{ new (body?: BodyInit_ | undefined, init?: ResponseInit | undefined): Response; prototype: Response; error(): Response; json(data: any, init?: ResponseInit | undefined): Response; redirect: (url: string | URL, status?: number | undefined) => Response; }'.
+node_modules/react-native/src/types/globals.d.ts(398,5): error TS2717: Subsequent property declarations must have the same type.  Property 'abort' must be of type 'ProgressEvent<XMLHttpRequestEventTarget>', but here has type 'ProgressEvent<EventTarget>'.
+node_modules/react-native/src/types/globals.d.ts(399,5): error TS2717: Subsequent property declarations must have the same type.  Property 'error' must be of type 'ProgressEvent<XMLHttpRequestEventTarget>', but here has type 'ProgressEvent<EventTarget>'.
+node_modules/react-native/src/types/globals.d.ts(400,5): error TS2717: Subsequent property declarations must have the same type.  Property 'load' must be of type 'ProgressEvent<XMLHttpRequestEventTarget>', but here has type 'ProgressEvent<EventTarget>'.
+node_modules/react-native/src/types/globals.d.ts(401,5): error TS2717: Subsequent property declarations must have the same type.  Property 'loadend' must be of type 'ProgressEvent<XMLHttpRequestEventTarget>', but here has type 'ProgressEvent<EventTarget>'.
+node_modules/react-native/src/types/globals.d.ts(402,5): error TS2717: Subsequent property declarations must have the same type.  Property 'loadstart' must be of type 'ProgressEvent<XMLHttpRequestEventTarget>', but here has type 'ProgressEvent<EventTarget>'.
+node_modules/react-native/src/types/globals.d.ts(403,5): error TS2717: Subsequent property declarations must have the same type.  Property 'progress' must be of type 'ProgressEvent<XMLHttpRequestEventTarget>', but here has type 'ProgressEvent<EventTarget>'.
+node_modules/react-native/src/types/globals.d.ts(404,5): error TS2717: Subsequent property declarations must have the same type.  Property 'timeout' must be of type 'ProgressEvent<XMLHttpRequestEventTarget>', but here has type 'ProgressEvent<EventTarget>'.
+node_modules/react-native/src/types/globals.d.ts(471,7): error TS2403: Subsequent variable declarations must have the same type.  Variable 'URL' must be of type '{ new (url: string | URL, base?: string | URL | undefined): URL; prototype: URL; canParse(url: string | URL, base?: string | URL | undefined): boolean; createObjectURL(obj: Blob | MediaSource): string; parse(url: string | URL, base?: string | ... 1 more ... | undefined): URL | null; revokeObjectURL(url: string): voi...', but here has type '{ new (url: string | URL, base?: string | URL | undefined): URL; prototype: URL; createObjectURL(obj: Blob): string; revokeObjectURL(url: string): void; }'.
+node_modules/react-native/src/types/globals.d.ts(534,5): error TS2717: Subsequent property declarations must have the same type.  Property 'onopen' must be of type '((this: WebSocket, ev: Event) => any) | null', but here has type '(() => void) | null'.
+node_modules/react-native/src/types/globals.d.ts(535,5): error TS2717: Subsequent property declarations must have the same type.  Property 'onmessage' must be of type '((this: WebSocket, ev: MessageEvent<any>) => any) | null', but here has type '((event: WebSocketMessageEvent) => void) | null'.
+node_modules/react-native/src/types/globals.d.ts(536,5): error TS2717: Subsequent property declarations must have the same type.  Property 'onerror' must be of type '((this: WebSocket, ev: Event) => any) | null', but here has type '((event: WebSocketErrorEvent) => void) | null'.
+node_modules/react-native/src/types/globals.d.ts(537,5): error TS2717: Subsequent property declarations must have the same type.  Property 'onclose' must be of type '((this: WebSocket, ev: CloseEvent) => any) | null', but here has type '((event: WebSocketCloseEvent) => void) | null'.
+node_modules/react-native/src/types/globals.d.ts(538,5): error TS2717: Subsequent property declarations must have the same type.  Property 'addEventListener' must be of type '{ <K extends keyof WebSocketEventMap>(type: K, listener: (this: WebSocket, ev: WebSocketEventMap[K]) => any, options?: boolean | AddEventListenerOptions | undefined): void; (type: string, listener: EventListenerOrEventListenerObject, options?: boolean | ... 1 more ... | undefined): void; }', but here has type 'WebsocketEventListener'.
+node_modules/react-native/src/types/globals.d.ts(539,5): error TS2717: Subsequent property declarations must have the same type.  Property 'removeEventListener' must be of type '{ <K extends keyof WebSocketEventMap>(type: K, listener: (this: WebSocket, ev: WebSocketEventMap[K]) => any, options?: boolean | EventListenerOptions | undefined): void; (type: string, listener: EventListenerOrEventListenerObject, options?: boolean | ... 1 more ... | undefined): void; }', but here has type 'WebsocketEventListener'.
+node_modules/react-native/src/types/globals.d.ts(542,7): error TS2403: Subsequent variable declarations must have the same type.  Variable 'WebSocket' must be of type '{ new (url: string | URL, protocols?: string | string[] | undefined): WebSocket; prototype: WebSocket; readonly CONNECTING: 0; readonly OPEN: 1; readonly CLOSING: 2; readonly CLOSED: 3; }', but here has type '{ new (uri: string, protocols?: string | string[] | null | undefined, options?: { [optionName: string]: any; headers: { [headerName: string]: string; }; } | null | undefined): WebSocket; ... 4 more ...; readonly OPEN: number; }'.
+node_modules/react-native/src/types/globals.d.ts(627,14): error TS2717: Subsequent property declarations must have the same type.  Property 'error' must be of type 'DOMException | null', but here has type 'Error | null'.
+node_modules/react-native/src/types/globals.d.ts(640,14): error TS2717: Subsequent property declarations must have the same type.  Property 'readyState' must be of type '0 | 2 | 1', but here has type 'number'.
+node_modules/react-native/src/types/globals.d.ts(641,14): error TS2717: Subsequent property declarations must have the same type.  Property 'result' must be of type 'string | ArrayBuffer | null', but here has type 'string | ArrayBuffer'.
+node_modules/solito/build/link/LinkCoreProps.d.ts(1,8): error TS1259: Module '"D:/VCT PLATFORM/vct-platform/node_modules/@types/react/index"' can only be default-imported using the 'esModuleInterop' flag
+node_modules/typescript/lib/lib.dom.d.ts(23,1): error TS6200: Definitions of the following identifiers conflict with those in another file: EndingType, BlobPart, BufferSource, FormData, RequestInfo, XMLHttpRequestResponseType, AbortSignal, AbortController
+packages/app/features/home/screen.tsx(54,60): error TS2769: No overload matches this call.
+  Overload 1 of 2, '(props: TextProps): Text', gave the following error.
+    Type 'React.ReactNode' is not assignable to type 'import("D:/VCT PLATFORM/vct-platform/node_modules/@types/react/index").ReactNode'.
+      Type 'ReactElement<unknown, string | JSXElementConstructor<any>>' is not assignable to type 'ReactNode'.
+        Property 'children' is missing in type 'ReactElement<unknown, string | JSXElementConstructor<any>>' but required in type 'ReactPortal'.
+  Overload 2 of 2, '(props: TextProps, context: any): Text', gave the following error.
+    Type 'React.ReactNode' is not assignable to type 'import("D:/VCT PLATFORM/vct-platform/node_modules/@types/react/index").ReactNode'.
+      Type 'ReactElement<unknown, string | JSXElementConstructor<any>>' is not assignable to type 'ReactNode'.
+        Property 'children' is missing in type 'ReactElement<unknown, string | JSXElementConstructor<any>>' but required in type 'ReactPortal'.
+packages/app/features/home/screen.tsx(58,48): error TS2769: No overload matches this call.
+  Overload 1 of 2, '(props: TextProps): Text', gave the following error.
+    Type 'React.ReactNode' is not assignable to type 'import("D:/VCT PLATFORM/vct-platform/node_modules/@types/react/index").ReactNode'.
+      Type 'ReactElement<unknown, string | JSXElementConstructor<any>>' is not assignable to type 'ReactNode'.
+        Property 'children' is missing in type 'ReactElement<unknown, string | JSXElementConstructor<any>>' but required in type 'ReactPortal'.
+  Overload 2 of 2, '(props: TextProps, context: any): Text', gave the following error.
+    Type 'React.ReactNode' is not assignable to type 'import("D:/VCT PLATFORM/vct-platform/node_modules/@types/react/index").ReactNode'.
+      Type 'ReactElement<unknown, string | JSXElementConstructor<any>>' is not assignable to type 'ReactNode'.
+        Property 'children' is missing in type 'ReactElement<unknown, string | JSXElementConstructor<any>>' but required in type 'ReactPortal'.
+packages/app/provider/index.tsx(7,27): error TS2322: Type 'ReactNode' is not assignable to type 'ReactElement<unknown, string | JSXElementConstructor<any>>'.
+  Type 'undefined' is not assignable to type 'ReactElement<unknown, string | JSXElementConstructor<any>>'.
+packages/app/provider/navigation/index.native.tsx(12,7): error TS2322: Type '{ prefixes: string[]; config: { initialRouteName: string; screens: { home: string; 'user-detail': string; }; }; }' is not assignable to type 'LinkingOptions<{ home: unknown; 'user-detail': unknown; }>'.
+  The types of 'config.initialRouteName' are incompatible between these types.
+    Type 'string' is not assignable to type '"home" | "user-detail" | undefined'.
+packages/app/provider/navigation/index.native.tsx(26,7): error TS2322: Type 'React.ReactNode' is not assignable to type 'import("D:/VCT PLATFORM/vct-platform/node_modules/@types/react/index").ReactNode'.
+  Type 'ReactElement<unknown, string | JSXElementConstructor<any>>' is not assignable to type 'ReactNode'.
+    Property 'children' is missing in type 'ReactElement<unknown, string | JSXElementConstructor<any>>' but required in type 'ReactPortal'.

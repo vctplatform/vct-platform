@@ -1,0 +1,117 @@
+:root {
+  --vct-bg-base: #f0f4f8;
+  --vct-bg-elevated: #ffffff;
+  --vct-bg-glass: rgba(255, 255, 255, 0.85);
+  --vct-bg-glass-heavy: #f8fafc;
+  --vct-bg-input: #e8edf3;
+  --vct-bg-card: #ffffff;
+
+  --vct-text-primary: #0f172a;
+  --vct-text-secondary: #334155;
+  --vct-text-tertiary: #64748b;
+
+  --vct-border-subtle: #dde3ec;
+  --vct-border-strong: #c1c9d6;
+
+  --vct-accent-cyan: #0ea5e9;
+  --vct-accent-gradient: linear-gradient(135deg, #0ea5e9 0%, #6366f1 100%);
+}
+
+:root.dark {
+  --vct-bg-base: #0b1120;
+  --vct-bg-elevated: #162032;
+  --vct-bg-glass: rgba(11, 17, 32, 0.88);
+  --vct-bg-glass-heavy: #0f172a;
+  --vct-bg-input: #1e293b;
+  --vct-bg-card: #162032;
+
+  --vct-text-primary: #f1f5f9;
+  --vct-text-secondary: #cbd5e1;
+  --vct-text-tertiary: #94a3b8;
+
+  --vct-border-subtle: #1e293b;
+  --vct-border-strong: #334155;
+
+  --vct-accent-cyan: #22d3ee;
+  --vct-accent-gradient: linear-gradient(135deg, #22d3ee 0%, #818cf8 100%);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#__next {
+  width: 100%;
+  -webkit-overflow-scrolling: touch;
+  margin: 0;
+  padding: 0;
+  min-height: 100%;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+  height: 100%;
+}
+
+body {
+  display: flex;
+  overflow-y: auto;
+  overscroll-behavior-y: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+  background: var(--vct-bg-base);
+  color: var(--vct-text-primary);
+  transition: background 0.3s ease, color 0.3s ease;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+:focus-visible {
+  outline: 2px solid var(--vct-accent-cyan);
+  outline-offset: 2px;
+}
+
+#__next {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ═══ Scrollbar ═══ */
+.vct-hide-scrollbar::-webkit-scrollbar {
+  width: 4px;
+}
+
+.vct-hide-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.vct-hide-scrollbar::-webkit-scrollbar-thumb {
+  background: var(--vct-border-subtle);
+  border-radius: 4px;
+}
+
+/* ═══ Animations ═══ */
+@keyframes vct-pulse {
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.4;
+  }
+}
