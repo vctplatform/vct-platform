@@ -2,7 +2,6 @@ package auth
 
 import (
 	"crypto/rand"
-	"crypto/subtle"
 	"encoding/hex"
 	"errors"
 	"fmt"
@@ -11,6 +10,7 @@ import (
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
+	"golang.org/x/crypto/bcrypt"
 )
 
 type UserRole string
@@ -28,11 +28,19 @@ const (
 	tokenUseRefresh = "refresh"
 )
 
+const (
+	bcryptCost          = 12
+	maxLoginAttempts    = 5
+	loginLockoutWindow  = 15 * time.Minute
+	minPasswordLength   = 8
+)
+
 var (
 	ErrUnauthorized       = errors.New("unauthorized")
 	ErrForbidden          = errors.New("forbidden")
 	ErrBadRequest         = errors.New("bad_request")
 	ErrInvalidCredentials = errors.New("invalid_credentials")
+	ErrAccountLocked      = errors.New("account_locked")
 )
 
 type AuthUser struct {
@@ -111,12 +119,27 @@ type ServiceConfig struct {
 	RefreshTTL      time.Duration
 	AuditLimit      int
 	CleanupInterval time.Duration
+	SeedCredentials []SeedCredential
+}
+
+// SeedCredential allows credentials to be configured externally via config/env
+type SeedCredential struct {
+	Username    string
+	Password    string // plaintext, will be hashed at init
+	DisplayName string
+	AllowedRole []UserRole
 }
 
 type userCredential struct {
-	password    string
-	displayName string
-	allowedRole []UserRole
+	passwordHash []byte
+	displayName  string
+	allowedRole  []UserRole
+}
+
+type loginAttemptRecord struct {
+	attempts  int
+	lastAttempt time.Time
+	lockedUntil time.Time
 }
 
 type refreshSession struct {
@@ -156,9 +179,22 @@ type Service struct {
 	cleanupInterval   time.Duration
 	lastCleanup       time.Time
 	credentials       map[string]userCredential
+	loginAttempts     map[string]*loginAttemptRecord
 	refreshSessions   map[string]*refreshSession
 	revokedAccessJTIs map[string]time.Time
 	audit             []AuditEntry
+}
+
+// DefaultSeedCredentials returns the default demo credentials.
+// In production, these should be overridden via environment variables.
+func DefaultSeedCredentials() []SeedCredential {
+	return []SeedCredential{
+		{Username: "admin", Password: "Admin@123", DisplayName: "Quản trị hệ thống", AllowedRole: []UserRole{RoleAdmin}},
+		{Username: "btc", Password: "Btc@123", DisplayName: "Ban tổ chức", AllowedRole: []UserRole{RoleBTC}},
+		{Username: "ref-manager", Password: "Ref@123", DisplayName: "Điều phối trọng tài", AllowedRole: []UserRole{RoleRefereeManager}},
+		{Username: "referee", Password: "Judge@123", DisplayName: "Trọng tài", AllowedRole: []UserRole{RoleReferee}},
+		{Username: "delegate", Password: "Delegate@123", DisplayName: "Cán bộ đoàn", AllowedRole: []UserRole{RoleDelegate}},
+	}
 }
 
 func NewService(config ServiceConfig) *Service {
@@ -171,40 +207,41 @@ func NewService(config ServiceConfig) *Service {
 		cleanupInterval = 5 * time.Minute
 	}
 
+	credentials := make(map[string]userCredential)
+
+	// Use provided seed credentials, fallback to defaults
+	seeds := config.SeedCredentials
+	if len(seeds) == 0 {
+		seeds = DefaultSeedCredentials()
+	}
+
+	for _, seed := range seeds {
+		username := strings.TrimSpace(strings.ToLower(seed.Username))
+		if username == "" || seed.Password == "" {
+			continue
+		}
+		hash, err := bcrypt.GenerateFromPassword([]byte(seed.Password), bcryptCost)
+		if err != nil {
+			// Skip invalid credentials but log
+			fmt.Printf("[WARN] Failed to hash password for user %q: %v\n", username, err)
+			continue
+		}
+		credentials[username] = userCredential{
+			passwordHash: hash,
+			displayName:  seed.DisplayName,
+			allowedRole:  seed.AllowedRole,
+		}
+	}
+
 	return &Service{
-		secret:          []byte(strings.TrimSpace(config.Secret)),
-		issuer:          strings.TrimSpace(config.Issuer),
-		accessTTL:       config.AccessTTL,
-		refreshTTL:      config.RefreshTTL,
-		auditLimit:      auditLimit,
-		cleanupInterval: cleanupInterval,
-		credentials: map[string]userCredential{
-			"admin": {
-				password:    "Admin@123",
-				displayName: "Quản trị hệ thống",
-				allowedRole: []UserRole{RoleAdmin},
-			},
-			"btc": {
-				password:    "Btc@123",
-				displayName: "Ban tổ chức",
-				allowedRole: []UserRole{RoleBTC},
-			},
-			"ref-manager": {
-				password:    "Ref@123",
-				displayName: "Điều phối trọng tài",
-				allowedRole: []UserRole{RoleRefereeManager},
-			},
-			"referee": {
-				password:    "Judge@123",
-				displayName: "Trọng tài",
-				allowedRole: []UserRole{RoleReferee},
-			},
-			"delegate": {
-				password:    "Delegate@123",
-				displayName: "Cán bộ đoàn",
-				allowedRole: []UserRole{RoleDelegate},
-			},
-		},
+		secret:            []byte(strings.TrimSpace(config.Secret)),
+		issuer:            strings.TrimSpace(config.Issuer),
+		accessTTL:         config.AccessTTL,
+		refreshTTL:        config.RefreshTTL,
+		auditLimit:        auditLimit,
+		cleanupInterval:   cleanupInterval,
+		credentials:       credentials,
+		loginAttempts:     make(map[string]*loginAttemptRecord),
 		refreshSessions:   make(map[string]*refreshSession),
 		revokedAccessJTIs: make(map[string]time.Time),
 		audit:             make([]AuditEntry, 0, auditLimit),
@@ -227,12 +264,50 @@ func (s *Service) Login(input LoginRequest, requestCtx RequestContext) (LoginRes
 	defer s.mu.Unlock()
 	s.cleanupLocked(now)
 
+	// Rate limiting: check login attempts
+	if record, exists := s.loginAttempts[username]; exists {
+		if !record.lockedUntil.IsZero() && now.Before(record.lockedUntil) {
+			remaining := record.lockedUntil.Sub(now).Round(time.Second)
+			s.addAuditLocked("auth.login", false, requestCtx, AuthUser{Username: username, Role: role}, map[string]any{
+				"reason": "account_locked", "lockRemaining": remaining.String(),
+			})
+			return LoginResult{}, wrapError(ErrAccountLocked, fmt.Sprintf("tài khoản bị khóa tạm thời, thử lại sau %s", remaining))
+		}
+		// Reset if outside window
+		if now.Sub(record.lastAttempt) > loginLockoutWindow {
+			record.attempts = 0
+			record.lockedUntil = time.Time{}
+		}
+	}
+
 	cred, ok := s.credentials[username]
-	passwordMatch := ok && subtle.ConstantTimeCompare([]byte(cred.password), []byte(password)) == 1
+	var passwordMatch bool
+	if ok {
+		passwordMatch = bcrypt.CompareHashAndPassword(cred.passwordHash, []byte(password)) == nil
+	}
+
 	if !passwordMatch {
-		s.addAuditLocked("auth.login", false, requestCtx, AuthUser{Username: username, Role: role}, map[string]any{"reason": "invalid_credentials"})
+		// Track failed attempt
+		record := s.loginAttempts[username]
+		if record == nil {
+			record = &loginAttemptRecord{}
+			s.loginAttempts[username] = record
+		}
+		record.attempts++
+		record.lastAttempt = now
+		if record.attempts >= maxLoginAttempts {
+			record.lockedUntil = now.Add(loginLockoutWindow)
+		}
+
+		s.addAuditLocked("auth.login", false, requestCtx, AuthUser{Username: username, Role: role}, map[string]any{
+			"reason": "invalid_credentials", "attemptCount": record.attempts,
+		})
 		return LoginResult{}, wrapError(ErrInvalidCredentials, "sai thông tin đăng nhập")
 	}
+
+	// Clear login attempts on success
+	delete(s.loginAttempts, username)
+
 	if !containsRole(cred.allowedRole, role) {
 		s.addAuditLocked("auth.login", false, requestCtx, AuthUser{Username: username, Role: role}, map[string]any{"reason": "invalid_role"})
 		return LoginResult{}, wrapError(ErrForbidden, "role không hợp lệ với tài khoản")
@@ -651,6 +726,12 @@ func (s *Service) cleanupLocked(now time.Time) {
 	for jti, expire := range s.revokedAccessJTIs {
 		if expire.Before(now) {
 			delete(s.revokedAccessJTIs, jti)
+		}
+	}
+	// Cleanup stale login attempt records
+	for username, record := range s.loginAttempts {
+		if now.Sub(record.lastAttempt) > loginLockoutWindow*2 {
+			delete(s.loginAttempts, username)
 		}
 	}
 }
