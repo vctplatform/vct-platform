@@ -1,6 +1,7 @@
 import { readFileSync, existsSync } from 'node:fs'
 import { resolve } from 'node:path'
 import assert from 'node:assert/strict'
+import { execSync } from 'node:child_process'
 
 const root = process.cwd()
 
@@ -15,8 +16,11 @@ const requiredFiles = [
   'packages/app/features/tournament/Page_appeals.tsx',
   'packages/app/features/auth/AuthProvider.tsx',
   'packages/app/features/auth/Page_login.tsx',
+  'packages/app/features/auth/entity-authz.generated.ts',
   'packages/app/features/auth/auth-client.ts',
+  'packages/app/features/hooks/use-route-action-guard.ts',
   'packages/app/features/hooks/use-toast.ts',
+  'packages/app/features/layout/entity-action-matrix.ts',
   'packages/app/features/mobile/mobile-routes.ts',
   'packages/app/features/components/vct-ui.legacy.tsx',
   'packages/app/features/components/vct-ui-layout.tsx',
@@ -29,6 +33,8 @@ const requiredFiles = [
   'apps/next/app/login/page.tsx',
   'backend/cmd/server/main.go',
   'backend/internal/httpapi/server.go',
+  'backend/internal/authz/policy.go',
+  'backend/internal/authz/policy.contract.json',
   'backend/internal/auth/service.go',
   'backend/internal/store/store.go',
   'backend/go.mod',
@@ -38,10 +44,17 @@ requiredFiles.forEach((file) => {
   assert.ok(existsSync(resolve(root, file)), `Missing file: ${file}`)
 })
 
+execSync('node scripts/generate-authz-contract.mjs --check', {
+  cwd: root,
+  stdio: 'pipe',
+})
+
 const routeRegistry = readFileSync(resolve(root, 'packages/app/features/layout/route-registry.ts'), 'utf8')
-assert.match(routeRegistry, /hop-chuyen-mon/, 'Route registry must include hop-chuyen-mon path')
+const routesFile = readFileSync(resolve(root, 'packages/app/features/layout/routes.ts'), 'utf8')
+const routeTypes = readFileSync(resolve(root, 'packages/app/features/layout/route-types.ts'), 'utf8')
+assert.match(routesFile, /hop-chuyen-mon/, 'Routes definition must include hop-chuyen-mon path')
 assert.match(routeRegistry, /getPageTitle/, 'Route registry must expose getPageTitle')
-assert.match(routeRegistry, /roles\?:/, 'Route registry should support RBAC roles metadata')
+assert.match(routeTypes, /roles\?:/, 'Route types should support RBAC roles metadata')
 assert.match(routeRegistry, /isRouteAccessible/, 'Route registry should expose access guard helper')
 
 const appShell = readFileSync(resolve(root, 'packages/app/features/layout/AppShell.tsx'), 'utf8')
@@ -143,16 +156,45 @@ assert.match(authProvider, /isAuthenticated/, 'Auth provider should expose authe
 assert.match(authProvider, /login:\s*async|const login = useCallback/, 'Auth provider should expose login action')
 assert.match(authProvider, /logout:\s*async|const logout = useCallback/, 'Auth provider should expose logout action')
 
+const actionGuard = readFileSync(resolve(root, 'packages/app/features/hooks/use-route-action-guard.ts'), 'utf8')
+assert.match(actionGuard, /requireAction/, 'Route action guard should expose requireAction helper')
+assert.match(actionGuard, /canPerformRouteAction/, 'Route action guard should rely on route action matrix')
+assert.match(actionGuard, /canPerformEntityRouteAction/, 'Route action guard should enforce backend entity matrix for shared actions')
+
+const entityActionMatrix = readFileSync(resolve(root, 'packages/app/features/layout/entity-action-matrix.ts'), 'utf8')
+assert.match(entityActionMatrix, /\/giai-dau/, 'Entity route matrix should map tournament configuration route')
+assert.match(entityActionMatrix, /\/noi-dung/, 'Entity route matrix should map content categories route')
+assert.match(entityActionMatrix, /\/referee-assignments/, 'Entity route matrix should map referee assignment route')
+assert.match(entityActionMatrix, /\/medals/, 'Entity route matrix should map medals route')
+assert.match(entityActionMatrix, /\/bracket/, 'Entity route matrix should map bracket route')
+
+const generatedAuthz = readFileSync(resolve(root, 'packages/app/features/auth/entity-authz.generated.ts'), 'utf8')
+assert.match(generatedAuthz, /ENTITY_AUTHZ_POLICY/, 'Generated frontend authz contract should expose policy map')
+assert.match(generatedAuthz, /EntityAuthzAction/, 'Generated frontend authz contract should expose action type')
+
 const loginPage = readFileSync(resolve(root, 'packages/app/features/auth/Page_login.tsx'), 'utf8')
 assert.match(loginPage, /Đăng nhập tài khoản điều hành/, 'Login page should include operations login heading')
 assert.match(loginPage, /tournamentCode/, 'Login page should support tournament code input')
+
+const nextPackage = readFileSync(resolve(root, 'apps/next/package.json'), 'utf8')
+assert.match(nextPackage, /prebuild/, 'Next app should run prebuild gate before build')
+assert.match(nextPackage, /generate-authz-contract\.mjs --check/, 'Next app prebuild should enforce authz contract check')
 
 const backendMain = readFileSync(resolve(root, 'backend/cmd/server/main.go'), 'utf8')
 assert.match(backendMain, /http\.Server/, 'Backend should run HTTP server')
 
 const backendAPI = readFileSync(resolve(root, 'backend/internal/httpapi/server.go'), 'utf8')
+const backendEntityHandler = readFileSync(resolve(root, 'backend/internal/httpapi/entity_handler.go'), 'utf8')
+const backendHelpers = readFileSync(resolve(root, 'backend/internal/httpapi/helpers.go'), 'utf8')
 assert.match(backendAPI, /\/api\/v1\/auth\/login/, 'Backend should expose auth login endpoint')
 assert.match(backendAPI, /handleEntityRoutes/, 'Backend should expose generic entity routes')
+assert.match(backendEntityHandler, /authorizeEntityAction/, 'Backend should enforce authorization for entity actions')
+assert.match(backendHelpers, /"medals"/, 'Backend entity set should include medals')
+assert.match(backendHelpers, /"brackets"/, 'Backend entity set should include brackets')
+
+const backendAuthz = readFileSync(resolve(root, 'backend/internal/authz/policy.go'), 'utf8')
+assert.match(backendAuthz, /CanEntityAction/, 'Backend authz should expose entity action policy check')
+assert.match(backendAuthz, /ActionCreate/, 'Backend authz should define action vocabulary')
 
 const backendAuth = readFileSync(resolve(root, 'backend/internal/auth/service.go'), 'utf8')
 assert.match(backendAuth, /Login\(/, 'Backend auth service should implement login')
@@ -193,5 +235,30 @@ assert.match(formsPage, /repositories\.formPerformances\.mock/, 'Forms page shou
 const registrationPage = readFileSync(resolve(root, 'packages/app/features/tournament/Page_registration.tsx'), 'utf8')
 assert.match(registrationPage, /useEntityCollection\(repositories\.athletes\.mock\)/, 'Registration page should use athletes repository')
 assert.match(registrationPage, /useEntityCollection\(repositories\.teams\.mock\)/, 'Registration page should use teams repository')
+assert.match(registrationPage, /useRouteActionGuard\('\/registration'/, 'Registration page should use route action guard')
+
+const athletesPageWithGuard = readFileSync(resolve(root, 'packages/app/features/tournament/Page_athletes.tsx'), 'utf8')
+assert.match(athletesPageWithGuard, /useRouteActionGuard\('\/athletes'/, 'Athletes page should use route action guard')
+
+const schedulePage = readFileSync(resolve(root, 'packages/app/features/tournament/Page_schedule.tsx'), 'utf8')
+assert.match(schedulePage, /useRouteActionGuard\('\/schedule'/, 'Schedule page should use route action guard')
+
+const resultsPageAfterGuard = readFileSync(resolve(root, 'packages/app/features/tournament/Page_results.tsx'), 'utf8')
+assert.match(resultsPageAfterGuard, /useRouteActionGuard\('\/results'/, 'Results page should use route action guard')
+
+const medalsPageAfterGuard = readFileSync(resolve(root, 'packages/app/features/tournament/Page_medals.tsx'), 'utf8')
+assert.match(medalsPageAfterGuard, /useRouteActionGuard\('\/medals'/, 'Medals page should use route action guard')
+
+const bracketPageAfterGuard = readFileSync(resolve(root, 'packages/app/features/tournament/Page_bracket.tsx'), 'utf8')
+assert.match(bracketPageAfterGuard, /useRouteActionGuard\('\/bracket'/, 'Bracket page should use route action guard')
+
+const refereeAssignmentsPageAfterGuard = readFileSync(resolve(root, 'packages/app/features/tournament/Page_referee_assignments.tsx'), 'utf8')
+assert.match(refereeAssignmentsPageAfterGuard, /useRouteActionGuard\('\/referee-assignments'/, 'Referee assignments page should use route action guard')
+
+const tournamentPageAfterGuard = readFileSync(resolve(root, 'packages/app/features/tournament/Page_giai_dau.tsx'), 'utf8')
+assert.match(tournamentPageAfterGuard, /useRouteActionGuard\('\/giai-dau'/, 'Tournament config page should use route action guard')
+
+const contentPageAfterGuard = readFileSync(resolve(root, 'packages/app/features/tournament/Page_noi_dung.tsx'), 'utf8')
+assert.match(contentPageAfterGuard, /useRouteActionGuard\('\/noi-dung'/, 'Content category page should use route action guard')
 
 console.log('Smoke tests passed')

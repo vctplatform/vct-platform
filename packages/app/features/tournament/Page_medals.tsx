@@ -1,14 +1,16 @@
 'use client';
 import * as React from 'react';
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import {
     VCT_Badge, VCT_KpiCard, VCT_Stack, VCT_Toast, VCT_AvatarLetter,
     VCT_SegmentedControl, VCT_ProgressBar
 } from '../components/vct-ui';
 import { VCT_Icons } from '../components/vct-icons';
-import { DON_VIS, LUOT_THI_QUYENS, TRAN_DAUS } from '../data/mock-data';
+import type { DonVi, LuotThiQuyen, TranDauDK } from '../data/types';
 import { VCT_Button, VCT_EmptyState, VCT_Modal } from '../components/vct-ui';
+import { repositories, useEntityCollection } from '../data/repository';
+import { useRouteActionGuard } from '../hooks/use-route-action-guard';
 
 // Aggregate medal data from mock results
 interface MedalRow { id: string; ten: string; tat: string; hcv: number; hcb: number; hcd: number; tong: number }
@@ -19,13 +21,17 @@ const MEDAL_COLORS: Record<string, { label: string; color: string; icon: string 
     dong: { label: 'Huy chương Đồng', color: '#d97706', icon: '🥉' },
 };
 
-const buildMedalTable = (): MedalRow[] => {
+const buildMedalTable = (
+    teams: DonVi[],
+    formPerformances: LuotThiQuyen[],
+    combatMatches: TranDauDK[],
+): MedalRow[] => {
     const map: Record<string, MedalRow> = {};
-    DON_VIS.forEach(d => { map[d.id] = { id: d.id, ten: d.ten, tat: d.tat, hcv: 0, hcb: 0, hcd: 0, tong: 0 }; });
+    teams.forEach(d => { map[d.id] = { id: d.id, ten: d.ten, tat: d.tat, hcv: 0, hcb: 0, hcd: 0, tong: 0 }; });
 
     // From Quyền results
-    const quyenByND = new Map<string, typeof LUOT_THI_QUYENS>();
-    LUOT_THI_QUYENS.filter(l => l.trang_thai === 'da_cham').forEach(l => {
+    const quyenByND = new Map<string, LuotThiQuyen[]>();
+    formPerformances.filter(l => l.trang_thai === 'da_cham').forEach(l => {
         const k = l.noi_dung;
         if (!quyenByND.has(k)) quyenByND.set(k, []);
         quyenByND.get(k)!.push(l);
@@ -33,7 +39,7 @@ const buildMedalTable = (): MedalRow[] => {
     quyenByND.forEach((entries) => {
         const sorted = [...entries].sort((a, b) => b.diem_tb - a.diem_tb);
         sorted.forEach((e, i) => {
-            const doan = DON_VIS.find(d => d.tat === e.doan_ten || d.ten.includes(e.doan_ten));
+            const doan = teams.find(d => d.tat === e.doan_ten || d.ten.includes(e.doan_ten));
             const md = doan ? map[doan.id] : undefined;
             if (!md) return;
             if (i === 0) { md.hcv++; md.tong++; }
@@ -43,9 +49,9 @@ const buildMedalTable = (): MedalRow[] => {
     });
 
     // From ĐK results
-    TRAN_DAUS.filter(t => t.trang_thai === 'ket_thuc').forEach(t => {
+    combatMatches.filter(t => t.trang_thai === 'ket_thuc').forEach(t => {
         const winnerDoan = t.diem_do > t.diem_xanh ? t.vdv_do.doan : t.vdv_xanh.doan;
-        const doan = DON_VIS.find(d => d.tat === winnerDoan || d.ten.includes(winnerDoan));
+        const doan = teams.find(d => d.tat === winnerDoan || d.ten.includes(winnerDoan));
         const md = doan ? map[doan.id] : undefined;
         if (md) { md.hcv++; md.tong++; }
     });
@@ -54,14 +60,47 @@ const buildMedalTable = (): MedalRow[] => {
 };
 
 export const Page_medals = () => {
+    const teamStore = useEntityCollection(repositories.teams.mock);
+    const formStore = useEntityCollection(repositories.formPerformances.mock);
+    const combatStore = useEntityCollection(repositories.combatMatches.mock);
     const [toast, setToast] = useState({ show: false, msg: '', type: 'success' });
     const [filterMedal, setFilterMedal] = useState('all');
     const [certModal, setCertModal] = useState<any>(null);
 
-    const medalTable = useMemo(buildMedalTable, []);
+    const medalTable = useMemo(
+        () => buildMedalTable(teamStore.items, formStore.items, combatStore.items),
+        [teamStore.items, formStore.items, combatStore.items]
+    );
     const totalHCV = medalTable.reduce((s, m) => s + m.hcv, 0);
     const totalHCB = medalTable.reduce((s, m) => s + m.hcb, 0);
     const totalHCD = medalTable.reduce((s, m) => s + m.hcd, 0);
+    const showToast = useCallback((msg: string, type = 'success') => {
+        setToast({ show: true, msg, type });
+        setTimeout(() => setToast(prev => ({ ...prev, show: false })), 3500);
+    }, []);
+    const { can, requireAction } = useRouteActionGuard('/medals', {
+        notifyDenied: (message) => showToast(message, 'error')
+    });
+    const permissions = useMemo(() => ({
+        canExport: can('export'),
+        canPublish: can('publish'),
+    }), [can]);
+
+    const handleExportLeaderboard = () => {
+        if (!requireAction('export', 'xuất bảng huy chương')) return;
+        window.print();
+        showToast('Đang xuất bảng huy chương...', 'info');
+    };
+
+    const openCertificate = (row: any) => {
+        if (!requireAction('publish', 'phát hành giấy chứng nhận')) return;
+        setCertModal(row);
+    };
+
+    const handlePrintCertificate = () => {
+        if (!requireAction('publish', 'in giấy chứng nhận')) return;
+        window.print();
+    };
 
     // Mock derived data for individual medalists based on medalTable
     const filtered = useMemo(() => {
@@ -78,15 +117,22 @@ export const Page_medals = () => {
     }, [medalTable, filterMedal]);
 
     return (
-        <div style={{ maxWidth: 1400, margin: '0 auto', paddingBottom: 100 }}>
+        <div className="mx-auto max-w-[1400px] pb-24">
             <VCT_Toast isVisible={toast.show} message={toast.msg} type={toast.type} onClose={() => setToast(p => ({ ...p, show: false }))} />
 
-            <VCT_Stack direction="row" justify="space-between" align="center" style={{ marginBottom: 24 }}>
+            <VCT_Stack direction="row" justify="space-between" align="center" className="mb-6">
                 <div style={{ fontSize: 18, fontWeight: 900, textTransform: 'uppercase' }}>Bảng Tổng Sắp Huy Chương</div>
-                <VCT_Button variant="secondary" icon={<VCT_Icons.Download size={16} />} onClick={() => { window.print(); setToast({ show: true, msg: 'Đang xuất bảng huy chương...', type: 'info' }); }}>Xuất PDF / In</VCT_Button>
+                <VCT_Button
+                    variant="secondary"
+                    icon={<VCT_Icons.Download size={16} />}
+                    onClick={handleExportLeaderboard}
+                    disabled={!permissions.canExport}
+                >
+                    Xuất PDF / In
+                </VCT_Button>
             </VCT_Stack>
 
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 16, marginBottom: 24 }}>
+            <div className="vct-stagger mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
                 <VCT_KpiCard label="🥇 Vàng" value={totalHCV} icon={<VCT_Icons.Award size={24} />} color="#fbbf24" />
                 <VCT_KpiCard label="🥈 Bạc" value={totalHCB} icon={<VCT_Icons.Award size={24} />} color="#94a3b8" />
                 <VCT_KpiCard label="🥉 Đồng" value={totalHCD} icon={<VCT_Icons.Award size={24} />} color="#d97706" />
@@ -149,7 +195,7 @@ export const Page_medals = () => {
                 </div>
             )}
 
-            <VCT_Stack direction="row" justify="space-between" align="center" style={{ marginBottom: 24 }}>
+            <VCT_Stack direction="row" justify="space-between" align="center" className="mb-6">
                 <div style={{ fontSize: 18, fontWeight: 900, textTransform: 'uppercase' }}>Vận Động Viên Đạt Huy Chương</div>
                 <VCT_SegmentedControl
                     options={[
@@ -166,10 +212,10 @@ export const Page_medals = () => {
             {filtered.length === 0 ? (
                 <VCT_EmptyState title="Không tìm thấy VĐV đạt huy chương" description="Thay đổi bộ lọc hoặc kiểm tra lại." icon="🏅" />
             ) : (
-                <div style={{ borderRadius: 16, border: '1px solid var(--vct-border-subtle)', overflow: 'hidden', background: 'var(--vct-bg-glass)' }}>
-                    <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                <div className="overflow-hidden rounded-2xl border border-[var(--vct-border-subtle)] bg-[var(--vct-bg-glass)]">
+                    <table className="w-full border-collapse">
                         <thead>
-                            <tr style={{ borderBottom: '1px solid var(--vct-border-strong)', background: 'var(--vct-bg-card)' }}>
+                            <tr className="border-b border-[var(--vct-border-strong)] bg-[var(--vct-bg-card)]">
                                 {['Huy chương', 'Họ & Tên', 'Đoàn', 'Nội dung', 'Điểm / Thành tích', 'In Giấy Khen'].map((h, i) => (
                                     <th key={i} style={{ padding: '16px', textAlign: 'left', fontSize: 11, fontWeight: 700, textTransform: 'uppercase', opacity: 0.5 }}>{h}</th>
                                 ))}
@@ -203,7 +249,15 @@ export const Page_medals = () => {
                                         </td>
                                         <td style={{ padding: '16px', fontSize: 16, fontWeight: 900, fontFamily: 'monospace' }}>{r.diem_so || '—'}</td>
                                         <td style={{ padding: '16px' }}>
-                                            <VCT_Button variant="secondary" icon={<VCT_Icons.Printer size={14} />} onClick={() => setCertModal(r)} style={{ padding: '4px 12px', fontSize: 12 }}>In Khen THưởng</VCT_Button>
+                                            <VCT_Button
+                                                variant="secondary"
+                                                icon={<VCT_Icons.Printer size={14} />}
+                                                onClick={() => openCertificate(r)}
+                                                style={{ padding: '4px 12px', fontSize: 12 }}
+                                                disabled={!permissions.canPublish}
+                                            >
+                                                In Khen THưởng
+                                            </VCT_Button>
                                         </td>
                                     </tr>
                                 );
@@ -215,7 +269,10 @@ export const Page_medals = () => {
 
             {/* Print Certificate Modal */}
             <VCT_Modal isOpen={!!certModal} onClose={() => setCertModal(null)} title="In Giấy Chứng Nhận Thành Tích" width="900px" footer={
-                <><VCT_Button variant="secondary" onClick={() => setCertModal(null)}>Đóng</VCT_Button><VCT_Button icon={<VCT_Icons.Printer size={16} />} onClick={() => window.print()}>In Giấy Khen</VCT_Button></>
+                <>
+                    <VCT_Button variant="secondary" onClick={() => setCertModal(null)}>Đóng</VCT_Button>
+                    <VCT_Button icon={<VCT_Icons.Printer size={16} />} onClick={handlePrintCertificate} disabled={!permissions.canPublish}>In Giấy Khen</VCT_Button>
+                </>
             }>
                 {certModal && (
                     <div className="print-cert-container" style={{ padding: 20 }}>
@@ -240,11 +297,11 @@ export const Page_medals = () => {
                             <div style={{ fontSize: 24, fontWeight: 'bold', marginBottom: 50 }}>Nội dung: {(certModal as any).nd_ten}</div>
 
                             <div style={{ display: 'flex', justifyContent: 'space-between', padding: '0 80px', marginTop: 'auto' }}>
-                                <div style={{ textAlign: 'center' }}>
+                                <div className="text-center">
                                     <p style={{ fontStyle: 'italic', marginBottom: 10 }}>............, ngày ..... tháng ..... năm 20...</p>
                                     <p style={{ fontWeight: 'bold', fontSize: 18 }}>TRƯỞNG BAN TỔ CHỨC</p>
                                 </div>
-                                <div style={{ textAlign: 'center' }}>
+                                <div className="text-center">
                                     <p style={{ visibility: 'hidden', marginBottom: 10 }}>............, ngày ..... tháng ..... năm 20...</p>
                                     <p style={{ fontWeight: 'bold', fontSize: 18 }}>LIÊN ĐOÀN VÕ THUẬT</p>
                                 </div>
@@ -265,9 +322,9 @@ export const Page_medals = () => {
 
             {/* Medal Table */}
             <div style={{ borderRadius: 16, border: '1px solid var(--vct-border-subtle)', overflow: 'hidden', background: 'var(--vct-bg-glass)', marginTop: 40 }}>
-                <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                <table className="w-full border-collapse">
                     <thead>
-                        <tr style={{ borderBottom: '1px solid var(--vct-border-strong)', background: 'var(--vct-bg-card)' }}>
+                        <tr className="border-b border-[var(--vct-border-strong)] bg-[var(--vct-bg-card)]">
                             {['Hạng', 'Đơn vị', '🥇 Vàng', '🥈 Bạc', '🥉 Đồng', 'Tổng'].map((h, i) => (
                                 <th key={i} style={{ padding: '14px 16px', textAlign: i >= 2 ? 'center' : 'left', fontSize: 12, fontWeight: 700, textTransform: 'uppercase', opacity: 0.6 }}>{h}</th>
                             ))}

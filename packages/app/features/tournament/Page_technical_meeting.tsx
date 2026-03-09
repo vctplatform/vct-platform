@@ -118,7 +118,7 @@ export const Page_technical_meeting = () => {
             <div style={{ background: 'var(--vct-bg-card)', borderRadius: 16, border: '1px solid var(--vct-border-subtle)', overflowX: 'auto' }}>
                 <VCT_Table
                     columns={[
-                        { key: 'doan_ten', label: 'Đoàn', render: (r: any) => <VCT_Text style={{ fontWeight: 800 }}>{r.doan_ten}</VCT_Text> },
+                        { key: 'doan_ten', label: 'Đoàn', render: (r: any) => <VCT_Text className="font-extrabold">{r.doan_ten}</VCT_Text> },
                         {
                             key: 'vdv_ten', label: 'VĐV / Giới / Tuổi', render: (r: any) => (
                                 <div>
@@ -129,7 +129,7 @@ export const Page_technical_meeting = () => {
                         },
                         {
                             key: 'can_nang', label: 'Trọng lượng ĐK (kg)', render: (r: any) => (
-                                r.loai === 'quyen' ? <span style={{ opacity: 0.3 }}>-</span> : <VCT_Text style={{ fontWeight: 800 }}>{r.vdv.can_nang}</VCT_Text>
+                                r.loai === 'quyen' ? <span className="opacity-30">-</span> : <VCT_Text className="font-extrabold">{r.vdv.can_nang}</VCT_Text>
                             )
                         },
                         {

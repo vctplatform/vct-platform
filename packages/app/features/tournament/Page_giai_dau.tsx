@@ -1,6 +1,6 @@
 'use client';
 import * as React from 'react';
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import {
     VCT_Card, VCT_Badge, VCT_Button, VCT_Text, VCT_Field, VCT_Input,
@@ -11,6 +11,8 @@ import { VCT_Icons } from '../components/vct-icons';
 import { TOURNAMENT_CONFIG } from '../data/tournament-config';
 import type { TournamentConfig, TrangThaiGiai } from '../data/types';
 import { DON_VIS, VAN_DONG_VIENS, TRONG_TAIS, SAN_DAUS } from '../data/mock-data';
+import { repositories, useEntityCollection, type TournamentConfigRecord } from '../data/repository';
+import { useRouteActionGuard } from '../hooks/use-route-action-guard';
 
 const GIAI_STATES: Record<TrangThaiGiai, { l: string; t: string; desc: string }> = {
     nhap: { l: 'Bản nháp', t: 'info', desc: 'Đang thiết lập thông số, chưa công bố' },
@@ -25,6 +27,11 @@ const CAP_DO_LABELS: Record<string, string> = {
     'khu_vuc': 'Khu vực',
     'tinh': 'Tỉnh/TP',
     'clb': 'Cấp CLB'
+};
+
+const toTournamentConfig = (row: TournamentConfigRecord): TournamentConfig => {
+    const { id: _id, ...payload } = row;
+    return payload;
 };
 
 // ── CUSTOM COMPONENTS ──
@@ -53,7 +60,25 @@ const CurrencyInput = ({ value, onChange, disabled, placeholder }: any) => {
 };
 
 export const Page_giai_dau = () => {
-    const [config, setConfig] = useState<TournamentConfig>({ ...TOURNAMENT_CONFIG });
+    const { items: tournamentConfigRows, setItems: setTournamentConfigRows } = useEntityCollection(repositories.tournamentConfig.mock);
+    const config = useMemo<TournamentConfig>(() => {
+        const row = tournamentConfigRows[0] as TournamentConfigRecord | undefined;
+        if (!row) return { ...TOURNAMENT_CONFIG };
+        return toTournamentConfig(row);
+    }, [tournamentConfigRows]);
+
+    const setConfig = useCallback((updater: React.SetStateAction<TournamentConfig>) => {
+        setTournamentConfigRows(prev => {
+            const current = (prev[0] as TournamentConfigRecord | undefined) ?? { id: 'TOURNAMENT-2026', ...TOURNAMENT_CONFIG };
+            const currentPayload = toTournamentConfig(current);
+            const nextPayload = typeof updater === 'function'
+                ? (updater as (value: TournamentConfig) => TournamentConfig)(currentPayload)
+                : updater;
+            const nextRows: TournamentConfigRecord[] = [{ id: current.id || 'TOURNAMENT-2026', ...nextPayload }];
+            void repositories.tournamentConfig.mock.replaceAll(nextRows);
+            return nextRows;
+        });
+    }, [setTournamentConfigRows]);
     const [isEditing, setIsEditing] = useState(false);
     const [toast, setToast] = useState({ show: false, msg: '', type: 'success' });
     const [showStatusModal, setShowStatusModal] = useState(false);
@@ -67,6 +92,13 @@ export const Page_giai_dau = () => {
         setToast({ show: true, msg, type });
         setTimeout(() => setToast(prev => ({ ...prev, show: false })), 3500);
     };
+    const { can, requireAction } = useRouteActionGuard('/giai-dau', {
+        notifyDenied: (message) => showToast(message, 'error')
+    });
+    const permissions = useMemo(() => ({
+        canUpdate: can('update'),
+        canPublish: can('publish'),
+    }), [can]);
 
     // State cho Cấu hình Điểm Xếp Hạng
     const [pointModal, setPointModal] = useState({ open: false, isEdit: false, index: -1, data: { thu_hang: 1, diem: 10 } });
@@ -102,6 +134,7 @@ export const Page_giai_dau = () => {
     };
 
     const handleSaveBtc = () => {
+        if (!requireAction('update', btcModal.isEdit ? 'cập nhật thành viên BTC' : 'thêm thành viên BTC')) return;
         if (!btcModal.data.ten || !btcModal.data.chuc_vu) {
             showToast('Vui lòng nhập họ tên và chức vụ', 'warning');
             return;
@@ -117,6 +150,7 @@ export const Page_giai_dau = () => {
     };
 
     const handleDeleteBtc = () => {
+        if (!requireAction('update', 'xóa thành viên BTC')) return;
         if (confirmDeleteBtc.index === -1) return;
         setConfig(prev => {
             const nextBtc = [...prev.btc];
@@ -128,6 +162,7 @@ export const Page_giai_dau = () => {
     };
 
     const handleSavePoint = () => {
+        if (!requireAction('update', pointModal.isEdit ? 'cập nhật cấu hình điểm' : 'thêm cấu hình điểm')) return;
         if (!pointModal.data.thu_hang || !pointModal.data.diem) {
             showToast('Vui lòng nhập cả Thứ hạng và Số điểm', 'warning');
             return;
@@ -148,6 +183,7 @@ export const Page_giai_dau = () => {
     };
 
     const handleDeletePoint = () => {
+        if (!requireAction('update', 'xóa mốc điểm xếp hạng')) return;
         if (confirmDeletePoint.index === -1) return;
         setConfig(prev => {
             const nextPoints = [...prev.diem_xep_hang];
@@ -167,12 +203,12 @@ export const Page_giai_dau = () => {
                     <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 16 }}>
                         <VCT_Field label="Tên giải đấu *"><VCT_Input value={config.ten_giai} onChange={(e: any) => handleChange('ten_giai', e.target.value)} disabled={!isEditing} /></VCT_Field>
                         <VCT_Stack direction="row" gap={16}>
-                            <VCT_Field label="Mã giải *" style={{ flex: 1 }}>
+                            <VCT_Field label="Mã giải *" className="flex-1">
                                 <VCT_Input value={config.ma_giai} onChange={(e: any) => handleChange('ma_giai', e.target.value)} disabled={!isEditing} />
                             </VCT_Field>
                             <VCT_Select
                                 label="Cấp độ"
-                                style={{ flex: 1 }}
+                                className="flex-1"
                                 options={[
                                     { value: 'quoc_gia', label: 'Quốc gia' },
                                     { value: 'khu_vuc', label: 'Khu vực' },
@@ -185,23 +221,23 @@ export const Page_giai_dau = () => {
                             />
                         </VCT_Stack>
                         <VCT_Stack direction="row" gap={16}>
-                            <VCT_Field label="Năm" style={{ flex: 1 }}><VCT_Input type="number" value={config.nam} onChange={(e: any) => handleChange('nam', e.target.value)} disabled={!isEditing} /></VCT_Field>
-                            <VCT_Field label="Lần thứ" style={{ flex: 1 }}><VCT_Input type="number" value={config.lan_thu} onChange={(e: any) => handleChange('lan_thu', Number(e.target.value))} disabled={!isEditing} /></VCT_Field>
+                            <VCT_Field label="Năm" className="flex-1"><VCT_Input type="number" value={config.nam} onChange={(e: any) => handleChange('nam', e.target.value)} disabled={!isEditing} /></VCT_Field>
+                            <VCT_Field label="Lần thứ" className="flex-1"><VCT_Input type="number" value={config.lan_thu} onChange={(e: any) => handleChange('lan_thu', Number(e.target.value))} disabled={!isEditing} /></VCT_Field>
                         </VCT_Stack>
                         <VCT_Stack direction="row" gap={16}>
-                            <VCT_Field label="ĐV Tổ chức" style={{ flex: 1 }}><VCT_Input value={config.dv_to_chuc} onChange={(e: any) => handleChange('dv_to_chuc', e.target.value)} disabled={!isEditing} /></VCT_Field>
-                            <VCT_Field label="ĐV Đăng cai" style={{ flex: 1 }}><VCT_Input value={config.dv_dang_cai} onChange={(e: any) => handleChange('dv_dang_cai', e.target.value)} disabled={!isEditing} /></VCT_Field>
+                            <VCT_Field label="ĐV Tổ chức" className="flex-1"><VCT_Input value={config.dv_to_chuc} onChange={(e: any) => handleChange('dv_to_chuc', e.target.value)} disabled={!isEditing} /></VCT_Field>
+                            <VCT_Field label="ĐV Đăng cai" className="flex-1"><VCT_Input value={config.dv_dang_cai} onChange={(e: any) => handleChange('dv_dang_cai', e.target.value)} disabled={!isEditing} /></VCT_Field>
                         </VCT_Stack>
                     </div>
                     <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 16 }}>
                         <VCT_Stack direction="row" gap={16}>
-                            <VCT_Field label="Bắt đầu" style={{ flex: 1 }}><VCT_Input type="date" value={config.ngay_bat_dau} onChange={(e: any) => handleChange('ngay_bat_dau', e.target.value)} disabled={!isEditing} /></VCT_Field>
-                            <VCT_Field label="Kết thúc" style={{ flex: 1 }}><VCT_Input type="date" value={config.ngay_ket_thuc} onChange={(e: any) => handleChange('ngay_ket_thuc', e.target.value)} disabled={!isEditing} /></VCT_Field>
-                            <VCT_Field label="Hạn đăng ký" style={{ flex: 1 }}><VCT_Input type="date" value={config.ngay_dk_cuoi} onChange={(e: any) => handleChange('ngay_dk_cuoi', e.target.value)} disabled={!isEditing} /></VCT_Field>
+                            <VCT_Field label="Bắt đầu" className="flex-1"><VCT_Input type="date" value={config.ngay_bat_dau} onChange={(e: any) => handleChange('ngay_bat_dau', e.target.value)} disabled={!isEditing} /></VCT_Field>
+                            <VCT_Field label="Kết thúc" className="flex-1"><VCT_Input type="date" value={config.ngay_ket_thuc} onChange={(e: any) => handleChange('ngay_ket_thuc', e.target.value)} disabled={!isEditing} /></VCT_Field>
+                            <VCT_Field label="Hạn đăng ký" className="flex-1"><VCT_Input type="date" value={config.ngay_dk_cuoi} onChange={(e: any) => handleChange('ngay_dk_cuoi', e.target.value)} disabled={!isEditing} /></VCT_Field>
                         </VCT_Stack>
                         <VCT_Stack direction="row" gap={16}>
                             <VCT_Field label="Địa điểm" style={{ flex: 2 }}><VCT_Input value={config.dia_diem} onChange={(e: any) => handleChange('dia_diem', e.target.value)} disabled={!isEditing} /></VCT_Field>
-                            <VCT_Field label="Tỉnh/TP" style={{ flex: 1 }}><VCT_Input value={config.tinh} onChange={(e: any) => handleChange('tinh', e.target.value)} disabled={!isEditing} /></VCT_Field>
+                            <VCT_Field label="Tỉnh/TP" className="flex-1"><VCT_Input value={config.tinh} onChange={(e: any) => handleChange('tinh', e.target.value)} disabled={!isEditing} /></VCT_Field>
                         </VCT_Stack>
                         <VCT_Field label="Địa chỉ cụ thể"><VCT_Input value={config.dia_chi} onChange={(e: any) => handleChange('dia_chi', e.target.value)} disabled={!isEditing} placeholder="Số nhà, đường, phường/xã..." /></VCT_Field>
                         <VCT_Field label="Link Điều lệ mẫu (PDF/Docx)"><VCT_Input value={config.link_dieu_le} onChange={(e: any) => handleChange('link_dieu_le', e.target.value)} disabled={!isEditing} placeholder="https://..." /></VCT_Field>
@@ -214,7 +250,7 @@ export const Page_giai_dau = () => {
             {/* ROW 2: QUY ĐỊNH KỸ THUẬT (3 Cột) */}
             < VCT_Stack direction="row" gap={24} >
                 {/* CỘT 1: QUOTA */}
-                < VCT_Card title="Quy định số lượng (Quota)" style={{ flex: 1 }}>
+                < VCT_Card title="Quy định số lượng (Quota)" className="flex-1">
                     <VCT_Stack gap={16}>
                         <VCT_Field label="Tối đa Đoàn tham dự"><VCT_Input type="number" value={config.quota.max_doan} onChange={(e: any) => handleNestedChange('quota', 'max_doan', Number(e.target.value))} disabled={!isEditing} /></VCT_Field>
                         <VCT_Field label="Số VĐV tối đa/Đoàn"><VCT_Input type="number" value={config.quota.max_vdv_per_doan} onChange={(e: any) => handleNestedChange('quota', 'max_vdv_per_doan', Number(e.target.value))} disabled={!isEditing} /></VCT_Field>
@@ -224,7 +260,7 @@ export const Page_giai_dau = () => {
                 </VCT_Card >
 
                 {/* CỘT 2: CHUYÊN MÔN QUYỀN */}
-                < VCT_Card title="Chuyên môn Quyền" style={{ flex: 1 }}>
+                < VCT_Card title="Chuyên môn Quyền" className="flex-1">
                     <VCT_Stack gap={16}>
                         <VCT_Field label="Hình thức tổ chức/Tính hạng">
                             <VCT_Select
@@ -252,7 +288,7 @@ export const Page_giai_dau = () => {
                 </VCT_Card >
 
                 {/* CỘT 3: CHUYÊN MÔN ĐỐI KHÁNG */}
-                < VCT_Card title="Chuyên môn Đối kháng" style={{ flex: 1 }}>
+                < VCT_Card title="Chuyên môn Đối kháng" className="flex-1">
                     <VCT_Stack gap={16}>
                         <VCT_Field label="Cơ cấu Huy chương Đồng">
                             <VCT_Select
@@ -274,10 +310,10 @@ export const Page_giai_dau = () => {
                             />
                         </VCT_Field>
                         <VCT_Stack direction="row" gap={16}>
-                            <VCT_Field label="Hiệp đấu (giây)" style={{ flex: 1 }}>
+                            <VCT_Field label="Hiệp đấu (giây)" className="flex-1">
                                 <VCT_Input type="number" value={config.cau_hinh_doi_khang.thoi_gian_hiep} onChange={(e: any) => handleNestedChange('cau_hinh_doi_khang', 'thoi_gian_hiep', Number(e.target.value))} disabled={!isEditing} />
                             </VCT_Field>
-                            <VCT_Field label="Nghỉ (giây)" style={{ flex: 1 }}>
+                            <VCT_Field label="Nghỉ (giây)" className="flex-1">
                                 <VCT_Input type="number" value={config.cau_hinh_doi_khang.thoi_gian_nghi} onChange={(e: any) => handleNestedChange('cau_hinh_doi_khang', 'thoi_gian_nghi', Number(e.target.value))} disabled={!isEditing} />
                             </VCT_Field>
                         </VCT_Stack>
@@ -288,7 +324,7 @@ export const Page_giai_dau = () => {
             {/* ROW 3: TÀI CHÍNH & GIẢI THƯỞNG & PHÁP LÝ */}
             < VCT_Stack direction="row" gap={24} >
                 {/* CỘT 1: LỆ PHÍ */}
-                < VCT_Card title="Lệ phí Tổ chức" style={{ flex: 1 }}>
+                < VCT_Card title="Lệ phí Tổ chức" className="flex-1">
                     <VCT_Stack gap={16}>
                         <VCT_Field label="Lệ phí Đoàn"><CurrencyInput value={config.le_phi.doan} onChange={(v: any) => handleNestedChange('le_phi', 'doan', v)} disabled={!isEditing} /></VCT_Field>
                         <VCT_Field label="Lệ phí / Nội dung"><CurrencyInput value={config.le_phi.noi_dung} onChange={(v: any) => handleNestedChange('le_phi', 'noi_dung', v)} disabled={!isEditing} /></VCT_Field>
@@ -297,7 +333,7 @@ export const Page_giai_dau = () => {
                 </VCT_Card >
 
                 {/* CỘT 2: CƠ CẤU GIẢI THƯỞNG */}
-                < VCT_Card title="Cơ cấu Giải thưởng" style={{ flex: 1 }}>
+                < VCT_Card title="Cơ cấu Giải thưởng" className="flex-1">
                     <VCT_Stack gap={16}>
                         <div style={{ fontSize: 13, fontWeight: 700, color: '#f59e0b', textTransform: 'uppercase' }}>Thưởng Cá nhân</div>
                         <VCT_Stack direction="row" gap={12}>
@@ -315,13 +351,13 @@ export const Page_giai_dau = () => {
                 </VCT_Card >
 
                 {/* CỘT 3: Y TẾ & PHÁP LÝ */}
-                < VCT_Card title="Y tế & Pháp lý" style={{ flex: 1 }}>
+                < VCT_Card title="Y tế & Pháp lý" className="flex-1">
                     <VCT_Stack gap={16}>
                         <div style={{ fontSize: 13, fontWeight: 700, color: '#ef4444', textTransform: 'uppercase' }}>Hỗ trợ Y tế</div>
                         <VCT_Field label="Bệnh viện trực tuyến & Khoảng cách">
                             <div style={{ display: 'flex', gap: 8 }}>
                                 <div style={{ flex: 2 }}><VCT_Input value={config.y_te.benh_vien} onChange={(e: any) => handleNestedChange('y_te', 'benh_vien', e.target.value)} disabled={!isEditing} placeholder="Tên BV..." /></div>
-                                <div style={{ flex: 1 }}><VCT_Input value={config.y_te.bv_kc} onChange={(e: any) => handleNestedChange('y_te', 'bv_kc', e.target.value)} disabled={!isEditing} placeholder="Khoảng cách..." /></div>
+                                <div className="flex-1"><VCT_Input value={config.y_te.bv_kc} onChange={(e: any) => handleNestedChange('y_te', 'bv_kc', e.target.value)} disabled={!isEditing} placeholder="Khoảng cách..." /></div>
                             </div>
                         </VCT_Field>
                         <VCT_Stack direction="row" gap={16}>
@@ -339,7 +375,7 @@ export const Page_giai_dau = () => {
 
             {/* ROW 4: HỆ THỐNG XẾP HẠNG TOÀN ĐOÀN */}
             <VCT_Card>
-                <VCT_Stack direction="row" justify="space-between" align="start" style={{ marginBottom: 16 }}>
+                <VCT_Stack direction="row" justify="space-between" align="start" className="mb-4">
                     <div>
                         <VCT_Text variant="h2" style={{ marginBottom: 4 }}>Phương thức Xếp hạng Toàn đoàn</VCT_Text>
                         <VCT_Text variant="small" style={{ color: 'var(--vct-text-secondary)' }}>
@@ -398,12 +434,19 @@ export const Page_giai_dau = () => {
                     </div>
                 ) : (
                     <div style={{ borderTop: '1px solid var(--vct-border-subtle)', paddingTop: 16, marginTop: 8 }}>
-                        <VCT_Stack direction="row" justify="space-between" align="center" style={{ marginBottom: 16 }}>
+                        <VCT_Stack direction="row" justify="space-between" align="center" className="mb-4">
                             <VCT_Text variant="small" style={{ color: 'var(--vct-text-secondary)', fontWeight: 500 }}>
                                 Cấu hình mức điểm tương ứng cho từng loại thứ hạng
                             </VCT_Text>
                             {isEditing && (
-                                <VCT_Button variant="secondary" icon={<VCT_Icons.Plus size={16} />} onClick={() => setPointModal({ open: true, isEdit: false, index: -1, data: { thu_hang: (config.diem_xep_hang?.length || 0) + 1, diem: 0 } })}>
+                                <VCT_Button
+                                    variant="secondary"
+                                    icon={<VCT_Icons.Plus size={16} />}
+                                    onClick={() => permissions.canUpdate
+                                        ? setPointModal({ open: true, isEdit: false, index: -1, data: { thu_hang: (config.diem_xep_hang?.length || 0) + 1, diem: 0 } })
+                                        : requireAction('update', 'thêm cấu hình điểm')}
+                                    disabled={!permissions.canUpdate}
+                                >
                                     Thêm cấu hình
                                 </VCT_Button>
                             )}
@@ -428,8 +471,26 @@ export const Page_giai_dau = () => {
                                         </div>
                                         {isEditing && (
                                             <div style={{ display: 'flex', flexDirection: 'column', gap: 4, marginLeft: 12, paddingLeft: 12, borderLeft: '1px solid var(--vct-border-subtle)' }}>
-                                                <button onClick={() => setPointModal({ open: true, isEdit: true, index: idx, data: { ...pt } })} style={{ background: 'none', border: 'none', color: 'var(--vct-text-tertiary)', cursor: 'pointer', padding: 2 }}><VCT_Icons.Edit size={14} /></button>
-                                                <button onClick={() => setConfirmDeletePoint({ open: true, index: idx })} style={{ background: 'none', border: 'none', color: '#ef4444', cursor: 'pointer', padding: 2 }}><VCT_Icons.Trash size={14} /></button>
+                                                <button
+                                                    onClick={() => permissions.canUpdate
+                                                        ? setPointModal({ open: true, isEdit: true, index: idx, data: { ...pt } })
+                                                        : requireAction('update', 'chỉnh sửa cấu hình điểm')}
+                                                    style={{ background: 'none', border: 'none', color: 'var(--vct-text-tertiary)', cursor: permissions.canUpdate ? 'pointer' : 'not-allowed', padding: 2, opacity: permissions.canUpdate ? 1 : 0.5 }}
+                                                    aria-label="Chỉnh sửa cấu hình điểm"
+                                                    disabled={!permissions.canUpdate}
+                                                >
+                                                    <VCT_Icons.Edit size={14} />
+                                                </button>
+                                                <button
+                                                    onClick={() => permissions.canUpdate
+                                                        ? setConfirmDeletePoint({ open: true, index: idx })
+                                                        : requireAction('update', 'xóa cấu hình điểm')}
+                                                    style={{ background: 'none', border: 'none', color: '#ef4444', cursor: permissions.canUpdate ? 'pointer' : 'not-allowed', padding: 2, opacity: permissions.canUpdate ? 1 : 0.5 }}
+                                                    aria-label="Xóa cấu hình điểm"
+                                                    disabled={!permissions.canUpdate}
+                                                >
+                                                    <VCT_Icons.Trash size={14} />
+                                                </button>
                                             </div>
                                         )}
                                     </div>
@@ -451,21 +512,45 @@ export const Page_giai_dau = () => {
             <VCT_Stack direction="row" justify="space-between" align="center">
                 <VCT_Text variant="h2">Danh sách Ban Tổ Chức ({config.btc.length} thành viên)</VCT_Text>
                 {isEditing && (
-                    <VCT_Button icon={<VCT_Icons.Plus size={16} />} onClick={() => setBtcModal({ open: true, isEdit: false, index: -1, data: { ten: '', chuc_vu: '', ban: '', cap: 2, sdt: '', email: '', dv: '' } })}>
+                    <VCT_Button
+                        icon={<VCT_Icons.Plus size={16} />}
+                        onClick={() => permissions.canUpdate
+                            ? setBtcModal({ open: true, isEdit: false, index: -1, data: { ten: '', chuc_vu: '', ban: '', cap: 2, sdt: '', email: '', dv: '' } })
+                            : requireAction('update', 'thêm thành viên BTC')}
+                        disabled={!permissions.canUpdate}
+                    >
                         Thêm thành viên
                     </VCT_Button>
                 )}
             </VCT_Stack>
             <VCT_Table data={config.btc} columns={[
                 { key: 'chuc_vu', label: 'Chức vụ', render: (r: any) => <VCT_Text style={{ fontWeight: 700, color: r.cap === 1 ? 'var(--vct-accent-cyan)' : 'inherit' }}>{r.chuc_vu}</VCT_Text> },
-                { key: 'ten', label: 'Họ và tên', render: (r: any) => <VCT_Text style={{ fontWeight: 700 }}>{r.ten}</VCT_Text> },
+                { key: 'ten', label: 'Họ và tên', render: (r: any) => <VCT_Text className="font-bold">{r.ten}</VCT_Text> },
                 { key: 'dv', label: 'Đơn vị / Chuyên môn' },
                 { key: 'sdt', label: 'Liên hệ', render: (r: any) => <VCT_Text variant="mono">{r.sdt} <span style={{ opacity: 0.4 }}>|</span> {r.email}</VCT_Text> },
                 {
                     key: 'actions', label: '', align: 'right', render: (r: any, idx: number) => isEditing ? (
                         <VCT_Stack direction="row" gap={8} justify="flex-end">
-                            <button onClick={() => setBtcModal({ open: true, isEdit: true, index: idx, data: { ...r } })} style={{ background: 'none', border: 'none', color: 'var(--vct-text-tertiary)', cursor: 'pointer' }}><VCT_Icons.Edit size={16} /></button>
-                            <button onClick={() => setConfirmDeleteBtc({ open: true, index: idx })} style={{ background: 'none', border: 'none', color: '#ef4444', cursor: 'pointer' }}><VCT_Icons.Trash size={16} /></button>
+                            <button
+                                onClick={() => permissions.canUpdate
+                                    ? setBtcModal({ open: true, isEdit: true, index: idx, data: { ...r } })
+                                    : requireAction('update', 'chỉnh sửa thành viên BTC')}
+                                style={{ background: 'none', border: 'none', color: 'var(--vct-text-tertiary)', cursor: permissions.canUpdate ? 'pointer' : 'not-allowed', opacity: permissions.canUpdate ? 1 : 0.5 }}
+                                aria-label="Chỉnh sửa thành viên BTC"
+                                disabled={!permissions.canUpdate}
+                            >
+                                <VCT_Icons.Edit size={16} />
+                            </button>
+                            <button
+                                onClick={() => permissions.canUpdate
+                                    ? setConfirmDeleteBtc({ open: true, index: idx })
+                                    : requireAction('update', 'xóa thành viên BTC')}
+                                style={{ background: 'none', border: 'none', color: '#ef4444', cursor: permissions.canUpdate ? 'pointer' : 'not-allowed', opacity: permissions.canUpdate ? 1 : 0.5 }}
+                                aria-label="Xóa thành viên BTC"
+                                disabled={!permissions.canUpdate}
+                            >
+                                <VCT_Icons.Trash size={16} />
+                            </button>
                         </VCT_Stack>
                     ) : null
                 }
@@ -476,7 +561,7 @@ export const Page_giai_dau = () => {
     const renderActivity = () => (
         <VCT_Stack gap={24} direction="row">
             {/* CHECKLIST */}
-            <div style={{ flex: 1 }}>
+            <div className="flex-1">
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
                     <VCT_Text variant="h2">Checklist Tổ chức</VCT_Text>
                     <VCT_Badge text={`${doneChecklist}/${config.checklist.length} Hoàn tất`} type={pctReady === 100 ? 'success' : 'warning'} />
@@ -495,7 +580,7 @@ export const Page_giai_dau = () => {
             <div style={{ width: 1, background: 'var(--vct-border-subtle)' }} />
 
             {/* AUDIT LOG */}
-            <div style={{ flex: 1 }}>
+            <div className="flex-1">
                 <VCT_Text variant="h2" style={{ marginBottom: 24, paddingBottom: 12, borderBottom: '1px solid var(--vct-border-subtle)' }}>Lịch sử hoạt động</VCT_Text>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 20, position: 'relative', paddingLeft: 8 }}>
                     <div style={{ position: 'absolute', top: 12, bottom: 12, left: 14, width: 2, background: 'linear-gradient(to bottom, var(--vct-border-strong), transparent)' }} />
@@ -563,12 +648,17 @@ export const Page_giai_dau = () => {
                             variant={isEditing ? "primary" : "secondary"}
                             icon={isEditing ? <VCT_Icons.Check size={16} /> : <VCT_Icons.Settings size={16} />}
                             onClick={() => {
+                                if (!permissions.canUpdate) {
+                                    requireAction('update', isEditing ? 'lưu cấu hình giải đấu' : 'thiết lập giải đấu');
+                                    return;
+                                }
                                 if (isEditing) {
                                     showToast('Đã lưu cấu hình giải đấu');
                                     setConfig(prev => ({ ...prev, audit: [...prev.audit, { time: new Date().toLocaleString('vi-VN'), action: 'Cập nhật cấu hình', by: 'Admin' }] }));
                                 }
                                 setIsEditing(!isEditing);
                             }}
+                            disabled={!permissions.canUpdate}
                         >
                             {isEditing ? "Lưu cấu hình" : "Thiết lập giải"}
                         </VCT_Button>
@@ -578,10 +668,10 @@ export const Page_giai_dau = () => {
 
             {/* 2. LIVE STATS */}
             <VCT_Stack direction="row" gap={16} style={{ marginBottom: 24, flexWrap: 'wrap' }}>
-                <VCT_KpiCard style={{ flex: 1 }} label="Đoàn tham dự" value={stats.doan} icon={<VCT_Icons.Users size={24} />} color="#22d3ee" sub={`Quota: ${config.quota.max_doan}`} />
-                <VCT_KpiCard style={{ flex: 1 }} label="Vận động viên" value={stats.vdv} icon={<VCT_Icons.User size={24} />} color="#f59e0b" />
-                <VCT_KpiCard style={{ flex: 1 }} label="Trọng tài" value={stats.trong_tai} icon={<VCT_Icons.Shield size={24} />} color="#10b981" />
-                <VCT_KpiCard style={{ flex: 1 }} label="Sàn đang đấu" value={`${stats.san_active}/${stats.san}`} icon={<VCT_Icons.Columns size={24} />} color="#a78bfa" />
+                <VCT_KpiCard className="flex-1" label="Đoàn tham dự" value={stats.doan} icon={<VCT_Icons.Users size={24} />} color="#22d3ee" sub={`Quota: ${config.quota.max_doan}`} />
+                <VCT_KpiCard className="flex-1" label="Vận động viên" value={stats.vdv} icon={<VCT_Icons.User size={24} />} color="#f59e0b" />
+                <VCT_KpiCard className="flex-1" label="Trọng tài" value={stats.trong_tai} icon={<VCT_Icons.Shield size={24} />} color="#10b981" />
+                <VCT_KpiCard className="flex-1" label="Sàn đang đấu" value={`${stats.san_active}/${stats.san}`} icon={<VCT_Icons.Columns size={24} />} color="#a78bfa" />
             </VCT_Stack>
 
             {/* 3. TABS CONTENT */}
@@ -591,7 +681,7 @@ export const Page_giai_dau = () => {
                 { key: 'activity', label: 'Hoạt động & Checklist' },
             ]} activeTab={activeTab} onChange={setActiveTab} />
 
-            <div style={{ marginTop: 24 }}>
+            <div className="mt-6">
                 {activeTab === 'overview' && renderOverview()}
                 {activeTab === 'btc' && renderBTC()}
                 {activeTab === 'activity' && renderActivity()}
@@ -609,7 +699,13 @@ export const Page_giai_dau = () => {
                     <VCT_Badge text={st.l} type={st.t as any} pulse={config.trang_thai === 'dang_ky' || config.trang_thai === 'thi_dau'} />
                 </VCT_Stack>
                 <div style={{ width: 1, height: 24, background: 'var(--vct-border-subtle)' }} />
-                <VCT_Button variant="primary" onClick={() => setShowStatusModal(true)}>Chuyển đổi</VCT_Button>
+                <VCT_Button
+                    variant="primary"
+                    onClick={() => permissions.canPublish ? setShowStatusModal(true) : requireAction('publish', 'chuyển trạng thái hệ thống')}
+                    disabled={!permissions.canPublish}
+                >
+                    Chuyển đổi
+                </VCT_Button>
             </div>
 
             {/* MODAL TRẠNG THÁI */}
@@ -617,6 +713,10 @@ export const Page_giai_dau = () => {
                 <VCT_Stack gap={12}>
                     {(Object.keys(GIAI_STATES) as TrangThaiGiai[]).map(k => (
                         <div key={k} onClick={() => {
+                            if (!permissions.canPublish) {
+                                requireAction('publish', 'chuyển trạng thái hệ thống');
+                                return;
+                            }
                             if (config.trang_thai === k) return;
                             setConfig(prev => ({
                                 ...prev, trang_thai: k,
@@ -629,7 +729,7 @@ export const Page_giai_dau = () => {
                             border: `2px solid ${config.trang_thai === k ? 'var(--vct-accent-cyan)' : 'var(--vct-border-subtle)'}`,
                             background: config.trang_thai === k ? 'rgba(34, 211, 238, 0.05)' : 'var(--vct-bg-card)',
                             display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                            opacity: config.trang_thai === k ? 1 : 0.6,
+                            opacity: permissions.canPublish ? (config.trang_thai === k ? 1 : 0.6) : 0.4,
                             transition: 'all 0.2s'
                         }}>
                             <div>
@@ -646,24 +746,24 @@ export const Page_giai_dau = () => {
             <VCT_Modal isOpen={btcModal.open} onClose={() => setBtcModal(prev => ({ ...prev, open: false }))} title={btcModal.isEdit ? "Sửa thành viên BTC" : "Thêm thành viên BTC"} width="600px" footer={
                 <>
                     <VCT_Button variant="secondary" onClick={() => setBtcModal(prev => ({ ...prev, open: false }))}>Hủy</VCT_Button>
-                    <VCT_Button onClick={handleSaveBtc}>{btcModal.isEdit ? "Cập nhật" : "Lưu thành viên"}</VCT_Button>
+                    <VCT_Button onClick={handleSaveBtc} disabled={!permissions.canUpdate}>{btcModal.isEdit ? "Cập nhật" : "Lưu thành viên"}</VCT_Button>
                 </>
             }>
                 <VCT_Stack gap={16}>
                     <VCT_Stack direction="row" gap={16}>
-                        <div style={{ flex: 1 }}>
+                        <div className="flex-1">
                             <VCT_Field label="Họ và tên *"><VCT_Input value={btcModal.data.ten} onChange={(e: any) => setBtcModal(p => ({ ...p, data: { ...p.data, ten: e.target.value } }))} placeholder="Nhập họ và tên..." /></VCT_Field>
                         </div>
-                        <div style={{ flex: 1 }}>
+                        <div className="flex-1">
                             <VCT_Field label="Chức vụ *"><VCT_Input value={btcModal.data.chuc_vu} onChange={(e: any) => setBtcModal(p => ({ ...p, data: { ...p.data, chuc_vu: e.target.value } }))} placeholder="Trưởng ban, Phó ban..." /></VCT_Field>
                         </div>
                     </VCT_Stack>
                     <VCT_Field label="Đơn vị / Chuyên môn"><VCT_Input value={btcModal.data.dv} onChange={(e: any) => setBtcModal(p => ({ ...p, data: { ...p.data, dv: e.target.value } }))} placeholder="Cơ quan công tác..." /></VCT_Field>
                     <VCT_Stack direction="row" gap={16}>
-                        <div style={{ flex: 1 }}>
+                        <div className="flex-1">
                             <VCT_Field label="Số điện thoại"><VCT_Input value={btcModal.data.sdt} onChange={(e: any) => setBtcModal(p => ({ ...p, data: { ...p.data, sdt: e.target.value } }))} placeholder="090..." /></VCT_Field>
                         </div>
-                        <div style={{ flex: 1 }}>
+                        <div className="flex-1">
                             <VCT_Field label="Email"><VCT_Input value={btcModal.data.email} onChange={(e: any) => setBtcModal(p => ({ ...p, data: { ...p.data, email: e.target.value } }))} placeholder="abc@email.com" /></VCT_Field>
                         </div>
                     </VCT_Stack>
@@ -698,7 +798,7 @@ export const Page_giai_dau = () => {
             <VCT_Modal isOpen={pointModal.open} onClose={() => setPointModal(prev => ({ ...prev, open: false }))} title={pointModal.isEdit ? "Sửa Cấu hình Điểm" : "Thêm Cấu hình Điểm"} width="400px" footer={
                 <>
                     <VCT_Button variant="secondary" onClick={() => setPointModal(prev => ({ ...prev, open: false }))}>Hủy</VCT_Button>
-                    <VCT_Button onClick={handleSavePoint}>{pointModal.isEdit ? "Cập nhật" : "Lưu Điểm"}</VCT_Button>
+                    <VCT_Button onClick={handleSavePoint} disabled={!permissions.canUpdate}>{pointModal.isEdit ? "Cập nhật" : "Lưu Điểm"}</VCT_Button>
                 </>
             }>
                 <VCT_Stack gap={16}>

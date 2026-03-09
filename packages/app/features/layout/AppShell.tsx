@@ -4,7 +4,12 @@ import { useEffect, useMemo, useState } from 'react'
 import { usePathname, useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
 import { VCT_Sidebar } from './sidebar'
-import { VCT_Provider } from '../components/vct-ui'
+import { VCT_Breadcrumbs } from './Breadcrumbs'
+import { VCT_IconButton, VCT_Provider } from '../components/vct-ui'
+import { VCT_Dropdown } from '../components/VCT_Dropdown'
+import { VCT_CommandPalette } from '../components/VCT_CommandPalette'
+import { VCT_ShortcutsPanel } from '../components/VCT_ShortcutsPanel'
+import { NotificationCenter } from '../notifications/NotificationCenter'
 import { VCT_Icons } from '../components/vct-icons'
 import { ThemeProvider, useTheme } from '../theme/ThemeProvider'
 import { AuthProvider, useAuth } from '../auth/AuthProvider'
@@ -16,8 +21,18 @@ import {
   isRouteAccessible,
 } from './route-registry'
 
-const MOBILE_BREAKPOINT = 1024
+const MOBILE_MAX_WIDTH = 767
+const TABLET_MAX_WIDTH = 1199
 const PUBLIC_ROUTES = ['/login']
+const SHELL_SIDEBAR_ID = 'vct-shell-sidebar'
+
+type ViewportMode = 'mobile' | 'tablet' | 'desktop'
+
+const getViewportMode = (width: number): ViewportMode => {
+  if (width <= MOBILE_MAX_WIDTH) return 'mobile'
+  if (width <= TABLET_MAX_WIDTH) return 'tablet'
+  return 'desktop'
+}
 
 const ThemeToggle = () => {
   const { theme, toggleTheme } = useTheme()
@@ -29,21 +44,10 @@ const ThemeToggle = () => {
       aria-label={isDark ? 'Chuyển sang chế độ sáng' : 'Chuyển sang chế độ tối'}
       onClick={toggleTheme}
       title={isDark ? 'Chuyển sang chế độ sáng' : 'Chuyển sang chế độ tối'}
-      style={{
-        display: 'flex',
-        alignItems: 'center',
-        gap: 8,
-        padding: '8px 14px',
-        borderRadius: '99px',
-        border: '1px solid var(--vct-border-subtle)',
-        background: isDark ? 'rgba(34, 211, 238, 0.1)' : 'rgba(245, 158, 11, 0.1)',
-        color: isDark ? '#22d3ee' : '#f59e0b',
-        cursor: 'pointer',
-        fontWeight: 700,
-        fontSize: 12,
-        fontFamily: 'inherit',
-        transition: 'background-color 0.3s ease, color 0.3s ease',
-      }}
+      className={`inline-flex items-center gap-2 rounded-full border px-3 py-2 text-xs font-extrabold transition ${isDark
+        ? 'border-cyan-400/30 bg-cyan-300/10 text-cyan-300'
+        : 'border-amber-500/30 bg-amber-300/15 text-amber-700'
+        }`}
     >
       {isDark ? <VCT_Icons.Moon size={16} /> : <VCT_Icons.Sun size={16} />}
       <span>{isDark ? 'Tối' : 'Sáng'}</span>
@@ -58,28 +62,15 @@ const RoleSwitcher = ({
   role: UserRole
   onChange: (next: UserRole) => void
 }) => (
-  <div style={{ minWidth: 170 }}>
-    <label
-      htmlFor="vct-role-switcher"
-      style={{ position: 'absolute', width: 1, height: 1, overflow: 'hidden', clipPath: 'inset(50%)' }}
-    >
+  <div className="min-w-[180px]">
+    <label htmlFor="vct-role-switcher" className="sr-only">
       Vai trò đăng nhập
     </label>
     <select
       id="vct-role-switcher"
       value={role}
       onChange={(event) => onChange(event.target.value as UserRole)}
-      style={{
-        width: '100%',
-        borderRadius: 10,
-        border: '1px solid var(--vct-border-subtle)',
-        background: 'var(--vct-bg-elevated)',
-        color: 'var(--vct-text-secondary)',
-        padding: '8px 10px',
-        fontSize: 12,
-        fontWeight: 700,
-        cursor: 'pointer',
-      }}
+      className="w-full cursor-pointer rounded-lg border border-vct-border bg-vct-elevated px-2.5 py-2 text-xs font-bold text-[var(--vct-text-secondary)]"
     >
       {USER_ROLE_OPTIONS.map((item) => (
         <option key={item.value} value={item.value}>
@@ -97,51 +88,20 @@ const AccessDenied = ({
   role: UserRole
   onBack: () => void
 }) => (
-  <div
-    style={{
-      maxWidth: 680,
-      margin: '80px auto 0',
-      borderRadius: 20,
-      border: '1px solid rgba(239, 68, 68, 0.25)',
-      background: 'rgba(239, 68, 68, 0.08)',
-      padding: 24,
-      display: 'grid',
-      gap: 12,
-    }}
-  >
-    <h2 style={{ margin: 0, fontSize: 24, fontWeight: 900, color: '#ef4444' }}>
-      Không có quyền truy cập
-    </h2>
-    <p style={{ margin: 0, color: 'var(--vct-text-secondary)', lineHeight: 1.6 }}>
+  <div className="mx-auto mt-20 grid max-w-3xl gap-3 rounded-2xl border border-red-500/30 bg-red-500/10 p-6">
+    <h2 className="m-0 text-2xl font-black text-red-500">Không có quyền truy cập</h2>
+    <p className="m-0 leading-7 text-[var(--vct-text-secondary)]">
       Vai trò hiện tại không có quyền mở module này. Hãy đổi vai trò hoặc quay về
       màn hình được phân quyền.
     </p>
-    <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-      <span
-        style={{
-          fontSize: 12,
-          fontWeight: 800,
-          color: '#ef4444',
-          background: 'rgba(239, 68, 68, 0.12)',
-          borderRadius: 999,
-          padding: '4px 10px',
-        }}
-      >
+    <div className="flex flex-wrap items-center gap-3">
+      <span className="rounded-full border border-red-500/30 bg-red-500/15 px-3 py-1 text-xs font-extrabold text-red-500">
         Vai trò: {USER_ROLE_OPTIONS.find((item) => item.value === role)?.label}
       </span>
       <button
         type="button"
         onClick={onBack}
-        style={{
-          borderRadius: 10,
-          border: '1px solid var(--vct-border-subtle)',
-          background: 'var(--vct-bg-elevated)',
-          color: 'var(--vct-text-primary)',
-          fontSize: 13,
-          fontWeight: 700,
-          padding: '8px 12px',
-          cursor: 'pointer',
-        }}
+        className="rounded-lg border border-vct-border bg-vct-elevated px-3 py-2 text-sm font-bold text-vct-text transition hover:bg-vct-input"
       >
         Về màn hình hợp lệ
       </button>
@@ -162,9 +122,13 @@ const ShellLayout = ({ children }: { children: React.ReactNode }) => {
     tournamentCode,
     operationShift,
   } = useAuth()
-  const [isMobile, setIsMobile] = useState(false)
+  const [viewportMode, setViewportMode] = useState<ViewportMode>('desktop')
   const [mobileNavOpen, setMobileNavOpen] = useState(false)
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false)
+
+  const compactNavigation = viewportMode !== 'desktop'
+  const isDesktop = viewportMode === 'desktop'
+  const isMobile = viewportMode === 'mobile'
 
   const isPublicRoute = useMemo(
     () =>
@@ -176,11 +140,10 @@ const ShellLayout = ({ children }: { children: React.ReactNode }) => {
 
   useEffect(() => {
     if (typeof window === 'undefined') return
-    const mq = window.matchMedia(`(max-width: ${MOBILE_BREAKPOINT}px)`)
-    const sync = () => setIsMobile(mq.matches)
+    const sync = () => setViewportMode(getViewportMode(window.innerWidth))
     sync()
-    mq.addEventListener('change', sync)
-    return () => mq.removeEventListener('change', sync)
+    window.addEventListener('resize', sync)
+    return () => window.removeEventListener('resize', sync)
   }, [])
 
   useEffect(() => {
@@ -206,10 +169,15 @@ const ShellLayout = ({ children }: { children: React.ReactNode }) => {
     () => canAccessRoute(pathname),
     [canAccessRoute, pathname]
   )
+
   const breadcrumbs = useMemo(
-    () => (canAccessCurrentRoute ? getBreadcrumbs(pathname) : ['VCT PLATFORM', 'Không có quyền']),
+    () =>
+      canAccessCurrentRoute
+        ? getBreadcrumbs(pathname)
+        : [{ label: 'VCT PLATFORM', href: '/' }, { label: 'Không có quyền' }],
     [pathname, canAccessCurrentRoute]
   )
+
   const pageTitle = canAccessCurrentRoute
     ? getPageTitle(pathname)
     : 'KHÔNG CÓ QUYỀN TRUY CẬP'
@@ -228,20 +196,19 @@ const ShellLayout = ({ children }: { children: React.ReactNode }) => {
   if (isHydrating || !isAuthenticated) {
     return (
       <VCT_Provider>
-        <div
-          style={{
-            minHeight: '100dvh',
-            display: 'grid',
-            placeItems: 'center',
-            background: 'var(--vct-bg-base)',
-            color: 'var(--vct-text-secondary)',
-          }}
-        >
-          <div style={{ textAlign: 'center' }}>
-            <div style={{ fontWeight: 900, fontSize: 18, marginBottom: 6 }}>
-              Đang xác thực phiên làm việc
+        <div className="grid min-h-dvh place-items-center bg-vct-bg text-[var(--vct-text-secondary)]">
+          <div className="w-full max-w-md px-6 text-center">
+            <div className="mx-auto mb-6 h-12 w-12 rounded-2xl vct-skeleton" />
+            <div className="mb-2 text-lg font-black">Đang xác thực phiên làm việc</div>
+            <div className="text-sm opacity-70">Vui lòng chờ trong giây lát...</div>
+            <div className="mt-8 space-y-3">
+              <div className="h-10 w-full vct-skeleton" />
+              <div className="flex gap-3">
+                <div className="h-10 flex-1 vct-skeleton" />
+                <div className="h-10 flex-1 vct-skeleton" />
+              </div>
+              <div className="h-10 w-3/4 vct-skeleton" />
             </div>
-            <div style={{ fontSize: 13, opacity: 0.7 }}>Vui lòng chờ trong giây lát...</div>
           </div>
         </div>
       </VCT_Provider>
@@ -250,16 +217,13 @@ const ShellLayout = ({ children }: { children: React.ReactNode }) => {
 
   return (
     <VCT_Provider>
-      <div
-        style={{
-          display: 'flex',
-          height: '100dvh',
-          width: '100vw',
-          overflow: 'hidden',
-          position: 'relative',
-        }}
-      >
+      <a href="#vct-main-content" className="vct-skip-link">
+        Bỏ qua điều hướng
+      </a>
+
+      <div className="relative flex h-dvh w-full overflow-hidden bg-vct-bg text-vct-text">
         <VCT_Sidebar
+          id={SHELL_SIDEBAR_ID}
           activeModule={pathname}
           onNavigate={(path: string) => {
             if (!isRouteAccessible(path, currentUser.role)) return
@@ -267,7 +231,7 @@ const ShellLayout = ({ children }: { children: React.ReactNode }) => {
           }}
           isCollapsed={isSidebarCollapsed}
           onToggleCollapse={() => setIsSidebarCollapsed((prev) => !prev)}
-          isMobile={isMobile}
+          isMobile={compactNavigation}
           mobileOpen={mobileNavOpen}
           onCloseMobile={() => setMobileNavOpen(false)}
           role={currentUser.role}
@@ -275,263 +239,106 @@ const ShellLayout = ({ children }: { children: React.ReactNode }) => {
           roleLabel={roleLabel}
         />
 
-        {isMobile && mobileNavOpen && (
+        {compactNavigation && mobileNavOpen && (
           <button
             type="button"
             aria-label="Đóng menu điều hướng"
             onClick={() => setMobileNavOpen(false)}
-            style={{
-              position: 'fixed',
-              inset: 0,
-              background: 'rgba(15, 23, 42, 0.45)',
-              border: 'none',
-              zIndex: 70,
-              cursor: 'pointer',
-            }}
+            className="fixed inset-0 z-[80] border-none bg-slate-900/50"
           />
         )}
 
-        <div
-          style={{
-            flex: 1,
-            display: 'flex',
-            flexDirection: 'column',
-            position: 'relative',
-            overflow: 'hidden',
-            minWidth: 0,
-            marginLeft: isMobile ? 0 : undefined,
-          }}
-        >
+        <div className="relative z-20 flex min-w-0 flex-1 flex-col overflow-hidden">
           <header
             role="banner"
-            style={{
-              height: isMobile ? 64 : 72,
-              padding: isMobile ? '0 16px' : '0 24px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              borderBottom: '1px solid var(--vct-border-subtle)',
-              background: 'var(--vct-bg-elevated)',
-              backdropFilter: 'blur(24px)',
-              zIndex: 20,
-              flexShrink: 0,
-              borderRadius: '0 0 16px 0',
-              boxShadow: '0 2px 12px rgba(0,0,0,0.04)',
-              gap: 12,
-            }}
+            className={`vct-glass flex shrink-0 items-center justify-between gap-3 border-b border-vct-border shadow-[var(--vct-shadow-sm)] ${isMobile ? 'h-16 px-4' : 'h-[74px] px-6'
+              }`}
           >
-            <div style={{ display: 'flex', alignItems: 'center', gap: 12, minWidth: 0 }}>
-              {isMobile && (
-                <button
-                  type="button"
+            <div className="flex min-w-0 items-center gap-3">
+              {compactNavigation && (
+                <VCT_IconButton
+                  ariaLabel="Mở menu điều hướng"
                   aria-label="Mở menu điều hướng"
-                  onClick={() => setMobileNavOpen(true)}
-                  style={{
-                    width: 36,
-                    height: 36,
-                    borderRadius: 10,
-                    border: '1px solid var(--vct-border-subtle)',
-                    background: 'var(--vct-bg-elevated)',
-                    color: 'var(--vct-text-secondary)',
-                    cursor: 'pointer',
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    flexShrink: 0,
-                  }}
-                >
-                  <VCT_Icons.List size={18} />
-                </button>
+                  aria-controls={SHELL_SIDEBAR_ID}
+                  aria-expanded={mobileNavOpen}
+                  onClick={() => setMobileNavOpen((prev) => !prev)}
+                  icon={<VCT_Icons.List size={18} />}
+                  className="shrink-0"
+                />
               )}
 
-              <div style={{ minWidth: 0 }}>
-                <h1
-                  style={{
-                    margin: 0,
-                    fontSize: isMobile ? 16 : 22,
-                    fontWeight: 900,
-                    textTransform: 'uppercase',
-                    letterSpacing: '0.02em',
-                    color: 'var(--vct-text-primary)',
-                    whiteSpace: 'nowrap',
-                    overflow: 'hidden',
-                    textOverflow: 'ellipsis',
-                  }}
-                >
+              <div className="min-w-0">
+                <h1 className="m-0 truncate text-base font-black uppercase tracking-wide tablet:text-xl">
                   {pageTitle}
                 </h1>
                 {!isMobile && (
-                  <>
-                    <div
-                      style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: 8,
-                        marginTop: 2,
-                        color: 'var(--vct-text-tertiary)',
-                        fontSize: 11,
-                        fontWeight: 600,
-                      }}
-                    >
-                      {breadcrumbs.map((crumb, idx) => (
-                        <React.Fragment key={`${crumb}-${idx}`}>
-                          {idx > 0 && <span style={{ opacity: 0.5 }}>/</span>}
-                          <span>{crumb}</span>
-                        </React.Fragment>
-                      ))}
-                    </div>
-                    <div
-                      style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: 8,
-                        marginTop: 6,
-                        fontSize: 11,
-                        fontWeight: 700,
-                        color: 'var(--vct-text-tertiary)',
-                      }}
-                    >
-                      <span
-                        style={{
-                          borderRadius: 999,
-                          border: '1px solid var(--vct-border-subtle)',
-                          background: 'var(--vct-bg-input)',
-                          padding: '2px 8px',
-                        }}
-                      >
+                  <div className="mt-1">
+                    <VCT_Breadcrumbs items={breadcrumbs} />
+                    <div className="mt-1 flex items-center gap-2 text-[11px] font-bold text-vct-text-muted">
+                      <span className="rounded-full border border-vct-border bg-vct-input px-2 py-0.5">
                         Mã giải: {tournamentCode}
                       </span>
-                      <span
-                        style={{
-                          borderRadius: 999,
-                          border: '1px solid var(--vct-border-subtle)',
-                          background: 'var(--vct-bg-input)',
-                          padding: '2px 8px',
-                        }}
-                      >
+                      <span className="rounded-full border border-vct-border bg-vct-input px-2 py-0.5">
                         Ca: {operationShift}
                       </span>
                     </div>
-                  </>
+                  </div>
                 )}
               </div>
             </div>
 
-            <div style={{ display: 'flex', alignItems: 'center', gap: isMobile ? 8 : 12 }}>
-              {!isMobile && (
+            <div className="flex items-center gap-2 tablet:gap-3">
+              {isDesktop && (
                 <>
                   <RoleSwitcher role={currentUser.role} onChange={setRole} />
-                  <div style={{ position: 'relative', width: 240 }}>
-                    <label htmlFor="global-search" style={{ position: 'absolute', width: 1, height: 1, overflow: 'hidden', clipPath: 'inset(50%)' }}>
+                  <div className="relative w-64">
+                    <label htmlFor="global-search" className="sr-only">
                       Tìm kiếm vận động viên hoặc đơn vị
                     </label>
-                    <div
-                      style={{
-                        position: 'absolute',
-                        left: 14,
-                        top: '50%',
-                        transform: 'translateY(-50%)',
-                        color: 'var(--vct-text-tertiary)',
-                      }}
-                    >
+                    <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-vct-text-muted">
                       <VCT_Icons.Search size={16} />
-                    </div>
+                    </span>
                     <input
                       id="global-search"
                       type="text"
                       placeholder="Tìm kiếm VĐV, Đơn vị..."
-                      style={{
-                        width: '100%',
-                        padding: '9px 14px 9px 36px',
-                        borderRadius: '99px',
-                        background: 'var(--vct-bg-elevated)',
-                        border: '1px solid var(--vct-border-subtle)',
-                        color: 'var(--vct-text-primary)',
-                        outline: 'none',
-                        fontSize: 13,
-                        transition: 'border-color 0.2s ease',
-                      }}
+                      className="w-full rounded-full border border-vct-border bg-vct-elevated py-2 pl-9 pr-3 text-sm text-vct-text outline-none transition focus:border-vct-accent"
                     />
                   </div>
                 </>
               )}
 
               <ThemeToggle />
-              <button
-                type="button"
-                aria-label="Hoạt động hệ thống"
-                style={{
-                  width: 36,
-                  height: 36,
-                  borderRadius: '50%',
-                  border: 'none',
-                  background: 'transparent',
-                  color: 'var(--vct-text-secondary)',
-                  cursor: 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                }}
-              >
-                <VCT_Icons.Activity size={18} />
-              </button>
-              <button
-                type="button"
-                aria-label="Tài khoản hiện tại"
-                title={roleLabel}
-                style={{
-                  width: 36,
-                  height: 36,
-                  borderRadius: '50%',
-                  border: 'none',
-                  background: 'linear-gradient(135deg, #b91c1c, #166534)',
-                  color: '#fff',
-                  fontSize: 13,
-                  fontWeight: 800,
-                  cursor: 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  boxShadow: '0 4px 12px rgba(15, 23, 42, 0.2)',
-                }}
-              >
-                {userInitials}
-              </button>
-              {!isMobile && (
-                <button
-                  type="button"
-                  aria-label="Đăng xuất"
-                  onClick={() => {
-                    void logout().then(() => {
-                      router.replace('/login')
-                    })
-                  }}
-                  style={{
-                    borderRadius: 10,
-                    border: '1px solid var(--vct-border-subtle)',
-                    background: 'transparent',
-                    color: 'var(--vct-text-secondary)',
-                    fontSize: 12,
-                    fontWeight: 700,
-                    padding: '8px 10px',
-                    cursor: 'pointer',
-                  }}
-                >
-                  Đăng xuất
-                </button>
-              )}
+
+              <NotificationCenter />
+
+              <VCT_Dropdown
+                trigger={
+                  <span
+                    className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-red-700 to-emerald-700 text-xs font-black text-white shadow-md"
+                    title={roleLabel}
+                  >
+                    {userInitials}
+                  </span>
+                }
+                items={[
+                  { label: `${currentUser.name} (${roleLabel})`, icon: <VCT_Icons.User size={16} />, onClick: () => { } },
+                  { label: 'Cài đặt', icon: <VCT_Icons.Settings size={16} />, onClick: () => { } },
+                  {
+                    label: 'Đăng xuất',
+                    icon: <VCT_Icons.LogOut size={16} />,
+                    danger: true,
+                    onClick: () => { void logout().then(() => { router.replace('/login') }) },
+                  },
+                ]}
+              />
             </div>
           </header>
 
           <main
+            id="vct-main-content"
             role="main"
-            style={{
-              flex: 1,
-              overflowY: 'auto',
-              padding: isMobile ? 16 : 24,
-              position: 'relative',
-            }}
-            className="vct-hide-scrollbar"
+            className={`vct-hide-scrollbar flex-1 overflow-y-auto ${isMobile ? 'p-4' : 'p-6'}`}
           >
             {canAccessCurrentRoute ? (
               <motion.div
@@ -552,6 +359,8 @@ const ShellLayout = ({ children }: { children: React.ReactNode }) => {
           </main>
         </div>
       </div>
+      <VCT_CommandPalette />
+      <VCT_ShortcutsPanel />
     </VCT_Provider>
   )
 }

@@ -1,6 +1,7 @@
 {
-  "name": "solito-blank",
+  "name": "vct-platform",
   "private": true,
+  "description": "VCT Platform — Nền tảng Quản trị Võ thuật Toàn diện cho Võ Cổ Truyền Việt Nam",
   "workspaces": [
     "apps/*",
     "packages/*"
@@ -17,14 +18,18 @@
     "dev:web": "npm run dev --workspace next-app",
     "dev:backend": "go -C backend run ./cmd/server",
     "dev:native": "npm run start --workspace expo-app",
-    "build": "npm run build --workspace next-app",
+    "build": "npm run authz:check && npm run build --workspace next-app",
     "build:backend": "go -C backend build -o ./bin/vct-backend ./cmd/server",
     "lint": "npm run lint --workspace next-app && npx eslint packages/app --ext .ts,.tsx",
     "typecheck": "npx tsc -p tsconfig.json --noEmit",
+    "authz:sync": "node scripts/generate-authz-contract.mjs",
+    "authz:check": "node scripts/generate-authz-contract.mjs --check",
     "test": "node scripts/run-tests.mjs",
     "test:ui": "playwright test tests/e2e/appshell.breakpoints.spec.mjs --config=playwright.config.mjs",
     "test:e2e": "playwright test tests/e2e/core-workflow.spec.mjs --config=playwright.config.mjs",
-    "ci": "npm run typecheck && npm run lint && npm run test && npm run build",
+    "smoke:backend:db": "node scripts/run-backend-db-smoke.mjs",
+    "quality:backend": "powershell -ExecutionPolicy Bypass -File scripts/run_quality_checks.ps1 -BackendPath ./backend",
+    "ci": "npm run authz:check && npm run typecheck && npm run lint && npm run test && npm run build",
     "native": "npm run dev:native",
     "web": "npm run dev:web",
     "backend": "go -C backend run ./cmd/server"
@@ -51,6 +56,7 @@
   "dependencies": {
     "framer-motion": "^12.35.0",
     "lucide-react": "^0.577.0",
-    "lucide-react-native": "^0.577.0"
+    "lucide-react-native": "^0.577.0",
+    "zod": "^4.3.6"
   }
 }

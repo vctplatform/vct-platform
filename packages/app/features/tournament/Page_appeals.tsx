@@ -68,10 +68,10 @@ export const Page_appeals = () => {
     };
 
     return (
-        <div style={{ maxWidth: 1400, margin: '0 auto', paddingBottom: 100 }}>
+        <div className="mx-auto max-w-[1400px] pb-24">
             <VCT_Toast isVisible={toast.show} message={toast.msg} type={toast.type} onClose={hideToast} />
             {uiState.error && (
-                <div style={{ marginBottom: 16, padding: '12px 14px', borderRadius: 12, border: '1px solid rgba(239,68,68,0.25)', background: 'rgba(239,68,68,0.08)', color: '#ef4444', fontSize: 13, fontWeight: 700 }}>
+                <div className="mb-4 rounded-xl border border-red-500/25 bg-red-500/[0.08] px-3.5 py-3 text-[13px] font-bold text-red-500">
                     Không thể tải khiếu nại: {uiState.error}
                 </div>
             )}
@@ -81,7 +81,7 @@ export const Page_appeals = () => {
                 </div>
             )}
 
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 16, marginBottom: 24 }}>
+            <div className="vct-stagger mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
                 <VCT_KpiCard label="Tổng" value={items.length} icon={<VCT_Icons.Alert size={24} />} color="#0ea5e9" />
                 <VCT_KpiCard label="Mới" value={items.filter(i => i.trang_thai === 'moi').length} icon={<VCT_Icons.Alert size={24} />} color="#ef4444" sub="Cần xử lý ngay" />
                 <VCT_KpiCard label="Đang xử lý" value={items.filter(i => i.trang_thai === 'dang_xu_ly').length} icon={<VCT_Icons.Clock size={24} />} color="#f59e0b" />
@@ -90,8 +90,8 @@ export const Page_appeals = () => {
 
             <VCT_StatusPipeline stages={pStages} activeStage={filter} onStageClick={setFilter} />
 
-            <VCT_Stack direction="row" gap={16} align="center" style={{ marginBottom: 20 }}>
-                <div style={{ flex: 1 }} />
+            <VCT_Stack direction="row" gap={16} align="center" className="mb-5">
+                <div className="flex-1" />
                 <VCT_Button icon={<VCT_Icons.Plus size={16} />} onClick={() => setShowModal(true)}>Tiếp nhận KN</VCT_Button>
             </VCT_Stack>
 
@@ -107,9 +107,9 @@ export const Page_appeals = () => {
                                 <div style={{ borderRadius: 16, border: '1px solid var(--vct-border-subtle)', overflow: 'hidden', background: 'var(--vct-bg-glass)', borderLeft: `4px solid ${st.color}` }}>
                                     <div onClick={() => setExpandedId(expandedId === item.id ? null : item.id)} style={{ padding: '16px 20px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 16 }}>
                                         <VCT_AvatarLetter name={item.doan_ten} size={32} />
-                                        <div style={{ flex: 1 }}>
+                                        <div className="flex-1">
                                             <div style={{ fontWeight: 700, fontSize: 14 }}>{item.doan_ten}</div>
-                                            <div style={{ fontSize: 12, opacity: 0.6 }}>{item.noi_dung_lien_quan}</div>
+                                            <div className="text-xs opacity-60">{item.noi_dung_lien_quan}</div>
                                         </div>
                                         <VCT_Badge text={lt.label} type="info" />
                                         <VCT_Badge text={st.label} type={st.type} pulse={item.trang_thai === 'moi'} />
@@ -120,10 +120,10 @@ export const Page_appeals = () => {
                                             <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }}>
                                                 <div style={{ padding: '16px 20px', borderTop: '1px dashed var(--vct-border-subtle)', background: 'var(--vct-bg-base)' }}>
                                                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 16 }}>
-                                                        <div><span style={{ fontSize: 11, opacity: 0.5 }}>Lý do</span><div style={{ fontSize: 13, fontWeight: 600 }}>{item.ly_do}</div></div>
-                                                        <div><span style={{ fontSize: 11, opacity: 0.5 }}>Bằng chứng</span><div style={{ fontSize: 13, fontWeight: 600 }}>{item.bang_chung || '—'}</div></div>
-                                                        {item.ket_luan && <div><span style={{ fontSize: 11, opacity: 0.5 }}>Kết luận</span><div style={{ fontSize: 13, fontWeight: 600, color: '#10b981' }}>{item.ket_luan}</div></div>}
-                                                        {item.nguoi_xu_ly && <div><span style={{ fontSize: 11, opacity: 0.5 }}>Người xử lý</span><div style={{ fontSize: 13, fontWeight: 600 }}>{item.nguoi_xu_ly} — {item.thoi_gian_xu_ly}</div></div>}
+                                                        <div><span className="text-[11px] opacity-50">Lý do</span><div style={{ fontSize: 13, fontWeight: 600 }}>{item.ly_do}</div></div>
+                                                        <div><span className="text-[11px] opacity-50">Bằng chứng</span><div style={{ fontSize: 13, fontWeight: 600 }}>{item.bang_chung || '—'}</div></div>
+                                                        {item.ket_luan && <div><span className="text-[11px] opacity-50">Kết luận</span><div style={{ fontSize: 13, fontWeight: 600, color: '#10b981' }}>{item.ket_luan}</div></div>}
+                                                        {item.nguoi_xu_ly && <div><span className="text-[11px] opacity-50">Người xử lý</span><div style={{ fontSize: 13, fontWeight: 600 }}>{item.nguoi_xu_ly} — {item.thoi_gian_xu_ly}</div></div>}
                                                     </div>
                                                     {(item.trang_thai === 'moi' || item.trang_thai === 'dang_xu_ly') && (
                                                         <VCT_Stack direction="row" gap={8}>
@@ -147,8 +147,8 @@ export const Page_appeals = () => {
             }>
                 <VCT_Stack gap={16}>
                     <VCT_Stack direction="row" gap={16}>
-                        <VCT_Field label="Đoàn khiếu nại *" style={{ flex: 1 }}><VCT_Input value={form.doan_ten} onChange={(e: any) => setForm({ ...form, doan_ten: e.target.value })} placeholder="CLB Bình Định" /></VCT_Field>
-                        <VCT_Field label="Loại" style={{ flex: 1 }}><VCT_Select options={[{ value: 'khieu_nai', label: 'Khiếu nại' }, { value: 'khang_nghi', label: 'Kháng nghị' }]} value={form.loai} onChange={(v: any) => setForm({ ...form, loai: v })} /></VCT_Field>
+                        <VCT_Field label="Đoàn khiếu nại *" className="flex-1"><VCT_Input value={form.doan_ten} onChange={(e: any) => setForm({ ...form, doan_ten: e.target.value })} placeholder="CLB Bình Định" /></VCT_Field>
+                        <VCT_Field label="Loại" className="flex-1"><VCT_Select options={[{ value: 'khieu_nai', label: 'Khiếu nại' }, { value: 'khang_nghi', label: 'Kháng nghị' }]} value={form.loai} onChange={(v: any) => setForm({ ...form, loai: v })} /></VCT_Field>
                     </VCT_Stack>
                     <VCT_Field label="Nội dung liên quan"><VCT_Input value={form.noi_dung_lien_quan} onChange={(e: any) => setForm({ ...form, noi_dung_lien_quan: e.target.value })} placeholder="ĐK Nam 48-52kg" /></VCT_Field>
                     <VCT_Field label="Lý do *"><VCT_Input value={form.ly_do} onChange={(e: any) => setForm({ ...form, ly_do: e.target.value })} placeholder="Mô tả chi tiết lý do..." /></VCT_Field>

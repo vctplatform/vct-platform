@@ -427,29 +427,61 @@ export const VCT_LoadingOverlay = ({ open, title, desc }: any) => (
     </AnimatePresence>
 );
 
-export const VCT_Modal = ({ isOpen, onClose, title, children, footer, width = '600px' }: any) => (
-    <AnimatePresence>
-        {isOpen && (
-            <div style={{ position: 'fixed', inset: 0, zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={onClose} style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(4px)' }} />
-                <motion.div
-                    role="dialog"
-                    aria-modal="true"
-                    aria-label={typeof title === 'string' ? title : 'Modal'}
-                    initial={{ scale: 0.95, opacity: 0, y: 20 }} animate={{ scale: 1, opacity: 1, y: 0 }} exit={{ scale: 0.95, opacity: 0, y: 20 }}
-                    style={{ width, maxWidth: '90vw', maxHeight: '85vh', display: 'flex', flexDirection: 'column', background: 'var(--vct-bg-elevated)', borderRadius: '24px', border: '1px solid var(--vct-border-strong)', padding: '32px', position: 'relative', zIndex: 1001, boxShadow: '0 25px 50px rgba(0,0,0,0.5)' }}
-                >
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', flexShrink: 0 }}>
-                        <h2 style={{ margin: 0, fontSize: '20px', fontWeight: 900, textTransform: 'uppercase' }}>{title}</h2>
-                        <button type="button" aria-label="Đóng hộp thoại" onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--vct-text-tertiary)' }}><VCT_Icons.x size={24} /></button>
-                    </div>
-                    <div style={{ overflowY: 'auto', flex: 1, paddingRight: '4px' }}>{children}</div>
-                    {footer && <div style={{ marginTop: '24px', paddingTop: '20px', borderTop: '1px solid var(--vct-border-subtle)', display: 'flex', justifyContent: 'flex-end', gap: '12px', flexShrink: 0 }}>{footer}</div>}
-                </motion.div>
-            </div>
-        )}
-    </AnimatePresence>
-);
+export const VCT_Modal = ({ isOpen, onClose, title, children, footer, width = '600px' }: any) => {
+    const modalRef = React.useRef<HTMLDivElement>(null);
+    React.useEffect(() => {
+        if (!isOpen) return;
+        const prev = document.body.style.overflow;
+        document.body.style.overflow = 'hidden';
+        // Auto-focus first focusable
+        requestAnimationFrame(() => {
+            const el = modalRef.current;
+            if (el) {
+                const first = el.querySelector<HTMLElement>('a[href], button:not([disabled]), textarea, input, select, [tabindex]:not([tabindex="-1"])');
+                first?.focus();
+            }
+        });
+        // Escape + focus trap
+        const handleKeyDown = (e: KeyboardEvent) => {
+            if (e.key === 'Escape') { onClose(); return; }
+            if (e.key !== 'Tab') return;
+            const el = modalRef.current;
+            if (!el) return;
+            const focusable = Array.from(el.querySelectorAll<HTMLElement>('a[href], button:not([disabled]), textarea, input, select, [tabindex]:not([tabindex="-1"])'));
+            if (focusable.length === 0) return;
+            const first = focusable[0]!;
+            const last = focusable[focusable.length - 1]!;
+            if (e.shiftKey) { if (document.activeElement === first) { e.preventDefault(); last.focus(); } }
+            else { if (document.activeElement === last) { e.preventDefault(); first.focus(); } }
+        };
+        document.addEventListener('keydown', handleKeyDown);
+        return () => { document.removeEventListener('keydown', handleKeyDown); document.body.style.overflow = prev; };
+    }, [isOpen, onClose]);
+    return (
+        <AnimatePresence>
+            {isOpen && (
+                <div style={{ position: 'fixed', inset: 0, zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={onClose} style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(4px)' }} />
+                    <motion.div
+                        ref={modalRef}
+                        role="dialog"
+                        aria-modal="true"
+                        aria-label={typeof title === 'string' ? title : 'Modal'}
+                        initial={{ scale: 0.95, opacity: 0, y: 20 }} animate={{ scale: 1, opacity: 1, y: 0 }} exit={{ scale: 0.95, opacity: 0, y: 20 }}
+                        style={{ width, maxWidth: '90vw', maxHeight: '85vh', display: 'flex', flexDirection: 'column', background: 'var(--vct-bg-elevated)', borderRadius: '24px', border: '1px solid var(--vct-border-strong)', padding: '32px', position: 'relative', zIndex: 1001, boxShadow: '0 25px 50px rgba(0,0,0,0.5)' }}
+                    >
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', flexShrink: 0 }}>
+                            <h2 style={{ margin: 0, fontSize: '20px', fontWeight: 900, textTransform: 'uppercase' }}>{title}</h2>
+                            <button type="button" aria-label="Đóng hộp thoại" onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--vct-text-tertiary)' }}><VCT_Icons.x size={24} /></button>
+                        </div>
+                        <div style={{ overflowY: 'auto', flex: 1, paddingRight: '4px' }}>{children}</div>
+                        {footer && <div style={{ marginTop: '24px', paddingTop: '20px', borderTop: '1px solid var(--vct-border-subtle)', display: 'flex', justifyContent: 'flex-end', gap: '12px', flexShrink: 0 }}>{footer}</div>}
+                    </motion.div>
+                </div>
+            )}
+        </AnimatePresence>
+    );
+};
 
 export const VCT_Toast = ({ message, type = 'success', isVisible, onClose }: any) => (
     <AnimatePresence>

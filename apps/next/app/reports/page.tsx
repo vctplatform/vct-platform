@@ -1,2 +1,7 @@
-import { Page_reports } from 'app/features/tournament/Page_reports';
-export default function Page() { return <Page_reports />; }
+'use client'
+
+import { Page_Reports } from 'app/features/reporting/Page_reports'
+
+export default function ReportsPage() {
+    return <Page_Reports />
+}

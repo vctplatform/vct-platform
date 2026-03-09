@@ -1,4 +1,3 @@
-version: '3.9'
 services:
   vct-backend:
     build:
@@ -8,7 +7,17 @@ services:
     ports:
       - '18080:18080'
     environment:
+      VCT_ENV: 'development'
       VCT_BACKEND_ADDR: ':18080'
       VCT_CORS_ORIGINS: 'http://localhost:3000,http://127.0.0.1:3000,http://localhost:8081,http://localhost:3101,http://127.0.0.1:3101'
-      VCT_SESSION_TTL: '12h'
+      VCT_ALLOW_DEMO_USERS: 'true'
+      VCT_JWT_SECRET: 'change-me-before-production-vct-2026'
+      VCT_JWT_ISSUER: 'vct-backend'
+      VCT_ACCESS_TTL: '15m'
+      VCT_REFRESH_TTL: '168h'
       VCT_DISABLE_AUTH_FOR_DATA: 'false'
+    healthcheck:
+      test: [ "CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:18080/healthz" ]
+      interval: 15s
+      timeout: 5s
+      retries: 3

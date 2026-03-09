@@ -1,4 +1,6 @@
 export * from './adapters'
 export * from './entity-repository'
+export * from './api-contracts'
 export * from './ui-state'
 export * from './use-entity-collection'
+export * from './realtime-client'

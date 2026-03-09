@@ -179,7 +179,7 @@ export const Page_combat = () => {
             <motion.div key={m.id} layout initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
                 <VCT_Card>
                     {/* Header */}
-                    <VCT_Stack direction="row" justify="space-between" align="center" style={{ marginBottom: 16 }}>
+                    <VCT_Stack direction="row" justify="space-between" align="center" className="mb-4">
                         <VCT_Stack direction="row" gap={10} align="center">
                             <VCT_Text variant="mono" style={{ fontSize: 11, opacity: 0.4 }}>{m.id}</VCT_Text>
                             <VCT_Badge text={m.hang_can} type="info" />
@@ -227,7 +227,7 @@ export const Page_combat = () => {
 
                     {/* Quick Score Panel — visible when LIVE */}
                     {isLive && (
-                        <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} style={{ marginTop: 16 }}>
+                        <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} className="mt-4">
                             <div style={{ display: 'grid', gridTemplateColumns: '1fr auto 1fr', gap: 12, padding: 16, borderRadius: 14, background: 'rgba(59,130,246,0.03)', border: '1px solid var(--vct-border-subtle)' }}>
                                 {/* Xanh round scores */}
                                 <div>
@@ -301,7 +301,7 @@ export const Page_combat = () => {
 
                     {/* Actions for non-live */}
                     {!isLive && m.trang_thai === 'chua_dau' && (
-                        <VCT_Stack direction="row" gap={8} justify="flex-end" style={{ marginTop: 16 }}>
+                        <VCT_Stack direction="row" gap={8} justify="flex-end" className="mt-4">
                             <VCT_Button onClick={() => startMatch(m.id)}>▶ Bắt đầu trận</VCT_Button>
                         </VCT_Stack>
                     )}
@@ -325,16 +325,16 @@ export const Page_combat = () => {
     };
 
     return (
-        <div style={{ maxWidth: 1400, margin: '0 auto', paddingBottom: 100 }}>
+        <div className="mx-auto max-w-[1400px] pb-24">
             <VCT_Toast isVisible={toast.show} message={toast.msg} type={toast.type} onClose={hideToast} />
 
             {uiState.error && (
-                <div style={{ marginBottom: 16, padding: '12px 14px', borderRadius: 12, border: '1px solid rgba(239,68,68,0.25)', background: 'rgba(239,68,68,0.08)', color: '#ef4444', fontSize: 13, fontWeight: 700 }}>
+                <div className="mb-4 rounded-xl border border-red-500/25 bg-red-500/[0.08] px-3.5 py-3 text-[13px] font-bold text-red-500">
                     Không thể tải dữ liệu đối kháng: {uiState.error}
                 </div>
             )}
 
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 16, marginBottom: 24 }}>
+            <div className="vct-stagger mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
                 <VCT_KpiCard label="Tổng trận" value={matches.length} icon={<VCT_Icons.Swords size={24} />} color="#0ea5e9" />
                 <VCT_KpiCard label="Đang thi đấu" value={matches.filter(m => m.trang_thai === 'dang_dau').length} icon={<VCT_Icons.Play size={24} />} color="#ef4444" sub="🔴 LIVE" />
                 <VCT_KpiCard label="Đã kết thúc" value={matches.filter(m => m.trang_thai === 'ket_thuc').length} icon={<VCT_Icons.Check size={24} />} color="#10b981" />
@@ -343,7 +343,7 @@ export const Page_combat = () => {
 
             <VCT_StatusPipeline stages={pStages} activeStage={filter === 'all' ? null : filter} onStageClick={(k) => setFilter(k || 'all')} />
 
-            <VCT_Stack direction="row" gap={16} align="center" style={{ marginBottom: 24, flexWrap: 'wrap' }}>
+            <VCT_Stack direction="row" gap={16} align="center" className="mb-6 flex-wrap">
                 <VCT_SegmentedControl options={[{ value: 'all', label: 'Tất cả vòng' }, { value: 'vong_loai', label: 'Vòng loại' }, { value: 'tu_ket', label: 'Tứ kết' }, { value: 'ban_ket', label: 'Bán kết' }, { value: 'chung_ket', label: 'CK 🏆' }]} value={vongFilter} onChange={setVongFilter} />
             </VCT_Stack>
 

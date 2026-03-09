@@ -3,26 +3,35 @@ import {
   CAN_KYS,
   DANG_KYS,
   DON_VIS,
+  HANG_CANS,
   LICH_THI_DAUS,
+  LUA_TUOIS,
   LUOT_THI_QUYENS,
+  NOI_DUNG_QUYENS,
   SAN_DAUS,
   TRAN_DAUS,
   TRONG_TAIS,
   VAN_DONG_VIENS,
 } from '../mock-data'
+import { TOURNAMENT_CONFIG } from '../tournament-config'
 import type {
   CanKy,
   DangKy,
   DonVi,
+  HangCan,
   KhieuNai,
   LichThiDau,
+  LuaTuoi,
   LuotThiQuyen,
+  NoiDungQuyen,
   SanDau,
+  TournamentConfig,
   TranDauDK,
   TrongTai,
   VanDongVien,
 } from '../types'
 import { createApiAdapter, createMockAdapter } from './entity-repository'
+import { resolveEntityEndpoints } from './api-contracts'
 
 export interface ResultRecord {
   id: string
@@ -35,6 +44,19 @@ export interface ResultRecord {
   huy_chuong: string
   vong?: string
   doi_thu?: string
+}
+
+export interface RefereeAssignmentRecord {
+  id: string
+  tt_id: string
+  san_id: string
+  vai_tro: string
+  ngay: string
+  phien: string
+}
+
+export interface TournamentConfigRecord extends TournamentConfig {
+  id: string
 }
 
 const isObject = (value: unknown): value is Record<string, unknown> =>
@@ -117,6 +139,36 @@ const isResult = (value: unknown): value is ResultRecord =>
   typeof value.noi_dung === 'string' &&
   typeof value.ket_qua === 'string'
 
+const isFormCategory = (value: unknown): value is NoiDungQuyen =>
+  isObject(value) &&
+  typeof value.id === 'string' &&
+  typeof value.ten === 'string' &&
+  typeof value.trang_thai === 'string'
+
+const isCombatCategory = (value: unknown): value is HangCan =>
+  isObject(value) &&
+  typeof value.id === 'string' &&
+  typeof value.lua_tuoi === 'string' &&
+  typeof value.trang_thai === 'string'
+
+const isAgeGroup = (value: unknown): value is LuaTuoi =>
+  isObject(value) &&
+  typeof value.id === 'string' &&
+  typeof value.ten === 'string' &&
+  typeof value.ma === 'string'
+
+const isRefereeAssignment = (value: unknown): value is RefereeAssignmentRecord =>
+  isObject(value) &&
+  typeof value.id === 'string' &&
+  typeof value.tt_id === 'string' &&
+  typeof value.san_id === 'string'
+
+const isTournamentConfig = (value: unknown): value is TournamentConfigRecord =>
+  isObject(value) &&
+  typeof value.id === 'string' &&
+  typeof value.ten_giai === 'string' &&
+  typeof value.ma_giai === 'string'
+
 const RESULTS_SEED: ResultRecord[] = [
   ...TRAN_DAUS.filter((m) => m.trang_thai === 'ket_thuc').map((m) => ({
     id: `R-${m.id}`,
@@ -138,6 +190,16 @@ const RESULTS_SEED: ResultRecord[] = [
     diem: `${w.can_thuc_te}`,
     huy_chuong: '',
   })),
+]
+
+const ASSIGNMENT_SEED: RefereeAssignmentRecord[] = [
+  { id: 'PA01', tt_id: 'TT01', san_id: 'S01', vai_tro: 'chinh', ngay: '2026-08-15', phien: 'sang' },
+  { id: 'PA02', tt_id: 'TT03', san_id: 'S01', vai_tro: 'phu', ngay: '2026-08-15', phien: 'sang' },
+  { id: 'PA03', tt_id: 'TT02', san_id: 'S02', vai_tro: 'chinh', ngay: '2026-08-15', phien: 'sang' },
+]
+
+const TOURNAMENT_CONFIG_SEED: TournamentConfigRecord[] = [
+  { id: 'TOURNAMENT-2026', ...TOURNAMENT_CONFIG },
 ]
 
 const resolveApiBaseUrl = () => {
@@ -170,46 +232,122 @@ const apiConfig = {
 export const repositories = {
   teams: {
     mock: createMockAdapter<DonVi>('vct:teams', DON_VIS, isDonVi),
-    api: createApiAdapter<DonVi>('teams', apiConfig),
+    api: createApiAdapter<DonVi>('teams', {
+      ...apiConfig,
+      endpoints: resolveEntityEndpoints('teams'),
+    }),
   },
   athletes: {
     mock: createMockAdapter<VanDongVien>('vct:athletes', VAN_DONG_VIENS, isAthlete),
-    api: createApiAdapter<VanDongVien>('athletes', apiConfig),
+    api: createApiAdapter<VanDongVien>('athletes', {
+      ...apiConfig,
+      endpoints: resolveEntityEndpoints('athletes'),
+    }),
   },
   registration: {
     mock: createMockAdapter<DangKy>('vct:registration', DANG_KYS, isRegistration),
-    api: createApiAdapter<DangKy>('registration', apiConfig),
+    api: createApiAdapter<DangKy>('registration', {
+      ...apiConfig,
+      endpoints: resolveEntityEndpoints('registration'),
+    }),
   },
   results: {
     mock: createMockAdapter<ResultRecord>('vct:results', RESULTS_SEED, isResult),
-    api: createApiAdapter<ResultRecord>('results', apiConfig),
+    api: createApiAdapter<ResultRecord>('results', {
+      ...apiConfig,
+      endpoints: resolveEntityEndpoints('results'),
+    }),
   },
   schedule: {
     mock: createMockAdapter<LichThiDau>('vct:schedule', LICH_THI_DAUS, isSchedule),
-    api: createApiAdapter<LichThiDau>('schedule', apiConfig),
+    api: createApiAdapter<LichThiDau>('schedule', {
+      ...apiConfig,
+      endpoints: resolveEntityEndpoints('schedule'),
+    }),
   },
   arenas: {
     mock: createMockAdapter<SanDau>('vct:arenas', SAN_DAUS, isArena),
-    api: createApiAdapter<SanDau>('arenas', apiConfig),
+    api: createApiAdapter<SanDau>('arenas', {
+      ...apiConfig,
+      endpoints: resolveEntityEndpoints('arenas'),
+    }),
   },
   referees: {
     mock: createMockAdapter<TrongTai>('vct:referees', TRONG_TAIS, isReferee),
-    api: createApiAdapter<TrongTai>('referees', apiConfig),
+    api: createApiAdapter<TrongTai>('referees', {
+      ...apiConfig,
+      endpoints: resolveEntityEndpoints('referees'),
+    }),
   },
   appeals: {
     mock: createMockAdapter<KhieuNai>('vct:appeals', KHIEU_NAIS, isAppeal),
-    api: createApiAdapter<KhieuNai>('appeals', apiConfig),
+    api: createApiAdapter<KhieuNai>('appeals', {
+      ...apiConfig,
+      endpoints: resolveEntityEndpoints('appeals'),
+    }),
   },
   weighIns: {
     mock: createMockAdapter<CanKy>('vct:weigh-ins', CAN_KYS, isWeighIn),
-    api: createApiAdapter<CanKy>('weigh-ins', apiConfig),
+    api: createApiAdapter<CanKy>('weigh-ins', {
+      ...apiConfig,
+      endpoints: resolveEntityEndpoints('weigh-ins'),
+    }),
   },
   combatMatches: {
     mock: createMockAdapter<TranDauDK>('vct:combat-matches', TRAN_DAUS, isCombatMatch),
-    api: createApiAdapter<TranDauDK>('combat-matches', apiConfig),
+    api: createApiAdapter<TranDauDK>('combat-matches', {
+      ...apiConfig,
+      endpoints: resolveEntityEndpoints('combat-matches'),
+    }),
   },
   formPerformances: {
     mock: createMockAdapter<LuotThiQuyen>('vct:form-performances', LUOT_THI_QUYENS, isFormPerformance),
-    api: createApiAdapter<LuotThiQuyen>('form-performances', apiConfig),
+    api: createApiAdapter<LuotThiQuyen>('form-performances', {
+      ...apiConfig,
+      endpoints: resolveEntityEndpoints('form-performances'),
+    }),
+  },
+  formCategories: {
+    mock: createMockAdapter<NoiDungQuyen>('vct:form-categories', NOI_DUNG_QUYENS, isFormCategory),
+    api: createApiAdapter<NoiDungQuyen>('content-categories', {
+      ...apiConfig,
+      endpoints: resolveEntityEndpoints('content-categories'),
+    }),
+  },
+  combatCategories: {
+    mock: createMockAdapter<HangCan>('vct:combat-categories', HANG_CANS, isCombatCategory),
+    api: createApiAdapter<HangCan>('content-categories', {
+      ...apiConfig,
+      endpoints: resolveEntityEndpoints('content-categories'),
+    }),
+  },
+  ageGroups: {
+    mock: createMockAdapter<LuaTuoi>('vct:age-groups', LUA_TUOIS, isAgeGroup),
+    api: createApiAdapter<LuaTuoi>('content-categories', {
+      ...apiConfig,
+      endpoints: resolveEntityEndpoints('content-categories'),
+    }),
+  },
+  refereeAssignments: {
+    mock: createMockAdapter<RefereeAssignmentRecord>(
+      'vct:referee-assignments',
+      ASSIGNMENT_SEED,
+      isRefereeAssignment
+    ),
+    api: createApiAdapter<RefereeAssignmentRecord>('referee-assignments', {
+      ...apiConfig,
+      endpoints: resolveEntityEndpoints('referee-assignments'),
+    }),
+  },
+  tournamentConfig: {
+    mock: createMockAdapter<TournamentConfigRecord>(
+      'vct:tournament-config',
+      TOURNAMENT_CONFIG_SEED,
+      isTournamentConfig
+    ),
+    api: createApiAdapter<TournamentConfigRecord>('tournament-config', {
+      ...apiConfig,
+      endpoints: resolveEntityEndpoints('tournament-config'),
+    }),
   },
 }

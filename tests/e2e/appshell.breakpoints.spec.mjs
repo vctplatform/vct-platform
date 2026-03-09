@@ -25,7 +25,9 @@ for (const scenario of cases) {
     } else {
       await expect(menuButton).toHaveCount(0)
       await expect(
-        page.getByLabel('Điều hướng chính').getByText('Cấu hình giải')
+        page
+          .getByLabel('Điều hướng chính')
+          .getByRole('heading', { name: 'Trung tâm điều hành' })
       ).toBeVisible()
     }
   })

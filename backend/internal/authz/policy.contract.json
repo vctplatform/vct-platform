@@ -1,0 +1,284 @@
+{
+  "version": 2,
+  "roles": [
+    "admin",
+    "btc",
+    "referee_manager",
+    "referee",
+    "delegate"
+  ],
+  "actions": [
+    "view",
+    "create",
+    "update",
+    "delete",
+    "import",
+    "export"
+  ],
+  "policies": {
+    "admin": {
+      "*": [
+        "view",
+        "create",
+        "update",
+        "delete",
+        "import",
+        "export"
+      ]
+    },
+    "btc": {
+      "teams": [
+        "view",
+        "create",
+        "update",
+        "import",
+        "export"
+      ],
+      "athletes": [
+        "view",
+        "create",
+        "update",
+        "import",
+        "export"
+      ],
+      "registration": [
+        "view",
+        "create",
+        "update",
+        "import",
+        "export"
+      ],
+      "schedule": [
+        "view",
+        "create",
+        "update",
+        "export"
+      ],
+      "results": [
+        "view",
+        "create",
+        "update",
+        "export"
+      ],
+      "medals": [
+        "view",
+        "update",
+        "export"
+      ],
+      "brackets": [
+        "view",
+        "update",
+        "export"
+      ],
+      "arenas": [
+        "view",
+        "create",
+        "update"
+      ],
+      "referees": [
+        "view",
+        "create",
+        "update"
+      ],
+      "appeals": [
+        "view",
+        "create",
+        "update",
+        "export"
+      ],
+      "weigh-ins": [
+        "view",
+        "create",
+        "update",
+        "export"
+      ],
+      "combat-matches": [
+        "view",
+        "update"
+      ],
+      "form-performances": [
+        "view",
+        "update"
+      ],
+      "content-categories": [
+        "view",
+        "create",
+        "update"
+      ],
+      "referee-assignments": [
+        "view",
+        "create",
+        "update"
+      ],
+      "tournament-config": [
+        "view",
+        "update"
+      ],
+      "tournaments": [
+        "view",
+        "create",
+        "update",
+        "export"
+      ],
+      "rankings": [
+        "view",
+        "export"
+      ],
+      "belts": [
+        "view",
+        "create",
+        "update"
+      ],
+      "techniques": [
+        "view",
+        "create",
+        "update"
+      ],
+      "transactions": [
+        "view",
+        "create",
+        "update",
+        "export"
+      ],
+      "budgets": [
+        "view",
+        "update"
+      ],
+      "clubs": [
+        "view",
+        "create",
+        "update"
+      ],
+      "members": [
+        "view",
+        "create",
+        "update",
+        "import"
+      ],
+      "community_events": [
+        "view",
+        "create",
+        "update"
+      ]
+    },
+    "referee_manager": {
+      "referees": [
+        "view",
+        "update"
+      ],
+      "referee-assignments": [
+        "view",
+        "create",
+        "update"
+      ],
+      "schedule": [
+        "view",
+        "update"
+      ],
+      "combat-matches": [
+        "view",
+        "update"
+      ],
+      "form-performances": [
+        "view",
+        "update"
+      ],
+      "appeals": [
+        "view",
+        "update"
+      ],
+      "results": [
+        "view"
+      ],
+      "medals": [
+        "view"
+      ],
+      "brackets": [
+        "view"
+      ],
+      "weigh-ins": [
+        "view"
+      ],
+      "rankings": [
+        "view"
+      ],
+      "belts": [
+        "view"
+      ],
+      "techniques": [
+        "view"
+      ]
+    },
+    "referee": {
+      "weigh-ins": [
+        "view",
+        "update"
+      ],
+      "combat-matches": [
+        "view",
+        "update"
+      ],
+      "form-performances": [
+        "view",
+        "update"
+      ],
+      "schedule": [
+        "view"
+      ],
+      "results": [
+        "view"
+      ],
+      "rankings": [
+        "view"
+      ],
+      "techniques": [
+        "view"
+      ]
+    },
+    "delegate": {
+      "teams": [
+        "view",
+        "create",
+        "update",
+        "import",
+        "export"
+      ],
+      "athletes": [
+        "view",
+        "create",
+        "update",
+        "import",
+        "export"
+      ],
+      "registration": [
+        "view",
+        "create",
+        "update",
+        "import",
+        "export"
+      ],
+      "schedule": [
+        "view"
+      ],
+      "results": [
+        "view"
+      ],
+      "medals": [
+        "view"
+      ],
+      "appeals": [
+        "view",
+        "create"
+      ],
+      "rankings": [
+        "view"
+      ],
+      "clubs": [
+        "view"
+      ],
+      "community_events": [
+        "view"
+      ]
+    }
+  }
+}

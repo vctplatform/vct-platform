@@ -16,6 +16,10 @@ import (
 
 func main() {
 	cfg := config.Load()
+	if err := cfg.Validate(); err != nil {
+		log.Fatalf("invalid config: %v", err)
+	}
+
 	api := httpapi.New(cfg)
 
 	server := &http.Server{
@@ -42,5 +46,8 @@ func main() {
 	defer cancel()
 	if err := server.Shutdown(ctx); err != nil {
 		log.Printf("graceful shutdown failed: %v", err)
+	}
+	if err := api.Close(); err != nil {
+		log.Printf("backend storage close failed: %v", err)
 	}
 }

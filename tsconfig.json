@@ -7,6 +7,12 @@
     "paths": {
       "app/*": [
         "./packages/app/*"
+      ],
+      "@vct/shared-types": [
+        "./packages/shared-types/src/index.ts"
+      ],
+      "@vct/ui": [
+        "./packages/ui/src/index.ts"
       ]
     },
     "baseUrl": ".",

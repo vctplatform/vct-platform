@@ -2,6 +2,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import type { EntityRepository } from './entity-repository'
 import { createInitialUIState } from './ui-state'
+import { subscribeToEntityRealtime } from './realtime-client'
 
 export const useEntityCollection = <T extends { id: string }>(
   repository: EntityRepository<T>
@@ -29,6 +30,28 @@ export const useEntityCollection = <T extends { id: string }>(
   useEffect(() => {
     void load()
   }, [load])
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+    if (repository.mode !== 'api' || !repository.entityName) return
+
+    let timer: ReturnType<typeof setTimeout> | null = null
+    const unsubscribe = subscribeToEntityRealtime(repository.entityName, () => {
+      if (timer) {
+        clearTimeout(timer)
+      }
+      timer = setTimeout(() => {
+        void load()
+      }, 120)
+    })
+
+    return () => {
+      if (timer) {
+        clearTimeout(timer)
+      }
+      unsubscribe()
+    }
+  }, [load, repository.entityName, repository.mode])
 
   const replaceAll = useCallback(
     async (next: T[]) => {

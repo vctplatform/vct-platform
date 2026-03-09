@@ -30,6 +30,10 @@ func NewStore() *Store {
 	return &Store{entities: seed}
 }
 
+func (s *Store) Close() error {
+	return nil
+}
+
 func (s *Store) EnsureEntity(entity string) {
 	s.mu.Lock()
 	defer s.mu.Unlock()

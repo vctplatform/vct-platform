@@ -12,6 +12,7 @@ import { NOI_DUNG_QUYENS, HANG_CANS, genId } from '../data/mock-data';
 import { TOURNAMENT_CONFIG } from '../data/tournament-config';
 import type { DangKy, TrangThaiDK, VanDongVien, HangCan, DonVi } from '../data/types';
 import { repositories, useEntityCollection } from '../data/repository';
+import { useRouteActionGuard } from '../hooks/use-route-action-guard';
 
 const RST_MAP: Record<TrangThaiDK, { l: string; t: string }> = {
     da_duyet: { l: 'Đã duyệt', t: 'success' },
@@ -49,6 +50,8 @@ const RegistrationModal = ({
     onSave,
     isEdit,
     athletes,
+    canSave,
+    onDenied,
 }: {
     isOpen: boolean,
     onClose: () => void,
@@ -57,6 +60,8 @@ const RegistrationModal = ({
     onSave: (vId: string, regs: any[]) => void,
     isEdit: boolean,
     athletes: VanDongVien[],
+    canSave: boolean,
+    onDenied?: () => void,
 }) => {
     const [checkedQ, setCheckedQ] = useState<Record<string, boolean>>({});
     const [checkedDK, setCheckedDK] = useState<string>('');
@@ -91,6 +96,10 @@ const RegistrationModal = ({
     const overQuota = newTotal > maxNd;
 
     const handleSave = () => {
+        if (!canSave) {
+            onDenied?.();
+            return;
+        }
         if (newTotal === 0) return;
         if (overQuota) return;
         const newRegs: any[] = [];
@@ -111,7 +120,7 @@ const RegistrationModal = ({
                 <VCT_Text variant="small" style={{ opacity: 0.5, fontWeight: 600 }}>Cập nhật Đăng ký • Giới hạn: {newTotal}/{maxNd} nội dung</VCT_Text>
                 <VCT_Stack direction="row" gap={12}>
                     <VCT_Button variant="secondary" onClick={onClose}>Đóng</VCT_Button>
-                    <VCT_Button disabled={newTotal === 0 || overQuota} onClick={handleSave}>Lưu Hồ Sơ Đăng Ký</VCT_Button>
+                    <VCT_Button disabled={newTotal === 0 || overQuota || !canSave} onClick={handleSave}>Lưu Hồ Sơ Đăng Ký</VCT_Button>
                 </VCT_Stack>
             </VCT_Stack>
         }>
@@ -139,7 +148,7 @@ const RegistrationModal = ({
                 <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 1fr)', gap: '20px' }}>
                     {/* CỘT QUYỀN */}
                     <div style={{ border: '1px solid rgba(34, 211, 238, 0.2)', background: 'rgba(34, 211, 238, 0.02)', borderRadius: '16px', padding: '16px' }}>
-                        <VCT_Stack direction="row" justify="space-between" align="center" style={{ marginBottom: 16 }}>
+                        <VCT_Stack direction="row" justify="space-between" align="center" className="mb-4">
                             <VCT_Text style={{ fontWeight: 800, color: '#22d3ee' }}>🥋 NỘI DUNG QUYỀN</VCT_Text>
                             <div style={{ fontSize: '11px', padding: '2px 8px', borderRadius: '8px', background: 'rgba(34, 211, 238, 0.1)', color: '#22d3ee', fontWeight: 800 }}>{newQCount} ĐÃ CHỌN</div>
                         </VCT_Stack>
@@ -151,7 +160,7 @@ const RegistrationModal = ({
                                 return (
                                     <label key={q.id} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '12px', borderRadius: '12px', border: `1.5px solid ${isChecked ? '#22d3ee' : 'var(--vct-border-subtle)'}`, background: isChecked ? 'rgba(34, 211, 238, 0.08)' : 'var(--vct-bg-card)', cursor: 'pointer', transition: 'all 0.2s' }}>
                                         <input type="checkbox" checked={isChecked} onChange={() => setCheckedQ(p => ({ ...p, [q.id]: !p[q.id] }))} style={{ width: 18, height: 18, accentColor: '#22d3ee' }} />
-                                        <div style={{ flex: 1 }}>
+                                        <div className="flex-1">
                                             <VCT_Text style={{ fontSize: '13px', fontWeight: isChecked ? 700 : 500 }}>{q.ten}</VCT_Text>
                                         </div>
                                     </label>
@@ -162,7 +171,7 @@ const RegistrationModal = ({
 
                     {/* CỘT ĐỐI KHÁNG */}
                     <div style={{ border: '1px solid rgba(245, 158, 11, 0.2)', background: 'rgba(245, 158, 11, 0.02)', borderRadius: '16px', padding: '16px' }}>
-                        <VCT_Stack direction="row" justify="space-between" align="center" style={{ marginBottom: 16 }}>
+                        <VCT_Stack direction="row" justify="space-between" align="center" className="mb-4">
                             <VCT_Text style={{ fontWeight: 800, color: '#f59e0b' }}>🥊 HẠNG CÂN ĐỐI KHÁNG</VCT_Text>
                             {checkedDK && <div onClick={() => setCheckedDK('')} style={{ fontSize: '11px', padding: '2px 8px', borderRadius: '8px', background: 'rgba(245, 158, 11, 0.1)', color: '#f59e0b', fontWeight: 800, cursor: 'pointer' }}>✕ BỎ CHỌN</div>}
                         </VCT_Stack>
@@ -223,6 +232,15 @@ export const Page_registration = () => {
         setToast({ show: true, msg, type });
         setTimeout(() => setToast(prev => ({ ...prev, show: false })), 3500);
     }, []);
+    const { can, requireAction } = useRouteActionGuard('/registration', {
+        notifyDenied: (message) => showToast(message, 'error')
+    });
+    const permissions = useMemo(() => ({
+        canCreate: can('create'),
+        canUpdate: can('update'),
+        canApprove: can('approve'),
+    }), [can]);
+    const canManageCard = permissions.canCreate || permissions.canUpdate;
 
     // Enrich Data with Names
     const enrichedData = useMemo(() => {
@@ -248,6 +266,7 @@ export const Page_registration = () => {
 
     // Bulk / Quick Actions
     const approveAll = () => {
+        if (!requireAction('approve', 'duyệt đăng ký')) return;
         const toDuyet = data.filter(r => r.trang_thai === 'cho_duyet').length;
         if (toDuyet === 0) return showToast('Không có đơn nào chờ duyệt', 'info');
         setData(prev => prev.map(r => r.trang_thai === 'cho_duyet' ? { ...r, trang_thai: 'da_duyet' } : r));
@@ -255,6 +274,7 @@ export const Page_registration = () => {
     };
 
     const handleSaveRegs = (vdvId: string, newRegs: any[]) => {
+        if (!canManageCard || !requireAction('update', 'cập nhật thẻ đăng ký')) return;
         const vdv = athletes.find(v => v.id === vdvId);
         if (!vdv) return;
 
@@ -280,6 +300,23 @@ export const Page_registration = () => {
         showToast(`Cập nhật thẻ đăng ký cho ${vdv.ho_ten} thành công.`, 'success');
         setModalMode(null);
     };
+
+    const openRegistrationPicker = useCallback(() => {
+        if (!canManageCard) {
+            requireAction('create', 'quản lý thẻ đăng ký');
+            return;
+        }
+        setModalMode('picker');
+    }, [canManageCard, requireAction]);
+
+    const openRegistrationEditor = useCallback((vdvId: string) => {
+        if (!canManageCard) {
+            requireAction('update', 'quản lý thẻ đăng ký');
+            return;
+        }
+        setSelectedVdv(vdvId);
+        setModalMode('reg');
+    }, [canManageCard, requireAction]);
 
     const pipeline = [
         { k: '', l: 'Tất cả ĐK', c: '#22d3ee', i: <VCT_Icons.List size={14} /> },
@@ -326,8 +363,8 @@ export const Page_registration = () => {
                 </div>
                 <VCT_Stack direction="row" gap={12}>
                     <div style={{ width: 280 }}><VCT_SearchInput value={search} onChange={setSearch} onClear={() => setSearch('')} placeholder="Tìm VĐV, nội dung thi..." /></div>
-                    <VCT_Button icon={<VCT_Icons.Check size={16} />} variant="secondary" onClick={approveAll} style={{ color: '#10b981', borderColor: 'rgba(16, 185, 129, 0.3)' }}>Duyệt loạt</VCT_Button>
-                    <VCT_Button icon={<VCT_Icons.Plus size={16} />} onClick={() => setModalMode('picker')}>Quản lý Thẻ (In-card)</VCT_Button>
+                    <VCT_Button icon={<VCT_Icons.Check size={16} />} variant="secondary" onClick={approveAll} style={{ color: '#10b981', borderColor: 'rgba(16, 185, 129, 0.3)' }} disabled={!permissions.canApprove}>Duyệt loạt</VCT_Button>
+                    <VCT_Button icon={<VCT_Icons.Plus size={16} />} onClick={openRegistrationPicker} disabled={!canManageCard}>Quản lý Thẻ (In-card)</VCT_Button>
                 </VCT_Stack>
             </VCT_Stack>
 
@@ -352,11 +389,11 @@ export const Page_registration = () => {
                                 )
                             },
                             { key: 'nd_ten', label: 'Nội dung đăng ký', render: (r: any) => <VCT_Text style={{ fontWeight: 700, fontSize: 14 }}>{r.nd_ten}</VCT_Text> },
-                            { key: 'ngay_dang_ky', label: 'Thời gian ĐK', render: (r: any) => <VCT_Text variant="mono" style={{ fontSize: 12, opacity: 0.6 }}>{new Date(r.ngay).toLocaleDateString('vi-VN')} {new Date(r.ngay).toLocaleTimeString('vi-VN')}</VCT_Text> },
+                            { key: 'ngay_dang_ky', label: 'Thời gian ĐK', render: (r: any) => <VCT_Text variant="mono" className="text-xs opacity-60">{new Date(r.ngay).toLocaleDateString('vi-VN')} {new Date(r.ngay).toLocaleTimeString('vi-VN')}</VCT_Text> },
                             { key: 'trang_thai', label: 'Trạng thái', render: (r: any) => <VCT_Badge text={RST_MAP[r.trang_thai as TrangThaiDK].l} type={RST_MAP[r.trang_thai as TrangThaiDK].t as any} /> },
                             {
                                 key: 'actions', label: '', align: 'right', render: (r: any) => (
-                                    <VCT_Button variant="secondary" onClick={() => { setSelectedVdv(r.vdv_id); setModalMode('reg'); }} style={{ padding: '8px 14px', fontSize: '12px' }} icon={<VCT_Icons.Edit size={14} />}>
+                                    <VCT_Button variant="secondary" onClick={() => openRegistrationEditor(r.vdv_id)} style={{ padding: '8px 14px', fontSize: '12px' }} icon={<VCT_Icons.Edit size={14} />} disabled={!canManageCard}>
                                         Sửa thẻ
                                     </VCT_Button>
                                 )
@@ -375,7 +412,7 @@ export const Page_registration = () => {
                             const curCount = data.filter(r => r.vdv_id === v.id).length;
                             const isMax = curCount >= TOURNAMENT_CONFIG.quota.max_nd_per_vdv;
                             return (
-                                <div key={v.id} onClick={() => { setSelectedVdv(v.id); setModalMode('reg'); }}
+                                <div key={v.id} onClick={() => openRegistrationEditor(v.id)}
                                     style={{
                                         display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px', background: 'var(--vct-bg-card)',
                                         borderRadius: '16px', cursor: 'pointer', border: '1px solid var(--vct-border-subtle)', transition: '0.2s',
@@ -411,6 +448,10 @@ export const Page_registration = () => {
                 onSave={handleSaveRegs}
                 isEdit={!!data.find(r => r.vdv_id === selectedVdv)}
                 athletes={athletes}
+                canSave={canManageCard}
+                onDenied={() => {
+                    requireAction('update', 'lưu thẻ đăng ký');
+                }}
             />
         </div>
     );

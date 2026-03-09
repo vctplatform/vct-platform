@@ -10,8 +10,10 @@ import {
 import { VCT_Icons } from '../components/vct-icons';
 import { TRONG_TAIS, SAN_DAUS, genId } from '../data/mock-data';
 import { CAP_BAC_TT_MAP, type TrongTai } from '../data/types';
+import { repositories, useEntityCollection, type RefereeAssignmentRecord } from '../data/repository';
+import { useRouteActionGuard } from '../hooks/use-route-action-guard';
 
-interface Assignment { id: string; tt_id: string; san_id: string; vai_tro: string; ngay: string; phien: string }
+interface Assignment extends RefereeAssignmentRecord {}
 
 const VAI_TRO_OPTIONS = [
     { value: 'chinh', label: 'Trọng tài chính' },
@@ -22,15 +24,6 @@ const VAI_TRO_OPTIONS = [
 
 const PHIENS = ['sang', 'chieu', 'toi'] as const;
 const PHIEN_LABELS: Record<string, string> = { sang: '🌅 Sáng', chieu: '☀️ Chiều', toi: '🌙 Tối' };
-
-const INIT_ASSIGNMENTS: Assignment[] = [
-    { id: 'PA01', tt_id: 'TT01', san_id: 'S01', vai_tro: 'chinh', ngay: '2026-08-15', phien: 'sang' },
-    { id: 'PA02', tt_id: 'TT03', san_id: 'S01', vai_tro: 'phu', ngay: '2026-08-15', phien: 'sang' },
-    { id: 'PA03', tt_id: 'TT02', san_id: 'S02', vai_tro: 'chinh', ngay: '2026-08-15', phien: 'sang' },
-    { id: 'PA04', tt_id: 'TT05', san_id: 'S02', vai_tro: 'giam_dinh', ngay: '2026-08-15', phien: 'sang' },
-    { id: 'PA05', tt_id: 'TT04', san_id: 'S03', vai_tro: 'chinh', ngay: '2026-08-15', phien: 'chieu' },
-    { id: 'PA06', tt_id: 'TT01', san_id: 'S01', vai_tro: 'chinh', ngay: '2026-08-15', phien: 'chieu' },
-];
 
 // ════════════════════════════════════════
 // AUTO-ASSIGN ALGORITHM (Round-robin)
@@ -74,7 +67,7 @@ function autoAssign(
 // PAGE COMPONENT
 // ════════════════════════════════════════
 export const Page_referee_assignments = () => {
-    const [assignments, setAssignments] = useState<Assignment[]>(INIT_ASSIGNMENTS);
+    const { items: assignments, setItems: setAssignmentsState } = useEntityCollection(repositories.refereeAssignments.mock);
     const [showModal, setShowModal] = useState(false);
     const [showAutoModal, setShowAutoModal] = useState(false);
     const [form, setForm] = useState({ tt_id: '', san_id: '', vai_tro: 'chinh', ngay: '2026-08-15', phien: 'sang' });
@@ -84,6 +77,24 @@ export const Page_referee_assignments = () => {
     const [toast, setToast] = useState({ show: false, msg: '', type: 'success' });
 
     const showToast = useCallback((msg: string, type = 'success') => { setToast({ show: true, msg, type }); setTimeout(() => setToast(p => ({ ...p, show: false })), 3500); }, []);
+    const { can, requireAction } = useRouteActionGuard('/referee-assignments', {
+        notifyDenied: (message) => showToast(message, 'error')
+    });
+    const permissions = useMemo(() => ({
+        canCreate: can('create'),
+        canDelete: can('delete'),
+        canAssign: can('assign'),
+    }), [can]);
+
+    const setAssignments = useCallback((updater: React.SetStateAction<Assignment[]>) => {
+        setAssignmentsState(prev => {
+            const next = typeof updater === 'function'
+                ? (updater as (value: Assignment[]) => Assignment[])(prev as Assignment[])
+                : updater;
+            void repositories.refereeAssignments.mock.replaceAll(next);
+            return next;
+        });
+    }, [setAssignmentsState]);
 
     const ttsActive = TRONG_TAIS.filter(t => t.trang_thai === 'xac_nhan');
     const sanActive = SAN_DAUS;
@@ -109,6 +120,7 @@ export const Page_referee_assignments = () => {
     }, [assignments]);
 
     const handleAdd = () => {
+        if (!requireAction('assign', 'phân công trọng tài')) return;
         if (!form.tt_id || !form.san_id) { showToast('Chọn TT và sàn!', 'error'); return; }
         const conflict = assignments.find(a => a.tt_id === form.tt_id && a.ngay === form.ngay && a.phien === form.phien && a.san_id !== form.san_id);
         if (conflict) { showToast(`TT đã được phân công sàn khác trong phiên này!`, 'error'); return; }
@@ -119,6 +131,7 @@ export const Page_referee_assignments = () => {
     };
 
     const handleDelete = () => {
+        if (!requireAction('delete', 'hủy phân công')) return;
         if (!deleteTarget) return;
         setAssignments(p => p.filter(a => a.id !== deleteTarget.id));
         showToast('Đã hủy phân công');
@@ -127,6 +140,7 @@ export const Page_referee_assignments = () => {
 
     // ── AUTO-ASSIGN ──
     const handleAutoAssign = useCallback(() => {
+        if (!requireAction('assign', 'phân công tự động')) return;
         setIsAutoAssigning(true);
         setTimeout(() => {
             const newAssignments = autoAssign(ttsActive, SAN_DAUS, '2026-08-15');
@@ -135,11 +149,11 @@ export const Page_referee_assignments = () => {
             setIsAutoAssigning(false);
             showToast(`Phân công tự động ${newAssignments.length} lượt trọng tài cho ${SAN_DAUS.filter(s => s.trang_thai !== 'bao_tri').length} sàn`);
         }, 1200);
-    }, [ttsActive, showToast]);
+    }, [requireAction, setAssignments, showToast, ttsActive]);
 
     // ── Matrix View: TT (rows) x Phiên (cols) ──
     const renderMatrixView = () => (
-        <div style={{ overflowX: 'auto' }}>
+        <div className="overflow-x-auto">
             <table style={{ width: '100%', borderCollapse: 'separate', borderSpacing: '0 4px', fontSize: 13 }}>
                 <thead>
                     <tr>
@@ -207,10 +221,10 @@ export const Page_referee_assignments = () => {
     );
 
     return (
-        <div style={{ maxWidth: 1400, margin: '0 auto', paddingBottom: 100 }}>
+        <div className="mx-auto max-w-[1400px] pb-24">
             <VCT_Toast isVisible={toast.show} message={toast.msg} type={toast.type} onClose={() => setToast(p => ({ ...p, show: false }))} />
 
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 16, marginBottom: 24 }}>
+            <div className="vct-stagger mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
                 <VCT_KpiCard label="Tổng phân công" value={assignments.length} icon={<VCT_Icons.Users size={24} />} color="#0ea5e9" />
                 <VCT_KpiCard label="TT tham gia" value={new Set(assignments.map(a => a.tt_id)).size} icon={<VCT_Icons.Shield size={24} />} color="#10b981" sub={`/${ttsActive.length} TT sẵn sàng`} />
                 <VCT_KpiCard label="Sàn có TT" value={bySan.size} icon={<VCT_Icons.Layout size={24} />} color="#22d3ee" sub={`/${sanActive.length} sàn`} />
@@ -218,7 +232,7 @@ export const Page_referee_assignments = () => {
             </div>
 
             {/* Toolbar */}
-            <VCT_Stack direction="row" justify="space-between" align="center" style={{ marginBottom: 24 }}>
+            <VCT_Stack direction="row" justify="space-between" align="center" className="mb-6">
                 <VCT_Stack direction="row" gap={8}>
                     <VCT_Button
                         variant={viewMode === 'san' ? 'primary' : 'secondary'}
@@ -236,10 +250,21 @@ export const Page_referee_assignments = () => {
                     </VCT_Button>
                 </VCT_Stack>
                 <VCT_Stack direction="row" gap={8}>
-                    <VCT_Button variant="secondary" icon={<VCT_Icons.Shuffle size={16} />} onClick={() => setShowAutoModal(true)}>
+                    <VCT_Button
+                        variant="secondary"
+                        icon={<VCT_Icons.Shuffle size={16} />}
+                        onClick={() => permissions.canAssign ? setShowAutoModal(true) : requireAction('assign', 'phân công tự động')}
+                        disabled={!permissions.canAssign}
+                    >
                         ⚡ Phân công tự động
                     </VCT_Button>
-                    <VCT_Button icon={<VCT_Icons.Plus size={16} />} onClick={() => setShowModal(true)}>Phân công TT</VCT_Button>
+                    <VCT_Button
+                        icon={<VCT_Icons.Plus size={16} />}
+                        onClick={() => permissions.canCreate ? setShowModal(true) : requireAction('create', 'thêm phân công')}
+                        disabled={!permissions.canCreate}
+                    >
+                        Phân công TT
+                    </VCT_Button>
                 </VCT_Stack>
             </VCT_Stack>
 
@@ -254,11 +279,11 @@ export const Page_referee_assignments = () => {
                         const sanAssigns = bySan.get(san.id) || [];
                         return (
                             <VCT_Card key={san.id}>
-                                <VCT_Stack direction="row" gap={12} align="center" style={{ marginBottom: 16 }}>
+                                <VCT_Stack direction="row" gap={12} align="center" className="mb-4">
                                     <div style={{ width: 12, height: 12, borderRadius: '50%', background: san.trang_thai === 'dang_thi_dau' ? '#ef4444' : san.trang_thai === 'san_sang' ? '#10b981' : '#f59e0b' }} />
-                                    <div style={{ flex: 1 }}>
+                                    <div className="flex-1">
                                         <div style={{ fontWeight: 800, fontSize: 15 }}>{san.ten}</div>
-                                        <div style={{ fontSize: 11, opacity: 0.5 }}>{san.vi_tri} • {san.loai}</div>
+                                        <div className="text-[11px] opacity-50">{san.vi_tri} • {san.loai}</div>
                                     </div>
                                     <VCT_Badge text={`${sanAssigns.length} TT`} type={sanAssigns.length > 0 ? 'success' : 'warning'} />
                                 </VCT_Stack>
@@ -273,12 +298,19 @@ export const Page_referee_assignments = () => {
                                             return (
                                                 <div key={a.id} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 12px', borderRadius: 12, background: 'var(--vct-bg-elevated)', border: '1px solid var(--vct-border-subtle)' }}>
                                                     <VCT_AvatarLetter name={tt?.ho_ten || '?'} size={28} />
-                                                    <div style={{ flex: 1 }}>
+                                                    <div className="flex-1">
                                                         <div style={{ fontWeight: 700, fontSize: 13 }}>{tt?.ho_ten || '—'}</div>
-                                                        <div style={{ fontSize: 11, opacity: 0.5 }}>{vtr?.label} • {tt ? CAP_BAC_TT_MAP[tt.cap_bac].label : ''}</div>
+                                                        <div className="text-[11px] opacity-50">{vtr?.label} • {tt ? CAP_BAC_TT_MAP[tt.cap_bac].label : ''}</div>
                                                     </div>
                                                     <VCT_Badge text={PHIEN_LABELS[a.phien] || a.phien} type="info" />
-                                                    <button onClick={() => setDeleteTarget(a)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#ef4444', padding: 4 }}><VCT_Icons.x size={14} /></button>
+                                                    <button
+                                                        onClick={() => permissions.canDelete ? setDeleteTarget(a) : requireAction('delete', 'hủy phân công')}
+                                                        style={{ background: 'none', border: 'none', cursor: permissions.canDelete ? 'pointer' : 'not-allowed', color: '#ef4444', padding: 4, opacity: permissions.canDelete ? 1 : 0.5 }}
+                                                        aria-label="Hủy phân công"
+                                                        disabled={!permissions.canDelete}
+                                                    >
+                                                        <VCT_Icons.x size={14} />
+                                                    </button>
                                                 </div>
                                             );
                                         })}
@@ -292,14 +324,17 @@ export const Page_referee_assignments = () => {
 
             {/* Add Modal */}
             <VCT_Modal isOpen={showModal} onClose={() => setShowModal(false)} title="Phân công Trọng tài" width="500px" footer={
-                <><VCT_Button variant="secondary" onClick={() => setShowModal(false)}>Hủy</VCT_Button><VCT_Button onClick={handleAdd}>Phân công</VCT_Button></>
+                <>
+                    <VCT_Button variant="secondary" onClick={() => setShowModal(false)}>Hủy</VCT_Button>
+                    <VCT_Button onClick={handleAdd} disabled={!permissions.canAssign}>Phân công</VCT_Button>
+                </>
             }>
                 <VCT_Stack gap={16}>
                     <VCT_Field label="Trọng tài *"><VCT_Select options={ttsActive.map(t => ({ value: t.id, label: `${t.ho_ten} — ${CAP_BAC_TT_MAP[t.cap_bac].label}` }))} value={form.tt_id} onChange={(v: any) => setForm({ ...form, tt_id: v })} /></VCT_Field>
                     <VCT_Field label="Sàn đấu *"><VCT_Select options={sanActive.map(s => ({ value: s.id, label: `${s.ten} — ${s.vi_tri}` }))} value={form.san_id} onChange={(v: any) => setForm({ ...form, san_id: v })} /></VCT_Field>
                     <VCT_Field label="Vai trò"><VCT_Select options={VAI_TRO_OPTIONS} value={form.vai_tro} onChange={(v: any) => setForm({ ...form, vai_tro: v })} /></VCT_Field>
                     <VCT_Stack direction="row" gap={16}>
-                        <VCT_Field label="Phiên" style={{ flex: 1 }}><VCT_Select options={[{ value: 'sang', label: 'Sáng' }, { value: 'chieu', label: 'Chiều' }, { value: 'toi', label: 'Tối' }]} value={form.phien} onChange={(v: any) => setForm({ ...form, phien: v })} /></VCT_Field>
+                        <VCT_Field label="Phiên" className="flex-1"><VCT_Select options={[{ value: 'sang', label: 'Sáng' }, { value: 'chieu', label: 'Chiều' }, { value: 'toi', label: 'Tối' }]} value={form.phien} onChange={(v: any) => setForm({ ...form, phien: v })} /></VCT_Field>
                     </VCT_Stack>
                 </VCT_Stack>
             </VCT_Modal>
@@ -314,15 +349,15 @@ export const Page_referee_assignments = () => {
                 <div style={{ padding: 16, borderRadius: 12, background: 'rgba(16,185,129,0.05)', border: '1px solid rgba(16,185,129,0.1)', marginBottom: 16 }}>
                     <VCT_Text variant="small" style={{ fontWeight: 700, color: '#10b981' }}>📊 Tổng quan dự kiến</VCT_Text>
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12, marginTop: 8 }}>
-                        <div style={{ textAlign: 'center' }}>
+                        <div className="text-center">
                             <div style={{ fontSize: 20, fontWeight: 900 }}>{ttsActive.length}</div>
                             <div style={{ fontSize: 11, color: 'var(--vct-text-tertiary)' }}>TT sẵn sàng</div>
                         </div>
-                        <div style={{ textAlign: 'center' }}>
+                        <div className="text-center">
                             <div style={{ fontSize: 20, fontWeight: 900 }}>{SAN_DAUS.filter(s => s.trang_thai !== 'bao_tri').length}</div>
                             <div style={{ fontSize: 11, color: 'var(--vct-text-tertiary)' }}>Sàn khả dụng</div>
                         </div>
-                        <div style={{ textAlign: 'center' }}>
+                        <div className="text-center">
                             <div style={{ fontSize: 20, fontWeight: 900 }}>{SAN_DAUS.filter(s => s.trang_thai !== 'bao_tri').length * 3 * 2}</div>
                             <div style={{ fontSize: 11, color: 'var(--vct-text-tertiary)' }}>Slot dự kiến</div>
                         </div>
@@ -331,7 +366,7 @@ export const Page_referee_assignments = () => {
 
                 <VCT_Stack direction="row" gap={12} justify="flex-end">
                     <VCT_Button variant="secondary" onClick={() => setShowAutoModal(false)}>Hủy</VCT_Button>
-                    <VCT_Button variant="primary" loading={isAutoAssigning} icon={<VCT_Icons.Shuffle size={16} />} onClick={handleAutoAssign}>
+                    <VCT_Button variant="primary" loading={isAutoAssigning} icon={<VCT_Icons.Shuffle size={16} />} onClick={handleAutoAssign} disabled={!permissions.canAssign}>
                         ⚡ Phân công ngay
                     </VCT_Button>
                 </VCT_Stack>

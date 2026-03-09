@@ -2,15 +2,7 @@
 import * as React from 'react'
 import { useEffect, useMemo, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
-import {
-  VCT_Button,
-  VCT_Field,
-  VCT_Input,
-  VCT_Select,
-  VCT_Stack,
-  VCT_Text,
-  VCT_Toast,
-} from '../components/vct-ui'
+import { VCT_Alert, VCT_Toast } from '../components/vct-ui'
 import { VCT_Icons } from '../components/vct-icons'
 import { useAuth } from './AuthProvider'
 import type { LoginInput, UserRole } from './types'
@@ -29,16 +21,16 @@ const QUICK_ACCOUNTS: Array<{
   role: UserRole
   label: string
 }> = [
-  { username: 'admin', password: 'Admin@123', role: 'admin', label: 'Admin' },
-  { username: 'btc', password: 'Btc@123', role: 'btc', label: 'Ban tổ chức' },
-  {
-    username: 'ref-manager',
-    password: 'Ref@123',
-    role: 'referee_manager',
-    label: 'Điều phối trọng tài',
-  },
-  { username: 'delegate', password: 'Delegate@123', role: 'delegate', label: 'Cán bộ đoàn' },
-]
+    { username: 'admin', password: 'Admin@123', role: 'admin', label: 'Admin' },
+    { username: 'btc', password: 'Btc@123', role: 'btc', label: 'Ban tổ chức' },
+    {
+      username: 'ref-manager',
+      password: 'Ref@123',
+      role: 'referee_manager',
+      label: 'Điều phối trọng tài',
+    },
+    { username: 'delegate', password: 'Delegate@123', role: 'delegate', label: 'Cán bộ đoàn' },
+  ]
 
 const SHIFT_OPTIONS = [
   { value: 'sang', label: 'Ca sáng (06:00 - 12:00)' },
@@ -54,6 +46,9 @@ const INITIAL_FORM: LoginInput = {
   operationShift: 'sang',
 }
 
+const INPUT_CLASS =
+  'w-full rounded-xl border border-vct-border bg-vct-elevated px-3 py-2.5 text-sm text-vct-text outline-none transition focus:border-vct-accent'
+
 export const Page_login = () => {
   const router = useRouter()
   const searchParams = useSearchParams()
@@ -63,7 +58,6 @@ export const Page_login = () => {
 
   const [form, setForm] = useState<LoginInput>(INITIAL_FORM)
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const [isCompact, setIsCompact] = useState(false)
   const [toast, setToast] = useState<{
     show: boolean
     msg: string
@@ -76,15 +70,6 @@ export const Page_login = () => {
     }
   }, [isAuthenticated, isHydrating, redirectTarget, router])
 
-  useEffect(() => {
-    if (typeof window === 'undefined') return
-    const mq = window.matchMedia('(max-width: 1024px)')
-    const sync = () => setIsCompact(mq.matches)
-    sync()
-    mq.addEventListener('change', sync)
-    return () => mq.removeEventListener('change', sync)
-  }, [])
-
   const handleField = <K extends keyof LoginInput>(key: K, value: LoginInput[K]) => {
     setForm((prev) => ({ ...prev, [key]: value }))
   }
@@ -93,7 +78,7 @@ export const Page_login = () => {
     () => [
       'Đồng bộ vai trò để phân quyền chính xác theo module.',
       'Mỗi ca điều hành tương ứng tổ trực ban kỹ thuật.',
-      'Sử dụng mã giải để phân tách dữ liệu theo mùa giải.',
+      'Sử dụng mã giải để tách dữ liệu theo mùa giải.',
     ],
     []
   )
@@ -136,250 +121,197 @@ export const Page_login = () => {
   }
 
   return (
-    <main
-      style={{
-        minHeight: '100dvh',
-        display: 'grid',
-        gridTemplateColumns: isCompact ? 'minmax(0, 1fr)' : '1.1fr 0.9fr',
-        background:
-          'radial-gradient(circle at 15% 20%, rgba(22, 163, 74, 0.12), transparent 40%), radial-gradient(circle at 85% 15%, rgba(185, 28, 28, 0.12), transparent 45%), #eef2f7',
-      }}
-    >
-      <section
-        style={{
-          padding: isCompact ? '28px 18px' : '48px clamp(24px, 6vw, 72px)',
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'space-between',
-          borderRight: isCompact ? 'none' : '1px solid rgba(15, 23, 42, 0.08)',
-          borderBottom: isCompact ? '1px solid rgba(15, 23, 42, 0.08)' : 'none',
-        }}
-      >
-        <div>
-          <VCT_Stack direction="row" gap={12} align="center" style={{ marginBottom: 20 }}>
-            <div
-              style={{
-                width: 44,
-                height: 44,
-                borderRadius: 14,
-                background: 'linear-gradient(135deg, #b91c1c, #166534)',
-                color: '#fff',
-                display: 'inline-flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}
-            >
-              <VCT_Icons.Shield size={20} />
+    <main className="relative min-h-dvh overflow-hidden bg-vct-bg text-vct-text" style={{ backgroundImage: 'radial-gradient(circle at 12% 16%, var(--vct-success-muted), transparent 38%), radial-gradient(circle at 88% 14%, var(--vct-danger-muted), transparent 42%)' }}>
+      <div className="mx-auto grid min-h-dvh w-full max-w-[1480px] desktop:grid-cols-[1.1fr_0.9fr]">
+        <section className="flex flex-col justify-between border-b border-vct-border px-4 py-6 tablet:px-8 tablet:py-10 desktop:border-b-0 desktop:border-r desktop:px-14">
+          <div>
+            <div className="mb-5 inline-flex items-center gap-3 rounded-2xl border border-vct-border bg-vct-elevated px-3 py-2 shadow-sm">
+              <span className="inline-flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br from-red-700 to-emerald-700 text-white">
+                <VCT_Icons.Shield size={20} />
+              </span>
+              <span>
+                <span className="block text-sm font-black uppercase tracking-wide">
+                  VCT Tournament Command
+                </span>
+                <span className="block text-xs text-vct-text-muted">
+                  Trung tâm vận hành giải võ cổ truyền
+                </span>
+              </span>
             </div>
-            <div>
-              <VCT_Text variant="h3" style={{ margin: 0 }}>
-                VCT Tournament Command
-              </VCT_Text>
-              <VCT_Text variant="small" style={{ opacity: 0.7 }}>
-                Trung tâm vận hành giải võ cổ truyền
-              </VCT_Text>
-            </div>
-          </VCT_Stack>
 
-          <h1
-            style={{
-              margin: 0,
-              fontSize: 'clamp(34px, 5.5vw, 62px)',
-              lineHeight: 1.05,
-              letterSpacing: '-0.03em',
-              textTransform: 'uppercase',
-              color: '#0f172a',
-            }}
-          >
-            Điều hành giải
-            <br />
-            chuẩn thi đấu
-          </h1>
-          <p
-            style={{
-              marginTop: 18,
-              marginBottom: 0,
-              color: '#334155',
-              maxWidth: 520,
-              fontSize: 15,
-              lineHeight: 1.7,
-            }}
-          >
-            Đăng nhập để quản lý danh sách đoàn, cân ký, bốc thăm, phân công trọng tài,
-            nhập kết quả và công bố huy chương theo thời gian thực.
-          </p>
-        </div>
+            <h1 className="m-0 text-[clamp(2rem,5.5vw,3.8rem)] font-black uppercase leading-[0.96] tracking-[-0.03em] text-vct-text">
+              Điều hành giải
+              <br />
+              chuẩn thi đấu
+            </h1>
+            <p className="mb-0 mt-4 max-w-[560px] text-sm leading-7 text-[var(--vct-text-secondary)] tablet:text-[15px]">
+              Đăng nhập để quản lý danh sách đoàn, cân ký, bốc thăm, phân công trọng tài, nhập
+              kết quả và công bố huy chương theo thời gian thực.
+            </p>
+          </div>
 
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: isCompact
-              ? 'repeat(1, minmax(0, 1fr))'
-              : 'repeat(3, minmax(0, 1fr))',
-            gap: 12,
-            marginTop: 28,
-          }}
-        >
-          {tips.map((tip, index) => (
-            <div
-              key={tip}
-              style={{
-                borderRadius: 14,
-                padding: '14px 12px',
-                border: '1px solid rgba(15, 23, 42, 0.1)',
-                background: 'rgba(255, 255, 255, 0.72)',
-              }}
-            >
-              <div
-                style={{
-                  width: 24,
-                  height: 24,
-                  borderRadius: 8,
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  color: '#fff',
-                  fontSize: 12,
-                  fontWeight: 800,
-                  background: index === 1 ? '#15803d' : '#b91c1c',
-                  marginBottom: 8,
-                }}
+          <div className="mt-7 grid gap-3 tablet:grid-cols-2 desktop:grid-cols-3">
+            {tips.map((tip, index) => (
+              <article
+                key={tip}
+                className="rounded-xl border border-vct-border bg-vct-elevated/75 px-3 py-3 shadow-[var(--vct-shadow-sm)]"
               >
-                {index + 1}
+                <div
+                  className={`mb-2 inline-flex h-6 w-6 items-center justify-center rounded-md text-xs font-black text-white ${index === 1 ? 'bg-emerald-700' : 'bg-red-700'
+                    }`}
+                >
+                  {index + 1}
+                </div>
+                <p className="m-0 text-xs leading-5 text-[var(--vct-text-secondary)]">{tip}</p>
+              </article>
+            ))}
+          </div>
+        </section>
+
+        <section className="flex items-center justify-center px-4 py-6 tablet:px-8 tablet:py-10 desktop:px-10">
+          <form
+            onSubmit={handleSubmit}
+            aria-label="Đăng nhập hệ thống giải võ cổ truyền"
+            className="w-full max-w-[560px] rounded-3xl border border-vct-border bg-vct-elevated/95 p-5 shadow-[var(--vct-shadow-xl)] tablet:p-7"
+          >
+            <div className="grid gap-4">
+              <div>
+                <h2 className="m-0 text-xl font-black text-vct-text">Đăng nhập tài khoản điều hành</h2>
+                <p className="mb-0 mt-1 text-xs text-vct-text-muted">Phiên bản backend: Go 1.26 API</p>
               </div>
-              <p style={{ margin: 0, fontSize: 12, lineHeight: 1.5, color: '#1e293b' }}>{tip}</p>
-            </div>
-          ))}
-        </div>
-      </section>
 
-      <section
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          padding: isCompact ? '22px 14px 28px' : '32px clamp(20px, 4vw, 44px)',
-        }}
-      >
-        <form
-          onSubmit={handleSubmit}
-          aria-label="Đăng nhập hệ thống giải võ cổ truyền"
-          style={{
-            width: '100%',
-            maxWidth: 520,
-            borderRadius: 24,
-            border: '1px solid rgba(15, 23, 42, 0.12)',
-            background: 'rgba(255, 255, 255, 0.95)',
-            boxShadow: '0 30px 70px rgba(15, 23, 42, 0.12)',
-            padding: '28px 24px',
-          }}
-        >
-          <VCT_Stack gap={16}>
-            <div>
-              <VCT_Text variant="h2" style={{ marginBottom: 2 }}>
-                Đăng nhập tài khoản điều hành
-              </VCT_Text>
-              <VCT_Text variant="small" style={{ color: '#64748b' }}>
-                Phiên bản backend: Go 1.26 API
-              </VCT_Text>
-            </div>
-
-            <VCT_Field label="Tài khoản">
-              <VCT_Input
-                value={form.username}
-                onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
-                  handleField('username', event.target.value)
-                }
-                autoFocus
-                placeholder="admin / btc / referee..."
+              <VCT_Alert
+                tone="info"
+                title="Phiên truy cập"
+                description={`Sau khi đăng nhập, hệ thống sẽ chuyển đến: ${redirectTarget}`}
               />
-            </VCT_Field>
 
-            <VCT_Field label="Mật khẩu">
-              <VCT_Input
-                type="password"
-                value={form.password}
-                onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
-                  handleField('password', event.target.value)
-                }
-                placeholder="Nhập mật khẩu"
-              />
-            </VCT_Field>
-
-            <VCT_Stack direction="row" gap={12} style={{ alignItems: 'end' }}>
-              <VCT_Field label="Vai trò" style={{ flex: 1 }}>
-                <VCT_Select
-                  value={form.role}
-                  options={ROLE_OPTIONS}
-                  onChange={(value: UserRole) => handleField('role', value)}
+              <div className="grid gap-1.5">
+                <label htmlFor="login-username" className="text-sm font-bold">
+                  Tài khoản
+                </label>
+                <input
+                  id="login-username"
+                  value={form.username}
+                  onChange={(event) => handleField('username', event.target.value)}
+                  autoFocus
+                  required
+                  autoComplete="username"
+                  placeholder="admin / btc / referee..."
+                  className={INPUT_CLASS}
                 />
-              </VCT_Field>
-              <VCT_Field label="Ca điều hành" style={{ flex: 1 }}>
-                <VCT_Select
-                  value={form.operationShift}
-                  options={SHIFT_OPTIONS}
-                  onChange={(value: LoginInput['operationShift']) =>
-                    handleField('operationShift', value)
-                  }
+              </div>
+
+              <div className="grid gap-1.5">
+                <label htmlFor="login-password" className="text-sm font-bold">
+                  Mật khẩu
+                </label>
+                <input
+                  id="login-password"
+                  type="password"
+                  value={form.password}
+                  onChange={(event) => handleField('password', event.target.value)}
+                  required
+                  autoComplete="current-password"
+                  placeholder="Nhập mật khẩu"
+                  className={INPUT_CLASS}
                 />
-              </VCT_Field>
-            </VCT_Stack>
+              </div>
 
-            <VCT_Field label="Mã giải">
-              <VCT_Input
-                value={form.tournamentCode}
-                onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
-                  handleField('tournamentCode', event.target.value)
-                }
-                placeholder="VCT-2026"
-              />
-            </VCT_Field>
-
-            <div>
-              <VCT_Text variant="small" style={{ opacity: 0.7, marginBottom: 6 }}>
-                Tài khoản mẫu nhanh
-              </VCT_Text>
-              <VCT_Stack direction="row" gap={8} style={{ flexWrap: 'wrap' }}>
-                {QUICK_ACCOUNTS.map((item) => (
-                  <button
-                    key={item.username}
-                    type="button"
-                    onClick={() =>
-                      setForm((prev) => ({
-                        ...prev,
-                        username: item.username,
-                        password: item.password,
-                        role: item.role,
-                      }))
-                    }
-                    style={{
-                      borderRadius: 999,
-                      border: '1px solid rgba(15, 23, 42, 0.15)',
-                      background: '#fff',
-                      padding: '6px 10px',
-                      fontSize: 12,
-                      fontWeight: 700,
-                      cursor: 'pointer',
-                    }}
+              <div className="grid gap-3 tablet:grid-cols-2">
+                <div className="grid gap-1.5">
+                  <label htmlFor="login-role" className="text-sm font-bold">
+                    Vai trò
+                  </label>
+                  <select
+                    id="login-role"
+                    value={form.role}
+                    onChange={(event) => handleField('role', event.target.value as UserRole)}
+                    className={INPUT_CLASS}
                   >
-                    {item.label}
-                  </button>
-                ))}
-              </VCT_Stack>
-            </div>
+                    {ROLE_OPTIONS.map((item) => (
+                      <option key={item.value} value={item.value}>
+                        {item.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div className="grid gap-1.5">
+                  <label htmlFor="login-shift" className="text-sm font-bold">
+                    Ca điều hành
+                  </label>
+                  <select
+                    id="login-shift"
+                    value={form.operationShift}
+                    onChange={(event) =>
+                      handleField('operationShift', event.target.value as LoginInput['operationShift'])
+                    }
+                    className={INPUT_CLASS}
+                  >
+                    {SHIFT_OPTIONS.map((item) => (
+                      <option key={item.value} value={item.value}>
+                        {item.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
 
-            <VCT_Button
-              type="submit"
-              loading={isSubmitting}
-              disabled={isSubmitting}
-              icon={<VCT_Icons.CheckCircle size={16} />}
-              style={{ width: '100%', justifyContent: 'center', marginTop: 4 }}
-            >
-              Vào hệ thống điều hành
-            </VCT_Button>
-          </VCT_Stack>
-        </form>
-      </section>
+              <div className="grid gap-1.5">
+                <label htmlFor="login-tournament-code" className="text-sm font-bold">
+                  Mã giải
+                </label>
+                <input
+                  id="login-tournament-code"
+                  value={form.tournamentCode}
+                  onChange={(event) => handleField('tournamentCode', event.target.value)}
+                  required
+                  placeholder="VCT-2026"
+                  className={INPUT_CLASS}
+                />
+              </div>
+
+              <fieldset className="grid gap-2">
+                <legend className="text-xs font-extrabold uppercase tracking-wide text-vct-text-muted">
+                  Tài khoản mẫu nhanh
+                </legend>
+                <div className="flex flex-wrap gap-2">
+                  {QUICK_ACCOUNTS.map((item) => (
+                    <button
+                      key={item.username}
+                      type="button"
+                      onClick={() =>
+                        setForm((prev) => ({
+                          ...prev,
+                          username: item.username,
+                          password: item.password,
+                          role: item.role,
+                        }))
+                      }
+                      className="rounded-full border border-vct-border bg-vct-elevated px-3 py-1.5 text-xs font-bold text-vct-text transition hover:bg-vct-input"
+                    >
+                      {item.label}
+                    </button>
+                  ))}
+                </div>
+              </fieldset>
+
+              <button
+                type="submit"
+                disabled={isSubmitting}
+                className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-transparent bg-vct-accent px-3 py-2.5 text-sm font-extrabold text-white transition hover:brightness-105 disabled:cursor-not-allowed disabled:opacity-70"
+              >
+                {isSubmitting ? (
+                  <span className="inline-flex h-4 w-4 animate-spin rounded-full border-2 border-white/90 border-r-transparent" />
+                ) : (
+                  <VCT_Icons.CheckCircle size={16} />
+                )}
+                Vào hệ thống điều hành
+              </button>
+            </div>
+          </form>
+        </section>
+      </div>
 
       <VCT_Toast
         isVisible={toast.show}

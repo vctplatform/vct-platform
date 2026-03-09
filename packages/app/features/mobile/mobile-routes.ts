@@ -1,64 +1,63 @@
 import type { UserRole } from '../auth/types'
-import { isRouteAccessible } from '../layout/route-registry'
+import { ROUTE_GROUPS } from '../layout/routes'
+import { ROUTE_REGISTRY, isRouteAccessible } from '../layout/route-registry'
+import type { RouteGroupId, RouteId } from '../layout/route-types'
 
-export type MobileRouteKey =
-  | 'teams'
-  | 'athletes'
-  | 'registration'
-  | 'results'
-  | 'schedule'
+export type MobileRouteKey = string
 
 export interface MobileRouteItem {
   key: MobileRouteKey
+  routeId: RouteId
+  groupId: RouteGroupId
   title: string
   subtitle: string
   webPath: string
   nativePath: string
 }
 
-export const MOBILE_ROUTE_REGISTRY: MobileRouteItem[] = [
-  {
-    key: 'teams',
-    title: 'Đơn vị tham gia',
-    subtitle: 'Theo dõi đoàn và trạng thái xác nhận',
-    webPath: '/teams',
-    nativePath: 'teams',
-  },
-  {
-    key: 'athletes',
-    title: 'Vận động viên',
-    subtitle: 'Danh sách hồ sơ vận động viên',
-    webPath: '/athletes',
-    nativePath: 'athletes',
-  },
-  {
-    key: 'registration',
-    title: 'Đăng ký nội dung',
-    subtitle: 'Kiểm tra và duyệt đăng ký thi đấu',
-    webPath: '/registration',
-    nativePath: 'registration',
-  },
-  {
-    key: 'results',
-    title: 'Kết quả',
-    subtitle: 'Theo dõi kết quả thi đấu gần nhất',
-    webPath: '/results',
-    nativePath: 'results',
-  },
-  {
-    key: 'schedule',
-    title: 'Lịch thi đấu',
-    subtitle: 'Lịch theo ngày và phiên đấu',
-    webPath: '/schedule',
-    nativePath: 'schedule',
-  },
-]
+const GROUP_LABEL_BY_ID = new Map(
+  ROUTE_GROUPS.map((group) => [group.id, group.label] as const)
+)
+
+const toMobileKey = (path: string) => {
+  const normalized = path
+    .replace(/^\//, '')
+    .replace(/\/+$/, '')
+    .replace(/\//g, '-')
+    .replace(/\[|\]/g, '')
+
+  return normalized || 'home'
+}
+
+const toNativePath = (path: string) => path.replace(/^\//, '').replace(/\/+$/, '')
+
+const isMobileRoute = (path: string, showInSidebar = false) =>
+  showInSidebar && path !== '/' && !path.includes('[')
+
+export const MOBILE_ROUTE_REGISTRY: MobileRouteItem[] = ROUTE_REGISTRY.filter(
+  (route) => isMobileRoute(route.path, route.showInSidebar)
+).map((route) => ({
+  key: toMobileKey(route.path),
+  routeId: route.id,
+  groupId: route.group,
+  title: route.label,
+  subtitle: GROUP_LABEL_BY_ID.get(route.group) ?? 'Nghiệp vụ giải đấu',
+  webPath: route.path,
+  nativePath: toNativePath(route.path),
+}))
+
+const MOBILE_ROUTE_BY_KEY = new Map(
+  MOBILE_ROUTE_REGISTRY.map((route) => [route.key, route] as const)
+)
 
 export const canAccessMobileRoute = (key: MobileRouteKey, role: UserRole) => {
-  const route = MOBILE_ROUTE_REGISTRY.find((item) => item.key === key)
+  const route = MOBILE_ROUTE_BY_KEY.get(key)
   if (!route) return false
   return isRouteAccessible(route.webPath, role)
 }
 
 export const getAccessibleMobileRoutes = (role: UserRole) =>
   MOBILE_ROUTE_REGISTRY.filter((route) => isRouteAccessible(route.webPath, role))
+
+export const getMobileRouteByKey = (key: MobileRouteKey) =>
+  MOBILE_ROUTE_BY_KEY.get(key)

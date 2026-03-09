@@ -1,12 +1,14 @@
 'use client';
 import * as React from 'react';
-import { useState, useMemo, useRef } from 'react';
+import { useState, useMemo, useRef, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import {
-    VCT_Card, VCT_Button, VCT_Text, VCT_Stack, VCT_Badge, VCT_KpiCard, VCT_EmptyState
+    VCT_Card, VCT_Button, VCT_Text, VCT_Stack, VCT_Badge, VCT_KpiCard, VCT_EmptyState, VCT_Toast
 } from '../components/vct-ui';
 import { VCT_Icons } from '../components/vct-icons';
 import { HANG_CANS, NOI_DUNG_QUYENS } from '../data/mock-data';
+import { repositories, useEntityCollection } from '../data/repository';
+import { useRouteActionGuard } from '../hooks/use-route-action-guard';
 
 // ════════════════════════════════════════════════════════════════
 // TYPES
@@ -62,6 +64,33 @@ const generateMockSlots = (numSlots: number): (BracketPlayer | null)[] => {
         ten: `${VDV_HO[i % VDV_HO.length] || ''} ${VDV_TEN[i % VDV_TEN.length] || ''}`,
         doan: DOAN_NAMES[i % DOAN_NAMES.length] || '',
     }));
+};
+
+const generateSlotsFromStore = (
+    numSlots: number,
+    roster: Array<{ id: string; ten: string; doan: string }>
+): (BracketPlayer | null)[] => {
+    if (roster.length === 0) return generateMockSlots(numSlots);
+
+    const uniqueRoster = Array.from(
+        new Map(roster.map((item) => [item.id, item])).values()
+    );
+
+    return Array.from({ length: numSlots }, (_, index) => {
+        const source = uniqueRoster[index];
+        if (source) {
+            return {
+                id: source.id,
+                ten: source.ten,
+                doan: source.doan,
+            };
+        }
+        return {
+            id: `seed_${index + 1}`,
+            ten: `${VDV_HO[index % VDV_HO.length] || ''} ${VDV_TEN[index % VDV_TEN.length] || ''}`,
+            doan: DOAN_NAMES[index % DOAN_NAMES.length] || '',
+        };
+    });
 };
 
 const generateMockMatches = (numSlots: number): BracketMatch[] => {
@@ -481,6 +510,7 @@ const SCHEMA_OPTIONS = [2, 4, 8, 16, 32, 64, 128];
 // MAIN PAGE COMPONENT
 // ════════════════════════════════════════════════════════════════
 export const Page_bracket = () => {
+    const combatStore = useEntityCollection(repositories.combatMatches.mock);
     const [selectedND, setSelectedND] = useState(NOI_DUNG_OPTIONS[0]?.value ?? '');
     const [selectedSchema, setSelectedSchema] = useState(8);
     const [zoom, setZoom] = useState(1);
@@ -488,9 +518,32 @@ export const Page_bracket = () => {
     const [isDragging, setIsDragging] = useState(false);
     const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
     const [selectedMatch, setSelectedMatch] = useState<BracketMatch | null>(null);
+    const [toast, setToast] = useState({ show: false, msg: '', type: 'success' });
     const containerRef = useRef<HTMLDivElement>(null);
+    const showToast = useCallback((msg: string, type = 'success') => {
+        setToast({ show: true, msg, type });
+        setTimeout(() => setToast(prev => ({ ...prev, show: false })), 3500);
+    }, []);
+    const { can, requireAction } = useRouteActionGuard('/bracket', {
+        notifyDenied: (message) => showToast(message, 'error')
+    });
+    const permissions = useMemo(() => ({
+        canUpdate: can('update'),
+        canExport: can('export'),
+    }), [can]);
 
-    const slots = useMemo(() => generateMockSlots(selectedSchema), [selectedSchema]);
+    const liveRoster = useMemo(
+        () =>
+            combatStore.items.flatMap((match) => [
+                { id: match.vdv_do.id, ten: match.vdv_do.ten, doan: match.vdv_do.doan },
+                { id: match.vdv_xanh.id, ten: match.vdv_xanh.ten, doan: match.vdv_xanh.doan },
+            ]),
+        [combatStore.items]
+    );
+    const slots = useMemo(
+        () => generateSlotsFromStore(selectedSchema, liveRoster),
+        [selectedSchema, liveRoster]
+    );
     const matches = useMemo(() => generateMockMatches(selectedSchema), [selectedSchema]);
 
     const numRounds = Math.log2(selectedSchema);
@@ -523,8 +576,21 @@ export const Page_bracket = () => {
         setSelectedMatch(match);
     };
 
+    const handleSchemaChange = (schema: number) => {
+        if (!requireAction('update', 'điều chỉnh sơ đồ nhánh')) return;
+        setSelectedSchema(schema);
+        resetView();
+    };
+
+    const handleExportBracket = () => {
+        if (!requireAction('export', 'xuất sơ đồ nhánh')) return;
+        window.print();
+        showToast('Đang mở bản in sơ đồ nhánh...', 'info');
+    };
+
     return (
         <div style={{ maxWidth: 1600, margin: '0 auto', paddingBottom: 100 }}>
+            <VCT_Toast isVisible={toast.show} message={toast.msg} type={toast.type} onClose={() => setToast(prev => ({ ...prev, show: false }))} />
             {/* Header */}
             <VCT_Stack direction="row" justify="space-between" align="center" style={{ marginBottom: 24, flexWrap: 'wrap', gap: 16 }}>
                 <div>
@@ -537,6 +603,9 @@ export const Page_bracket = () => {
                     <VCT_Badge text={`${selectedSchema} VĐV`} type="info" />
                     <VCT_Badge text={`${numRounds} vòng`} type="success" />
                     <VCT_Badge text={`${totalMatches} trận`} type="warning" />
+                    <VCT_Button variant="secondary" icon={<VCT_Icons.Download size={14} />} onClick={handleExportBracket} disabled={!permissions.canExport}>
+                        Xuất sơ đồ
+                    </VCT_Button>
                 </VCT_Stack>
             </VCT_Stack>
 
@@ -572,13 +641,14 @@ export const Page_bracket = () => {
                         <label style={{ fontSize: 11, fontWeight: 700, opacity: 0.5, textTransform: 'uppercase' as const, marginBottom: 4, display: 'block' }}>Schema (Số VĐV)</label>
                         <VCT_Stack direction="row" gap={4}>
                             {SCHEMA_OPTIONS.map(s => (
-                                <button key={s} onClick={() => { setSelectedSchema(s); resetView(); }}
+                                <button key={s} onClick={() => handleSchemaChange(s)}
                                     style={{
                                         padding: '8px 14px', borderRadius: 10, border: 'none', cursor: 'pointer',
                                         fontWeight: 700, fontSize: 13, transition: 'all 0.2s',
                                         background: selectedSchema === s ? '#3b82f6' : 'var(--vct-bg-elevated)',
                                         color: selectedSchema === s ? '#fff' : 'var(--vct-text-secondary)',
                                     }}
+                                    disabled={!permissions.canUpdate}
                                 >
                                     {s}
                                 </button>
@@ -586,7 +656,7 @@ export const Page_bracket = () => {
                         </VCT_Stack>
                     </div>
 
-                    <div style={{ flex: 1 }} />
+                    <div className="flex-1" />
 
                     {/* Zoom controls */}
                     <VCT_Stack direction="row" gap={4} align="center">
@@ -647,7 +717,7 @@ export const Page_bracket = () => {
                         boxShadow: '0 20px 60px rgba(0,0,0,0.3)', minWidth: 320, maxWidth: 400,
                     }}
                 >
-                    <VCT_Stack direction="row" justify="space-between" align="center" style={{ marginBottom: 16 }}>
+                    <VCT_Stack direction="row" justify="space-between" align="center" className="mb-4">
                         <VCT_Stack direction="row" gap={8} align="center">
                             <VCT_Badge text={`Trận #${selectedMatch.match_no}`} type="info" />
                             <VCT_Badge text={selectedMatch.round_key} type="success" />

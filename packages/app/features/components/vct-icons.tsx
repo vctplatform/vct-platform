@@ -58,7 +58,30 @@ import {
     Eye,
     List,
     Flag,
-    ClipboardList
+    ClipboardList,
+    LogOut,
+    Bell,
+    MoreVertical,
+    Layers,
+    TrendingUp,
+    TrendingDown,
+    DollarSign,
+    ArrowDownLeft,
+    ArrowUpRight,
+    Book,
+    Video,
+    Network,
+    Library,
+    ZoomIn,
+    ZoomOut,
+    BarChart2,
+    Laptop,
+    ShoppingBag,
+    Building,
+    Camera,
+    VideoOff,
+    Info,
+    Image as ImageIcon
 } from 'lucide-react';
 
 /**
@@ -92,6 +115,8 @@ export const VCT_Icons = {
     Search: (p: IconProps) => <Search {...defaultProps} {...p} />,
     Settings: (p: IconProps) => <Settings {...defaultProps} {...p} />,
     x: (p: IconProps) => <X {...defaultProps} {...p} />, // Chữ x thường để tương thích code cũ
+    X: (p: IconProps) => <X {...defaultProps} {...p} />,
+    Close: (p: IconProps) => <X {...defaultProps} {...p} />,
     Activity: (p: IconProps) => <Activity {...defaultProps} {...p} />,
     Grip: (p: IconProps) => <GripHorizontal {...defaultProps} {...p} />,
     List: (p: IconProps) => <AlignJustify {...defaultProps} {...p} />,
@@ -141,6 +166,7 @@ export const VCT_Icons = {
     Heart: (p: IconProps) => <Heart {...defaultProps} {...p} />, // Tài trợ/Y tế
 
     // --- Mở rộng cho Sidebar Cấu trúc mới ---
+    Building: (p: IconProps) => <Building {...defaultProps} {...p} />,
     Building2: (p: IconProps) => <Building2 {...defaultProps} {...p} />,
     ClipboardCheck: (p: IconProps) => <ClipboardCheck {...defaultProps} {...p} />,
     UserCheck: (p: IconProps) => <UserCheck {...defaultProps} {...p} />,
@@ -162,4 +188,30 @@ export const VCT_Icons = {
     Eye: (p: IconProps) => <Eye {...defaultProps} {...p} />,
     Flag: (p: IconProps) => <Flag {...defaultProps} {...p} />,
     ClipboardList: (p: IconProps) => <ClipboardList {...defaultProps} {...p} />,
+
+    // --- Header & Auth ---
+    LogOut: (p: IconProps) => <LogOut {...defaultProps} {...p} />,
+    Bell: (p: IconProps) => <Bell {...defaultProps} {...p} />,
+
+    // --- Others ---
+    MoreVertical: (p: IconProps) => <MoreVertical {...defaultProps} {...p} />,
+    Layers: (p: IconProps) => <Layers {...defaultProps} {...p} />,
+    TrendingUp: (p: IconProps) => <TrendingUp {...defaultProps} {...p} />,
+    TrendingDown: (p: IconProps) => <TrendingDown {...defaultProps} {...p} />,
+    DollarSign: (p: IconProps) => <DollarSign {...defaultProps} {...p} />,
+    ArrowDownLeft: (p: IconProps) => <ArrowDownLeft {...defaultProps} {...p} />,
+    ArrowUpRight: (p: IconProps) => <ArrowUpRight {...defaultProps} {...p} />,
+    Book: (p: IconProps) => <Book {...defaultProps} {...p} />,
+    Video: (p: IconProps) => <Video {...defaultProps} {...p} />,
+    Network: (p: IconProps) => <Network {...defaultProps} {...p} />,
+    Library: (p: IconProps) => <Library {...defaultProps} {...p} />,
+    ZoomIn: (p: IconProps) => <ZoomIn {...defaultProps} {...p} />,
+    ZoomOut: (p: IconProps) => <ZoomOut {...defaultProps} {...p} />,
+    BarChart2: (p: IconProps) => <BarChart2 {...defaultProps} {...p} />,
+    Laptop: (p: IconProps) => <Laptop {...defaultProps} {...p} />,
+    ShoppingBag: (p: IconProps) => <ShoppingBag {...defaultProps} {...p} />,
+    Camera: (p: IconProps) => <Camera {...defaultProps} {...p} />,
+    VideoOff: (p: IconProps) => <VideoOff {...defaultProps} {...p} />,
+    Info: (p: IconProps) => <Info {...defaultProps} {...p} />,
+    Image: (p: IconProps) => <ImageIcon {...defaultProps} {...p} />,
 };

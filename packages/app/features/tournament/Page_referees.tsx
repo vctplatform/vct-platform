@@ -115,10 +115,10 @@ export const Page_referees = () => {
     const toggleSelect = (id: string) => setSelectedIds(p => { const n = new Set(p); n.has(id) ? n.delete(id) : n.add(id); return n; });
 
     return (
-        <div style={{ maxWidth: 1400, margin: '0 auto', paddingBottom: 100 }}>
+        <div className="mx-auto max-w-[1400px] pb-24">
             <VCT_Toast isVisible={toast.show} message={toast.msg} type={toast.type} onClose={hideToast} />
             {uiState.error && (
-                <div style={{ marginBottom: 16, padding: '12px 14px', borderRadius: 12, border: '1px solid rgba(239,68,68,0.25)', background: 'rgba(239,68,68,0.08)', color: '#ef4444', fontSize: 13, fontWeight: 700 }}>
+                <div className="mb-4 rounded-xl border border-red-500/25 bg-red-500/[0.08] px-3.5 py-3 text-[13px] font-bold text-red-500">
                     Không thể tải danh sách trọng tài: {uiState.error}
                 </div>
             )}
@@ -129,7 +129,7 @@ export const Page_referees = () => {
             )}
 
             {/* KPI Row */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 16, marginBottom: 24 }}>
+            <div className="vct-stagger mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
                 <VCT_KpiCard label="Tổng trọng tài" value={refs.length} icon={<VCT_Icons.Shield size={24} />} color="#0ea5e9" />
                 <VCT_KpiCard label="Đã xác nhận" value={refs.filter(r => r.trang_thai === 'xac_nhan').length} icon={<VCT_Icons.Check size={24} />} color="#10b981" />
                 <VCT_KpiCard label="Quốc gia" value={refs.filter(r => r.cap_bac === 'quoc_gia').length} icon={<VCT_Icons.Star size={24} />} color="#a78bfa" sub="Cấp bậc cao nhất" />
@@ -152,13 +152,13 @@ export const Page_referees = () => {
             {filtered.length === 0 ? (
                 <VCT_EmptyState title="Không tìm thấy trọng tài" description="Thử thay đổi bộ lọc." actionLabel="Thêm trọng tài" onAction={openAdd} icon="⚖️" />
             ) : (
-                <div style={{ borderRadius: 16, border: '1px solid var(--vct-border-subtle)', overflow: 'hidden', background: 'var(--vct-bg-glass)' }}>
-                    <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                <div className="overflow-hidden rounded-2xl border border-[var(--vct-border-subtle)] bg-[var(--vct-bg-glass)]">
+                    <table className="w-full border-collapse">
                         <thead>
-                            <tr style={{ borderBottom: '1px solid var(--vct-border-strong)', background: 'var(--vct-bg-card)' }}>
+                            <tr className="border-b border-[var(--vct-border-strong)] bg-[var(--vct-bg-card)]">
                                 <th style={{ padding: '12px 16px', width: 40 }}><input type="checkbox" onChange={() => setSelectedIds(p => p.size === filtered.length ? new Set() : new Set(filtered.map(r => r.id)))} checked={selectedIds.size === filtered.length && filtered.length > 0} style={{ accentColor: '#22d3ee' }} /></th>
                                 {['Trọng tài', 'Đơn vị', 'Cấp bậc', 'Chuyên môn', 'Kinh nghiệm', 'Trạng thái', ''].map((h, i) => (
-                                    <th key={i} style={{ padding: '12px 16px', textAlign: 'left', fontSize: 11, fontWeight: 700, textTransform: 'uppercase', opacity: 0.5 }}>{h}</th>
+                                    <th key={i} className="px-4 py-3 text-left text-[11px] font-bold uppercase opacity-50">{h}</th>
                                 ))}
                             </tr>
                         </thead>
@@ -170,19 +170,19 @@ export const Page_referees = () => {
                                 return (
                                     <React.Fragment key={r.id}>
                                         <tr onClick={() => setExpandedId(expandedId === r.id ? null : r.id)} style={{ borderBottom: '1px solid var(--vct-border-subtle)', cursor: 'pointer', background: selectedIds.has(r.id) ? 'rgba(34, 211, 238, 0.05)' : idx % 2 === 0 ? 'transparent' : 'rgba(128,128,128,0.02)', borderLeft: `3px solid ${st.color}`, transition: 'background 0.15s' }}>
-                                            <td style={{ padding: '12px 16px' }}><input type="checkbox" checked={selectedIds.has(r.id)} onChange={() => toggleSelect(r.id)} onClick={(e: any) => e.stopPropagation()} style={{ accentColor: '#22d3ee' }} /></td>
-                                            <td style={{ padding: '12px 16px' }}>
+                                            <td className="px-4 py-3"><input type="checkbox" checked={selectedIds.has(r.id)} onChange={() => toggleSelect(r.id)} onClick={(e: any) => e.stopPropagation()} style={{ accentColor: '#22d3ee' }} /></td>
+                                            <td className="px-4 py-3">
                                                 <VCT_Stack direction="row" gap={10} align="center">
                                                     <VCT_AvatarLetter name={r.ho_ten} size={32} />
-                                                    <div><div style={{ fontWeight: 700, fontSize: 13 }}>{r.ho_ten}</div><div style={{ fontSize: 11, opacity: 0.5 }}>{r.gioi === 'nam' ? '♂ Nam' : '♀ Nữ'}</div></div>
+                                                    <div><div style={{ fontWeight: 700, fontSize: 13 }}>{r.ho_ten}</div><div className="text-[11px] opacity-50">{r.gioi === 'nam' ? '♂ Nam' : '♀ Nữ'}</div></div>
                                                 </VCT_Stack>
                                             </td>
                                             <td style={{ padding: '12px 16px', fontSize: 13 }}>{r.don_vi}</td>
-                                            <td style={{ padding: '12px 16px' }}><span style={{ padding: '3px 10px', borderRadius: 8, background: `${cb.color}15`, color: cb.color, fontSize: 12, fontWeight: 700 }}>{cb.label}</span></td>
-                                            <td style={{ padding: '12px 16px' }}><span style={{ padding: '3px 10px', borderRadius: 8, background: `${cm.color}15`, color: cm.color, fontSize: 12, fontWeight: 700 }}>{cm.label}</span></td>
+                                            <td className="px-4 py-3"><span style={{ padding: '3px 10px', borderRadius: 8, background: `${cb.color}15`, color: cb.color, fontSize: 12, fontWeight: 700 }}>{cb.label}</span></td>
+                                            <td className="px-4 py-3"><span style={{ padding: '3px 10px', borderRadius: 8, background: `${cm.color}15`, color: cm.color, fontSize: 12, fontWeight: 700 }}>{cm.label}</span></td>
                                             <td style={{ padding: '12px 16px', fontSize: 12, opacity: 0.7, maxWidth: 180, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{r.kinh_nghiem || '—'}</td>
-                                            <td style={{ padding: '12px 16px' }}><VCT_Badge text={st.label} type={st.type} /></td>
-                                            <td style={{ padding: '12px 16px' }}>
+                                            <td className="px-4 py-3"><VCT_Badge text={st.label} type={st.type} /></td>
+                                            <td className="px-4 py-3">
                                                 <VCT_Stack direction="row" gap={4}>
                                                     <button onClick={(e: any) => { e.stopPropagation(); openEdit(r); }} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--vct-text-tertiary)', padding: 4 }}><VCT_Icons.Edit size={14} /></button>
                                                     <button onClick={(e: any) => { e.stopPropagation(); setDeleteTarget(r); }} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#ef4444', padding: 4 }}><VCT_Icons.Trash size={14} /></button>
@@ -194,11 +194,11 @@ export const Page_referees = () => {
                                                 <tr><td colSpan={8} style={{ padding: 0 }}>
                                                     <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }}>
                                                         <div style={{ padding: '20px 24px', background: 'var(--vct-bg-base)', borderTop: '1px dashed var(--vct-border-subtle)', display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: 16 }}>
-                                                            <div><span style={{ fontSize: 11, opacity: 0.5 }}>SĐT</span><div style={{ fontWeight: 700, fontSize: 13 }}>{r.sdt}</div></div>
-                                                            <div><span style={{ fontSize: 11, opacity: 0.5 }}>Email</span><div style={{ fontWeight: 700, fontSize: 13 }}>{r.email}</div></div>
-                                                            <div><span style={{ fontSize: 11, opacity: 0.5 }}>Ngày sinh</span><div style={{ fontWeight: 700, fontSize: 13 }}>{r.ngay_sinh}</div></div>
-                                                            <div><span style={{ fontSize: 11, opacity: 0.5 }}>Kinh nghiệm</span><div style={{ fontWeight: 700, fontSize: 13 }}>{r.kinh_nghiem || '—'}</div></div>
-                                                            {r.ghi_chu && <div style={{ gridColumn: '1 / -1' }}><span style={{ fontSize: 11, opacity: 0.5 }}>Ghi chú</span><div style={{ fontWeight: 600, fontSize: 13, color: '#f59e0b' }}>{r.ghi_chu}</div></div>}
+                                                            <div><span className="text-[11px] opacity-50">SĐT</span><div style={{ fontWeight: 700, fontSize: 13 }}>{r.sdt}</div></div>
+                                                            <div><span className="text-[11px] opacity-50">Email</span><div style={{ fontWeight: 700, fontSize: 13 }}>{r.email}</div></div>
+                                                            <div><span className="text-[11px] opacity-50">Ngày sinh</span><div style={{ fontWeight: 700, fontSize: 13 }}>{r.ngay_sinh}</div></div>
+                                                            <div><span className="text-[11px] opacity-50">Kinh nghiệm</span><div style={{ fontWeight: 700, fontSize: 13 }}>{r.kinh_nghiem || '—'}</div></div>
+                                                            {r.ghi_chu && <div style={{ gridColumn: '1 / -1' }}><span className="text-[11px] opacity-50">Ghi chú</span><div style={{ fontWeight: 600, fontSize: 13, color: '#f59e0b' }}>{r.ghi_chu}</div></div>}
                                                             <div style={{ gridColumn: '1 / -1', display: 'flex', gap: 6 }}>
                                                                 {PIPELINE.filter(s => s.key !== r.trang_thai).map(s => (
                                                                     <button key={s.key} onClick={() => { setRefs(p => p.map(x => x.id === r.id ? { ...x, trang_thai: s.key as TrangThaiTT } : x)); showToast(`→ ${s.label}`); }}
@@ -236,19 +236,19 @@ export const Page_referees = () => {
                 <VCT_Stack gap={16}>
                     <VCT_Stack direction="row" gap={16}>
                         <VCT_Field label="Họ tên *" style={{ flex: 2 }}><VCT_Input value={form.ho_ten} onChange={(e: any) => setForm({ ...form, ho_ten: e.target.value })} placeholder="Nguyễn Văn A" /></VCT_Field>
-                        <VCT_Field label="Giới tính" style={{ flex: 1 }}><VCT_Select options={[{ value: 'nam', label: 'Nam' }, { value: 'nu', label: 'Nữ' }]} value={form.gioi} onChange={(v: any) => setForm({ ...form, gioi: v })} /></VCT_Field>
+                        <VCT_Field label="Giới tính" className="flex-1"><VCT_Select options={[{ value: 'nam', label: 'Nam' }, { value: 'nu', label: 'Nữ' }]} value={form.gioi} onChange={(v: any) => setForm({ ...form, gioi: v })} /></VCT_Field>
                     </VCT_Stack>
                     <VCT_Stack direction="row" gap={16}>
-                        <VCT_Field label="Ngày sinh" style={{ flex: 1 }}><VCT_Input type="date" value={form.ngay_sinh} onChange={(e: any) => setForm({ ...form, ngay_sinh: e.target.value })} /></VCT_Field>
-                        <VCT_Field label="Đơn vị" style={{ flex: 1 }}><VCT_Input value={form.don_vi} onChange={(e: any) => setForm({ ...form, don_vi: e.target.value })} placeholder="TP.HCM" /></VCT_Field>
+                        <VCT_Field label="Ngày sinh" className="flex-1"><VCT_Input type="date" value={form.ngay_sinh} onChange={(e: any) => setForm({ ...form, ngay_sinh: e.target.value })} /></VCT_Field>
+                        <VCT_Field label="Đơn vị" className="flex-1"><VCT_Input value={form.don_vi} onChange={(e: any) => setForm({ ...form, don_vi: e.target.value })} placeholder="TP.HCM" /></VCT_Field>
                     </VCT_Stack>
                     <VCT_Stack direction="row" gap={16}>
-                        <VCT_Field label="Cấp bậc" style={{ flex: 1 }}><VCT_Select options={[{ value: 'quoc_gia', label: 'Quốc gia' }, { value: 'cap_1', label: 'Cấp 1' }, { value: 'cap_2', label: 'Cấp 2' }, { value: 'cap_3', label: 'Cấp 3' }]} value={form.cap_bac} onChange={(v: any) => setForm({ ...form, cap_bac: v })} /></VCT_Field>
-                        <VCT_Field label="Chuyên môn" style={{ flex: 1 }}><VCT_Select options={[{ value: 'quyen', label: 'Quyền' }, { value: 'doi_khang', label: 'Đối kháng' }, { value: 'ca_hai', label: 'Cả hai' }]} value={form.chuyen_mon} onChange={(v: any) => setForm({ ...form, chuyen_mon: v })} /></VCT_Field>
+                        <VCT_Field label="Cấp bậc" className="flex-1"><VCT_Select options={[{ value: 'quoc_gia', label: 'Quốc gia' }, { value: 'cap_1', label: 'Cấp 1' }, { value: 'cap_2', label: 'Cấp 2' }, { value: 'cap_3', label: 'Cấp 3' }]} value={form.cap_bac} onChange={(v: any) => setForm({ ...form, cap_bac: v })} /></VCT_Field>
+                        <VCT_Field label="Chuyên môn" className="flex-1"><VCT_Select options={[{ value: 'quyen', label: 'Quyền' }, { value: 'doi_khang', label: 'Đối kháng' }, { value: 'ca_hai', label: 'Cả hai' }]} value={form.chuyen_mon} onChange={(v: any) => setForm({ ...form, chuyen_mon: v })} /></VCT_Field>
                     </VCT_Stack>
                     <VCT_Stack direction="row" gap={16}>
-                        <VCT_Field label="SĐT" style={{ flex: 1 }}><VCT_Input value={form.sdt} onChange={(e: any) => setForm({ ...form, sdt: e.target.value })} placeholder="0901..." /></VCT_Field>
-                        <VCT_Field label="Email" style={{ flex: 1 }}><VCT_Input value={form.email} onChange={(e: any) => setForm({ ...form, email: e.target.value })} placeholder="email@..." /></VCT_Field>
+                        <VCT_Field label="SĐT" className="flex-1"><VCT_Input value={form.sdt} onChange={(e: any) => setForm({ ...form, sdt: e.target.value })} placeholder="0901..." /></VCT_Field>
+                        <VCT_Field label="Email" className="flex-1"><VCT_Input value={form.email} onChange={(e: any) => setForm({ ...form, email: e.target.value })} placeholder="email@..." /></VCT_Field>
                     </VCT_Stack>
                     <VCT_Field label="Kinh nghiệm"><VCT_Input value={form.kinh_nghiem} onChange={(e: any) => setForm({ ...form, kinh_nghiem: e.target.value })} placeholder="15 năm, 20 giải QG" /></VCT_Field>
                     <VCT_Field label="Ghi chú"><VCT_Input value={form.ghi_chu} onChange={(e: any) => setForm({ ...form, ghi_chu: e.target.value })} /></VCT_Field>

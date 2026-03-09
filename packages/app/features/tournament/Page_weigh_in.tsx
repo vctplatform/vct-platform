@@ -73,17 +73,17 @@ export const Page_weigh_in = () => {
     };
 
     return (
-        <div style={{ maxWidth: 1400, margin: '0 auto', paddingBottom: 100 }}>
+        <div className="mx-auto max-w-[1400px] pb-24">
             <VCT_Toast isVisible={toast.show} message={toast.msg} type={toast.type} onClose={hideToast} />
 
             {uiState.error && (
-                <div style={{ marginBottom: 16, padding: '12px 14px', borderRadius: 12, border: '1px solid rgba(239,68,68,0.25)', background: 'rgba(239,68,68,0.08)', color: '#ef4444', fontSize: 13, fontWeight: 700 }}>
+                <div className="mb-4 rounded-xl border border-red-500/25 bg-red-500/[0.08] px-3.5 py-3 text-[13px] font-bold text-red-500">
                     Không thể tải dữ liệu cân ký: {uiState.error}
                 </div>
             )}
 
             {/* KPI Row */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 16, marginBottom: 24 }}>
+            <div className="vct-stagger mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-5">
                 <VCT_KpiCard label="Tổng VĐV cần cân" value={records.length} icon={<VCT_Icons.Activity size={24} />} color="#0ea5e9" />
                 <VCT_KpiCard label="Đã cân" value={daCan} icon={<VCT_Icons.Check size={24} />} color="#10b981" sub={`${Math.round((daCan / Math.max(1, records.length)) * 100)}% hoàn thành`} />
                 <VCT_KpiCard label="Đạt cân" value={records.filter(r => r.ket_qua === 'dat').length} icon={<VCT_Icons.Check size={24} />} color="#22d3ee" />
@@ -92,13 +92,13 @@ export const Page_weigh_in = () => {
             </div>
 
             {/* Progress */}
-            <div style={{ marginBottom: 20 }}>
-                <div style={{ fontSize: 12, fontWeight: 700, opacity: 0.6, marginBottom: 6 }}>TIẾN ĐỘ CÂN KÝ</div>
+            <div className="mb-5">
+                <div className="mb-1.5 text-xs font-bold opacity-60">TIẾN ĐỘ CÂN KÝ</div>
                 <VCT_ProgressBar value={daCan} max={records.length} showLabel height={8} />
             </div>
 
             {/* Stats Row: Donut + By Đoàn */}
-            <div style={{ display: 'grid', gridTemplateColumns: '240px 1fr', gap: 20, marginBottom: 24 }}>
+            <div className="mb-6 grid grid-cols-1 gap-5 lg:grid-cols-[240px_1fr]">
                 {/* Donut Chart */}
                 <div style={{ padding: 16, borderRadius: 14, background: 'var(--vct-bg-glass)', border: '1px solid var(--vct-border-subtle)', textAlign: 'center' }}>
                     <div style={{ fontSize: 11, fontWeight: 800, textTransform: 'uppercase', opacity: 0.4, marginBottom: 8 }}>Tỷ lệ cân ký</div>
@@ -165,9 +165,9 @@ export const Page_weigh_in = () => {
             <VCT_FilterChips filters={activeFilters} onRemove={k => { if (k === 'status') setStatusFilter(null); if (k === 'search') setSearch(''); }} onClearAll={() => { setStatusFilter(null); setSearch(''); }} />
 
             {/* Toolbar */}
-            <VCT_Stack direction="row" gap={16} align="center" style={{ marginBottom: 20 }}>
-                <div style={{ flex: '1 1 250px', minWidth: 200 }}><VCT_SearchInput value={search} onChange={setSearch} onClear={() => setSearch('')} placeholder="Tìm VĐV, đoàn..." /></div>
-                <div style={{ flex: '0 0 auto' }}>
+            <VCT_Stack direction="row" gap={16} align="center" className="mb-5">
+                <div className="min-w-[200px] flex-[1_1_250px]"><VCT_SearchInput value={search} onChange={setSearch} onClear={() => setSearch('')} placeholder="Tìm VĐV, đoàn..." /></div>
+                <div className="flex-none">
                     <VCT_Button variant="secondary" icon={<VCT_Icons.Printer size={16} />} onClick={() => window.print()}>In danh sách Cân Ký & Bốc thăm</VCT_Button>
                 </div>
             </VCT_Stack>
@@ -210,11 +210,11 @@ export const Page_weigh_in = () => {
                     <tbody>
                         {filtered.map((r, i) => (
                             <tr key={r.id}>
-                                <td style={{ textAlign: 'center' }}>{i + 1}</td>
+                                <td className="text-center">{i + 1}</td>
                                 <td>{r.doan_ten}</td>
                                 <td style={{ fontWeight: 'bold' }}>{r.vdv_ten}</td>
-                                <td style={{ textAlign: 'center' }}>{r.gioi === 'nam' ? 'Nam' : 'Nữ'}</td>
-                                <td style={{ textAlign: 'center' }}>{r.can_tu}-{r.can_den}kg</td>
+                                <td className="text-center">{r.gioi === 'nam' ? 'Nam' : 'Nữ'}</td>
+                                <td className="text-center">{r.can_tu}-{r.can_den}kg</td>
                                 <td></td>
                                 <td></td>
                                 <td></td>
@@ -223,11 +223,11 @@ export const Page_weigh_in = () => {
                     </tbody>
                 </table>
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 40, padding: '0 50px' }}>
-                    <div style={{ textAlign: 'center' }}>
+                    <div className="text-center">
                         <p style={{ fontWeight: 'bold' }}>BAN TỔ CHỨC</p>
                         <p style={{ fontStyle: 'italic', fontSize: 12 }}>(Ký và ghi rõ họ tên)</p>
                     </div>
-                    <div style={{ textAlign: 'center' }}>
+                    <div className="text-center">
                         <p style={{ fontWeight: 'bold' }}>TRƯỞNG BAN TRỌNG TÀI</p>
                         <p style={{ fontStyle: 'italic', fontSize: 12 }}>(Ký và ghi rõ họ tên)</p>
                     </div>
@@ -238,12 +238,12 @@ export const Page_weigh_in = () => {
             {filtered.length === 0 ? (
                 <VCT_EmptyState title="Không tìm thấy" description="Thử thay đổi bộ lọc." icon="⚖️" />
             ) : (
-                <div style={{ borderRadius: 16, border: '1px solid var(--vct-border-subtle)', overflow: 'hidden', background: 'var(--vct-bg-glass)' }}>
-                    <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                <div className="overflow-hidden rounded-2xl border border-[var(--vct-border-subtle)] bg-[var(--vct-bg-glass)]">
+                    <table className="w-full border-collapse">
                         <thead>
-                            <tr style={{ borderBottom: '1px solid var(--vct-border-strong)', background: 'var(--vct-bg-card)' }}>
+                            <tr className="border-b border-[var(--vct-border-strong)] bg-[var(--vct-bg-card)]">
                                 {['VĐV', 'Đoàn', 'Giới', 'Hạng cân ĐK', 'Cân thực tế', 'Kết quả', 'Thời gian', 'Ghi chú', ''].map((h, i) => (
-                                    <th key={i} style={{ padding: '12px 16px', textAlign: 'left', fontSize: 11, fontWeight: 700, textTransform: 'uppercase', opacity: 0.5 }}>{h}</th>
+                                    <th key={i} className="px-4 py-3 text-left text-[11px] font-bold uppercase opacity-50">{h}</th>
                                 ))}
                             </tr>
                         </thead>
@@ -253,7 +253,7 @@ export const Page_weigh_in = () => {
                                 const isOverweight = r.ket_qua === 'khong_dat';
                                 return (
                                     <tr key={r.id} style={{ borderBottom: '1px solid var(--vct-border-subtle)', borderLeft: `3px solid ${kq.color}`, background: isOverweight ? 'rgba(239, 68, 68, 0.03)' : idx % 2 === 0 ? 'transparent' : 'rgba(128,128,128,0.02)' }}>
-                                        <td style={{ padding: '12px 16px' }}>
+                                        <td className="px-4 py-3">
                                             <VCT_Stack direction="row" gap={8} align="center">
                                                 <VCT_AvatarLetter name={r.vdv_ten} size={28} />
                                                 <span style={{ fontWeight: 700, fontSize: 13 }}>{r.vdv_ten}</span>
@@ -261,16 +261,16 @@ export const Page_weigh_in = () => {
                                         </td>
                                         <td style={{ padding: '12px 16px', fontSize: 13 }}>{r.doan_ten}</td>
                                         <td style={{ padding: '12px 16px', fontSize: 13 }}>{r.gioi === 'nam' ? '♂' : '♀'}</td>
-                                        <td style={{ padding: '12px 16px' }}><span style={{ fontWeight: 700, fontSize: 13, fontFamily: 'monospace' }}>{r.can_tu}-{r.can_den}kg</span></td>
-                                        <td style={{ padding: '12px 16px' }}>
+                                        <td className="px-4 py-3"><span style={{ fontWeight: 700, fontSize: 13, fontFamily: 'monospace' }}>{r.can_tu}-{r.can_den}kg</span></td>
+                                        <td className="px-4 py-3">
                                             {r.can_thuc_te > 0 ? (
                                                 <span style={{ fontWeight: 900, fontSize: 16, color: isOverweight ? '#ef4444' : '#10b981', fontFamily: 'monospace' }}>{r.can_thuc_te}kg</span>
                                             ) : <span style={{ opacity: 0.3, fontSize: 13 }}>—</span>}
                                         </td>
-                                        <td style={{ padding: '12px 16px' }}><VCT_Badge text={kq.label} type={kq.type} pulse={r.ket_qua === 'cho_can'} /></td>
+                                        <td className="px-4 py-3"><VCT_Badge text={kq.label} type={kq.type} pulse={r.ket_qua === 'cho_can'} /></td>
                                         <td style={{ padding: '12px 16px', fontSize: 11, fontFamily: 'monospace', opacity: 0.6 }}>{r.thoi_gian || '—'}</td>
                                         <td style={{ padding: '12px 16px', fontSize: 12, color: isOverweight ? '#ef4444' : 'inherit', fontWeight: isOverweight ? 700 : 400 }}>{r.ghi_chu || '—'}</td>
-                                        <td style={{ padding: '12px 16px' }}>
+                                        <td className="px-4 py-3">
                                             <VCT_Button variant={r.ket_qua === 'cho_can' ? 'primary' : 'secondary'} onClick={() => openWeigh(r)} style={{ padding: '4px 12px', fontSize: 11 }}>
                                                 {r.ket_qua === 'cho_can' ? '⚖️ Cân' : '🔄 Cân lại'}
                                             </VCT_Button>
@@ -280,7 +280,7 @@ export const Page_weigh_in = () => {
                             })}
                         </tbody>
                     </table>
-                    <div style={{ padding: '10px 16px', borderTop: '2px solid var(--vct-border-strong)', background: 'var(--vct-bg-card)', display: 'flex', gap: 24, fontSize: 12, fontWeight: 700, opacity: 0.6 }}>
+                    <div className="flex gap-6 border-t-2 border-[var(--vct-border-strong)] bg-[var(--vct-bg-card)] px-4 py-2.5 text-xs font-bold opacity-60">
                         <span>Hiện {filtered.length}/{records.length}</span>
                         <span>♂ {filtered.filter(r => r.gioi === 'nam').length} — ♀ {filtered.filter(r => r.gioi === 'nu').length}</span>
                     </div>
@@ -297,7 +297,7 @@ export const Page_weigh_in = () => {
                             <VCT_AvatarLetter name={weighModal.vdv_ten} size={40} />
                             <div>
                                 <div style={{ fontWeight: 800, fontSize: 15 }}>{weighModal.vdv_ten}</div>
-                                <div style={{ fontSize: 12, opacity: 0.6 }}>{weighModal.doan_ten} • {weighModal.gioi === 'nam' ? '♂ Nam' : '♀ Nữ'}</div>
+                                <div className="text-xs opacity-60">{weighModal.doan_ten} • {weighModal.gioi === 'nam' ? '♂ Nam' : '♀ Nữ'}</div>
                             </div>
                         </div>
                         <div style={{ padding: 16, borderRadius: 12, background: 'var(--vct-bg-elevated)', textAlign: 'center' }}>

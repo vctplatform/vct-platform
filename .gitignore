@@ -81,3 +81,11 @@ test-results/
 !.yarn/releases
 !.yarn/sdks
 !.yarn/versions
+
+ts_errors*.txt
+tsc.log
+tsc_utf8.log
+ts_errors_final.txt
+*.ps1
+tsconfig.base.json
+start.log

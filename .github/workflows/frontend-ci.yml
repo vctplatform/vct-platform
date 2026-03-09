@@ -15,7 +15,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: 20
           cache: npm
 
       - name: Install dependencies
@@ -29,6 +29,9 @@ jobs:
 
       - name: Tests
         run: npm run test
+
+      - name: Authz contract check
+        run: npm run authz:check
 
       - name: Build web
         run: npm run build

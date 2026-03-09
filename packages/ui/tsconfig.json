@@ -1,0 +1,26 @@
+{
+    "compilerOptions": {
+        "target": "ES2022",
+        "module": "ESNext",
+        "moduleResolution": "bundler",
+        "strict": true,
+        "jsx": "react-jsx",
+        "declaration": true,
+        "declarationMap": true,
+        "sourceMap": true,
+        "esModuleInterop": true,
+        "skipLibCheck": true,
+        "forceConsistentCasingInFileNames": true,
+        "noEmit": true
+    },
+    "include": [
+        "src/**/*.ts",
+        "src/**/*.tsx",
+        "../app/features/components/**/*.ts",
+        "../app/features/components/**/*.tsx"
+    ],
+    "exclude": [
+        "node_modules",
+        "dist"
+    ]
+}

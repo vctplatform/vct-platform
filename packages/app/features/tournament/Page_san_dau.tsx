@@ -208,11 +208,11 @@ export const Page_san_dau = () => {
     };
 
     return (
-        <div style={{ maxWidth: '1400px', margin: '0 auto', paddingBottom: '100px' }}>
+        <div className="mx-auto max-w-[1400px] pb-24">
             <VCT_Toast isVisible={toast.show} message={toast.msg} type={toast.type} onClose={hideToast} />
 
             {/* ── KPI HEADER ── */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px', marginBottom: '24px' }}>
+            <div className="vct-stagger mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
                 <VCT_KpiCard label="Tổng Sàn Đấu" value={arenas.length} icon={<VCT_Icons.Columns size={24} />} color="#0ea5e9" />
                 <VCT_KpiCard label="Đang thi đấu (LIVE)" value={liveArenas} icon={<VCT_Icons.Activity size={24} />} color="#ef4444" sub="Có nhịp tim" />
                 <VCT_KpiCard label="Tổng trận hôm nay" value={totalMatches} icon={<VCT_Icons.List size={24} />} color="#8b5cf6" sub={`Đã xong: ${totalDone}`} />
@@ -231,7 +231,7 @@ export const Page_san_dau = () => {
             {/* ── FILTERS ── */}
             <VCT_Card style={{ marginBottom: '24px', padding: '16px' }}>
                 <VCT_Stack direction="row" gap={16} align="center">
-                    <div style={{ flex: 1 }}>
+                    <div className="flex-1">
                         <VCT_SearchInput
                             placeholder="Tìm kiếm sàn đấu, vị trí..."
                             value={searchQuery}
@@ -266,7 +266,7 @@ export const Page_san_dau = () => {
 
             {/* ── ARENA GRID ── */}
             {uiState.error && (
-                <div style={{ marginBottom: 16, padding: '12px 14px', borderRadius: 12, border: '1px solid rgba(239,68,68,0.25)', background: 'rgba(239,68,68,0.08)', color: '#ef4444', fontSize: 13, fontWeight: 700 }}>
+                <div className="mb-4 rounded-xl border border-red-500/25 bg-red-500/[0.08] px-3.5 py-3 text-[13px] font-bold text-red-500">
                     Không thể tải dữ liệu sàn đấu: {uiState.error}
                 </div>
             )}
@@ -316,7 +316,7 @@ export const Page_san_dau = () => {
 
                                 {/* PROGRESS HUB */}
                                 <VCT_Stack direction="row" gap={12} style={{ marginBottom: '16px', background: 'var(--vct-bg-elevated)', padding: '12px', borderRadius: '12px', border: '1px solid var(--vct-border-subtle)' }}>
-                                    <div style={{ flex: 1 }}>
+                                    <div className="flex-1">
                                         <VCT_Text variant="small" style={{ opacity: 0.5, fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Tiến độ</VCT_Text>
                                         <div style={{ fontSize: '16px', fontWeight: 800 }}>{arena.done_today}/{arena.total_today} <span style={{ fontSize: '11px', fontWeight: 500, opacity: 0.5 }}>trận</span></div>
                                         <div style={{ height: 4, background: 'var(--vct-border-subtle)', borderRadius: 2, marginTop: 4, overflow: 'hidden' }}>
@@ -324,7 +324,7 @@ export const Page_san_dau = () => {
                                         </div>
                                     </div>
                                     <VCT_Divider vertical />
-                                    <div style={{ flex: 1 }}>
+                                    <div className="flex-1">
                                         <VCT_Text variant="small" style={{ opacity: 0.5, fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Đợi sân</VCT_Text>
                                         <div style={{ fontSize: '16px', fontWeight: 800 }}>{arena.queue.length} <span style={{ fontSize: '11px', fontWeight: 500, opacity: 0.5 }}>trận</span></div>
                                     </div>
@@ -399,7 +399,7 @@ export const Page_san_dau = () => {
                                 )}
 
                                 {/* ACTION BUTTONS */}
-                                <VCT_Stack direction="row" gap={8} style={{ marginTop: 16 }}>
+                                <VCT_Stack direction="row" gap={8} className="mt-4">
                                     <VCT_Button variant="secondary" onClick={() => openEditArena(arena)} style={{ width: 40, padding: 0, flexShrink: 0 }} title="Sửa thông tin sàn">
                                         <VCT_Icons.Edit size={16} />
                                     </VCT_Button>
@@ -430,7 +430,7 @@ export const Page_san_dau = () => {
                                                     <div style={{ fontSize: 11, opacity: 0.5, fontWeight: 700, marginBottom: 8, textTransform: 'uppercase' }}>Thông tin phụ trách</div>
                                                     <div style={{ fontSize: 13, fontWeight: 700 }}>{arena.phu_trach} <span style={{ opacity: 0.5 }}>({arena.phu_trach_sdt})</span></div>
                                                     <div style={{ fontSize: 13, marginTop: 8 }}>Trọng tài: <span style={{ fontWeight: 600 }}>{arena.trong_tai.length} người</span></div>
-                                                    <div style={{ marginTop: 16 }}>
+                                                    <div className="mt-4">
                                                         <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, marginBottom: 4, fontWeight: 600 }}>
                                                             <span>Tiến độ trận ({arena.done_today}/{arena.total_today})</span>
                                                             <span style={{ color: 'var(--vct-accent-cyan)' }}>{Math.round((arena.done_today / Math.max(1, arena.total_today)) * 100)}%</span>
@@ -456,7 +456,7 @@ export const Page_san_dau = () => {
                                             </div>
 
                                             {/* HOẠT ĐỘNG (TIMELINE) */}
-                                            <div style={{ marginTop: 24 }}>
+                                            <div className="mt-6">
                                                 <div style={{ fontSize: 11, opacity: 0.5, fontWeight: 700, marginBottom: 8, textTransform: 'uppercase' }}>Lịch sử hoạt động</div>
                                                 <VCT_Stack gap={6}>
                                                     {arena.history.length === 0 ? <div style={{ fontSize: 13, opacity: 0.5 }}>Chưa có hoạt động</div> :

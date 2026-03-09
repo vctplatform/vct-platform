@@ -13,6 +13,8 @@ import { getVDVsByDoan, genId } from '../data/mock-data';
 import { TOURNAMENT_CONFIG } from '../data/tournament-config';
 import { TRANG_THAI_DOAN_MAP, DOC_CHECKLIST, type DonVi, type TrangThaiDoan } from '../data/types';
 import { repositories, useEntityCollection } from '../data/repository';
+import { useAuth } from '../auth/AuthProvider';
+import { canPerformRouteAction } from '../layout/route-registry';
 
 // ════════════════════════════════════════
 // STATUS PIPELINE CONFIG
@@ -54,16 +56,16 @@ const ExpandPanel = ({ team, onDocToggle, onStatusChange }: { team: DonVi; onDoc
 
             {tab === 'info' && (
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 16 }}>
-                    <div><span style={{ fontSize: 11, opacity: 0.5 }}>Loại</span><div style={{ fontWeight: 700, fontSize: 13 }}>{team.loai === 'doan_tinh' ? 'Đoàn tỉnh/TP' : team.loai === 'clb' ? 'CLB' : 'Cá nhân'}</div></div>
-                    <div><span style={{ fontSize: 11, opacity: 0.5 }}>Tỉnh/TP</span><div style={{ fontWeight: 700, fontSize: 13 }}>{team.tinh}</div></div>
-                    <div><span style={{ fontSize: 11, opacity: 0.5 }}>Trưởng đoàn</span><div style={{ fontWeight: 700, fontSize: 13 }}>{team.truong_doan}</div></div>
-                    <div><span style={{ fontSize: 11, opacity: 0.5 }}>SĐT</span><div style={{ fontWeight: 700, fontSize: 13 }}>{team.sdt}</div></div>
-                    <div><span style={{ fontSize: 11, opacity: 0.5 }}>Email</span><div style={{ fontWeight: 700, fontSize: 13 }}>{team.email}</div></div>
-                    <div><span style={{ fontSize: 11, opacity: 0.5 }}>Địa chỉ</span><div style={{ fontWeight: 700, fontSize: 13 }}>{team.dia_chi}</div></div>
-                    <div><span style={{ fontSize: 11, opacity: 0.5 }}>VĐV</span><div style={{ fontWeight: 700, fontSize: 13 }}>{team.so_vdv} <span style={{ opacity: 0.5 }}>({team.nam}♂ {team.nu}♀)</span></div></div>
-                    <div><span style={{ fontSize: 11, opacity: 0.5 }}>HLV</span><div style={{ fontWeight: 700, fontSize: 13 }}>{team.hlv}</div></div>
-                    <div><span style={{ fontSize: 11, opacity: 0.5 }}>Thành tích</span><div style={{ fontWeight: 700, fontSize: 13 }}>{team.thanh_tich || '—'}</div></div>
-                    {team.ghi_chu && <div style={{ gridColumn: '1 / -1' }}><span style={{ fontSize: 11, opacity: 0.5 }}>Ghi chú</span><div style={{ fontWeight: 600, fontSize: 13, color: '#f59e0b' }}>{team.ghi_chu}</div></div>}
+                    <div><span className="text-[11px] opacity-50">Loại</span><div style={{ fontWeight: 700, fontSize: 13 }}>{team.loai === 'doan_tinh' ? 'Đoàn tỉnh/TP' : team.loai === 'clb' ? 'CLB' : 'Cá nhân'}</div></div>
+                    <div><span className="text-[11px] opacity-50">Tỉnh/TP</span><div style={{ fontWeight: 700, fontSize: 13 }}>{team.tinh}</div></div>
+                    <div><span className="text-[11px] opacity-50">Trưởng đoàn</span><div style={{ fontWeight: 700, fontSize: 13 }}>{team.truong_doan}</div></div>
+                    <div><span className="text-[11px] opacity-50">SĐT</span><div style={{ fontWeight: 700, fontSize: 13 }}>{team.sdt}</div></div>
+                    <div><span className="text-[11px] opacity-50">Email</span><div style={{ fontWeight: 700, fontSize: 13 }}>{team.email}</div></div>
+                    <div><span className="text-[11px] opacity-50">Địa chỉ</span><div style={{ fontWeight: 700, fontSize: 13 }}>{team.dia_chi}</div></div>
+                    <div><span className="text-[11px] opacity-50">VĐV</span><div style={{ fontWeight: 700, fontSize: 13 }}>{team.so_vdv} <span style={{ opacity: 0.5 }}>({team.nam}♂ {team.nu}♀)</span></div></div>
+                    <div><span className="text-[11px] opacity-50">HLV</span><div style={{ fontWeight: 700, fontSize: 13 }}>{team.hlv}</div></div>
+                    <div><span className="text-[11px] opacity-50">Thành tích</span><div style={{ fontWeight: 700, fontSize: 13 }}>{team.thanh_tich || '—'}</div></div>
+                    {team.ghi_chu && <div style={{ gridColumn: '1 / -1' }}><span className="text-[11px] opacity-50">Ghi chú</span><div style={{ fontWeight: 600, fontSize: 13, color: '#f59e0b' }}>{team.ghi_chu}</div></div>}
                     <div style={{ gridColumn: '1 / -1' }}>
                         <span style={{ fontSize: 11, opacity: 0.5, marginBottom: 4, display: 'block' }}>Chuyển trạng thái</span>
                         <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
@@ -96,15 +98,15 @@ const ExpandPanel = ({ team, onDocToggle, onStatusChange }: { team: DonVi; onDoc
                 <div>
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 16, marginBottom: 16 }}>
                         <div style={{ padding: 16, borderRadius: 12, background: 'var(--vct-bg-elevated)', textAlign: 'center' }}>
-                            <div style={{ fontSize: 11, opacity: 0.5 }}>Tổng lệ phí</div>
+                            <div className="text-[11px] opacity-50">Tổng lệ phí</div>
                             <div style={{ fontSize: 20, fontWeight: 900, color: 'var(--vct-accent-cyan)' }}>{(team.le_phi.tong / 1000000).toFixed(1)}M</div>
                         </div>
                         <div style={{ padding: 16, borderRadius: 12, background: 'var(--vct-bg-elevated)', textAlign: 'center' }}>
-                            <div style={{ fontSize: 11, opacity: 0.5 }}>Đã đóng</div>
+                            <div className="text-[11px] opacity-50">Đã đóng</div>
                             <div style={{ fontSize: 20, fontWeight: 900, color: '#10b981' }}>{(team.le_phi.da_dong / 1000000).toFixed(1)}M</div>
                         </div>
                         <div style={{ padding: 16, borderRadius: 12, background: 'var(--vct-bg-elevated)', textAlign: 'center' }}>
-                            <div style={{ fontSize: 11, opacity: 0.5 }}>Còn thiếu</div>
+                            <div className="text-[11px] opacity-50">Còn thiếu</div>
                             <div style={{ fontSize: 20, fontWeight: 900, color: feeRemain > 0 ? '#ef4444' : '#10b981' }}>{feeRemain > 0 ? `${(feeRemain / 1000000).toFixed(1)}M` : '✓'}</div>
                         </div>
                     </div>
@@ -134,6 +136,7 @@ const ExpandPanel = ({ team, onDocToggle, onStatusChange }: { team: DonVi; onDoc
 // MAIN PAGE COMPONENT
 // ════════════════════════════════════════
 export const Page_teams = () => {
+    const { currentUser } = useAuth();
     const { items: teams, setItems: setTeamsState } = useEntityCollection(repositories.teams.mock);
     const [search, setSearch] = useState('');
     const [statusFilter, setStatusFilter] = useState<string | null>(null);
@@ -144,11 +147,24 @@ export const Page_teams = () => {
     const [editingTeam, setEditingTeam] = useState<DonVi | null>(null);
     const [deleteTarget, setDeleteTarget] = useState<DonVi | null>(null);
     const [form, setForm] = useState<any>({ ...BLANK_FORM });
+    const auditActor = currentUser.name || currentUser.role;
 
     const showToast = useCallback((msg: string, type = 'success') => {
         setToast({ show: true, msg, type });
         setTimeout(() => setToast(prev => ({ ...prev, show: false })), 3500);
     }, []);
+
+    const permissions = useMemo(() => ({
+        canCreate: canPerformRouteAction('/teams', currentUser.role, 'create'),
+        canUpdate: canPerformRouteAction('/teams', currentUser.role, 'update'),
+        canDelete: canPerformRouteAction('/teams', currentUser.role, 'delete'),
+        canApprove: canPerformRouteAction('/teams', currentUser.role, 'approve'),
+        canExport: canPerformRouteAction('/teams', currentUser.role, 'export'),
+    }), [currentUser.role]);
+
+    const showPermissionDenied = useCallback((actionLabel: string) => {
+        showToast(`Vai trò hiện tại không có quyền ${actionLabel}`, 'error');
+    }, [showToast]);
 
     const setTeams = useCallback((updater: React.SetStateAction<DonVi[]>) => {
         setTeamsState(prev => {
@@ -161,15 +177,6 @@ export const Page_teams = () => {
     }, [setTeamsState]);
 
     // Keyboard shortcut: Ctrl+N to add
-    useEffect(() => {
-        const handler = (e: KeyboardEvent) => {
-            if (e.ctrlKey && e.key === 'n') { e.preventDefault(); openAddModal(); }
-            if (e.key === 'Escape') { setShowModal(false); setDeleteTarget(null); }
-        };
-        window.addEventListener('keydown', handler);
-        return () => window.removeEventListener('keydown', handler);
-    }, []);
-
     // ── Computed ──
     const filtered = useMemo(() => {
         let data = teams;
@@ -200,20 +207,55 @@ export const Page_teams = () => {
     };
 
     // ── CRUD Operations ──
-    const openAddModal = () => { setEditingTeam(null); setForm({ ...BLANK_FORM }); setShowModal(true); };
-    const openEditModal = (team: DonVi) => { setEditingTeam(team); setForm({ ...team }); setShowModal(true); };
+    const openAddModal = useCallback(() => {
+        if (!permissions.canCreate) {
+            showPermissionDenied('thêm đơn vị');
+            return;
+        }
+        setEditingTeam(null);
+        setForm({ ...BLANK_FORM });
+        setShowModal(true);
+    }, [permissions.canCreate, showPermissionDenied]);
+
+    const openEditModal = useCallback((team: DonVi) => {
+        if (!permissions.canUpdate) {
+            showPermissionDenied('chỉnh sửa đơn vị');
+            return;
+        }
+        setEditingTeam(team);
+        setForm({ ...team });
+        setShowModal(true);
+    }, [permissions.canUpdate, showPermissionDenied]);
+
+    // Keyboard shortcut: Ctrl+N to add
+    useEffect(() => {
+        const handler = (e: KeyboardEvent) => {
+            if (e.ctrlKey && e.key === 'n') { e.preventDefault(); openAddModal(); }
+            if (e.key === 'Escape') { setShowModal(false); setDeleteTarget(null); }
+        };
+        window.addEventListener('keydown', handler);
+        return () => window.removeEventListener('keydown', handler);
+    }, [openAddModal]);
 
     const handleSave = () => {
         if (!form.ten || !form.ma) { showToast('Vui lòng nhập tên và mã đơn vị', 'error'); return; }
         if (editingTeam) {
+            if (!permissions.canUpdate) {
+                showPermissionDenied('chỉnh sửa đơn vị');
+                return;
+            }
             setTeams(prev => prev.map(t => t.id === editingTeam.id ? { ...t, ...form } : t));
             showToast(`Đã cập nhật "${form.ten}"`);
         } else {
+            if (!permissions.canCreate) {
+                showPermissionDenied('thêm đơn vị');
+                return;
+            }
             const newTeam: DonVi = {
                 ...form, id: genId('D'), so_vdv: 0, nam: 0, nu: 0, hlv: 0, nd_q: 0, nd_dk: 0,
                 trang_thai: 'nhap', le_phi: { tong: TOURNAMENT_CONFIG.le_phi.doan, da_dong: 0 },
                 docs: { 0: false, 1: false, 2: false, 3: false, 4: false, 5: false },
-                ngay_dk: new Date().toISOString().split('T')[0], audit: [{ time: new Date().toLocaleString('vi-VN'), action: 'Tạo mới', by: 'Admin' }],
+                ngay_dk: new Date().toISOString().split('T')[0], audit: [{ time: new Date().toLocaleString('vi-VN'), action: 'Tạo mới', by: auditActor }],
                 thanh_tich: '',
             };
             setTeams(prev => [newTeam, ...prev]);
@@ -223,6 +265,10 @@ export const Page_teams = () => {
     };
 
     const handleDelete = () => {
+        if (!permissions.canDelete) {
+            showPermissionDenied('xóa đơn vị');
+            return;
+        }
         if (!deleteTarget) return;
         const vdvCount = getVDVsByDoan(deleteTarget.id).length;
         if (vdvCount > 0) { showToast(`Không thể xóa! Đoàn "${deleteTarget.ten}" có ${vdvCount} VĐV`, 'error'); setDeleteTarget(null); return; }
@@ -233,20 +279,53 @@ export const Page_teams = () => {
     };
 
     const handleDocToggle = (teamId: string, docIdx: number) => {
+        if (!permissions.canUpdate) {
+            showPermissionDenied('cập nhật hồ sơ đơn vị');
+            return;
+        }
         setTeams(prev => prev.map(t => t.id === teamId ? { ...t, docs: { ...t.docs, [docIdx]: !t.docs[docIdx] } } : t));
     };
 
     const handleStatusChange = (teamId: string, status: TrangThaiDoan) => {
-        setTeams(prev => prev.map(t => t.id === teamId ? { ...t, trang_thai: status, audit: [...t.audit, { time: new Date().toLocaleString('vi-VN'), action: `Chuyển → ${TRANG_THAI_DOAN_MAP[status].label}`, by: 'Admin' }] } : t));
+        if (!permissions.canApprove) {
+            showPermissionDenied('duyệt trạng thái đơn vị');
+            return;
+        }
+        setTeams(prev => prev.map(t => t.id === teamId ? { ...t, trang_thai: status, audit: [...t.audit, { time: new Date().toLocaleString('vi-VN'), action: `Chuyển → ${TRANG_THAI_DOAN_MAP[status].label}`, by: auditActor }] } : t));
         showToast(`Đã chuyển trạng thái → ${TRANG_THAI_DOAN_MAP[status].label}`);
     };
 
     // Bulk actions
-    const bulkApprove = () => {
-        setTeams(prev => prev.map(t => selectedIds.has(t.id) ? { ...t, trang_thai: 'da_xac_nhan' as TrangThaiDoan, audit: [...t.audit, { time: new Date().toLocaleString('vi-VN'), action: 'Duyệt hàng loạt', by: 'Admin' }] } : t));
+    const bulkApprove = useCallback(() => {
+        if (!permissions.canApprove) {
+            showPermissionDenied('duyệt đơn vị');
+            return;
+        }
+        setTeams(prev => prev.map(t => selectedIds.has(t.id) ? { ...t, trang_thai: 'da_xac_nhan' as TrangThaiDoan, audit: [...t.audit, { time: new Date().toLocaleString('vi-VN'), action: 'Duyệt hàng loạt', by: auditActor }] } : t));
         showToast(`Đã duyệt ${selectedIds.size} đơn vị`);
         setSelectedIds(new Set());
-    };
+    }, [auditActor, permissions.canApprove, selectedIds, setTeams, showPermissionDenied, showToast]);
+
+    const bulkActions = useMemo(() => {
+        const actions: Array<{ label: string; icon: React.ReactNode; onClick: () => void; variant: string }> = [];
+        if (permissions.canApprove) {
+            actions.push({
+                label: 'Duyệt tất cả',
+                icon: <VCT_Icons.Check size={14} />,
+                onClick: bulkApprove,
+                variant: 'primary',
+            });
+        }
+        if (permissions.canDelete) {
+            actions.push({
+                label: 'Xóa',
+                icon: <VCT_Icons.Trash size={14} />,
+                onClick: () => showToast('Chức năng xóa hàng loạt đang phát triển', 'error'),
+                variant: 'danger',
+            });
+        }
+        return actions;
+    }, [bulkApprove, permissions.canApprove, permissions.canDelete, showToast]);
 
     // Select all/toggle
     const toggleSelect = (id: string) => setSelectedIds(prev => { const n = new Set(prev); n.has(id) ? n.delete(id) : n.add(id); return n; });
@@ -269,7 +348,7 @@ export const Page_teams = () => {
         { key: 'tinh', label: 'Tỉnh/TP' },
         {
             key: 'so_vdv', label: 'VĐV', align: 'center' as const, render: (r: DonVi) => (
-                <div style={{ textAlign: 'center' }}>
+                <div className="text-center">
                     <span style={{ fontWeight: 800, color: 'var(--vct-accent-cyan)' }}>{r.so_vdv}</span>
                     <span style={{ fontSize: 10, opacity: 0.5, marginLeft: 4 }}>/ {TOURNAMENT_CONFIG.quota.max_vdv_per_doan}</span>
                     <VCT_ProgressBar value={r.so_vdv} max={TOURNAMENT_CONFIG.quota.max_vdv_per_doan} height={3} />
@@ -279,7 +358,7 @@ export const Page_teams = () => {
         {
             key: 'docs', label: 'Hồ sơ', align: 'center' as const, render: (r: DonVi) => {
                 const done = Object.values(r.docs).filter(Boolean).length;
-                return <div style={{ textAlign: 'center' }}><span style={{ fontWeight: 700, color: done === 6 ? '#10b981' : '#f59e0b' }}>{done}/6</span></div>;
+                return <div className="text-center"><span style={{ fontWeight: 700, color: done === 6 ? '#10b981' : '#f59e0b' }}>{done}/6</span></div>;
             }
         },
         {
@@ -297,19 +376,27 @@ export const Page_teams = () => {
         {
             key: 'actions', label: '', align: 'right' as const, render: (r: DonVi) => (
                 <VCT_Stack direction="row" gap={4} justify="flex-end">
-                    <button onClick={(e: any) => { e.stopPropagation(); openEditModal(r); }} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--vct-text-tertiary)', padding: 4 }}><VCT_Icons.Edit size={14} /></button>
-                    <button onClick={(e: any) => { e.stopPropagation(); setDeleteTarget(r); }} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#ef4444', padding: 4 }}><VCT_Icons.Trash size={14} /></button>
+                    {permissions.canUpdate && (
+                        <button onClick={(e: any) => { e.stopPropagation(); openEditModal(r); }} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--vct-text-tertiary)', padding: 4 }} aria-label={`Chỉnh sửa ${r.ten}`}>
+                            <VCT_Icons.Edit size={14} />
+                        </button>
+                    )}
+                    {permissions.canDelete && (
+                        <button onClick={(e: any) => { e.stopPropagation(); setDeleteTarget(r); }} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#ef4444', padding: 4 }} aria-label={`Xóa ${r.ten}`}>
+                            <VCT_Icons.Trash size={14} />
+                        </button>
+                    )}
                 </VCT_Stack>
             )
         },
     ];
 
     return (
-        <div style={{ maxWidth: 1400, margin: '0 auto', paddingBottom: 100 }}>
+        <div className="mx-auto max-w-[1400px] pb-24">
             <VCT_Toast isVisible={toast.show} message={toast.msg} type={toast.type} onClose={() => setToast(prev => ({ ...prev, show: false }))} />
 
             {/* ── KPI ROW ── */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 16, marginBottom: 24 }}>
+            <div className="vct-stagger mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-5">
                 <VCT_KpiCard label="Tổng đơn vị" value={teams.length} icon={<VCT_Icons.Building2 size={24} />} color="#0ea5e9" sub={`Quota: ${teams.length}/${TOURNAMENT_CONFIG.quota.max_doan}`} />
                 <VCT_KpiCard label="Tổng VĐV" value={totalVdv} icon={<VCT_Icons.Users size={24} />} color="#f59e0b" sub={`${totalNam} Nam — ${totalNu} Nữ`} />
                 <VCT_KpiCard label="Đã xác nhận" value={teams.filter(t => t.trang_thai === 'da_xac_nhan' || t.trang_thai === 'da_checkin').length} icon={<VCT_Icons.Check size={24} />} color="#10b981" />
@@ -324,22 +411,22 @@ export const Page_teams = () => {
             <VCT_FilterChips filters={activeFilters} onRemove={removeFilter} onClearAll={() => { setStatusFilter(null); setSearch(''); }} />
 
             {/* ── TOOLBAR ── */}
-            <VCT_Stack direction="row" gap={16} align="center" style={{ marginBottom: 20, flexWrap: 'wrap' }}>
-                <div style={{ flex: '1 1 250px', minWidth: 200 }}>
+            <VCT_Stack direction="row" gap={16} align="center" className="mb-5 flex-wrap">
+                <div className="min-w-[200px] flex-[1_1_250px]">
                     <VCT_SearchInput value={search} onChange={setSearch} onClear={() => setSearch('')} placeholder="Tìm đơn vị, mã, tỉnh..." />
                 </div>
-                <VCT_Button icon={<VCT_Icons.Download size={16} />} variant="secondary" onClick={() => showToast('Đang xuất Excel...', 'info')}>Export</VCT_Button>
-                <VCT_Button icon={<VCT_Icons.Plus size={16} />} onClick={openAddModal}>Thêm đơn vị</VCT_Button>
+                <VCT_Button icon={<VCT_Icons.Download size={16} />} variant="secondary" onClick={() => permissions.canExport ? showToast('Đang xuất Excel...', 'info') : showPermissionDenied('xuất danh sách đơn vị')} disabled={!permissions.canExport}>Export</VCT_Button>
+                <VCT_Button icon={<VCT_Icons.Plus size={16} />} onClick={openAddModal} disabled={!permissions.canCreate}>Thêm đơn vị</VCT_Button>
             </VCT_Stack>
 
             {/* ── TABLE ── */}
             {filtered.length === 0 ? (
                 <VCT_EmptyState title="Không tìm thấy đơn vị" description={search || statusFilter ? 'Thử thay đổi bộ lọc hoặc từ khóa tìm kiếm.' : 'Chưa có đơn vị nào. Bấm "Thêm đơn vị" để bắt đầu.'} actionLabel="Thêm đơn vị" onAction={openAddModal} icon="🏢" />
             ) : (
-                <div style={{ borderRadius: 16, border: '1px solid var(--vct-border-subtle)', overflow: 'hidden', background: 'var(--vct-bg-glass)' }}>
-                    <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                <div className="overflow-hidden rounded-2xl border border-[var(--vct-border-subtle)] bg-[var(--vct-bg-glass)]">
+                    <table className="w-full border-collapse">
                         <thead>
-                            <tr style={{ borderBottom: '1px solid var(--vct-border-strong)', background: 'var(--vct-bg-card)' }}>
+                            <tr className="border-b border-[var(--vct-border-strong)] bg-[var(--vct-bg-card)]">
                                 {columns.map((col, i) => (
                                     <th key={i} style={{ padding: '14px 16px', textAlign: (col.align || 'left') as any, fontSize: 11, fontWeight: 700, textTransform: 'uppercase', opacity: 0.5, position: 'sticky', top: 0, background: 'var(--vct-bg-card)', zIndex: 2 }}>
                                         {col.label}
@@ -377,7 +464,7 @@ export const Page_teams = () => {
                         </tbody>
                     </table>
                     {/* Summary footer */}
-                    <div style={{ padding: '12px 16px', borderTop: '2px solid var(--vct-border-strong)', background: 'var(--vct-bg-card)', display: 'flex', gap: 24, fontSize: 12, fontWeight: 700, opacity: 0.6 }}>
+                    <div className="flex gap-6 border-t-2 border-[var(--vct-border-strong)] bg-[var(--vct-bg-card)] px-4 py-3 text-xs font-bold opacity-60">
                         <span>Hiện {filtered.length}/{teams.length} đơn vị</span>
                         <span>Tổng VĐV: {filtered.reduce((s, t) => s + t.so_vdv, 0)}</span>
                         <span>♂ {filtered.reduce((s, t) => s + t.nam, 0)} — ♀ {filtered.reduce((s, t) => s + t.nu, 0)}</span>
@@ -387,10 +474,7 @@ export const Page_teams = () => {
 
             {/* ── BULK ACTIONS ── */}
             <AnimatePresence>
-                <VCT_BulkActionsBar count={selectedIds.size} onClearSelection={() => setSelectedIds(new Set())} actions={[
-                    { label: 'Duyệt tất cả', icon: <VCT_Icons.Check size={14} />, onClick: bulkApprove, variant: 'primary' },
-                    { label: 'Xóa', icon: <VCT_Icons.Trash size={14} />, onClick: () => showToast('Chức năng xóa hàng loạt đang phát triển', 'error'), variant: 'danger' },
-                ]} />
+                <VCT_BulkActionsBar count={selectedIds.size} onClearSelection={() => setSelectedIds(new Set())} actions={bulkActions} />
             </AnimatePresence>
 
             {/* ── ADD/EDIT MODAL ── */}
@@ -403,20 +487,20 @@ export const Page_teams = () => {
                 <VCT_Stack gap={16}>
                     <VCT_Field label="Tên đơn vị *"><VCT_Input value={form.ten} onChange={(e: any) => setForm({ ...form, ten: e.target.value })} placeholder="VD: CLB Võ cổ truyền Bình Định" /></VCT_Field>
                     <VCT_Stack direction="row" gap={16}>
-                        <VCT_Field label="Mã đơn vị *" style={{ flex: 1 }}><VCT_Input value={form.ma} onChange={(e: any) => setForm({ ...form, ma: e.target.value })} placeholder="VD: BD-001" /></VCT_Field>
-                        <VCT_Field label="Viết tắt" style={{ flex: 1 }}><VCT_Input value={form.tat} onChange={(e: any) => setForm({ ...form, tat: e.target.value })} placeholder="VD: BĐ" /></VCT_Field>
+                        <VCT_Field label="Mã đơn vị *" className="flex-1"><VCT_Input value={form.ma} onChange={(e: any) => setForm({ ...form, ma: e.target.value })} placeholder="VD: BD-001" /></VCT_Field>
+                        <VCT_Field label="Viết tắt" className="flex-1"><VCT_Input value={form.tat} onChange={(e: any) => setForm({ ...form, tat: e.target.value })} placeholder="VD: BĐ" /></VCT_Field>
                     </VCT_Stack>
                     <VCT_Stack direction="row" gap={16}>
-                        <VCT_Field label="Loại" style={{ flex: 1 }}><VCT_Select options={[{ value: 'doan_tinh', label: 'Đoàn tỉnh/TP' }, { value: 'clb', label: 'Câu lạc bộ' }, { value: 'ca_nhan', label: 'Cá nhân' }]} value={form.loai} onChange={(v: any) => setForm({ ...form, loai: v })} /></VCT_Field>
-                        <VCT_Field label="Tỉnh / TP" style={{ flex: 1 }}><VCT_Input value={form.tinh} onChange={(e: any) => setForm({ ...form, tinh: e.target.value })} placeholder="VD: Bình Định" /></VCT_Field>
+                        <VCT_Field label="Loại" className="flex-1"><VCT_Select options={[{ value: 'doan_tinh', label: 'Đoàn tỉnh/TP' }, { value: 'clb', label: 'Câu lạc bộ' }, { value: 'ca_nhan', label: 'Cá nhân' }]} value={form.loai} onChange={(v: any) => setForm({ ...form, loai: v })} /></VCT_Field>
+                        <VCT_Field label="Tỉnh / TP" className="flex-1"><VCT_Input value={form.tinh} onChange={(e: any) => setForm({ ...form, tinh: e.target.value })} placeholder="VD: Bình Định" /></VCT_Field>
                     </VCT_Stack>
                     <VCT_Stack direction="row" gap={16}>
-                        <VCT_Field label="Trưởng đoàn" style={{ flex: 1 }}><VCT_Input value={form.truong_doan} onChange={(e: any) => setForm({ ...form, truong_doan: e.target.value })} placeholder="Họ và tên" /></VCT_Field>
-                        <VCT_Field label="Số điện thoại" style={{ flex: 1 }}><VCT_Input value={form.sdt} onChange={(e: any) => setForm({ ...form, sdt: e.target.value })} placeholder="0901 234 567" /></VCT_Field>
+                        <VCT_Field label="Trưởng đoàn" className="flex-1"><VCT_Input value={form.truong_doan} onChange={(e: any) => setForm({ ...form, truong_doan: e.target.value })} placeholder="Họ và tên" /></VCT_Field>
+                        <VCT_Field label="Số điện thoại" className="flex-1"><VCT_Input value={form.sdt} onChange={(e: any) => setForm({ ...form, sdt: e.target.value })} placeholder="0901 234 567" /></VCT_Field>
                     </VCT_Stack>
                     <VCT_Stack direction="row" gap={16}>
-                        <VCT_Field label="Email" style={{ flex: 1 }}><VCT_Input value={form.email} onChange={(e: any) => setForm({ ...form, email: e.target.value })} placeholder="email@example.com" /></VCT_Field>
-                        <VCT_Field label="Địa chỉ" style={{ flex: 1 }}><VCT_Input value={form.dia_chi} onChange={(e: any) => setForm({ ...form, dia_chi: e.target.value })} placeholder="Địa chỉ liên hệ" /></VCT_Field>
+                        <VCT_Field label="Email" className="flex-1"><VCT_Input value={form.email} onChange={(e: any) => setForm({ ...form, email: e.target.value })} placeholder="email@example.com" /></VCT_Field>
+                        <VCT_Field label="Địa chỉ" className="flex-1"><VCT_Input value={form.dia_chi} onChange={(e: any) => setForm({ ...form, dia_chi: e.target.value })} placeholder="Địa chỉ liên hệ" /></VCT_Field>
                     </VCT_Stack>
                     <VCT_Field label="Ghi chú"><VCT_Input value={form.ghi_chu} onChange={(e: any) => setForm({ ...form, ghi_chu: e.target.value })} placeholder="Ghi chú (tùy chọn)" /></VCT_Field>
                 </VCT_Stack>

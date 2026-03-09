@@ -1,2 +1,0 @@
-../../packages/app/features/tournament/Page_appeals.tsx(26,137): error TS2353: Object literal may only specify known properties, and 'ghi_chu' does not exist in type 'Partial<KhieuNai>'.
-../../packages/app/features/tournament/Page_teams.tsx(348,84): error TS2554: Expected 1 arguments, but got 2.

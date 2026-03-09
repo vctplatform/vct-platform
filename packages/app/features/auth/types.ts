@@ -1,9 +1,6 @@
-export type UserRole =
-  | 'admin'
-  | 'btc'
-  | 'referee_manager'
-  | 'referee'
-  | 'delegate'
+import type { EntityAuthzRole } from './entity-authz.generated'
+
+export type UserRole = EntityAuthzRole
 
 export interface AuthUser {
   id: string

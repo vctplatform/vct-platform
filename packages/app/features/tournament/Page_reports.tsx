@@ -209,7 +209,7 @@ export const Page_reports = () => {
   }
 
   return (
-    <div style={{ maxWidth: 1400, margin: '0 auto', paddingBottom: 100 }}>
+    <div className="mx-auto max-w-[1400px] pb-24">
       <VCT_Toast
         isVisible={toast.show}
         message={toast.msg}
@@ -234,8 +234,8 @@ export const Page_reports = () => {
         </div>
       )}
 
-      <VCT_Stack direction="row" gap={16} align="center" style={{ marginBottom: 24 }}>
-        <div style={{ flex: 1 }}>
+      <VCT_Stack direction="row" gap={16} align="center" className="mb-6">
+        <div className="flex-1">
           <div
             style={{
               fontSize: 12,

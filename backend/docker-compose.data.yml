@@ -1,0 +1,51 @@
+services:
+  postgres:
+    image: postgres:18-alpine
+    container_name: vct-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: vct
+      POSTGRES_USER: vct
+      POSTGRES_PASSWORD: vct
+      TZ: Asia/Ho_Chi_Minh
+    ports:
+      - '5432:5432'
+    volumes:
+      - vct-postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U vct -d vct']
+      interval: 10s
+      timeout: 5s
+      retries: 6
+
+  redis:
+    image: redis:7-alpine
+    container_name: vct-redis
+    restart: unless-stopped
+    command: ['redis-server', '--appendonly', 'yes']
+    ports:
+      - '6379:6379'
+    volumes:
+      - vct-redis-data:/data
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 10s
+      timeout: 5s
+      retries: 6
+
+  pgadmin:
+    image: dpage/pgadmin4:9.3
+    container_name: vct-pgadmin
+    restart: unless-stopped
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@vct.local
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - '5050:80'
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+volumes:
+  vct-postgres-data:
+  vct-redis-data:

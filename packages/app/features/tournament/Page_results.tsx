@@ -12,6 +12,7 @@ import { TRAN_DAUS, LUOT_THI_QUYENS, genId } from '../data/mock-data';
 import type { VongDau } from '../data/types';
 import { repositories, useEntityCollection, type ResultRecord } from '../data/repository';
 import { downloadRowsAsExcel, downloadTextFile, openPrintWindow, rowsToCsv } from '../data/export-utils';
+import { useRouteActionGuard } from '../hooks/use-route-action-guard';
 
 interface KetQuaItem extends ResultRecord {}
 
@@ -59,6 +60,13 @@ export const Page_results = () => {
     const { items: extraResults, setItems: setExtraResultsState } = useEntityCollection(repositories.results.mock);
 
     const showToast = useCallback((msg: string, type = 'success') => { setToast({ show: true, msg, type }); setTimeout(() => setToast(p => ({ ...p, show: false })), 3500); }, []);
+    const { can, requireAction } = useRouteActionGuard('/results', {
+        notifyDenied: (message) => showToast(message, 'error')
+    });
+    const permissions = useMemo(() => ({
+        canCreate: can('create'),
+        canExport: can('export'),
+    }), [can]);
 
     const setExtraResults = useCallback((updater: React.SetStateAction<KetQuaItem[]>) => {
         setExtraResultsState(prev => {
@@ -91,6 +99,7 @@ export const Page_results = () => {
     }, [allResults]);
 
     const handleAddManual = () => {
+        if (!requireAction('create', 'nhập kết quả thủ công')) return;
         if (!manualForm.vdv_ten || !manualForm.noi_dung) { showToast('Nhập tên VĐV và nội dung!', 'error'); return; }
         const item: KetQuaItem = {
             id: genId('MR'),
@@ -119,6 +128,7 @@ export const Page_results = () => {
     })), [filtered]);
 
     const handleExportCsv = () => {
+        if (!requireAction('export', 'xuất kết quả')) return;
         const csv = rowsToCsv(exportRows);
         const stamp = new Date().toISOString().slice(0, 10);
         downloadTextFile(`ket-qua-${stamp}.csv`, csv, 'text/csv;charset=utf-8');
@@ -126,12 +136,14 @@ export const Page_results = () => {
     };
 
     const handleExportExcel = () => {
+        if (!requireAction('export', 'xuất kết quả')) return;
         const stamp = new Date().toISOString().slice(0, 10);
         downloadRowsAsExcel(`ket-qua-${stamp}.xls`, exportRows, 'KetQua');
         showToast(`Đã xuất Excel ${exportRows.length} dòng`);
     };
 
     const handleExportPdf = () => {
+        if (!requireAction('export', 'in/xuất PDF kết quả')) return;
         const html = `
             <h1>Báo cáo kết quả thi đấu</h1>
             <p class="muted">Sinh lúc ${new Date().toLocaleString('vi-VN')}</p>
@@ -170,10 +182,10 @@ export const Page_results = () => {
     };
 
     return (
-        <div style={{ maxWidth: 1400, margin: '0 auto', paddingBottom: 100 }}>
+        <div className="mx-auto max-w-[1400px] pb-24">
             <VCT_Toast isVisible={toast.show} message={toast.msg} type={toast.type} onClose={() => setToast(p => ({ ...p, show: false }))} />
 
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 16, marginBottom: 24 }}>
+            <div className="vct-stagger mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
                 <VCT_KpiCard label="Tổng kết quả" value={allResults.length} icon={<VCT_Icons.Award size={24} />} color="#0ea5e9" />
                 <VCT_KpiCard label="Đối kháng" value={allResults.filter(r => r.loai === 'doi_khang').length} icon={<VCT_Icons.Swords size={24} />} color="#f59e0b" />
                 <VCT_KpiCard label="Quyền" value={allResults.filter(r => r.loai === 'quyen').length} icon={<VCT_Icons.Award size={24} />} color="#22d3ee" />
@@ -183,11 +195,11 @@ export const Page_results = () => {
             <VCT_Stack direction="row" gap={16} align="center" style={{ marginBottom: 24, flexWrap: 'wrap' }}>
                 <VCT_SegmentedControl options={[{ value: 'all', label: 'Tất cả' }, { value: 'doi_khang', label: '🥊 Đối kháng' }, { value: 'quyen', label: '🥋 Quyền' }]} value={typeFilter} onChange={setTypeFilter} />
                 <VCT_SearchInput value={search} onChange={setSearch} placeholder="Tìm VĐV, nội dung, đoàn..." />
-                <div style={{ flex: 1 }} />
-                <VCT_Button variant="secondary" icon={<VCT_Icons.Plus size={16} />} onClick={() => setShowManualModal(true)}>Nhập kết quả</VCT_Button>
-                <VCT_Button variant="secondary" icon={<VCT_Icons.Download size={16} />} onClick={handleExportCsv}>Xuất CSV</VCT_Button>
-                <VCT_Button variant="secondary" icon={<VCT_Icons.Download size={16} />} onClick={handleExportExcel}>Xuất Excel</VCT_Button>
-                <VCT_Button variant="secondary" icon={<VCT_Icons.Printer size={16} />} onClick={handleExportPdf}>In/PDF</VCT_Button>
+                <div className="flex-1" />
+                <VCT_Button variant="secondary" icon={<VCT_Icons.Plus size={16} />} onClick={() => permissions.canCreate ? setShowManualModal(true) : requireAction('create', 'nhập kết quả')} disabled={!permissions.canCreate}>Nhập kết quả</VCT_Button>
+                <VCT_Button variant="secondary" icon={<VCT_Icons.Download size={16} />} onClick={handleExportCsv} disabled={!permissions.canExport}>Xuất CSV</VCT_Button>
+                <VCT_Button variant="secondary" icon={<VCT_Icons.Download size={16} />} onClick={handleExportExcel} disabled={!permissions.canExport}>Xuất Excel</VCT_Button>
+                <VCT_Button variant="secondary" icon={<VCT_Icons.Printer size={16} />} onClick={handleExportPdf} disabled={!permissions.canExport}>In/PDF</VCT_Button>
             </VCT_Stack>
 
             {/* Summary by Đoàn */}
@@ -207,9 +219,9 @@ export const Page_results = () => {
             )}
 
             {/* Table */}
-            <div style={{ borderRadius: 16, border: '1px solid var(--vct-border-subtle)', overflow: 'hidden', background: 'var(--vct-bg-glass)' }}>
-                <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                    <thead><tr style={{ borderBottom: '1px solid var(--vct-border-strong)', background: 'var(--vct-bg-card)' }}>
+            <div className="overflow-hidden rounded-2xl border border-[var(--vct-border-subtle)] bg-[var(--vct-bg-glass)]">
+                <table className="w-full border-collapse">
+                    <thead><tr className="border-b border-[var(--vct-border-strong)] bg-[var(--vct-bg-card)]">
                         {['Loại', 'Nội dung', 'VĐV', 'Đoàn', 'Kết quả', 'Điểm', 'HC', ''].map((h, i) => (
                             <th key={i} style={{ padding: '14px 16px', textAlign: 'left', fontSize: 11, fontWeight: 700, textTransform: 'uppercase', opacity: 0.5 }}>{h}</th>
                         ))}
@@ -280,7 +292,7 @@ export const Page_results = () => {
 
             {/* Manual Entry Modal */}
             <VCT_Modal isOpen={showManualModal} onClose={() => setShowManualModal(false)} title="📝 Nhập kết quả thủ công" width="500px" footer={
-                <><VCT_Button variant="secondary" onClick={() => setShowManualModal(false)}>Hủy</VCT_Button><VCT_Button onClick={handleAddManual}>Lưu kết quả</VCT_Button></>
+                <><VCT_Button variant="secondary" onClick={() => setShowManualModal(false)}>Hủy</VCT_Button><VCT_Button onClick={handleAddManual} disabled={!permissions.canCreate}>Lưu kết quả</VCT_Button></>
             }>
                 <VCT_Stack gap={16}>
                     <VCT_Field label="Loại *">
@@ -293,10 +305,10 @@ export const Page_results = () => {
                         <VCT_Input value={manualForm.vdv_ten} onChange={(e: any) => setManualForm(p => ({ ...p, vdv_ten: e.target.value }))} placeholder="Họ tên VĐV" />
                     </VCT_Field>
                     <VCT_Stack direction="row" gap={12}>
-                        <VCT_Field label="Đoàn" style={{ flex: 1 }}>
+                        <VCT_Field label="Đoàn" className="flex-1">
                             <VCT_Input value={manualForm.doan} onChange={(e: any) => setManualForm(p => ({ ...p, doan: e.target.value }))} placeholder="Tên đoàn" />
                         </VCT_Field>
-                        <VCT_Field label="Kết quả" style={{ flex: 1 }}>
+                        <VCT_Field label="Kết quả" className="flex-1">
                             <VCT_Input value={manualForm.ket_qua} onChange={(e: any) => setManualForm(p => ({ ...p, ket_qua: e.target.value }))} placeholder="VD: Hạng 1" />
                         </VCT_Field>
                     </VCT_Stack>

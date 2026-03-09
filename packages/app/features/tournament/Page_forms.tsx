@@ -186,17 +186,17 @@ export const Page_forms = () => {
     const liveScoreResult = liveScores.length >= 3 ? calcQuyenScore(liveScores.length === numJ ? liveScores : [...liveScores, ...Array(Math.max(0, numJ - liveScores.length)).fill(0)]) : null;
     const liveAvg = liveScoreResult?.avg ?? null;
     return (
-        <div style={{ maxWidth: 1400, margin: '0 auto', paddingBottom: 100 }}>
+        <div className="mx-auto max-w-[1400px] pb-24">
             <VCT_Toast isVisible={toast.show} message={toast.msg} type={toast.type} onClose={hideToast} />
 
             {uiState.error && (
-                <div style={{ marginBottom: 16, padding: '12px 14px', borderRadius: 12, border: '1px solid rgba(239,68,68,0.25)', background: 'rgba(239,68,68,0.08)', color: '#ef4444', fontSize: 13, fontWeight: 700 }}>
+                <div className="mb-4 rounded-xl border border-red-500/25 bg-red-500/[0.08] px-3.5 py-3 text-[13px] font-bold text-red-500">
                     Không thể tải dữ liệu thi quyền: {uiState.error}
                 </div>
             )}
 
             {/* KPI */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 16, marginBottom: 24 }}>
+            <div className="vct-stagger mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
                 <VCT_KpiCard label="Tổng lượt thi" value={entries.length} icon={<VCT_Icons.Award size={24} />} color="#22d3ee" />
                 <VCT_KpiCard label="Đã chấm" value={entries.filter(e => e.trang_thai === 'da_cham').length} icon={<VCT_Icons.Check size={24} />} color="#10b981" />
                 <VCT_KpiCard label="Chờ thi" value={entries.filter(e => e.trang_thai === 'cho_thi').length} icon={<VCT_Icons.Clock size={24} />} color="#f59e0b" />
@@ -287,10 +287,10 @@ export const Page_forms = () => {
             {filtered.length === 0 ? (
                 <VCT_EmptyState title="Không có lượt thi" description="Thử thay đổi bộ lọc." icon="🥋" />
             ) : (
-                <div style={{ borderRadius: 16, border: '1px solid var(--vct-border-subtle)', overflow: 'hidden', background: 'var(--vct-bg-glass)' }}>
-                    <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                <div className="overflow-hidden rounded-2xl border border-[var(--vct-border-subtle)] bg-[var(--vct-bg-glass)]">
+                    <table className="w-full border-collapse">
                         <thead>
-                            <tr style={{ borderBottom: '1px solid var(--vct-border-strong)', background: 'var(--vct-bg-card)' }}>
+                            <tr className="border-b border-[var(--vct-border-strong)] bg-[var(--vct-bg-card)]">
                                 {['#', 'VĐV', 'Đoàn', 'Nội dung', 'GĐ1', 'GĐ2', 'GĐ3', 'GĐ4', 'GĐ5', 'Điểm Tổng', 'Trạng thái', ''].map((h, i) => (
                                     <th key={i} style={{ padding: '12px 10px', textAlign: i >= 4 && i <= 9 ? 'center' : 'left', fontSize: 11, fontWeight: 700, textTransform: 'uppercase', opacity: 0.5 }}>{h}</th>
                                 ))}
@@ -326,7 +326,7 @@ export const Page_forms = () => {
                                                     <span style={{ fontSize: 18, fontWeight: 900, color: '#22d3ee', fontFamily: 'monospace' }}>{e.diem_tb.toFixed(2)}</span>
                                                     {r?.tie_breaker_reason && <span style={{ fontSize: 10, color: 'var(--vct-text-tertiary)', marginTop: 4, fontStyle: 'italic', fontWeight: 600 }}>{r.tie_breaker_reason}</span>}
                                                 </div>
-                                            ) : <span style={{ opacity: 0.3 }}>—</span>}
+                                            ) : <span className="opacity-30">—</span>}
                                         </td>
                                         <td style={{ padding: '12px 10px' }}><VCT_Badge text={st.label} type={st.type} pulse={e.trang_thai === 'dang_thi'} /></td>
                                         <td style={{ padding: '12px 10px' }}>
@@ -355,7 +355,7 @@ export const Page_forms = () => {
                             <VCT_AvatarLetter name={scoreModal.vdv_ten} size={40} />
                             <div>
                                 <div style={{ fontWeight: 800, fontSize: 15 }}>{scoreModal.vdv_ten}</div>
-                                <div style={{ fontSize: 12, opacity: 0.6 }}>{scoreModal.doan_ten} • {scoreModal.noi_dung}</div>
+                                <div className="text-xs opacity-60">{scoreModal.doan_ten} • {scoreModal.noi_dung}</div>
                             </div>
                         </div>
 
@@ -367,7 +367,7 @@ export const Page_forms = () => {
                                 const isMin = allNums.length === 5 && !isNaN(n) && n === Math.min(...allNums);
                                 const isMax = allNums.length === 5 && !isNaN(n) && n === Math.max(...allNums);
                                 return (
-                                    <div key={i} style={{ textAlign: 'center' }}>
+                                    <div key={i} className="text-center">
                                         <div style={{ fontSize: 11, fontWeight: 700, opacity: 0.5, marginBottom: 6 }}>GĐ{i + 1}</div>
                                         <VCT_Input type="text" inputMode="decimal" value={s} onChange={(e: any) => {
                                             let val = e.target.value.replace(',', '.');

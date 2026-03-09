@@ -13,6 +13,7 @@ import type { VanDongVien, TrangThaiVDV, GioiTinh } from '../data/types';
 import { repositories, useEntityCollection } from '../data/repository';
 import { csvRowsToObjects, downloadTextFile, parseCsvRows, rowsToCsv } from '../data/export-utils';
 import { useToast } from '../hooks/use-toast';
+import { useRouteActionGuard } from '../hooks/use-route-action-guard';
 
 const ST_MAP: Record<TrangThaiVDV, { l: string; t: string }> = {
     du_dieu_kien: { l: 'Đủ điều kiện', t: 'success' },
@@ -134,6 +135,17 @@ export const Page_athletes = () => {
     const [showPrintModal, setShowPrintModal] = useState(false);
     const [deleteTarget, setDeleteTarget] = useState<VanDongVien | null>(null);
     const fileInputRef = React.useRef<HTMLInputElement | null>(null);
+    const { can, requireAction } = useRouteActionGuard('/athletes', {
+        notifyDenied: (message) => showToast(message, 'error')
+    });
+
+    const permissions = useMemo(() => ({
+        canImport: can('import'),
+        canExport: can('export'),
+        canUpdate: can('update'),
+        canApprove: can('approve'),
+        canDelete: can('delete'),
+    }), [can]);
 
     const setData = useCallback((updater: React.SetStateAction<VanDongVien[]>) => {
         setDataState(prev => {
@@ -146,6 +158,7 @@ export const Page_athletes = () => {
     }, [setDataState]);
 
     const downloadImportTemplate = useCallback(() => {
+        if (!requireAction('export', 'tải mẫu import')) return;
         const templateRows = [
             {
                 id: 'V001',
@@ -168,11 +181,18 @@ export const Page_athletes = () => {
         ];
         downloadTextFile('mau-import-vdv.csv', rowsToCsv(templateRows), 'text/csv;charset=utf-8');
         showToast('Đã tải file mẫu import VĐV');
-    }, [showToast]);
+    }, [requireAction, showToast]);
 
-    const openImportPicker = () => fileInputRef.current?.click();
+    const openImportPicker = () => {
+        if (!requireAction('import', 'import VĐV')) return;
+        fileInputRef.current?.click();
+    };
 
     const handleImportFile = async (event: React.ChangeEvent<HTMLInputElement>) => {
+        if (!can('import')) {
+            event.target.value = '';
+            return;
+        }
         const file = event.target.files?.[0];
         if (!file) return;
 
@@ -248,6 +268,7 @@ export const Page_athletes = () => {
 
     // Handlers
     const handleToggleDoc = (id: string, key: keyof VanDongVien['ho_so'], val: boolean) => {
+        if (!requireAction('update', 'cập nhật hồ sơ VĐV')) return;
         setData(prev => prev.map(v => {
             if (v.id !== id) return v;
             const newDocs = { ...v.ho_so, [key]: val };
@@ -261,16 +282,19 @@ export const Page_athletes = () => {
     };
 
     const handleApprove = (id: string) => {
+        if (!requireAction('approve', 'duyệt hồ sơ VĐV')) return;
         setData(prev => prev.map(v => v.id === id ? { ...v, trang_thai: 'du_dieu_kien' } : v));
         showToast('Đã xác nhận đủ điều kiện', 'success');
     };
 
     const handleReject = (id: string) => {
+        if (!requireAction('approve', 'chuyển trạng thái hồ sơ VĐV')) return;
         setData(prev => prev.map(v => v.id === id ? { ...v, trang_thai: 'thieu_ho_so' } : v));
         showToast('Đã chuyển sang trạng thái Thiếu Hồ Sơ', 'warning');
     };
 
     const handleDelete = () => {
+        if (!requireAction('delete', 'xóa VĐV')) return;
         if (!deleteTarget) return;
         setData(prev => prev.filter(v => v.id !== deleteTarget.id));
         showToast(`Đã xóa ${deleteTarget.ho_ten}`, 'success');
@@ -288,6 +312,7 @@ export const Page_athletes = () => {
     };
 
     const handleBulkApprove = () => {
+        if (!requireAction('approve', 'duyệt danh sách VĐV')) return;
         if (selectedIds.length === 0) return;
         setData(prev => prev.map(v => selectedIds.includes(v.id) ? { ...v, trang_thai: 'du_dieu_kien' } : v));
         showToast(`Đã duyệt ${selectedIds.length} VĐV`, 'success');
@@ -295,7 +320,7 @@ export const Page_athletes = () => {
     };
 
     return (
-        <div style={{ maxWidth: '1200px', margin: '0 auto', paddingBottom: '100px' }}>
+        <div className="mx-auto max-w-[1200px] pb-24">
             <VCT_Toast isVisible={toast.show} message={toast.msg} type={toast.type} onClose={hideToast} />
             <input
                 ref={fileInputRef}
@@ -306,7 +331,7 @@ export const Page_athletes = () => {
             />
 
             {/* KPI HEADERS */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '16px', marginBottom: '24px' }}>
+            <div className="vct-stagger mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
                 <VCT_KpiCard label="Tổng Võ Sinh" value={stats.total} icon={<VCT_Icons.Users size={24} />} color="#22d3ee" sub={`${stats.nam} Nam - ${stats.nu} Nữ`} />
                 <VCT_KpiCard label="Đủ điều kiện y tế" value={stats.ok} icon={<VCT_Icons.Check size={24} />} color="#10b981" />
                 <VCT_KpiCard label="Thiếu HS / Chờ duyệt" value={stats.pending} icon={<VCT_Icons.Alert size={24} />} color="#f59e0b" />
@@ -314,14 +339,14 @@ export const Page_athletes = () => {
             </div>
 
             {/* TOOLBAR */}
-            <VCT_Stack direction="row" gap={16} align="center" style={{ marginBottom: '16px', flexWrap: 'wrap' }}>
-                <div style={{ flex: '1 1 250px', minWidth: '200px' }}>
+            <VCT_Stack direction="row" gap={16} align="center" className="mb-4 flex-wrap">
+                <div className="min-w-[200px] flex-[1_1_250px]">
                     <VCT_SearchInput value={search} onChange={setSearch} onClear={() => setSearch('')} placeholder="Tìm tên, mã VĐV, CCCD..." />
                 </div>
-                <div style={{ flex: '0 0 auto', width: '250px' }}>
+                <div className="w-[250px] flex-none">
                     <select
                         value={filterDoan} onChange={(e) => setFilterDoan(e.target.value)}
-                        style={{ width: '100%', padding: '12px 16px', borderRadius: '12px', background: 'var(--vct-bg-input)', border: '1px solid var(--vct-border-subtle)', color: 'var(--vct-text-primary)', outline: 'none', appearance: 'none', cursor: 'pointer', fontSize: '14px', fontWeight: 600 }}
+                        className="w-full cursor-pointer appearance-none rounded-xl border border-[var(--vct-border-subtle)] bg-[var(--vct-bg-input)] px-4 py-3 text-sm font-semibold text-[var(--vct-text-primary)] outline-none"
                     >
                         <option value="">Tất cả Đoàn/Thành phố</option>
                         {DON_VIS.map(d => <option key={d.id} value={d.id}>{d.ten}</option>)}
@@ -331,11 +356,11 @@ export const Page_athletes = () => {
                     options={[{ value: 'all', label: 'Tất cả' }, { value: 'nam', label: `Nam (${stats.nam})` }, { value: 'nu', label: `Nữ (${stats.nu})` }]}
                     value={filterGioi} onChange={setFilterGioi}
                 />
-                <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginLeft: 'auto' }}>
-                    <VCT_Button variant="secondary" icon={<VCT_Icons.Download size={14} />} onClick={downloadImportTemplate}>
+                <div className="ml-auto flex items-center gap-2">
+                    <VCT_Button variant="secondary" icon={<VCT_Icons.Download size={14} />} onClick={downloadImportTemplate} disabled={!permissions.canExport}>
                         Tải mẫu
                     </VCT_Button>
-                    <VCT_Button variant="secondary" icon={<VCT_Icons.Upload size={14} />} onClick={openImportPicker}>
+                    <VCT_Button variant="secondary" icon={<VCT_Icons.Upload size={14} />} onClick={openImportPicker} disabled={!permissions.canImport}>
                         Import CSV/JSON
                     </VCT_Button>
                 </div>
@@ -351,8 +376,8 @@ export const Page_athletes = () => {
                     {selectedIds.length > 0 && (
                         <div style={{ display: 'flex', alignItems: 'center', gap: 8, paddingLeft: 16, borderLeft: '1px solid var(--vct-border-strong)' }}>
                             <VCT_Text style={{ fontWeight: 800, color: '#22d3ee' }}>Đã chọn: {selectedIds.length}</VCT_Text>
-                            <VCT_Button onClick={handleBulkApprove} icon={<VCT_Icons.Check size={14} />} style={{ padding: '6px 12px', fontSize: '12px' }}>Duyệt nhanh</VCT_Button>
-                            <VCT_Button variant="secondary" onClick={() => setShowPrintModal(true)} icon={<VCT_Icons.Printer size={14} />} style={{ padding: '6px 12px', fontSize: '12px', background: 'var(--vct-bg-input)' }}>In Thẻ VĐV</VCT_Button>
+                            <VCT_Button onClick={handleBulkApprove} icon={<VCT_Icons.Check size={14} />} style={{ padding: '6px 12px', fontSize: '12px' }} disabled={!permissions.canApprove}>Duyệt nhanh</VCT_Button>
+                            <VCT_Button variant="secondary" onClick={() => permissions.canExport ? setShowPrintModal(true) : requireAction('export', 'in thẻ VĐV')} icon={<VCT_Icons.Printer size={14} />} style={{ padding: '6px 12px', fontSize: '12px', background: 'var(--vct-bg-input)' }} disabled={!permissions.canExport}>In Thẻ VĐV</VCT_Button>
                         </div>
                     )}
                 </div>
@@ -360,7 +385,7 @@ export const Page_athletes = () => {
 
             {/* LIST */}
             {filteredData.length === 0 ? <VCT_EmptyState title="Không tìm thấy Vận động viên" icon="👤" /> : (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                <div className="flex flex-col gap-3">
                     {filteredData.map((v) => {
                         const isExpanded = expandedId === v.id;
                         const isSelected = selectedIds.includes(v.id);
@@ -389,7 +414,7 @@ export const Page_athletes = () => {
                                         </div>
                                     </div>
                                     <div onClick={() => setExpandedId(isExpanded ? null : v.id)} style={{ flex: 1, textAlign: 'center' }}>
-                                        <VCT_Text style={{ fontWeight: 800 }}>{v.can_nang} <span style={{ opacity: 0.5, fontSize: 11, fontWeight: 500 }}>kg</span></VCT_Text>
+                                        <VCT_Text className="font-extrabold">{v.can_nang} <span style={{ opacity: 0.5, fontSize: 11, fontWeight: 500 }}>kg</span></VCT_Text>
                                         <VCT_Text variant="small">{calcTuoi(v.ngay_sinh)} tuổi</VCT_Text>
                                     </div>
                                     <div onClick={() => setExpandedId(isExpanded ? null : v.id)} style={{ flex: 2 }}>
@@ -469,7 +494,7 @@ export const Page_athletes = () => {
                                                                 return (
                                                                     <label key={doc.key} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '8px 12px', borderRadius: 8, cursor: 'pointer', border: `1px solid ${checked ? 'rgba(16, 185, 129, 0.3)' : 'var(--vct-border-strong)'}`, background: checked ? 'rgba(16, 185, 129, 0.05)' : 'transparent', transition: 'all 0.2s' }}>
                                                                         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                                                                            <input type="checkbox" checked={checked} onChange={(e) => handleToggleDoc(v.id, doc.key as any, e.target.checked)} style={{ width: 16, height: 16, accentColor: '#10b981' }} />
+                                                                            <input type="checkbox" checked={checked} onChange={(e) => handleToggleDoc(v.id, doc.key as any, e.target.checked)} disabled={!permissions.canUpdate} style={{ width: 16, height: 16, accentColor: '#10b981' }} />
                                                                             <span style={{ fontSize: 13, fontWeight: checked ? 700 : 500, opacity: checked ? 1 : 0.6 }}>{doc.label}</span>
                                                                         </div>
                                                                         {!checked && <span style={{ fontSize: 10, fontWeight: 800, color: '#ef4444', background: 'rgba(239, 68, 68, 0.1)', padding: '2px 6px', borderRadius: 4 }}>THIẾU</span>}
@@ -483,11 +508,11 @@ export const Page_athletes = () => {
                                                 {/* FOOTER ACTIONS */}
                                                 <div style={{ marginTop: 16, display: 'flex', justifyContent: 'flex-end', gap: 12 }}>
                                                     {v.trang_thai === 'du_dieu_kien' ? (
-                                                        <VCT_Button variant="secondary" icon={<VCT_Icons.x size={14} />} onClick={() => handleReject(v.id)} style={{ color: '#f59e0b', borderColor: 'rgba(245, 158, 11, 0.3)' }}>Từ chối / Thiếu HS</VCT_Button>
+                                                        <VCT_Button variant="secondary" icon={<VCT_Icons.x size={14} />} onClick={() => handleReject(v.id)} style={{ color: '#f59e0b', borderColor: 'rgba(245, 158, 11, 0.3)' }} disabled={!permissions.canApprove}>Từ chối / Thiếu HS</VCT_Button>
                                                     ) : (
-                                                        <VCT_Button icon={<VCT_Icons.Check size={14} />} onClick={() => handleApprove(v.id)}>Xác nhận Đủ Điều Kiện</VCT_Button>
+                                                        <VCT_Button icon={<VCT_Icons.Check size={14} />} onClick={() => handleApprove(v.id)} disabled={!permissions.canApprove}>Xác nhận Đủ Điều Kiện</VCT_Button>
                                                     )}
-                                                    <VCT_Button variant="secondary" icon={<VCT_Icons.Trash size={14} />} onClick={() => setDeleteTarget(v)} style={{ color: '#ef4444', borderColor: 'rgba(239, 68, 68, 0.3)' }}>Hủy Đăng Ký</VCT_Button>
+                                                    <VCT_Button variant="secondary" icon={<VCT_Icons.Trash size={14} />} onClick={() => permissions.canDelete ? setDeleteTarget(v) : requireAction('delete', 'xóa VĐV')} style={{ color: '#ef4444', borderColor: 'rgba(239, 68, 68, 0.3)' }} disabled={!permissions.canDelete}>Hủy Đăng Ký</VCT_Button>
                                                 </div>
                                             </div>
                                         </motion.div>
@@ -501,7 +526,7 @@ export const Page_athletes = () => {
 
             {/* PRINT ID CARD MODAL */}
             <VCT_Modal isOpen={showPrintModal} onClose={() => setShowPrintModal(false)} title="In Thẻ Vận Động Viên" width="800px" footer={
-                <><VCT_Button variant="secondary" onClick={() => setShowPrintModal(false)}>Đóng</VCT_Button><VCT_Button onClick={() => window.print()} icon={<VCT_Icons.Printer size={16} />}>In {selectedIds.length} thẻ</VCT_Button></>
+                <><VCT_Button variant="secondary" onClick={() => setShowPrintModal(false)}>Đóng</VCT_Button><VCT_Button onClick={() => permissions.canExport ? window.print() : requireAction('export', 'in thẻ VĐV')} icon={<VCT_Icons.Printer size={16} />} disabled={!permissions.canExport}>In {selectedIds.length} thẻ</VCT_Button></>
             }>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '20px', padding: 10, maxHeight: '60vh', overflowY: 'auto' }} className="vct-hide-scrollbar print-only-cards">
                     {data.filter(v => selectedIds.includes(v.id)).map(v => (

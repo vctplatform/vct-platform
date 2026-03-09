@@ -7,9 +7,19 @@ import { useRouter } from 'next/navigation';
 import {
     VCT_Card, VCT_Badge, VCT_KpiCard, VCT_Text, VCT_Stack, VCT_Button, VCT_AvatarLetter
 } from '../components/vct-ui';
+import { VCT_Timeline, type TimelineEvent } from '../components/VCT_Timeline';
 import { VCT_Icons } from '../components/vct-icons';
 import { TOURNAMENT_CONFIG } from '../data/tournament-config';
 import { repositories, useEntityCollection } from '../data/repository';
+
+// Mock activity feed (real-time in Phase 3)
+const ACTIVITY_FEED: TimelineEvent[] = [
+    { time: '2 phút trước', title: 'Trận #12 kết thúc', description: 'Nguyễn Văn A thắng điểm 7-5', color: 'var(--vct-success)' },
+    { time: '8 phút trước', title: 'Cân ký hoàn tất', description: '42/45 VĐV đạt cân nặng', color: 'var(--vct-info)' },
+    { time: '15 phút trước', title: 'Đoàn Bình Định gửi hồ sơ', description: '15 VĐV, 8 nội dung', color: 'var(--vct-warning)' },
+    { time: '30 phút trước', title: 'Trận #11 bắt đầu', description: 'Sàn 2 — Đối kháng Nữ 52kg', color: 'var(--vct-danger)' },
+    { time: '45 phút trước', title: 'Lịch thi đấu cập nhật', description: 'Buổi chiều: 12 trận ĐK, 6 lượt Quyền', color: 'var(--vct-accent-cyan)' },
+];
 
 export const Page_dashboard = () => {
     const router = useRouter();
@@ -70,9 +80,9 @@ export const Page_dashboard = () => {
     useEffect(() => { const int = setInterval(() => setTick(t => !t), 1000); return () => clearInterval(int); }, []);
 
     return (
-        <div style={{ maxWidth: '1400px', margin: '0 auto', paddingBottom: '80px', display: 'flex', flexDirection: 'column', gap: '24px' }}>
+        <div className="mx-auto flex max-w-[1400px] flex-col gap-6 pb-20">
             {(teamsStore.uiState.error || athletesStore.uiState.error || refereesStore.uiState.error || combatStore.uiState.error || formsStore.uiState.error || weighStore.uiState.error || appealsStore.uiState.error || arenasStore.uiState.error) && (
-                <div style={{ padding: '12px 14px', borderRadius: 12, border: '1px solid rgba(239,68,68,0.25)', background: 'rgba(239,68,68,0.08)', color: '#ef4444', fontSize: 13, fontWeight: 700 }}>
+                <div className="rounded-xl border border-red-500/25 bg-red-500/[0.08] px-3.5 py-3 text-[13px] font-bold text-red-500">
                     Một số nguồn dữ liệu dashboard chưa tải được. Số liệu có thể chưa đầy đủ.
                 </div>
             )}
@@ -103,7 +113,7 @@ export const Page_dashboard = () => {
             </motion.div>
 
             {/* 2. KPI ROW */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '20px' }}>
+            <div className="vct-stagger grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-4">
                 <VCT_KpiCard label="Đoàn tham gia" value={kpis.doan} icon={<VCT_Icons.Building2 size={28} />} color="#0ea5e9" />
                 <VCT_KpiCard label="Tổng VĐV" value={kpis.vdv.tong} icon={<VCT_Icons.Users size={28} />} color="#f59e0b" sub={`♂ ${kpis.vdv.nam} — ♀ ${kpis.vdv.nu}`} />
                 <VCT_KpiCard label="Trọng Tài" value={kpis.trong_tai} icon={<VCT_Icons.UserCheck size={28} />} color="#10b981" />
@@ -125,7 +135,7 @@ export const Page_dashboard = () => {
             </div>
 
             {/* 3. MIDDLE SECTION */}
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 350px', gap: '24px', alignItems: 'stretch' }}>
+            <div className="grid grid-cols-1 items-stretch gap-6 desktop:grid-cols-[1fr_350px]">
                 <VCT_Card title="🔴 Sàn đấu trực tiếp (LIVE)" headerAction={<VCT_Button variant="secondary" onClick={() => router.push('/combat')}>Quản lý thi đấu</VCT_Button>} style={{ height: '100%' }}>
                     <VCT_Stack gap={16}>
                         {kpis.san_live.map(san => (
@@ -143,7 +153,7 @@ export const Page_dashboard = () => {
                                         <div style={{ flex: 1, textAlign: 'center' }}>
                                             <div style={{ width: 12, height: 12, borderRadius: '50%', background: '#3b82f6', margin: '0 auto 8px', boxShadow: '0 0 8px rgba(59,130,246,0.5)' }} />
                                             <div style={{ fontWeight: 800, fontSize: 14 }}>{san.match.vdv_xanh.ten}</div>
-                                            <div style={{ fontSize: 11, opacity: 0.5 }}>{san.match.vdv_xanh.doan}</div>
+                                            <div className="text-[11px] opacity-50">{san.match.vdv_xanh.doan}</div>
                                         </div>
                                         <div style={{ fontSize: 32, fontWeight: 900, fontFamily: 'monospace', color: '#10b981', display: 'flex', gap: 12, alignItems: 'center' }}>
                                             <span style={{ color: '#3b82f6' }}>{san.match.diem_xanh}</span>
@@ -153,7 +163,7 @@ export const Page_dashboard = () => {
                                         <div style={{ flex: 1, textAlign: 'center' }}>
                                             <div style={{ width: 12, height: 12, borderRadius: '50%', background: '#ef4444', margin: '0 auto 8px', boxShadow: '0 0 8px rgba(239,68,68,0.5)' }} />
                                             <div style={{ fontWeight: 800, fontSize: 14 }}>{san.match.vdv_do.ten}</div>
-                                            <div style={{ fontSize: 11, opacity: 0.5 }}>{san.match.vdv_do.doan}</div>
+                                            <div className="text-[11px] opacity-50">{san.match.vdv_do.doan}</div>
                                         </div>
                                     </div>
                                 )}
@@ -208,17 +218,22 @@ export const Page_dashboard = () => {
                         </VCT_Stack>
                     </VCT_Card>
                 </VCT_Stack>
+
+                {/* Activity Feed */}
+                <VCT_Card title="📋 Hoạt động gần đây">
+                    <VCT_Timeline events={ACTIVITY_FEED} maxHeight={280} />
+                </VCT_Card>
             </div>
 
             {/* 4. LEADERBOARD (Top 3 Medals) */}
             <VCT_Card title="🏆 Top 3 Đoàn Xuất Sắc" headerAction={<VCT_Button variant="secondary" onClick={() => router.push('/medals')}>Theo dõi bảng tổng sắp</VCT_Button>}>
                 {kpis.top_huy_chuong.length > 0 ? (
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16 }}>
+                    <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
                         {kpis.top_huy_chuong.map((m, i) => (
-                            <div key={m.id} style={{ display: 'flex', alignItems: 'center', gap: 16, padding: 16, borderRadius: 12, background: 'var(--vct-bg-elevated)', border: `1px solid ${i === 0 ? '#eab30850' : i === 1 ? '#94a3b850' : '#b4530950'}` }}>
-                                <div style={{ fontSize: 32, fontWeight: 900, color: i === 0 ? '#eab308' : i === 1 ? '#94a3b8' : '#b45309' }}>{i + 1}</div>
+                            <div key={m.id} className="vct-card-hover flex items-center gap-4 rounded-xl border bg-[var(--vct-bg-elevated)] p-4" style={{ borderColor: i === 0 ? '#eab30850' : i === 1 ? '#94a3b850' : '#b4530950' }}>
+                                <div className="text-[32px] font-black" style={{ color: i === 0 ? '#eab308' : i === 1 ? '#94a3b8' : '#b45309' }}>{i + 1}</div>
                                 <VCT_AvatarLetter name={m.ten} size={48} />
-                                <div style={{ flex: 1 }}>
+                                <div className="flex-1">
                                     <div style={{ fontWeight: 800, fontSize: 14 }}>{m.ten}</div>
                                     <div style={{ fontSize: 12, display: 'flex', gap: 12, marginTop: 4 }}>
                                         <span style={{ color: '#eab308', fontWeight: 700 }}>🥇 {m.hcv}</span>

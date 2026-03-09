@@ -1,5 +1,5 @@
-import { Page_dashboard } from 'app/features/tournament/Page_dashboard'
+import { Page_command_center } from 'app/features/dashboard/Page_command_center'
 
 export default function Page() {
-  return <Page_dashboard />
+  return <Page_command_center />
 }

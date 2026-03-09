@@ -10,6 +10,7 @@ import { VCT_Icons } from '../components/vct-icons';
 import { SAN_DAUS, HANG_CANS, NOI_DUNG_QUYENS, genId } from '../data/mock-data';
 import type { LichThiDau, TrangThaiLich, PhienThi, SanDau } from '../data/types';
 import { repositories, useEntityCollection } from '../data/repository';
+import { useRouteActionGuard } from '../hooks/use-route-action-guard';
 
 // ════════════════════════════════════════
 // CONSTANTS & MAPS
@@ -110,6 +111,13 @@ export const Page_schedule = () => {
         setToast({ show: true, msg, type });
         setTimeout(() => setToast(p => ({ ...p, show: false })), 3000);
     }, []);
+    const { can, requireAction } = useRouteActionGuard('/schedule', {
+        notifyDenied: (message) => showToast(message, 'error')
+    });
+    const permissions = useMemo(() => ({
+        canCreate: can('create'),
+        canDelete: can('delete'),
+    }), [can]);
 
     const setSchedule = useCallback((updater: React.SetStateAction<LichThiDau[]>) => {
         setScheduleState(prev => {
@@ -143,6 +151,7 @@ export const Page_schedule = () => {
 
     // ── AUTO-SCHEDULE ──
     const handleAutoSchedule = useCallback(() => {
+        if (!requireAction('create', 'tạo lịch thi đấu')) return;
         setIsGenerating(true);
         setTimeout(() => {
             const contents = getAllContents();
@@ -153,19 +162,20 @@ export const Page_schedule = () => {
             setIsGenerating(false);
             showToast(`Đã tạo tự động ${newSchedule.length} phiên, ${newSchedule.reduce((s, l) => s + l.so_tran, 0)} trận trên ${SAN_DAUS.filter(s => s.trang_thai !== 'bao_tri').length} sàn`);
         }, 1500);
-    }, [autoConfig, setSchedule, showToast]);
+    }, [autoConfig, requireAction, setSchedule, showToast]);
 
     // ── DELETE ITEM ──
     const handleDelete = useCallback((id: string) => {
+        if (!requireAction('delete', 'xóa phiên lịch thi đấu')) return;
         setSchedule(prev => prev.filter(l => l.id !== id));
         showToast('Đã xóa phiên thi đấu', 'info');
-    }, [setSchedule, showToast]);
+    }, [requireAction, setSchedule, showToast]);
 
     // ── Grid View: San x Phien matrix ──
     const renderGridView = () => {
         const activeSansList = SAN_DAUS.filter(s => s.trang_thai !== 'bao_tri');
         return (
-            <div style={{ overflowX: 'auto' }}>
+            <div className="overflow-x-auto">
                 <table style={{ width: '100%', borderCollapse: 'separate', borderSpacing: '0 4px', fontSize: 13 }}>
                     <thead>
                         <tr>
@@ -218,11 +228,11 @@ export const Page_schedule = () => {
     };
 
     return (
-        <div style={{ maxWidth: 1400, margin: '0 auto', paddingBottom: 100 }}>
+        <div className="mx-auto max-w-[1400px] pb-24">
             <VCT_Toast isVisible={toast.show} message={toast.msg} type={toast.type} onClose={() => setToast(p => ({ ...p, show: false }))} />
 
             {/* KPIs */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 16, marginBottom: 24 }}>
+            <div className="vct-stagger mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
                 <VCT_KpiCard label="Tổng phiên" value={totalSessions} icon={<VCT_Icons.Calendar size={24} />} color="#0ea5e9" />
                 <VCT_KpiCard label="Tổng trận" value={totalMatches} icon={<VCT_Icons.Swords size={24} />} color="#f59e0b" />
                 <VCT_KpiCard label="Đang diễn ra" value={liveCount} icon={<VCT_Icons.Play size={24} />} color="#ef4444" sub="🔴 LIVE" />
@@ -232,7 +242,7 @@ export const Page_schedule = () => {
             <VCT_StatusPipeline stages={pStages} activeStage={null} onStageClick={() => { }} />
 
             {/* Toolbar */}
-            <VCT_Stack direction="row" justify="space-between" align="center" style={{ marginBottom: 16, marginTop: 16 }}>
+            <VCT_Stack direction="row" justify="space-between" align="center" className="my-4">
                 <VCT_Stack direction="row" gap={8}>
                     <VCT_Button
                         variant={viewMode === 'timeline' ? 'primary' : 'secondary'}
@@ -253,6 +263,7 @@ export const Page_schedule = () => {
                     variant="primary"
                     icon={<VCT_Icons.Shuffle size={16} />}
                     onClick={() => setShowAutoModal(true)}
+                    disabled={!permissions.canCreate}
                 >
                     ⚡ Tạo lịch tự động
                 </VCT_Button>
@@ -273,13 +284,13 @@ export const Page_schedule = () => {
                     if (items.length === 0) return null;
                     const p = PHIEN_MAP[phien];
                     return (
-                        <div key={phien} style={{ marginBottom: 24 }}>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
+                        <div key={phien} className="mb-6">
+                            <div className="mb-3 flex items-center gap-2">
                                 <span style={{ fontSize: 20 }}>{p.icon}</span>
                                 <span style={{ fontSize: 14, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.03em' }}>{p.label}</span>
                                 <span style={{ fontSize: 11, color: 'var(--vct-text-tertiary)' }}>{p.time}</span>
                             </div>
-                            <div style={{ display: 'grid', gap: 10 }}>
+                            <div className="grid gap-2.5">
                                 {items.map((l, i) => {
                                     const st = ST_MAP[l.trang_thai];
                                     const san = SAN_DAUS.find(s => s.id === l.san_id);
@@ -299,14 +310,14 @@ export const Page_schedule = () => {
                                                     <div style={{ fontSize: 11, opacity: 0.4 }}>{l.gio_ket_thuc}</div>
                                                 </div>
                                                 <div style={{ width: 1, height: 40, background: 'var(--vct-border-subtle)' }} />
-                                                <div style={{ flex: 1 }}>
+                                                <div className="flex-1">
                                                     <div style={{ fontWeight: 700, fontSize: 14 }}>{l.noi_dung}</div>
-                                                    <div style={{ fontSize: 12, opacity: 0.5, marginTop: 2 }}>
+                                                    <div className="mt-0.5 text-xs opacity-50">
                                                         📍 {san?.ten || l.san_id} • {l.so_tran} trận
                                                     </div>
                                                 </div>
                                                 <VCT_Badge text={st.label} type={st.type} pulse={l.trang_thai === 'dang_dien_ra'} />
-                                                <VCT_Button variant="ghost" icon={<VCT_Icons.Trash size={14} />} onClick={() => handleDelete(l.id)} />
+                                                <VCT_Button variant="ghost" icon={<VCT_Icons.Trash size={14} />} onClick={() => handleDelete(l.id)} disabled={!permissions.canDelete} />
                                             </div>
                                         </motion.div>
                                     );
@@ -341,24 +352,24 @@ export const Page_schedule = () => {
                 <div style={{ marginTop: 16, padding: 16, borderRadius: 12, background: 'rgba(59,130,246,0.05)', border: '1px solid rgba(59,130,246,0.1)' }}>
                     <VCT_Text variant="small" style={{ fontWeight: 700, color: '#3b82f6' }}>📊 Tổng quan dự kiến</VCT_Text>
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12, marginTop: 8 }}>
-                        <div style={{ textAlign: 'center' }}>
+                        <div className="text-center">
                             <div style={{ fontSize: 20, fontWeight: 900, color: 'var(--vct-text-primary)' }}>{getAllContents().length}</div>
                             <div style={{ fontSize: 11, color: 'var(--vct-text-tertiary)' }}>Nội dung</div>
                         </div>
-                        <div style={{ textAlign: 'center' }}>
+                        <div className="text-center">
                             <div style={{ fontSize: 20, fontWeight: 900, color: 'var(--vct-text-primary)' }}>{SAN_DAUS.filter(s => s.trang_thai !== 'bao_tri').length}</div>
                             <div style={{ fontSize: 11, color: 'var(--vct-text-tertiary)' }}>Sàn khả dụng</div>
                         </div>
-                        <div style={{ textAlign: 'center' }}>
+                        <div className="text-center">
                             <div style={{ fontSize: 20, fontWeight: 900, color: 'var(--vct-text-primary)' }}>{autoConfig.days * 3}</div>
                             <div style={{ fontSize: 11, color: 'var(--vct-text-tertiary)' }}>Phiên tổng</div>
                         </div>
                     </div>
                 </div>
 
-                <VCT_Stack direction="row" gap={12} justify="flex-end" style={{ marginTop: 24 }}>
+                <VCT_Stack direction="row" gap={12} justify="flex-end" className="mt-6">
                     <VCT_Button variant="secondary" onClick={() => setShowAutoModal(false)}>Hủy</VCT_Button>
-                    <VCT_Button variant="primary" loading={isGenerating} icon={<VCT_Icons.Shuffle size={16} />} onClick={handleAutoSchedule}>
+                    <VCT_Button variant="primary" loading={isGenerating} icon={<VCT_Icons.Shuffle size={16} />} onClick={handleAutoSchedule} disabled={!permissions.canCreate}>
                         ⚡ Tạo lịch ngay
                     </VCT_Button>
                 </VCT_Stack>

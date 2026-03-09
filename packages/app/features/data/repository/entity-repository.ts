@@ -6,6 +6,8 @@ export interface ImportReport<T> {
 }
 
 export interface EntityRepository<T extends { id: string }> {
+  entityName?: string
+  mode?: 'mock' | 'api'
   list: () => Promise<T[]>
   getById: (id: string) => Promise<T | undefined>
   create: (item: T) => Promise<T>
@@ -99,6 +101,8 @@ export const createMockAdapter = <T extends { id: string }>(
   }
 
   return {
+    entityName: storageKey,
+    mode: 'mock',
     async list() {
       return clone(ensureSeed())
     },
@@ -183,6 +187,33 @@ export const createApiAdapter = <T extends { id: string }>(
       .replace('{entity}', entityName)
       .replace('{id}', encodeURIComponent(String(params.id ?? '')))
 
+  const responseCache = new Map<string, { expiresAt: number; value: unknown }>()
+  const cacheTTL = 15 * 1000
+
+  const cacheKey = (method: HttpMethod, path: string, query = '') =>
+    `${method}:${path}${query}`
+
+  const readCache = <R>(key: string): R | null => {
+    const hit = responseCache.get(key)
+    if (!hit) return null
+    if (hit.expiresAt <= Date.now()) {
+      responseCache.delete(key)
+      return null
+    }
+    return clone(hit.value as R)
+  }
+
+  const writeCache = <R>(key: string, value: R) => {
+    responseCache.set(key, {
+      expiresAt: Date.now() + cacheTTL,
+      value: clone(value),
+    })
+  }
+
+  const invalidateCache = () => {
+    responseCache.clear()
+  }
+
   const request = async <R>(
     method: HttpMethod,
     path: string,
@@ -207,6 +238,16 @@ export const createApiAdapter = <T extends { id: string }>(
     const query = options.query
       ? `?${new URLSearchParams(options.query).toString()}`
       : ''
+    const key = cacheKey(method, path, query)
+    const isCacheable = method === 'GET' && options.parseAs !== 'text'
+
+    if (isCacheable) {
+      const cached = readCache<R>(key)
+      if (cached !== null) {
+        return cached
+      }
+    }
+
     const response = await fetch(`${baseUrl}${path}${query}`, {
       method,
       headers,
@@ -233,10 +274,16 @@ export const createApiAdapter = <T extends { id: string }>(
     if (response.status === 204) {
       return undefined as R
     }
-    return (await response.json()) as R
+    const payload = (await response.json()) as R
+    if (isCacheable) {
+      writeCache(key, payload)
+    }
+    return payload
   }
 
   return {
+    entityName,
+    mode: 'api',
     async list() {
       return request<T[]>('GET', resolvePath(endpointMap.list))
     },
@@ -244,27 +291,42 @@ export const createApiAdapter = <T extends { id: string }>(
       return request<T | undefined>('GET', resolvePath(endpointMap.getById, { id }))
     },
     async create(item: T) {
-      return request<T>('POST', resolvePath(endpointMap.create), { body: item })
+      const created = await request<T>('POST', resolvePath(endpointMap.create), {
+        body: item,
+      })
+      invalidateCache()
+      return created
     },
     async update(id: string, patch: Partial<T>) {
-      return request<T>('PATCH', resolvePath(endpointMap.update, { id }), {
+      const updated = await request<T>('PATCH', resolvePath(endpointMap.update, { id }), {
         body: patch,
       })
+      invalidateCache()
+      return updated
     },
     async remove(id: string) {
       await request<void>('DELETE', resolvePath(endpointMap.remove, { id }), {
         parseAs: 'text',
       })
+      invalidateCache()
     },
     async replaceAll(items: T[]) {
-      return request<T[]>('PUT', resolvePath(endpointMap.replaceAll), {
+      const rows = await request<T[]>('PUT', resolvePath(endpointMap.replaceAll), {
         body: { items },
       })
+      invalidateCache()
+      return rows
     },
     async importItems(payload: unknown[]) {
-      return request<ImportReport<T>>('POST', resolvePath(endpointMap.importItems), {
-        body: { items: payload },
-      })
+      const report = await request<ImportReport<T>>(
+        'POST',
+        resolvePath(endpointMap.importItems),
+        {
+          body: { items: payload },
+        }
+      )
+      invalidateCache()
+      return report
     },
     async exportItems(format: ExportFormat) {
       return request<string>('GET', resolvePath(endpointMap.exportItems), {

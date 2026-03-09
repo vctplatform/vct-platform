@@ -8,11 +8,12 @@ import (
 
 func newTestService() *Service {
 	return NewService(ServiceConfig{
-		Secret:     "test-secret-for-auth-service",
-		Issuer:     "vct-test",
-		AccessTTL:  10 * time.Minute,
-		RefreshTTL: 2 * time.Hour,
-		AuditLimit: 200,
+		Secret:         "test-secret-for-auth-service",
+		Issuer:         "vct-test",
+		AccessTTL:      10 * time.Minute,
+		RefreshTTL:     2 * time.Hour,
+		AuditLimit:     200,
+		AllowDemoUsers: true,
 	})
 }
 

@@ -217,11 +217,11 @@ export const Page_boc_tham = () => {
     const displaySlots = existingDraw?.slots || (animPhase !== 'idle' ? tempSlots : []);
 
     return (
-        <div style={{ maxWidth: 1400, margin: '0 auto', paddingBottom: 100 }}>
+        <div className="mx-auto max-w-[1400px] pb-24">
             <VCT_Toast isVisible={toast.show} message={toast.msg} type={toast.type} onClose={hideToast} />
 
             {(registrationStore.uiState.error || athleteStore.uiState.error) && (
-                <div style={{ marginBottom: 16, padding: '12px 14px', borderRadius: 12, border: '1px solid rgba(239,68,68,0.25)', background: 'rgba(239,68,68,0.08)', color: '#ef4444', fontSize: 13, fontWeight: 700 }}>
+                <div className="mb-4 rounded-xl border border-red-500/25 bg-red-500/[0.08] px-3.5 py-3 text-[13px] font-bold text-red-500">
                     Không thể tải đủ dữ liệu để bốc thăm.
                 </div>
             )}
@@ -257,7 +257,7 @@ export const Page_boc_tham = () => {
             {/* ── CONTENT SELECTOR ── */}
             <VCT_Card title="Chọn Nội dung Bốc thăm">
                 <VCT_Stack direction="row" gap={16} align="flex-end">
-                    <div style={{ flex: 1 }}>
+                    <div className="flex-1">
                         <VCT_Select
                             label="Hạng cân / Nội dung"
                             options={CONTENT_OPTIONS.map(c => ({ value: c.value, label: c.label }))}
@@ -304,7 +304,7 @@ export const Page_boc_tham = () => {
                 </div>
 
                 {/* Action Buttons */}
-                <VCT_Stack direction="row" gap={12} style={{ marginTop: 24 }} justify="flex-end">
+                <VCT_Stack direction="row" gap={12} className="mt-6" justify="flex-end">
                     {existingDraw && existingDraw.status === 'draft' && (
                         <>
                             <VCT_Button variant="danger" icon={<VCT_Icons.Trash size={16} />} onClick={handleReset}>
@@ -335,7 +335,7 @@ export const Page_boc_tham = () => {
 
             {/* ── DRAW RESULT BRACKET ── */}
             {displaySlots.length > 0 && (
-                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }} style={{ marginTop: 24 }}>
+                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }} className="mt-6">
                     <VCT_Card title={`Kết quả Bốc thăm — ${CONTENT_OPTIONS.find(c => c.value === selectedContent)?.label || ''}`}
                         headerAction={existingDraw && <VCT_Badge text={`Schema ${existingDraw.schema} • ${existingDraw.timestamp}`} type="info" />}
                     >
@@ -404,7 +404,7 @@ export const Page_boc_tham = () => {
 
                         {/* Draw History for all contents */}
                         {drawResults.length > 1 && (
-                            <div style={{ marginTop: 24 }}>
+                            <div className="mt-6">
                                 <VCT_Text variant="small" style={{ fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 8, color: 'var(--vct-text-tertiary)' }}>
                                     Tổng hợp bốc thăm ({drawResults.length} nội dung)
                                 </VCT_Text>

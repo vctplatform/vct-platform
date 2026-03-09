@@ -4,6 +4,7 @@ import (
 	"crypto/rand"
 	"crypto/subtle"
 	"encoding/hex"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"strings"
@@ -111,12 +112,21 @@ type ServiceConfig struct {
 	RefreshTTL      time.Duration
 	AuditLimit      int
 	CleanupInterval time.Duration
+	AllowDemoUsers  bool
+	CredentialsJSON string
 }
 
 type userCredential struct {
 	password    string
 	displayName string
 	allowedRole []UserRole
+}
+
+type credentialSeed struct {
+	Username    string     `json:"username"`
+	Password    string     `json:"password"`
+	DisplayName string     `json:"displayName"`
+	Roles       []UserRole `json:"roles"`
 }
 
 type refreshSession struct {
@@ -171,43 +181,112 @@ func NewService(config ServiceConfig) *Service {
 		cleanupInterval = 5 * time.Minute
 	}
 
+	credentials, err := resolveCredentials(config.CredentialsJSON, config.AllowDemoUsers)
+	if err != nil {
+		panic(fmt.Sprintf("auth credential configuration invalid: %v", err))
+	}
+
 	return &Service{
-		secret:          []byte(strings.TrimSpace(config.Secret)),
-		issuer:          strings.TrimSpace(config.Issuer),
-		accessTTL:       config.AccessTTL,
-		refreshTTL:      config.RefreshTTL,
-		auditLimit:      auditLimit,
-		cleanupInterval: cleanupInterval,
-		credentials: map[string]userCredential{
-			"admin": {
-				password:    "Admin@123",
-				displayName: "Quản trị hệ thống",
-				allowedRole: []UserRole{RoleAdmin},
-			},
-			"btc": {
-				password:    "Btc@123",
-				displayName: "Ban tổ chức",
-				allowedRole: []UserRole{RoleBTC},
-			},
-			"ref-manager": {
-				password:    "Ref@123",
-				displayName: "Điều phối trọng tài",
-				allowedRole: []UserRole{RoleRefereeManager},
-			},
-			"referee": {
-				password:    "Judge@123",
-				displayName: "Trọng tài",
-				allowedRole: []UserRole{RoleReferee},
-			},
-			"delegate": {
-				password:    "Delegate@123",
-				displayName: "Cán bộ đoàn",
-				allowedRole: []UserRole{RoleDelegate},
-			},
-		},
+		secret:            []byte(strings.TrimSpace(config.Secret)),
+		issuer:            strings.TrimSpace(config.Issuer),
+		accessTTL:         config.AccessTTL,
+		refreshTTL:        config.RefreshTTL,
+		auditLimit:        auditLimit,
+		cleanupInterval:   cleanupInterval,
+		credentials:       credentials,
 		refreshSessions:   make(map[string]*refreshSession),
 		revokedAccessJTIs: make(map[string]time.Time),
 		audit:             make([]AuditEntry, 0, auditLimit),
+	}
+}
+
+func resolveCredentials(raw string, allowDemo bool) (map[string]userCredential, error) {
+	trimmed := strings.TrimSpace(raw)
+	if trimmed == "" {
+		if allowDemo {
+			return demoCredentials(), nil
+		}
+		return map[string]userCredential{}, nil
+	}
+
+	var seeds []credentialSeed
+	if err := json.Unmarshal([]byte(trimmed), &seeds); err != nil {
+		return nil, fmt.Errorf("parse VCT_BOOTSTRAP_USERS_JSON failed: %w", err)
+	}
+	if len(seeds) == 0 {
+		return nil, fmt.Errorf("VCT_BOOTSTRAP_USERS_JSON must contain at least one credential")
+	}
+
+	allowedRoles := map[UserRole]struct{}{
+		RoleAdmin:          {},
+		RoleBTC:            {},
+		RoleRefereeManager: {},
+		RoleReferee:        {},
+		RoleDelegate:       {},
+	}
+
+	credentials := make(map[string]userCredential, len(seeds))
+	for _, seed := range seeds {
+		username := strings.TrimSpace(strings.ToLower(seed.Username))
+		password := strings.TrimSpace(seed.Password)
+		displayName := strings.TrimSpace(seed.DisplayName)
+		if username == "" || password == "" || displayName == "" {
+			return nil, fmt.Errorf("credential must include username/password/displayName")
+		}
+		if len(seed.Roles) == 0 {
+			return nil, fmt.Errorf("credential %q must include at least one role", username)
+		}
+
+		roles := make([]UserRole, 0, len(seed.Roles))
+		seenRoles := map[UserRole]struct{}{}
+		for _, role := range seed.Roles {
+			if _, ok := allowedRoles[role]; !ok {
+				return nil, fmt.Errorf("credential %q has unsupported role %q", username, role)
+			}
+			if _, exists := seenRoles[role]; exists {
+				continue
+			}
+			seenRoles[role] = struct{}{}
+			roles = append(roles, role)
+		}
+
+		credentials[username] = userCredential{
+			password:    password,
+			displayName: displayName,
+			allowedRole: roles,
+		}
+	}
+
+	return credentials, nil
+}
+
+func demoCredentials() map[string]userCredential {
+	return map[string]userCredential{
+		"admin": {
+			password:    "Admin@123",
+			displayName: "Quản trị hệ thống",
+			allowedRole: []UserRole{RoleAdmin},
+		},
+		"btc": {
+			password:    "Btc@123",
+			displayName: "Ban tổ chức",
+			allowedRole: []UserRole{RoleBTC},
+		},
+		"ref-manager": {
+			password:    "Ref@123",
+			displayName: "Điều phối trọng tài",
+			allowedRole: []UserRole{RoleRefereeManager},
+		},
+		"referee": {
+			password:    "Judge@123",
+			displayName: "Trọng tài",
+			allowedRole: []UserRole{RoleReferee},
+		},
+		"delegate": {
+			password:    "Delegate@123",
+			displayName: "Cán bộ đoàn",
+			allowedRole: []UserRole{RoleDelegate},
+		},
 	}
 }
 
