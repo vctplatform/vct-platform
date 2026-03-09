@@ -10,6 +10,7 @@ import (
 	"sort"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 
 	"vct-platform/backend/internal/auth"
@@ -17,18 +18,34 @@ import (
 	"vct-platform/backend/internal/store"
 )
 
+const (
+	maxRequestBodySize = 10 << 20 // 10 MB
+	rateLimitWindow    = 1 * time.Minute
+	rateLimitMax       = 60
+)
+
+type ipRateEntry struct {
+	count     int
+	windowStart time.Time
+}
+
 type Server struct {
 	cfg             config.Config
 	authService     *auth.Service
 	store           *store.Store
 	allowedEntities map[string]struct{}
 	allowedOrigins  map[string]struct{}
+	rateMu          sync.Mutex
+	rateMap         map[string]*ipRateEntry
 }
 
 func New(cfg config.Config) *Server {
 	originSet := make(map[string]struct{}, len(cfg.AllowedOrigins))
 	for _, origin := range cfg.AllowedOrigins {
-		originSet[origin] = struct{}{}
+		trimmed := strings.TrimSpace(origin)
+		if trimmed != "" && trimmed != "*" {
+			originSet[trimmed] = struct{}{}
+		}
 	}
 
 	return &Server{
@@ -44,6 +61,7 @@ func New(cfg config.Config) *Server {
 		store:           store.NewStore(),
 		allowedEntities: defaultEntitySet(),
 		allowedOrigins:  originSet,
+		rateMap:         make(map[string]*ipRateEntry),
 	}
 }
 
@@ -57,7 +75,7 @@ func (s *Server) Handler() http.Handler {
 	mux.HandleFunc("/api/v1/auth/revoke", s.withAuth(s.handleAuthRevoke))
 	mux.HandleFunc("/api/v1/auth/audit", s.withAuth(s.handleAuthAudit))
 	mux.HandleFunc("/api/v1/", s.handleEntityRoutes)
-	return s.withCORS(s.withLogging(mux))
+	return s.withCORS(s.withRateLimit(s.withBodyLimit(s.withSecurityHeaders(s.withLogging(mux)))))
 }
 
 func (s *Server) handleHealth(w http.ResponseWriter, _ *http.Request) {
@@ -350,6 +368,10 @@ func (s *Server) handleExport(entity string, w http.ResponseWriter, r *http.Requ
 	_, _ = w.Write([]byte(payload))
 }
 
+// ════════════════════════════════════════
+// MIDDLEWARE
+// ════════════════════════════════════════
+
 func (s *Server) withAuth(next func(http.ResponseWriter, *http.Request, auth.Principal)) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		principal, err := s.principalFromRequest(r)
@@ -376,13 +398,13 @@ func (s *Server) principalFromRequest(r *http.Request) (auth.Principal, error) {
 func (s *Server) withCORS(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		origin := strings.TrimSpace(r.Header.Get("Origin"))
-		if origin != "" {
-			if s.isAllowedOrigin(origin) {
-				w.Header().Set("Access-Control-Allow-Origin", origin)
-				w.Header().Set("Vary", "Origin")
-				w.Header().Set("Access-Control-Allow-Headers", "Authorization, Content-Type")
-				w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, DELETE, OPTIONS")
-			}
+		if origin != "" && s.isAllowedOrigin(origin) {
+			w.Header().Set("Access-Control-Allow-Origin", origin)
+			w.Header().Set("Vary", "Origin")
+			w.Header().Set("Access-Control-Allow-Headers", "Authorization, Content-Type, X-Requested-With")
+			w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, DELETE, OPTIONS")
+			w.Header().Set("Access-Control-Max-Age", "7200")
+			w.Header().Set("Access-Control-Allow-Credentials", "true")
 		}
 		if r.Method == http.MethodOptions {
 			w.WriteHeader(http.StatusNoContent)
@@ -393,11 +415,62 @@ func (s *Server) withCORS(next http.Handler) http.Handler {
 }
 
 func (s *Server) isAllowedOrigin(origin string) bool {
-	if _, ok := s.allowedOrigins["*"]; ok {
-		return true
-	}
+	// No wildcard support - explicit origins only
 	_, ok := s.allowedOrigins[origin]
 	return ok
+}
+
+func (s *Server) withSecurityHeaders(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("X-Content-Type-Options", "nosniff")
+		w.Header().Set("X-Frame-Options", "DENY")
+		w.Header().Set("X-XSS-Protection", "1; mode=block")
+		w.Header().Set("Referrer-Policy", "strict-origin-when-cross-origin")
+		w.Header().Set("Cache-Control", "no-store")
+		next.ServeHTTP(w, r)
+	})
+}
+
+func (s *Server) withBodyLimit(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.Body != nil && r.ContentLength > maxRequestBodySize {
+			http.Error(w, `{"message":"request body quá lớn (tối đa 10MB)"}`, http.StatusRequestEntityTooLarge)
+			return
+		}
+		r.Body = http.MaxBytesReader(w, r.Body, maxRequestBodySize)
+		next.ServeHTTP(w, r)
+	})
+}
+
+func (s *Server) withRateLimit(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		ip := extractClientIP(r)
+		now := time.Now()
+
+		s.rateMu.Lock()
+		entry, exists := s.rateMap[ip]
+		if !exists {
+			entry = &ipRateEntry{windowStart: now}
+			s.rateMap[ip] = entry
+		}
+		if now.Sub(entry.windowStart) > rateLimitWindow {
+			entry.count = 0
+			entry.windowStart = now
+		}
+		entry.count++
+		count := entry.count
+		s.rateMu.Unlock()
+
+		if count > rateLimitMax {
+			w.Header().Set("Retry-After", "60")
+			http.Error(w, `{"message":"quá nhiều request, vui lòng thử lại sau"}`, http.StatusTooManyRequests)
+			return
+		}
+
+		w.Header().Set("X-RateLimit-Limit", strconv.Itoa(rateLimitMax))
+		w.Header().Set("X-RateLimit-Remaining", strconv.Itoa(rateLimitMax-count))
+		next.ServeHTTP(w, r)
+	})
 }
 
 func (s *Server) withLogging(next http.Handler) http.Handler {
@@ -410,21 +483,28 @@ func (s *Server) withLogging(next http.Handler) http.Handler {
 	})
 }
 
-func requestContextFromRequest(r *http.Request) auth.RequestContext {
+// ════════════════════════════════════════
+// HELPERS
+// ════════════════════════════════════════
+
+func extractClientIP(r *http.Request) string {
 	ip := strings.TrimSpace(r.Header.Get("X-Forwarded-For"))
 	if ip == "" {
 		host, _, err := net.SplitHostPort(strings.TrimSpace(r.RemoteAddr))
 		if err == nil {
-			ip = host
-		} else {
-			ip = strings.TrimSpace(r.RemoteAddr)
+			return host
 		}
-	} else if strings.Contains(ip, ",") {
-		ip = strings.TrimSpace(strings.Split(ip, ",")[0])
+		return strings.TrimSpace(r.RemoteAddr)
 	}
+	if strings.Contains(ip, ",") {
+		return strings.TrimSpace(strings.Split(ip, ",")[0])
+	}
+	return ip
+}
 
+func requestContextFromRequest(r *http.Request) auth.RequestContext {
 	return auth.RequestContext{
-		IP:        ip,
+		IP:        extractClientIP(r),
 		UserAgent: strings.TrimSpace(r.UserAgent()),
 	}
 }
@@ -456,10 +536,6 @@ func badRequest(w http.ResponseWriter, message string) {
 	success(w, http.StatusBadRequest, map[string]string{"message": message})
 }
 
-func unauthorized(w http.ResponseWriter, message string) {
-	success(w, http.StatusUnauthorized, map[string]string{"message": message})
-}
-
 func notFound(w http.ResponseWriter) {
 	success(w, http.StatusNotFound, map[string]string{"message": "không tìm thấy tài nguyên"})
 }
@@ -469,7 +545,7 @@ func methodNotAllowed(w http.ResponseWriter) {
 }
 
 func internalError(w http.ResponseWriter, err error) {
-	success(w, http.StatusInternalServerError, map[string]string{"message": err.Error()})
+	success(w, http.StatusInternalServerError, map[string]string{"message": "lỗi hệ thống nội bộ"})
 }
 
 func writeAuthError(w http.ResponseWriter, err error) {
@@ -483,6 +559,8 @@ func writeAuthError(w http.ResponseWriter, err error) {
 		status = http.StatusForbidden
 	case errors.Is(err, auth.ErrUnauthorized):
 		status = http.StatusUnauthorized
+	case errors.Is(err, auth.ErrAccountLocked):
+		status = http.StatusTooManyRequests
 	}
 	success(w, status, map[string]string{"message": authMessage(err)})
 }

@@ -58,7 +58,8 @@ import {
     Eye,
     List,
     Flag,
-    ClipboardList
+    ClipboardList,
+    Info
 } from 'lucide-react';
 
 /**
@@ -162,4 +163,7 @@ export const VCT_Icons = {
     Eye: (p: IconProps) => <Eye {...defaultProps} {...p} />,
     Flag: (p: IconProps) => <Flag {...defaultProps} {...p} />,
     ClipboardList: (p: IconProps) => <ClipboardList {...defaultProps} {...p} />,
+    Info: (p: IconProps) => <Info {...defaultProps} {...p} />,
+    ChevronRight: (p: IconProps) => <ChevronRight {...defaultProps} {...p} />,
+    AlertTriangle: (p: IconProps) => <AlertTriangle {...defaultProps} {...p} />,
 };

@@ -1,0 +1,26 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "next-web",
+      "runtimeExecutable": "node",
+      "runtimeArgs": ["C:\\nvm4w\\nodejs\\node_modules\\npm\\bin\\npm-cli.js", "run", "dev", "--workspace", "next-app"],
+      "port": 3000,
+      "autoPort": true
+    },
+    {
+      "name": "go-backend",
+      "runtimeExecutable": "go",
+      "runtimeArgs": ["-C", "backend", "run", "./cmd/server"],
+      "port": 18080,
+      "autoPort": true
+    },
+    {
+      "name": "expo-mobile",
+      "runtimeExecutable": "node",
+      "runtimeArgs": ["C:\\nvm4w\\nodejs\\node_modules\\npm\\bin\\npm-cli.js", "run", "start", "--workspace", "expo-app"],
+      "port": 8081,
+      "autoPort": true
+    }
+  ]
+}
