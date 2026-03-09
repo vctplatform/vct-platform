@@ -152,7 +152,10 @@ const getStoredAuthToken = () => {
   try {
     const raw = window.localStorage.getItem('vct:auth-session')
     if (!raw) return null
-    const parsed = JSON.parse(raw) as { token?: string }
+    const parsed = JSON.parse(raw) as { token?: string; accessToken?: string }
+    if (typeof parsed?.accessToken === 'string' && parsed.accessToken.trim()) {
+      return parsed.accessToken
+    }
     return parsed?.token ?? null
   } catch {
     return null

@@ -156,7 +156,10 @@ assert.match(backendAPI, /handleEntityRoutes/, 'Backend should expose generic en
 
 const backendAuth = readFileSync(resolve(root, 'backend/internal/auth/service.go'), 'utf8')
 assert.match(backendAuth, /Login\(/, 'Backend auth service should implement login')
-assert.match(backendAuth, /GetSession\(/, 'Backend auth service should validate sessions')
+assert.match(backendAuth, /AuthenticateAccessToken\(/, 'Backend auth service should validate access tokens')
+assert.match(backendAuth, /Refresh\(/, 'Backend auth service should implement refresh token rotation')
+assert.match(backendAuth, /Revoke\(/, 'Backend auth service should support token revocation')
+assert.match(backendAuth, /GetAuditLogs\(/, 'Backend auth service should expose audit logs')
 
 const nativeNavigation = readFileSync(resolve(root, 'packages/app/navigation/native/index.tsx'), 'utf8')
 assert.match(nativeNavigation, /AuthProvider/, 'Native navigation should include AuthProvider')

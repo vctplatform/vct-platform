@@ -2,6 +2,7 @@ package auth
 
 import (
 	"crypto/rand"
+	"crypto/subtle"
 	"encoding/hex"
 	"errors"
 	"fmt"
@@ -227,7 +228,8 @@ func (s *Service) Login(input LoginRequest, requestCtx RequestContext) (LoginRes
 	s.cleanupLocked(now)
 
 	cred, ok := s.credentials[username]
-	if !ok || cred.password != password {
+	passwordMatch := ok && subtle.ConstantTimeCompare([]byte(cred.password), []byte(password)) == 1
+	if !passwordMatch {
 		s.addAuditLocked("auth.login", false, requestCtx, AuthUser{Username: username, Role: role}, map[string]any{"reason": "invalid_credentials"})
 		return LoginResult{}, wrapError(ErrInvalidCredentials, "sai thông tin đăng nhập")
 	}
@@ -601,7 +603,7 @@ func (s *Service) parseToken(rawToken string, expectedUse string) (tokenClaims, 
 	}
 
 	parsed, err := jwt.ParseWithClaims(tokenText, &tokenClaims{}, func(token *jwt.Token) (any, error) {
-		if token.Method != jwt.SigningMethodHS256 {
+		if token.Method == nil || token.Method.Alg() != jwt.SigningMethodHS256.Alg() {
 			return nil, wrapError(ErrUnauthorized, "phương thức ký token không hợp lệ")
 		}
 		return s.secret, nil

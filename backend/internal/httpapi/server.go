@@ -155,7 +155,7 @@ func (s *Server) handleAuthAudit(w http.ResponseWriter, r *http.Request, princip
 	}
 
 	if principal.User.Role != auth.RoleAdmin && principal.User.Role != auth.RoleBTC {
-		unauthorized(w, "Không đủ quyền xem audit logs")
+		writeAuthError(w, fmt.Errorf("%w: Không đủ quyền xem audit logs", auth.ErrForbidden))
 		return
 	}
 

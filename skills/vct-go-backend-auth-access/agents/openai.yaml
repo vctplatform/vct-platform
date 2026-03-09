@@ -1,0 +1,4 @@
+interface:
+  display_name: "VCT Go Backend Auth Access"
+  short_description: "Design JWT auth and access control for VCT backend"
+  default_prompt: "Use $vct-go-backend-auth-access to implement or refactor JWT auth flows for the VCT backend."

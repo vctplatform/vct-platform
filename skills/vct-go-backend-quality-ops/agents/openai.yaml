@@ -1,0 +1,4 @@
+interface:
+  display_name: "VCT Go Backend Quality Ops"
+  short_description: "Validate tests, security, and release readiness"
+  default_prompt: "Use $vct-go-backend-quality-ops to run quality gates and hardening checks for the VCT Go backend."

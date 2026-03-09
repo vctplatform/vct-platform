@@ -1,0 +1,4 @@
+interface:
+  display_name: "VCT Go Backend Foundation"
+  short_description: "Scaffold and structure VCT Go backend services"
+  default_prompt: "Use $vct-go-backend-foundation to scaffold backend modules aligned with VCT Platform and Go 1.26."
