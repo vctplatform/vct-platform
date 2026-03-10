@@ -4,8 +4,10 @@ import * as React from 'react'
 import { useState, useMemo } from 'react'
 import {
     VCT_Badge, VCT_Button, VCT_Stack, VCT_SearchInput,
-    VCT_Select, VCT_EmptyState, VCT_KpiCard, VCT_Tabs
+    VCT_Select, VCT_EmptyState, VCT_Tabs
 } from '../components/vct-ui'
+import { VCT_PageContainer, VCT_PageHero, VCT_StatRow } from '../components/vct-ui'
+import type { StatItem } from '../components/VCT_StatRow'
 import { VCT_Icons } from '../components/vct-icons'
 
 // ════════════════════════════════════════
@@ -50,27 +52,25 @@ export const Page_belt_exams = () => {
             v = v.filter(e => e.title.toLowerCase().includes(q) || e.location.toLowerCase().includes(q))
         }
         return v
-    }, [search, statusFilter])
+    }, [exams, search, statusFilter])
 
     return (
-        <div className="mx-auto max-w-[1400px] p-4 pb-24">
-            <div className="mb-6 flex flex-wrap items-start justify-between gap-4">
-                <div>
-                    <h1 className="text-2xl font-bold tracking-tight text-[var(--vct-text-primary)]">Kỳ thi Thăng Cấp Đai</h1>
-                    <p className="text-sm text-[var(--vct-text-secondary)] mt-1">Tổ chức, quản lý hồ sơ đăng ký thi và chấm điểm thăng cấp.</p>
-                </div>
-                <VCT_Stack direction="row" gap={12}>
-                    <VCT_Button icon={<VCT_Icons.Plus size={16} />}>Tạo Kỳ thi mới</VCT_Button>
-                </VCT_Stack>
-            </div>
+        <VCT_PageContainer size="wide" animated>
+            <VCT_PageHero
+                icon={<VCT_Icons.Award size={24} />}
+                title="Kỳ thi Thăng Cấp Đai"
+                subtitle="Tổ chức, quản lý hồ sơ đăng ký thi và chấm điểm thăng cấp."
+                gradientFrom="rgba(139, 92, 246, 0.08)"
+                gradientTo="rgba(245, 158, 11, 0.06)"
+                actions={<VCT_Button icon={<VCT_Icons.Plus size={16} />}>Tạo Kỳ thi mới</VCT_Button>}
+            />
 
-            {/* ── KPI ── */}
-            <div className="vct-stagger mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                <VCT_KpiCard label="Kỳ thi Đang đăng ký" value={exams.filter(e => e.status === 'registration').length} icon={<VCT_Icons.Calendar size={24} />} color="#0ea5e9" />
-                <VCT_KpiCard label="Kỳ thi Đang chấm điểm" value={exams.filter(e => e.status === 'grading').length} icon={<VCT_Icons.Edit size={24} />} color="#f59e0b" />
-                <VCT_KpiCard label="Tổng thí sinh tham gia" value={exams.reduce((s, e) => s + e.candidates_count, 0)} icon={<VCT_Icons.Users size={24} />} color="#10b981" />
-                <VCT_KpiCard label="Kỳ thi Hoàn tất" value={exams.filter(e => e.status === 'completed').length} icon={<VCT_Icons.Award size={24} />} color="#8b5cf6" />
-            </div>
+            <VCT_StatRow items={[
+                { label: 'Đang đăng ký', value: exams.filter(e => e.status === 'registration').length, icon: <VCT_Icons.Calendar size={18} />, color: '#0ea5e9' },
+                { label: 'Đang chấm điểm', value: exams.filter(e => e.status === 'grading').length, icon: <VCT_Icons.Edit size={18} />, color: '#f59e0b' },
+                { label: 'Thí sinh', value: exams.reduce((s, e) => s + e.candidates_count, 0), icon: <VCT_Icons.Users size={18} />, color: '#10b981' },
+                { label: 'Hoàn tất', value: exams.filter(e => e.status === 'completed').length, icon: <VCT_Icons.Award size={18} />, color: '#8b5cf6' },
+            ] as StatItem[]} className="mb-6" />
 
             {/* ── TABS & TOOLBAR ── */}
             <div className="mb-6 flex flex-wrap items-center justify-between gap-4 border-b border-[var(--vct-border-subtle)] pb-4">
@@ -129,6 +129,6 @@ export const Page_belt_exams = () => {
                     ))}
                 </div>
             )}
-        </div>
+        </VCT_PageContainer>
     )
 }

@@ -1,7 +1,8 @@
 'use client'
 
 import * as React from 'react'
-import { VCT_KpiCard, VCT_Badge, VCT_Button, VCT_Stack } from '../components/vct-ui'
+import { VCT_Badge, VCT_Button, VCT_Stack, VCT_PageContainer, VCT_StatRow } from '../components/vct-ui'
+import type { StatItem } from '../components/VCT_StatRow'
 import { VCT_Icons } from '../components/vct-icons'
 
 // ════════════════════════════════════════
@@ -80,7 +81,7 @@ const MetricGrid = ({ title, icon, metrics, color }: { title: string; icon: Reac
 // ════════════════════════════════════════
 export const Page_admin_system = () => {
     return (
-        <div className="mx-auto max-w-[1400px] p-4 pb-24">
+        <VCT_PageContainer size="wide" animated>
             <div className="mb-6 flex flex-wrap items-start justify-between gap-4">
                 <div>
                     <h1 className="text-2xl font-bold tracking-tight text-[var(--vct-text-primary)]">Cấu Hình & Giám Sát Hệ Thống</h1>
@@ -93,12 +94,12 @@ export const Page_admin_system = () => {
             </div>
 
             {/* ── KPI ── */}
-            <div className="vct-stagger mb-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                <VCT_KpiCard label="Uptime" value="99.98%" icon={<VCT_Icons.Activity size={24} />} color="#10b981" />
-                <VCT_KpiCard label="CPU Usage" value="23%" icon={<VCT_Icons.Laptop size={24} />} color="#0ea5e9" />
-                <VCT_KpiCard label="Memory" value="4.2/8 GB" icon={<VCT_Icons.Layers size={24} />} color="#f59e0b" />
-                <VCT_KpiCard label="Disk" value="22/100 GB" icon={<VCT_Icons.Settings size={24} />} color="#8b5cf6" />
-            </div>
+            <VCT_StatRow items={[
+                { label: 'Uptime', value: '99.98%', icon: <VCT_Icons.Activity size={18} />, color: '#10b981' },
+                { label: 'CPU', value: '23%', icon: <VCT_Icons.Laptop size={18} />, color: '#0ea5e9' },
+                { label: 'Memory', value: '4.2/8 GB', icon: <VCT_Icons.Layers size={18} />, color: '#f59e0b' },
+                { label: 'Disk', value: '22/100 GB', icon: <VCT_Icons.Settings size={18} />, color: '#8b5cf6' },
+            ] as StatItem[]} className="mb-8" />
 
             {/* ── INFRASTRUCTURE METRICS ── */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
@@ -167,6 +168,6 @@ export const Page_admin_system = () => {
                     ))}
                 </div>
             </div>
-        </div>
+        </VCT_PageContainer>
     )
 }

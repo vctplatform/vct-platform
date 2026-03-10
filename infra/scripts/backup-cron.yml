@@ -1,0 +1,32 @@
+# VCT Platform - Backup Scheduling via Docker
+# Add this to your docker-compose.prod.yml or run standalone
+#
+# Usage: docker compose -f backup-cron.yml up -d
+
+services:
+  db-backup:
+    image: postgres:17-alpine
+    volumes:
+      - ../../infra/scripts/backup.sh:/backup.sh:ro
+      - backup_data:/backups
+    environment:
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_NAME=vct_platform
+      - DB_USER=vct_user
+      - DB_PASSWORD=${DB_PASSWORD}
+      - BACKUP_DIR=/backups
+      - RETAIN_DAILY=7
+      - RETAIN_WEEKLY=4
+    entrypoint: >
+      /bin/sh -c "
+        chmod +x /backup.sh &&
+        echo '0 2 * * * /backup.sh >> /var/log/backup.log 2>&1' | crontab - &&
+        crond -f
+      "
+    restart: unless-stopped
+    depends_on:
+      - postgres
+
+volumes:
+  backup_data:

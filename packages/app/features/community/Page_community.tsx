@@ -3,8 +3,10 @@
 import * as React from 'react'
 import { useState } from 'react'
 import {
-    VCT_Button, VCT_Stack, VCT_SearchInput, VCT_KpiCard, VCT_Badge
+    VCT_Button, VCT_Stack, VCT_SearchInput, VCT_Badge
 } from '../components/vct-ui'
+import { VCT_PageContainer, VCT_PageHero, VCT_StatRow } from '../components/vct-ui'
+import type { StatItem } from '../components/VCT_StatRow'
 import { VCT_Icons } from '../components/vct-icons'
 
 // ════════════════════════════════════════
@@ -29,25 +31,25 @@ const MOCK_EVENTS = [
 export const Page_community = () => {
     const [search, setSearch] = useState('')
 
-    return (
-        <div className="mx-auto max-w-[1400px] p-4 pb-24">
-            <div className="mb-6 flex flex-wrap items-start justify-between gap-4">
-                <div>
-                    <h1 className="text-2xl font-bold tracking-tight text-[var(--vct-text-primary)]">Cộng Đồng Võ Thuật</h1>
-                    <p className="text-sm text-[var(--vct-text-secondary)] mt-1">Tin tức, sự kiện và kết nối cộng đồng võ thuật toàn quốc.</p>
-                </div>
-                <VCT_Stack direction="row" gap={12}>
-                    <VCT_Button icon={<VCT_Icons.Plus size={16} />}>Đăng bài mới</VCT_Button>
-                </VCT_Stack>
-            </div>
+    const kpis: StatItem[] = [
+        { label: 'Thành viên', value: '12.5k', icon: <VCT_Icons.Users size={18} />, color: '#0ea5e9' },
+        { label: 'Bài viết hôm nay', value: 28, icon: <VCT_Icons.FileText size={18} />, color: '#10b981' },
+        { label: 'Sự kiện sắp tới', value: 5, icon: <VCT_Icons.Calendar size={18} />, color: '#f59e0b' },
+        { label: 'CLB hoạt động', value: 340, icon: <VCT_Icons.Flag size={18} />, color: '#8b5cf6' },
+    ]
 
-            {/* ── KPI ── */}
-            <div className="vct-stagger mb-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                <VCT_KpiCard label="Thành viên" value="12.5k" icon={<VCT_Icons.Users size={24} />} color="#0ea5e9" />
-                <VCT_KpiCard label="Bài viết hôm nay" value={28} icon={<VCT_Icons.FileText size={24} />} color="#10b981" />
-                <VCT_KpiCard label="Sự kiện sắp tới" value={5} icon={<VCT_Icons.Calendar size={24} />} color="#f59e0b" />
-                <VCT_KpiCard label="CLB hoạt động" value={340} icon={<VCT_Icons.Flag size={24} />} color="#8b5cf6" />
-            </div>
+    return (
+        <VCT_PageContainer size="wide" animated>
+            <VCT_PageHero
+                icon={<VCT_Icons.Users size={24} />}
+                title="Cộng Đồng Võ Thuật"
+                subtitle="Tin tức, sự kiện và kết nối cộng đồng võ thuật toàn quốc."
+                gradientFrom="rgba(14, 165, 233, 0.08)"
+                gradientTo="rgba(139, 92, 246, 0.06)"
+                actions={<VCT_Button icon={<VCT_Icons.Plus size={16} />}>Đăng bài mới</VCT_Button>}
+            />
+
+            <VCT_StatRow items={kpis} className="mb-8" />
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 {/* ── NEWSFEED ── */}
@@ -117,6 +119,6 @@ export const Page_community = () => {
                     </div>
                 </div>
             </div>
-        </div>
+        </VCT_PageContainer>
     )
 }

@@ -3,9 +3,11 @@ import * as React from 'react';
 import { useState, useMemo, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import {
-    VCT_Badge, VCT_KpiCard, VCT_Stack, VCT_Toast, VCT_AvatarLetter,
+    VCT_Badge, VCT_Stack, VCT_Toast, VCT_AvatarLetter,
     VCT_SegmentedControl, VCT_ProgressBar
 } from '../components/vct-ui';
+import { VCT_PageContainer, VCT_PageHero, VCT_SectionCard, VCT_StatRow } from '../components/vct-ui';
+import type { StatItem } from '../components/VCT_StatRow';
 import { VCT_Icons } from '../components/vct-icons';
 import type { DonVi, LuotThiQuyen, TranDauDK } from '../data/types';
 import { VCT_Button, VCT_EmptyState, VCT_Modal } from '../components/vct-ui';
@@ -116,28 +118,35 @@ export const Page_medals = () => {
         return athletes;
     }, [medalTable, filterMedal]);
 
+    const kpis: StatItem[] = [
+        { label: '🥇 Vàng', value: totalHCV, icon: <VCT_Icons.Award size={18} />, color: '#fbbf24' },
+        { label: '🥈 Bạc', value: totalHCB, icon: <VCT_Icons.Award size={18} />, color: '#94a3b8' },
+        { label: '🥉 Đồng', value: totalHCD, icon: <VCT_Icons.Award size={18} />, color: '#d97706' },
+        { label: 'Tổng HC', value: totalHCV + totalHCB + totalHCD, icon: <VCT_Icons.Star size={18} />, color: '#22d3ee', sub: `${medalTable.length} đoàn có huy chương` },
+    ];
+
     return (
-        <div className="mx-auto max-w-[1400px] pb-24">
+        <VCT_PageContainer size="wide" animated>
+            <VCT_PageHero
+                icon={<VCT_Icons.Award size={24} />}
+                title="Bảng Tổng Sắp Huy Chương"
+                subtitle="Tổng hợp thành tích huy chương toàn giải."
+                gradientFrom="rgba(251, 191, 36, 0.08)"
+                gradientTo="rgba(217, 119, 6, 0.06)"
+                actions={
+                    <VCT_Button
+                        variant="secondary"
+                        icon={<VCT_Icons.Download size={16} />}
+                        onClick={handleExportLeaderboard}
+                        disabled={!permissions.canExport}
+                    >
+                        Xuất PDF / In
+                    </VCT_Button>
+                }
+            />
             <VCT_Toast isVisible={toast.show} message={toast.msg} type={toast.type} onClose={() => setToast(p => ({ ...p, show: false }))} />
 
-            <VCT_Stack direction="row" justify="space-between" align="center" className="mb-6">
-                <div style={{ fontSize: 18, fontWeight: 900, textTransform: 'uppercase' }}>Bảng Tổng Sắp Huy Chương</div>
-                <VCT_Button
-                    variant="secondary"
-                    icon={<VCT_Icons.Download size={16} />}
-                    onClick={handleExportLeaderboard}
-                    disabled={!permissions.canExport}
-                >
-                    Xuất PDF / In
-                </VCT_Button>
-            </VCT_Stack>
-
-            <div className="vct-stagger mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
-                <VCT_KpiCard label="🥇 Vàng" value={totalHCV} icon={<VCT_Icons.Award size={24} />} color="#fbbf24" />
-                <VCT_KpiCard label="🥈 Bạc" value={totalHCB} icon={<VCT_Icons.Award size={24} />} color="#94a3b8" />
-                <VCT_KpiCard label="🥉 Đồng" value={totalHCD} icon={<VCT_Icons.Award size={24} />} color="#d97706" />
-                <VCT_KpiCard label="Tổng HC" value={totalHCV + totalHCB + totalHCD} icon={<VCT_Icons.Star size={24} />} color="#22d3ee" sub={`${medalTable.length} đoàn có huy chương`} />
-            </div>
+            <VCT_StatRow items={kpis} className="mb-8" />
 
             {/* Stacked Bar Chart */}
             {medalTable.length > 0 && (
@@ -212,10 +221,10 @@ export const Page_medals = () => {
             {filtered.length === 0 ? (
                 <VCT_EmptyState title="Không tìm thấy VĐV đạt huy chương" description="Thay đổi bộ lọc hoặc kiểm tra lại." icon="🏅" />
             ) : (
-                <div className="overflow-hidden rounded-2xl border border-[var(--vct-border-subtle)] bg-[var(--vct-bg-glass)]">
+                <VCT_SectionCard flush accentColor="#fbbf24">
                     <table className="w-full border-collapse">
                         <thead>
-                            <tr className="border-b border-[var(--vct-border-strong)] bg-[var(--vct-bg-card)]">
+                            <tr className="border-b border-vct-border bg-vct-elevated">
                                 {['Huy chương', 'Họ & Tên', 'Đoàn', 'Nội dung', 'Điểm / Thành tích', 'In Giấy Khen'].map((h, i) => (
                                     <th key={i} style={{ padding: '16px', textAlign: 'left', fontSize: 11, fontWeight: 700, textTransform: 'uppercase', opacity: 0.5 }}>{h}</th>
                                 ))}
@@ -241,7 +250,7 @@ export const Page_medals = () => {
                                         <td style={{ padding: '16px' }}>
                                             <div style={{ fontWeight: 800, fontSize: 15 }}>{r.vdv_ten}</div>
                                         </td>
-                                        <td style={{ padding: '16px', fontSize: 14, fontWeight: 600, color: 'var(--vct-text-secondary)' }}>{r.doan_ten}</td>
+                                        <td className="p-4 text-sm font-semibold text-vct-text-secondary">{r.doan_ten}</td>
                                         <td style={{ padding: '16px' }}>
                                             <div style={{ display: 'inline-flex', padding: '4px 10px', borderRadius: '8px', fontSize: '12px', fontWeight: 800, color: '#f59e0b', background: 'rgba(245, 158, 11, 0.1)' }}>
                                                 {r.nd_ten}
@@ -256,7 +265,7 @@ export const Page_medals = () => {
                                                 style={{ padding: '4px 12px', fontSize: 12 }}
                                                 disabled={!permissions.canPublish}
                                             >
-                                                In Khen THưởng
+                                                In Khen Thưởng
                                             </VCT_Button>
                                         </td>
                                     </tr>
@@ -264,8 +273,9 @@ export const Page_medals = () => {
                             })}
                         </tbody>
                     </table>
-                </div>
-            )}
+                </VCT_SectionCard>
+            )
+            }
 
             {/* Print Certificate Modal */}
             <VCT_Modal isOpen={!!certModal} onClose={() => setCertModal(null)} title="In Giấy Chứng Nhận Thành Tích" width="900px" footer={
@@ -321,10 +331,10 @@ export const Page_medals = () => {
             </VCT_Modal>
 
             {/* Medal Table */}
-            <div style={{ borderRadius: 16, border: '1px solid var(--vct-border-subtle)', overflow: 'hidden', background: 'var(--vct-bg-glass)', marginTop: 40 }}>
+            <VCT_SectionCard flush accentColor="#22d3ee" className="mt-10">
                 <table className="w-full border-collapse">
                     <thead>
-                        <tr className="border-b border-[var(--vct-border-strong)] bg-[var(--vct-bg-card)]">
+                        <tr className="border-b border-vct-border bg-vct-elevated">
                             {['Hạng', 'Đơn vị', '🥇 Vàng', '🥈 Bạc', '🥉 Đồng', 'Tổng'].map((h, i) => (
                                 <th key={i} style={{ padding: '14px 16px', textAlign: i >= 2 ? 'center' : 'left', fontSize: 12, fontWeight: 700, textTransform: 'uppercase', opacity: 0.6 }}>{h}</th>
                             ))}
@@ -348,7 +358,8 @@ export const Page_medals = () => {
                         ))}
                     </tbody>
                 </table>
-            </div>
-        </div>
+            </VCT_SectionCard>
+        </VCT_PageContainer >
     );
 };
+

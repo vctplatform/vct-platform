@@ -16,6 +16,7 @@ type TTLCache struct {
 	entries    map[string]entry
 	defaultTTL time.Duration
 	maxEntries int
+	entityTTL  map[string]time.Duration // per-entity TTL overrides
 }
 
 func NewTTLCache(defaultTTL time.Duration, maxEntries int) *TTLCache {
@@ -29,7 +30,37 @@ func NewTTLCache(defaultTTL time.Duration, maxEntries int) *TTLCache {
 		entries:    make(map[string]entry, maxEntries),
 		defaultTTL: defaultTTL,
 		maxEntries: maxEntries,
+		entityTTL:  make(map[string]time.Duration),
 	}
+}
+
+// SetEntityTTL configures a custom TTL for a specific entity type.
+// Use TTL=0 to disable caching for that entity (e.g., scoring data).
+func (c *TTLCache) SetEntityTTL(entity string, ttl time.Duration) {
+	c.mu.Lock()
+	c.entityTTL[entity] = ttl
+	c.mu.Unlock()
+}
+
+// GetEntityTTL returns the configured TTL for an entity, or the default.
+func (c *TTLCache) GetEntityTTL(entity string) time.Duration {
+	c.mu.RLock()
+	ttl, ok := c.entityTTL[entity]
+	c.mu.RUnlock()
+	if ok {
+		return ttl
+	}
+	return c.defaultTTL
+}
+
+// SetForEntity stores a value with the entity-specific TTL.
+// If entity TTL is 0 (disabled), the value is not cached.
+func (c *TTLCache) SetForEntity(entity, key string, value any) {
+	ttl := c.GetEntityTTL(entity)
+	if ttl <= 0 {
+		return // caching disabled for this entity
+	}
+	c.SetWithTTL(key, value, ttl)
 }
 
 func (c *TTLCache) Get(key string) (any, bool) {

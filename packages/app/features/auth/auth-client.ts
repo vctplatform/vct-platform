@@ -4,6 +4,8 @@ import type {
   AuthUser,
   LoginInput,
   RevokeInput,
+  UserRoleAssignment,
+  WorkspaceAccess,
 } from './types'
 
 const API_BASE_URL =
@@ -29,7 +31,16 @@ interface BackendAuthUser {
     username: string
     displayName: string
     role: AuthUser['role']
+    email?: string
+    avatarUrl?: string
+    tenantId?: string
+    locale?: string
+    timezone?: string
+    metadata?: Record<string, unknown>
   }
+  roles?: UserRoleAssignment[]
+  permissions?: string[]
+  workspaces?: WorkspaceAccess[]
 }
 
 interface BackendTokenResponse {
@@ -37,19 +48,15 @@ interface BackendTokenResponse {
   accessToken?: string
   refreshToken?: string
   tokenType?: 'Bearer'
+  tournamentCode?: string
+  operationShift?: 'sang' | 'chieu' | 'toi'
   expiresAt?: string
   refreshExpiresAt?: string
 }
 
-interface BackendLoginResponse extends BackendAuthUser, BackendTokenResponse {
-  tournamentCode?: string
-  operationShift?: 'sang' | 'chieu' | 'toi'
-}
+interface BackendLoginResponse extends BackendAuthUser, BackendTokenResponse { }
 
-interface BackendMeResponse extends BackendAuthUser, Partial<BackendTokenResponse> {
-  tournamentCode?: string
-  operationShift?: 'sang' | 'chieu' | 'toi'
-}
+interface BackendMeResponse extends BackendAuthUser, Partial<BackendTokenResponse> { }
 
 interface BackendAuditResponse {
   items: AuthAuditEntry[]
@@ -58,25 +65,27 @@ interface BackendAuditResponse {
 
 interface AuthMeResult {
   user: AuthUser
-  tournamentCode: string
-  operationShift: 'sang' | 'chieu' | 'toi'
+  tournamentCode?: string
+  operationShift?: 'sang' | 'chieu' | 'toi'
   expiresAt: string
   refreshExpiresAt: string
 }
 
-const toAuthUser = (payload: BackendLoginResponse['user']): AuthUser => ({
-  id: payload.id,
-  username: payload.username,
-  name: payload.displayName,
-  role: payload.role,
+const toAuthUser = (payload: BackendLoginResponse): AuthUser => ({
+  id: payload.user.id,
+  username: payload.user.username,
+  name: payload.user.displayName,
+  role: payload.user.role,
+  email: payload.user.email,
+  avatarUrl: payload.user.avatarUrl,
+  tenantId: payload.user.tenantId,
+  locale: payload.user.locale ?? 'vi',
+  timezone: payload.user.timezone ?? 'Asia/Ho_Chi_Minh',
+  roles: Array.isArray(payload.roles) ? payload.roles : [],
+  permissions: Array.isArray(payload.permissions) ? payload.permissions : [],
+  workspaces: Array.isArray(payload.workspaces) ? payload.workspaces : [],
+  metadata: payload.user.metadata,
 })
-
-const normalizeShift = (
-  value: string | undefined
-): 'sang' | 'chieu' | 'toi' => {
-  if (value === 'chieu' || value === 'toi') return value
-  return 'sang'
-}
 
 const parseError = async (response: Response): Promise<string> => {
   const fallback = `HTTP ${response.status}`
@@ -110,8 +119,7 @@ const requestJson = async <T>(
 }
 
 const toSession = (
-  payload: BackendLoginResponse,
-  fallback: Pick<LoginInput, 'operationShift' | 'tournamentCode'>
+  payload: BackendLoginResponse
 ): AuthSession => {
   const accessToken = payload.accessToken ?? payload.token ?? ''
   const refreshToken = payload.refreshToken ?? ''
@@ -124,9 +132,9 @@ const toSession = (
     accessToken,
     refreshToken,
     tokenType: payload.tokenType ?? 'Bearer',
-    user: toAuthUser(payload.user),
-    tournamentCode: payload.tournamentCode ?? fallback.tournamentCode,
-    operationShift: normalizeShift(payload.operationShift ?? fallback.operationShift),
+    user: toAuthUser(payload),
+    tournamentCode: payload.tournamentCode,
+    operationShift: payload.operationShift,
     expiresAt:
       payload.expiresAt ?? new Date(Date.now() + 15 * 60 * 1000).toISOString(),
     refreshExpiresAt:
@@ -138,15 +146,23 @@ const toSession = (
 export const authClient = {
   baseUrl: API_BASE_URL,
   async login(input: LoginInput): Promise<AuthSession> {
+    const loginPayload: Record<string, unknown> = {
+      username: input.username,
+      password: input.password,
+    }
+    if (input.role) loginPayload.role = input.role
+    if (input.tournamentCode) loginPayload.tournamentCode = input.tournamentCode
+    if (input.operationShift) loginPayload.operationShift = input.operationShift
+
     const payload = await requestJson<BackendLoginResponse>('/api/v1/auth/login', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         Accept: 'application/json',
       },
-      body: JSON.stringify(input),
+      body: JSON.stringify(loginPayload),
     })
-    return toSession(payload, input)
+    return toSession(payload)
   },
 
   async me(accessToken: string): Promise<AuthMeResult> {
@@ -158,9 +174,9 @@ export const authClient = {
     })
 
     return {
-      user: toAuthUser(payload.user),
-      tournamentCode: payload.tournamentCode ?? 'VCT-2026',
-      operationShift: normalizeShift(payload.operationShift),
+      user: toAuthUser(payload),
+      tournamentCode: payload.tournamentCode,
+      operationShift: payload.operationShift,
       expiresAt:
         payload.expiresAt ?? new Date(Date.now() + 15 * 60 * 1000).toISOString(),
       refreshExpiresAt:
@@ -169,10 +185,7 @@ export const authClient = {
     }
   },
 
-  async refresh(
-    refreshToken: string,
-    fallback: Pick<LoginInput, 'operationShift' | 'tournamentCode'>
-  ): Promise<AuthSession> {
+  async refresh(refreshToken: string): Promise<AuthSession> {
     const payload = await requestJson<BackendLoginResponse>('/api/v1/auth/refresh', {
       method: 'POST',
       headers: {
@@ -181,7 +194,7 @@ export const authClient = {
       },
       body: JSON.stringify({ refreshToken }),
     })
-    return toSession(payload, fallback)
+    return toSession(payload)
   },
 
   async logout(accessToken: string): Promise<void> {
@@ -232,5 +245,25 @@ export const authClient = {
         Authorization: `Bearer ${accessToken}`,
       },
     })
+  },
+
+  async register(input: {
+    username: string
+    password: string
+    displayName: string
+    role?: string
+  }): Promise<AuthSession> {
+    const payload = await requestJson<BackendLoginResponse>(
+      '/api/v1/auth/register',
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+        },
+        body: JSON.stringify(input),
+      }
+    )
+    return toSession(payload)
   },
 }

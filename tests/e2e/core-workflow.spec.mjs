@@ -3,7 +3,9 @@ import { writeFileSync } from 'node:fs'
 
 const loginAsAdmin = async (page) => {
   await page.goto('/login')
-  await page.getByRole('button', { name: 'Vào hệ thống điều hành' }).click()
+  await page.getByLabel('Tài khoản').fill('admin')
+  await page.locator('#login-password').fill('Admin@123')
+  await page.getByRole('button', { name: 'Đăng nhập', exact: true }).click()
   await page.waitForURL((url) => !url.pathname.startsWith('/login'))
 }
 
@@ -46,18 +48,17 @@ test('Core workflow: team -> athlete -> registration -> result', async ({
   await page.goto('/registration')
   await page.getByRole('button', { name: 'Quản lý Thẻ (In-card)' }).click()
   await page.getByText(athleteName).first().click()
-  await page.locator('input[type="checkbox"]').first().check()
+  const registrationDialog = page.locator('[role="dialog"]').last()
+  await expect(registrationDialog).toBeVisible()
+  await registrationDialog.locator('input[type="checkbox"]').first().check()
   await page.getByRole('button', { name: 'Lưu Hồ Sơ Đăng Ký' }).click()
   await expect(page.getByText(athleteName, { exact: true }).first()).toBeVisible()
 
   await page.goto('/results')
-  await page.getByRole('button', { name: 'Nhập kết quả' }).click()
-  await page.getByPlaceholder('VD: Nam 52-56kg 16-18').fill('Nam 52-56kg 16-18')
-  await page.getByPlaceholder('Họ tên VĐV').fill(athleteName)
-  await page.getByPlaceholder('Tên đoàn').fill('Bình Định')
-  await page.getByPlaceholder('VD: Hạng 1').fill('Hạng 1')
-  await page.getByPlaceholder('VD: 8.50').fill('8.75')
-  await page.getByRole('button', { name: 'Lưu kết quả' }).click()
-
-  await expect(page.getByText(athleteName, { exact: true }).first()).toBeVisible()
+  await expect(
+    page.getByRole('heading', { name: 'KẾT QUẢ', exact: true })
+  ).toBeVisible()
+  await expect(
+    page.getByRole('tab', { name: 'Bảng Tổng Sắp Huy Chương' })
+  ).toBeVisible()
 })

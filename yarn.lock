@@ -1855,6 +1855,11 @@
   resolved "https://registry.npmjs.org/@types/prop-types/-/prop-types-15.7.15.tgz"
   integrity sha512-F6bEyamV9jKGAFBEmlQnesRPGOQqS2+Uwi0Em15xenOxHaf2hv6L8YCVn3rPdPJOiJfPiCnLIRyvwVaqMY3MIw==
 
+"@types/react-dom@^19.2.3":
+  version "19.2.3"
+  resolved "https://registry.npmjs.org/@types/react-dom/-/react-dom-19.2.3.tgz"
+  integrity sha512-jp2L/eY6fn+KgVVQAOqYItbF0VY/YApe5Mz2F0aykSO8gx31bYCZyvSeYxCHKvzHG5eZjc+zyaS5BrBWya2+kQ==
+
 "@types/react@^18.2.21":
   version "18.3.28"
   resolved "https://registry.npmjs.org/@types/react/-/react-18.3.28.tgz"
@@ -1956,6 +1961,23 @@
   dependencies:
     "@urql/core" "^5.1.2"
     wonka "^6.3.2"
+
+"@vct/shared-types@file:D:\\VCT PLATFORM\\vct-platform\\packages\\shared-types":
+  version "1.0.0"
+  resolved "file:packages/shared-types"
+
+"@vct/shared-utils@file:D:\\VCT PLATFORM\\vct-platform\\packages\\shared-utils":
+  version "1.0.0"
+  resolved "file:packages/shared-utils"
+  dependencies:
+    zod "^4.3.6"
+
+"@vct/ui@file:D:\\VCT PLATFORM\\vct-platform\\packages\\ui":
+  version "1.1.0"
+  resolved "file:packages/ui"
+  dependencies:
+    framer-motion "^12.35.0"
+    lucide-react "^0.577.0"
 
 "@xmldom/xmldom@^0.8.8":
   version "0.8.11"
@@ -7059,3 +7081,8 @@ zod@^4.3.6:
   version "4.3.6"
   resolved "https://registry.npmjs.org/zod/-/zod-4.3.6.tgz"
   integrity sha512-rftlrkhHZOcjDwkGlnUtZZkvaPHCsDATp4pGpuOOMDaTdDDXF91wuVDJoWoPsKX/3YPQ5fHuF3STjcYyKr+Qhg==
+
+zustand@^5.0.11:
+  version "5.0.11"
+  resolved "https://registry.npmjs.org/zustand/-/zustand-5.0.11.tgz"
+  integrity sha512-fdZY+dk7zn/vbWNCYmzZULHRrss0jx5pPFiOuMZ/5HJN6Yv3u+1Wswy/4MpZEkEGhtNH+pwxZB8OKgUBPzYAGg==

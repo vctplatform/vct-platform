@@ -4,8 +4,10 @@ import * as React from 'react'
 import { useState, useMemo } from 'react'
 import {
     VCT_Button, VCT_Stack, VCT_SearchInput,
-    VCT_KpiCard, VCT_Badge, VCT_Tabs
+    VCT_Badge, VCT_Tabs
 } from '../components/vct-ui'
+import { VCT_PageContainer, VCT_PageHero, VCT_SectionCard, VCT_StatRow } from '../components/vct-ui'
+import type { StatItem } from '../components/VCT_StatRow'
 import { VCT_Icons } from '../components/vct-icons'
 
 // ════════════════════════════════════════
@@ -42,46 +44,30 @@ export const Page_finance = () => {
     const totalExpense = MOCK_TRANSACTIONS.filter(t => t.type === 'expense').reduce((acc, curr) => acc + curr.amount, 0)
     const balance = totalIncome - totalExpense
 
-    return (
-        <div className="mx-auto max-w-[1400px] p-4 pb-24">
-            <div className="mb-6 flex flex-wrap items-start justify-between gap-4">
-                <div>
-                    <h1 className="text-2xl font-bold tracking-tight text-[var(--vct-text-primary)]">Quản Lý Tài Chính</h1>
-                    <p className="text-sm text-[var(--vct-text-secondary)] mt-1">Quản lý thu chi, quỹ liên đoàn, hội phí và ngân sách giải đấu.</p>
-                </div>
-                <VCT_Stack direction="row" gap={12}>
-                    <VCT_Button variant="outline" icon={<VCT_Icons.Download size={16} />}>Xuất Báo Cáo</VCT_Button>
-                    <VCT_Button icon={<VCT_Icons.Plus size={16} />}>Thêm Giao Dịch</VCT_Button>
-                </VCT_Stack>
-            </div>
+    const kpis: StatItem[] = [
+        { label: 'Tổng Quỹ Hiện Tại', value: `${(balance / 1000000).toFixed(1)}M`, icon: <VCT_Icons.DollarSign size={18} />, color: '#0ea5e9' },
+        { label: 'Tổng Thu (Tháng)', value: `${(totalIncome / 1000000).toFixed(1)}M`, icon: <VCT_Icons.TrendingUp size={18} />, color: '#10b981' },
+        { label: 'Tổng Chi (Tháng)', value: `${(totalExpense / 1000000).toFixed(1)}M`, icon: <VCT_Icons.TrendingDown size={18} />, color: '#ef4444' },
+        { label: 'Chờ Thanh Toán', value: '2.5M', icon: <VCT_Icons.Clock size={18} />, color: '#f59e0b' },
+    ]
 
-            {/* ── KPI ── */}
-            <div className="vct-stagger mb-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                <VCT_KpiCard
-                    label="Tổng Quỹ Hiện Tại"
-                    value={`${(balance / 1000000).toFixed(1)}M`}
-                    icon={<VCT_Icons.DollarSign size={24} />}
-                    color="#0ea5e9"
-                />
-                <VCT_KpiCard
-                    label="Tổng Thu (Tháng)"
-                    value={`${(totalIncome / 1000000).toFixed(1)}M`}
-                    icon={<VCT_Icons.TrendingUp size={24} />}
-                    color="#10b981"
-                />
-                <VCT_KpiCard
-                    label="Tổng Chi (Tháng)"
-                    value={`${(totalExpense / 1000000).toFixed(1)}M`}
-                    icon={<VCT_Icons.TrendingDown size={24} />}
-                    color="#ef4444"
-                />
-                <VCT_KpiCard
-                    label="Chờ Thanh Toán"
-                    value="2.5M"
-                    icon={<VCT_Icons.Clock size={24} />}
-                    color="#f59e0b"
-                />
-            </div>
+    return (
+        <VCT_PageContainer size="wide" animated>
+            <VCT_PageHero
+                icon={<VCT_Icons.DollarSign size={24} />}
+                title="Quản Lý Tài Chính"
+                subtitle="Quản lý thu chi, quỹ liên đoàn, hội phí và ngân sách giải đấu."
+                gradientFrom="rgba(14, 165, 233, 0.08)"
+                gradientTo="rgba(16, 185, 129, 0.06)"
+                actions={
+                    <VCT_Stack direction="row" gap={12}>
+                        <VCT_Button variant="outline" icon={<VCT_Icons.Download size={16} />}>Xuất Báo Cáo</VCT_Button>
+                        <VCT_Button icon={<VCT_Icons.Plus size={16} />}>Thêm Giao Dịch</VCT_Button>
+                    </VCT_Stack>
+                }
+            />
+
+            <VCT_StatRow items={kpis} className="mb-8" />
 
             {/* ── QUICK ACTIONS ── */}
             <div className="mb-8 grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -133,10 +119,10 @@ export const Page_finance = () => {
             </div>
 
             {/* ── LIST ── */}
-            <div className="bg-[var(--vct-bg-card)] border border-[var(--vct-border-strong)] rounded-2xl overflow-hidden">
+            <VCT_SectionCard flush accentColor="#0ea5e9">
                 <table className="w-full text-left border-collapse">
                     <thead>
-                        <tr className="bg-[var(--vct-bg-elevated)] border-b border-[var(--vct-border-strong)] text-[11px] uppercase tracking-wider text-[var(--vct-text-tertiary)] font-bold">
+                        <tr className="border-b border-vct-border bg-vct-elevated text-[11px] uppercase tracking-wider text-vct-text-tertiary font-bold">
                             <th className="p-4 w-40">Mã GD</th>
                             <th className="p-4 w-48">Thời gian</th>
                             <th className="p-4">Diễn giải</th>
@@ -186,8 +172,8 @@ export const Page_finance = () => {
                         ))}
                     </tbody>
                 </table>
-            </div>
+            </VCT_SectionCard>
 
-        </div>
+        </VCT_PageContainer>
     )
 }

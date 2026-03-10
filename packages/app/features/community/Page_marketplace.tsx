@@ -3,8 +3,10 @@
 import * as React from 'react'
 import { useState, useMemo } from 'react'
 import {
-    VCT_Button, VCT_Stack, VCT_SearchInput, VCT_KpiCard, VCT_Badge
+    VCT_Button, VCT_Stack, VCT_SearchInput, VCT_Badge,
+    VCT_PageContainer, VCT_StatRow
 } from '../components/vct-ui'
+import type { StatItem } from '../components/VCT_StatRow'
 import { VCT_Icons } from '../components/vct-icons'
 
 // ════════════════════════════════════════
@@ -32,7 +34,7 @@ export const Page_marketplace = () => {
     }, [search])
 
     return (
-        <div className="mx-auto max-w-[1400px] p-4 pb-24">
+        <VCT_PageContainer size="wide" animated>
             <div className="mb-6 flex flex-wrap items-start justify-between gap-4">
                 <div>
                     <h1 className="text-2xl font-bold tracking-tight text-[var(--vct-text-primary)]">Sàn Giao Dịch Võ Thuật</h1>
@@ -44,12 +46,12 @@ export const Page_marketplace = () => {
             </div>
 
             {/* ── KPI ── */}
-            <div className="vct-stagger mb-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                <VCT_KpiCard label="Sản phẩm đang bán" value={124} icon={<VCT_Icons.ShoppingBag size={24} />} color="#0ea5e9" />
-                <VCT_KpiCard label="Đã bán tháng này" value={38} icon={<VCT_Icons.Check size={24} />} color="#10b981" />
-                <VCT_KpiCard label="Người bán uy tín" value={56} icon={<VCT_Icons.Star size={24} />} color="#f59e0b" />
-                <VCT_KpiCard label="Doanh số (triệu)" value="245M" icon={<VCT_Icons.DollarSign size={24} />} color="#8b5cf6" />
-            </div>
+            <VCT_StatRow items={[
+                { label: 'Sản phẩm', value: 124, icon: <VCT_Icons.ShoppingBag size={18} />, color: '#0ea5e9' },
+                { label: 'Đã bán', value: 38, icon: <VCT_Icons.Check size={18} />, color: '#10b981' },
+                { label: 'Uy tín', value: 56, icon: <VCT_Icons.Star size={18} />, color: '#f59e0b' },
+                { label: 'Doanh số', value: '245M', icon: <VCT_Icons.DollarSign size={18} />, color: '#8b5cf6' },
+            ] as StatItem[]} className="mb-8" />
 
             {/* ── SEARCH ── */}
             <div className="mb-6">
@@ -88,6 +90,6 @@ export const Page_marketplace = () => {
                     </div>
                 ))}
             </div>
-        </div>
+        </VCT_PageContainer>
     )
 }

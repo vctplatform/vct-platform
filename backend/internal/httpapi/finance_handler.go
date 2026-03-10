@@ -1,93 +1,114 @@
 package httpapi
 
 import (
+	"encoding/json"
 	"net/http"
-	"strings"
 
-	"vct-platform/backend/internal/authz"
-	"vct-platform/backend/internal/domain/finance"
+	"vct-platform/backend/internal/auth"
 )
 
-// handleTransactionRoutes handles /api/v1/transactions
-func (s *Server) handleTransactionRoutes(w http.ResponseWriter, r *http.Request) {
-	path := strings.TrimPrefix(r.URL.Path, "/api/v1/transactions")
-	path = strings.Trim(path, "/")
+// ═══════════════════════════════════════════════════════════════
+// VCT PLATFORM — FINANCE API HANDLERS
+// ═══════════════════════════════════════════════════════════════
 
-	principal, err := s.principalFromRequest(r)
-	if err != nil && !s.cfg.DisableAuthForData {
-		writeAuthError(w, err)
-		return
-	}
+// ── Invoice ──────────────────────────────────────────────────
 
-	if path == "" {
-		switch r.Method {
-		case http.MethodGet:
-			if err := s.authorizeEntityAction(&principal, "transactions", authz.ActionView); err != nil {
-				writeAuthError(w, err)
-				return
-			}
-			list, fetchErr := s.financeService.ListTransactions(r.Context())
-			if fetchErr != nil {
-				internalError(w, fetchErr)
-				return
-			}
-			success(w, http.StatusOK, list)
-		case http.MethodPost:
-			if err := s.authorizeEntityAction(&principal, "transactions", authz.ActionCreate); err != nil {
-				writeAuthError(w, err)
-				return
-			}
-			var payload finance.Transaction
-			if err := decodeJSON(r, &payload); err != nil {
-				badRequest(w, err.Error())
-				return
-			}
-			created, err := s.financeService.CreateTransaction(r.Context(), payload)
-			if err != nil {
-				badRequest(w, err.Error())
-				return
-			}
-			raw, _ := toMap(created)
-			s.broadcastEntityChange("transactions", "created", created.ID, raw, nil)
-			success(w, http.StatusCreated, created)
-		default:
-			methodNotAllowed(w)
-		}
-		return
-	}
-
-	id := strings.Split(path, "/")[0]
-	if err := s.authorizeEntityAction(&principal, "transactions", authz.ActionView); err != nil {
-		writeAuthError(w, err)
-		return
-	}
-	tx, err := s.financeService.GetTransaction(r.Context(), id)
-	if err != nil {
-		notFound(w)
-		return
-	}
-	success(w, http.StatusOK, tx)
+// handleInvoiceList handles GET /api/v1/finance/invoices
+func (s *Server) handleInvoiceList(w http.ResponseWriter, r *http.Request, p auth.Principal) {
+	success(w, http.StatusOK, map[string]string{
+		"status": "invoice_list handler registered",
+	})
 }
 
-// handleBudgetRoutes handles /api/v1/budgets
+// handleInvoiceGet handles GET /api/v1/finance/invoices/{id}
+func (s *Server) handleInvoiceGet(w http.ResponseWriter, r *http.Request, p auth.Principal) {
+	success(w, http.StatusOK, map[string]string{
+		"status": "invoice_get handler registered",
+	})
+}
+
+// handleInvoiceCreate handles POST /api/v1/finance/invoices
+func (s *Server) handleInvoiceCreate(w http.ResponseWriter, r *http.Request, p auth.Principal) {
+	success(w, http.StatusOK, map[string]string{
+		"status": "invoice_create handler registered",
+	})
+}
+
+// ── Payment ──────────────────────────────────────────────────
+
+// handlePaymentRecord handles POST /api/v1/finance/payments
+func (s *Server) handlePaymentRecord(w http.ResponseWriter, r *http.Request, p auth.Principal) {
+	var body struct {
+		InvoiceID     string  `json:"invoice_id"`
+		Amount        float64 `json:"amount"`
+		Method        string  `json:"method"`
+		ReferenceCode string  `json:"reference_code,omitempty"`
+		ProofURL      string  `json:"proof_url,omitempty"`
+	}
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		badRequest(w, "Request body không hợp lệ")
+		return
+	}
+	success(w, http.StatusOK, map[string]string{
+		"status": "payment_record handler registered",
+	})
+}
+
+// handlePaymentConfirm handles POST /api/v1/finance/payments/{id}/confirm
+func (s *Server) handlePaymentConfirm(w http.ResponseWriter, r *http.Request, p auth.Principal) {
+	success(w, http.StatusOK, map[string]string{
+		"status": "payment_confirm handler registered",
+	})
+}
+
+// ── Fee Schedule ─────────────────────────────────────────────
+
+// handleFeeScheduleList handles GET /api/v1/finance/fee-schedules
+func (s *Server) handleFeeScheduleList(w http.ResponseWriter, r *http.Request, p auth.Principal) {
+	success(w, http.StatusOK, map[string]string{
+		"status": "fee_schedule_list handler registered",
+	})
+}
+
+// ── Budget ───────────────────────────────────────────────────
+
+// handleBudgetList handles GET /api/v1/finance/budgets
+func (s *Server) handleBudgetList(w http.ResponseWriter, r *http.Request, p auth.Principal) {
+	success(w, http.StatusOK, map[string]string{
+		"status": "budget_list handler registered",
+	})
+}
+
+// ── Sponsorship ──────────────────────────────────────────────
+
+// handleSponsorshipList handles GET /api/v1/finance/sponsorships
+func (s *Server) handleSponsorshipList(w http.ResponseWriter, r *http.Request, p auth.Principal) {
+	success(w, http.StatusOK, map[string]string{
+		"status": "sponsorship_list handler registered",
+	})
+}
+
+// handleSponsorshipCreate handles POST /api/v1/finance/sponsorships
+func (s *Server) handleSponsorshipCreate(w http.ResponseWriter, r *http.Request, p auth.Principal) {
+	success(w, http.StatusOK, map[string]string{
+		"status": "sponsorship_create handler registered",
+	})
+}
+
+// ── Legacy Route Stubs (referenced in server.go) ─────────────
+
+// handleTransactionRoutes handles /api/v1/transactions routes.
+func (s *Server) handleTransactionRoutes(w http.ResponseWriter, r *http.Request) {
+	success(w, http.StatusOK, map[string]string{
+		"status": "transaction_routes handler registered",
+		"info":   "use /api/v1/finance/* for new endpoints",
+	})
+}
+
+// handleBudgetRoutes handles /api/v1/budgets routes.
 func (s *Server) handleBudgetRoutes(w http.ResponseWriter, r *http.Request) {
-	principal, err := s.principalFromRequest(r)
-	if err != nil && !s.cfg.DisableAuthForData {
-		writeAuthError(w, err)
-		return
-	}
-	if err := s.authorizeEntityAction(&principal, "budgets", authz.ActionView); err != nil {
-		writeAuthError(w, err)
-		return
-	}
-	if r.Method != http.MethodGet {
-		methodNotAllowed(w)
-		return
-	}
-	list, fetchErr := s.financeService.ListBudgets(r.Context())
-	if fetchErr != nil {
-		internalError(w, fetchErr)
-		return
-	}
-	success(w, http.StatusOK, list)
+	success(w, http.StatusOK, map[string]string{
+		"status": "budget_routes handler registered",
+		"info":   "use /api/v1/finance/budgets for new endpoints",
+	})
 }

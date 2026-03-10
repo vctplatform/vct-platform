@@ -78,7 +78,7 @@ export function VCT_DataGrid<T extends { id?: string;[key: string]: any }>({
     const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
     const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set())
 
-    const getRowId = (row: T, i: number) => row.id ?? String(i)
+    const getRowId = useCallback((row: T, i: number) => row.id ?? String(i), [])
 
     const handleSelectAll = useCallback(() => {
         if (selectedIds.size === data.length) {
@@ -89,7 +89,7 @@ export function VCT_DataGrid<T extends { id?: string;[key: string]: any }>({
             setSelectedIds(all)
             onSelectionChange?.(Array.from(all))
         }
-    }, [data, selectedIds.size, onSelectionChange])
+    }, [data, getRowId, selectedIds.size, onSelectionChange])
 
     const handleSelectRow = useCallback(
         (id: string) => {

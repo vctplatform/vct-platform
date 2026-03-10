@@ -1,10 +1,13 @@
 'use client'
 
 import * as React from 'react'
+import Image from 'next/image'
 import {
     VCT_Badge, VCT_Button, VCT_Stack, VCT_SearchInput,
-    VCT_EmptyState, VCT_KpiCard
+    VCT_EmptyState
 } from '../components/vct-ui'
+import { VCT_PageContainer, VCT_PageHero, VCT_StatRow } from '../components/vct-ui'
+import type { StatItem } from '../components/VCT_StatRow'
 import { VCT_Icons } from '../components/vct-icons'
 
 // ════════════════════════════════════════
@@ -21,24 +24,22 @@ const MOCK_COURSES = [
 // ════════════════════════════════════════
 export const Page_elearning = () => {
     return (
-        <div className="mx-auto max-w-[1400px] p-4 pb-24">
-            <div className="mb-6 flex flex-wrap items-start justify-between gap-4">
-                <div>
-                    <h1 className="text-2xl font-bold tracking-tight text-[var(--vct-text-primary)]">Học trực tuyến (E-Learning)</h1>
-                    <p className="text-sm text-[var(--vct-text-secondary)] mt-1">Nền tảng đào tạo từ xa cho Huấn luyện viên, Trọng tài và Cán bộ chuyên môn.</p>
-                </div>
-                <VCT_Stack direction="row" gap={12}>
-                    <VCT_Button icon={<VCT_Icons.Plus size={16} />}>Tạo Khóa học mới</VCT_Button>
-                </VCT_Stack>
-            </div>
+        <VCT_PageContainer size="wide" animated>
+            <VCT_PageHero
+                icon={<VCT_Icons.Video size={24} />}
+                title="Học trực tuyến (E-Learning)"
+                subtitle="Nền tảng đào tạo từ xa cho HLV, Trọng tài và Cán bộ chuyên môn."
+                gradientFrom="rgba(14, 165, 233, 0.08)"
+                gradientTo="rgba(139, 92, 246, 0.06)"
+                actions={<VCT_Button icon={<VCT_Icons.Plus size={16} />}>Tạo Khóa học mới</VCT_Button>}
+            />
 
-            {/* ── KPI ── */}
-            <div className="vct-stagger mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                <VCT_KpiCard label="Khóa học đang mở" value={15} icon={<VCT_Icons.Video size={24} />} color="#0ea5e9" />
-                <VCT_KpiCard label="Học viên đang học" value={2450} icon={<VCT_Icons.Users size={24} />} color="#f59e0b" />
-                <VCT_KpiCard label="Chứng chỉ đã cấp" value={890} icon={<VCT_Icons.Award size={24} />} color="#10b981" />
-                <VCT_KpiCard label="Tỷ lệ hoàn thành" value={'68%'} icon={<VCT_Icons.Activity size={24} />} color="#8b5cf6" />
-            </div>
+            <VCT_StatRow items={[
+                { label: 'Khóa học mở', value: 15, icon: <VCT_Icons.Video size={18} />, color: '#0ea5e9' },
+                { label: 'Học viên', value: 2450, icon: <VCT_Icons.Users size={18} />, color: '#f59e0b' },
+                { label: 'Chứng chỉ cấp', value: 890, icon: <VCT_Icons.Award size={18} />, color: '#10b981' },
+                { label: 'Hoàn thành', value: '68%', icon: <VCT_Icons.Activity size={18} />, color: '#8b5cf6' },
+            ] as StatItem[]} className="mb-6" />
 
             {/* ── LIST VIEW ── */}
             <div className="mb-6">
@@ -50,7 +51,13 @@ export const Page_elearning = () => {
                         <div key={course.id} className="bg-[var(--vct-bg-elevated)] border border-[var(--vct-border-strong)] rounded-2xl overflow-hidden hover:border-[var(--vct-accent-cyan)] hover:shadow-[0_4px_24px_-8px_var(--vct-accent-cyan)] transition-all flex flex-col group cursor-pointer">
                             <div className="aspect-video relative overflow-hidden bg-[var(--vct-bg-card)]">
                                 <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors z-10"></div>
-                                <img src={course.thumbnail} alt={course.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                                <Image
+                                    src={course.thumbnail}
+                                    alt={course.title}
+                                    fill
+                                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                                    className="object-cover group-hover:scale-105 transition-transform duration-500"
+                                />
                                 {course.progress === 100 && (
                                     <div className="absolute top-2 right-2 bg-[#10b981] text-white text-[10px] font-bold px-2 py-1 rounded-md uppercase z-20 flex items-center gap-1">
                                         <VCT_Icons.Check size={12} /> Hoàn thành
@@ -89,6 +96,6 @@ export const Page_elearning = () => {
                     ))}
                 </div>
             </div>
-        </div>
+        </VCT_PageContainer>
     )
 }

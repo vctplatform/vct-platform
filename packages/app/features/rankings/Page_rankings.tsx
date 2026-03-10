@@ -4,8 +4,11 @@ import * as React from 'react'
 import { useState, useMemo } from 'react'
 import {
     VCT_Badge, VCT_Button, VCT_Stack, VCT_SearchInput,
-    VCT_Select, VCT_EmptyState, VCT_KpiCard, VCT_Tabs
+    VCT_Select, VCT_EmptyState, VCT_Tabs,
+    VCT_PageContainer, VCT_PageHeader
 } from '../components/vct-ui'
+import { VCT_StatRow } from '../components/vct-ui'
+import type { StatItem } from '../components/VCT_StatRow'
 import { VCT_Icons } from '../components/vct-icons'
 
 // ════════════════════════════════════════
@@ -45,29 +48,29 @@ export const Page_rankings = () => {
     }, [search])
 
     return (
-        <div className="mx-auto max-w-[1400px] p-4 pb-24">
-            <div className="mb-6 flex flex-wrap items-start justify-between gap-4">
-                <div>
-                    <h1 className="text-2xl font-bold tracking-tight text-[var(--vct-text-primary)]">Bảng Xếp Hạng Quốc Gia</h1>
-                    <p className="text-sm text-[var(--vct-text-secondary)] mt-1">Hệ thống tính điểm xếp hạng Vận động viên theo từng năm thi đấu.</p>
-                </div>
-                <VCT_Stack direction="row" gap={12}>
-                    <VCT_Select
-                        value={yearFilter}
-                        onChange={setYearFilter}
-                        options={[{ value: '2024', label: 'Mùa giải 2024' }, { value: '2023', label: 'Mùa giải 2023' }]}
-                    />
-                    <VCT_Button icon={<VCT_Icons.Download size={16} />} variant="secondary">Xuất BXH</VCT_Button>
-                </VCT_Stack>
-            </div>
+        <VCT_PageContainer size="wide">
+            <VCT_PageHeader
+                title="Bảng Xếp Hạng Quốc Gia"
+                description="Hệ thống tính điểm xếp hạng Vận động viên theo từng năm thi đấu."
+                actions={
+                    <VCT_Stack direction="row" gap={12}>
+                        <VCT_Select
+                            value={yearFilter}
+                            onChange={setYearFilter}
+                            options={[{ value: '2024', label: 'Mùa giải 2024' }, { value: '2023', label: 'Mùa giải 2023' }]}
+                        />
+                        <VCT_Button icon={<VCT_Icons.Download size={16} />} variant="secondary">Xuất BXH</VCT_Button>
+                    </VCT_Stack>
+                }
+            />
 
             {/* ── KPI ── */}
-            <div className="vct-stagger mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                <VCT_KpiCard label="Hạng mục thi đấu" value={8} icon={<VCT_Icons.Layers size={24} />} color="#0ea5e9" />
-                <VCT_KpiCard label="VĐV có Rank" value={1450} icon={<VCT_Icons.Users size={24} />} color="#f59e0b" />
-                <VCT_KpiCard label="Giải đấu đã tính" value={12} icon={<VCT_Icons.Trophy size={24} />} color="#10b981" />
-                <VCT_KpiCard label="Tổng trận" value={8500} icon={<VCT_Icons.Swords size={24} />} color="#ef4444" />
-            </div>
+            <VCT_StatRow items={[
+                { label: 'Hạng mục', value: 8, icon: <VCT_Icons.Layers size={18} />, color: '#0ea5e9' },
+                { label: 'VĐV có Rank', value: 1450, icon: <VCT_Icons.Users size={18} />, color: '#f59e0b' },
+                { label: 'Giải đã tính', value: 12, icon: <VCT_Icons.Trophy size={18} />, color: '#10b981' },
+                { label: 'Tổng trận', value: 8500, icon: <VCT_Icons.Swords size={18} />, color: '#ef4444' },
+            ] as StatItem[]} className="mb-6" />
 
             {/* ── PODIUM ── */}
             <div className="mb-8 flex flex-col md:flex-row items-end justify-center gap-4 mt-12">
@@ -197,6 +200,6 @@ export const Page_rankings = () => {
                     <VCT_EmptyState title="Không tìm thấy VĐV" description="Thử thay đổi hạng cân hoặc từ khóa tìm kiếm." icon="🔍" />
                 </div>
             )}
-        </div>
+        </VCT_PageContainer>
     )
 }

@@ -3,10 +3,12 @@ import * as React from 'react';
 import { useState, useMemo, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-    VCT_Badge, VCT_Button, VCT_Text, VCT_Stack, VCT_KpiCard,
+    VCT_Badge, VCT_Button, VCT_Text, VCT_Stack,
     VCT_Toast, VCT_Modal, VCT_SearchInput, VCT_ConfirmDialog,
     VCT_SegmentedControl, VCT_EmptyState
 } from '../components/vct-ui';
+import { VCT_PageContainer, VCT_StatRow } from '../components/vct-ui';
+import type { StatItem } from '../components/VCT_StatRow';
 import { VCT_Icons } from '../components/vct-icons';
 import { DON_VIS, HANG_CANS, NOI_DUNG_QUYENS, genId } from '../data/mock-data';
 import type { VanDongVien, TrangThaiVDV, GioiTinh } from '../data/types';
@@ -320,7 +322,7 @@ export const Page_athletes = () => {
     };
 
     return (
-        <div className="mx-auto max-w-[1200px] pb-24">
+        <VCT_PageContainer size="wide" animated>
             <VCT_Toast isVisible={toast.show} message={toast.msg} type={toast.type} onClose={hideToast} />
             <input
                 ref={fileInputRef}
@@ -331,12 +333,12 @@ export const Page_athletes = () => {
             />
 
             {/* KPI HEADERS */}
-            <div className="vct-stagger mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
-                <VCT_KpiCard label="Tổng Võ Sinh" value={stats.total} icon={<VCT_Icons.Users size={24} />} color="#22d3ee" sub={`${stats.nam} Nam - ${stats.nu} Nữ`} />
-                <VCT_KpiCard label="Đủ điều kiện y tế" value={stats.ok} icon={<VCT_Icons.Check size={24} />} color="#10b981" />
-                <VCT_KpiCard label="Thiếu HS / Chờ duyệt" value={stats.pending} icon={<VCT_Icons.Alert size={24} />} color="#f59e0b" />
-                <VCT_KpiCard label="Cân nặng trung bình" value={`${stats.avgW}kg`} icon={<VCT_Icons.Activity size={24} />} color="#a78bfa" sub="Phân bổ: 42kg - 85kg" />
-            </div>
+            <VCT_StatRow items={[
+                { label: 'Tổng Võ Sinh', value: stats.total, icon: <VCT_Icons.Users size={18} />, color: '#22d3ee', sub: `${stats.nam} Nam - ${stats.nu} Nữ` },
+                { label: 'Đủ điều kiện', value: stats.ok, icon: <VCT_Icons.Check size={18} />, color: '#10b981' },
+                { label: 'Thiếu HS', value: stats.pending, icon: <VCT_Icons.Alert size={18} />, color: '#f59e0b' },
+                { label: 'TB cân nặng', value: `${stats.avgW}kg`, icon: <VCT_Icons.Activity size={18} />, color: '#a78bfa', sub: '42kg - 85kg' },
+            ] as StatItem[]} className="mb-6" />
 
             {/* TOOLBAR */}
             <VCT_Stack direction="row" gap={16} align="center" className="mb-4 flex-wrap">
@@ -581,6 +583,6 @@ export const Page_athletes = () => {
                 title="Xóa Vận Động Viên" message={`Xóa VĐV "${deleteTarget?.ho_ten}" sẽ gỡ bỏ tên khỏi các danh sách thi đấu và không thể khôi phục.`}
                 onConfirm={handleDelete} confirmLabel="Xác nhận xóa"
             />
-        </div>
+        </VCT_PageContainer>
     );
 };

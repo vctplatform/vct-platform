@@ -2,7 +2,6 @@ package auth
 
 import (
 	"crypto/rand"
-	"crypto/subtle"
 	"encoding/hex"
 	"encoding/json"
 	"errors"
@@ -12,16 +11,44 @@ import (
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
+	"golang.org/x/crypto/bcrypt"
+
+	"vct-platform/backend/internal/util"
 )
 
 type UserRole string
 
 const (
-	RoleAdmin          UserRole = "admin"
-	RoleBTC            UserRole = "btc"
-	RoleRefereeManager UserRole = "referee_manager"
-	RoleReferee        UserRole = "referee"
-	RoleDelegate       UserRole = "delegate"
+	RoleAdmin               UserRole = "admin"
+	RoleFederationPresident UserRole = "federation_president"
+	RoleFederationSecretary UserRole = "federation_secretary"
+	RoleProvincialAdmin     UserRole = "provincial_admin"
+	RoleTechnicalDirector   UserRole = "technical_director"
+	RoleBTC                 UserRole = "btc"
+	RoleRefereeManager      UserRole = "referee_manager"
+	RoleReferee             UserRole = "referee"
+	RoleCoach               UserRole = "coach"
+	RoleDelegate            UserRole = "delegate"
+	RoleAthlete             UserRole = "athlete"
+	RoleMedicalStaff        UserRole = "medical_staff"
+
+	// Provincial-level roles
+	RoleProvincialPresident       UserRole = "provincial_president"
+	RoleProvincialVicePresident   UserRole = "provincial_vice_president"
+	RoleProvincialSecretary       UserRole = "provincial_secretary"
+	RoleProvincialTechnicalHead   UserRole = "provincial_technical_head"
+	RoleProvincialRefereeHead     UserRole = "provincial_referee_head"
+	RoleProvincialCommitteeMember UserRole = "provincial_committee_member"
+	RoleProvincialAccountant      UserRole = "provincial_accountant"
+
+	// Club-level roles
+	RoleClubLeader     UserRole = "club_leader"
+	RoleClubViceLeader UserRole = "club_vice_leader"
+	RoleClubSecretary  UserRole = "club_secretary"
+	RoleClubAccountant UserRole = "club_accountant"
+
+	// Parent / Guardian role
+	RoleParent UserRole = "parent"
 )
 
 const (
@@ -34,6 +61,20 @@ var (
 	ErrForbidden          = errors.New("forbidden")
 	ErrBadRequest         = errors.New("bad_request")
 	ErrInvalidCredentials = errors.New("invalid_credentials")
+	ErrConflict           = errors.New("conflict")
+)
+
+// Error codes for structured API responses.
+const (
+	CodeInvalidCredentials = "ERR_INVALID_CREDENTIALS"
+	CodeBadRequest         = "ERR_BAD_REQUEST"
+	CodeForbidden          = "ERR_FORBIDDEN"
+	CodeUnauthorized       = "ERR_UNAUTHORIZED"
+	CodeConflict           = "ERR_CONFLICT"
+	CodeTokenExpired       = "ERR_TOKEN_EXPIRED"
+	CodeTokenRevoked       = "ERR_TOKEN_REVOKED"
+	CodeSessionInvalid     = "ERR_SESSION_INVALID"
+	CodeRefreshReuse       = "ERR_REFRESH_REUSE"
 )
 
 type AuthUser struct {
@@ -41,6 +82,30 @@ type AuthUser struct {
 	Username    string   `json:"username"`
 	DisplayName string   `json:"displayName"`
 	Role        UserRole `json:"role"`
+	Email       string   `json:"email,omitempty"`
+	AvatarURL   string   `json:"avatarUrl,omitempty"`
+	TenantID    string   `json:"tenantId,omitempty"`
+	Locale      string   `json:"locale,omitempty"`
+	Timezone    string   `json:"timezone,omitempty"`
+}
+
+// RoleAssignment represents a scoped role assignment for UUID RBAC.
+type RoleAssignment struct {
+	RoleID    string `json:"roleId"`
+	RoleName  string `json:"roleName"`
+	RoleCode  string `json:"roleCode"`
+	ScopeType string `json:"scopeType"`
+	ScopeID   string `json:"scopeId,omitempty"`
+	ScopeName string `json:"scopeName,omitempty"`
+	GrantedAt string `json:"grantedAt"`
+}
+
+// WorkspaceAccess represents a workspace this user UUID can access.
+type WorkspaceAccess struct {
+	Type      string `json:"type"`
+	ScopeID   string `json:"scopeId"`
+	ScopeName string `json:"scopeName"`
+	Role      string `json:"role"`
 }
 
 type LoginRequest struct {
@@ -49,6 +114,14 @@ type LoginRequest struct {
 	Role           UserRole `json:"role"`
 	TournamentCode string   `json:"tournamentCode"`
 	OperationShift string   `json:"operationShift"`
+}
+
+// RegisterRequest represents a self-registration request.
+type RegisterRequest struct {
+	Username    string   `json:"username"`
+	Password    string   `json:"password"`
+	DisplayName string   `json:"displayName"`
+	Role        UserRole `json:"role"`
 }
 
 type RefreshRequest struct {
@@ -78,9 +151,12 @@ type TokenResponse struct {
 
 type LoginResult struct {
 	TokenResponse
-	User           AuthUser `json:"user"`
-	TournamentCode string   `json:"tournamentCode"`
-	OperationShift string   `json:"operationShift"`
+	User           AuthUser          `json:"user"`
+	Roles          []RoleAssignment  `json:"roles"`
+	Permissions    []string          `json:"permissions"`
+	Workspaces     []WorkspaceAccess `json:"workspaces"`
+	TournamentCode string            `json:"tournamentCode"`
+	OperationShift string            `json:"operationShift"`
 }
 
 type Principal struct {
@@ -117,9 +193,10 @@ type ServiceConfig struct {
 }
 
 type userCredential struct {
-	password    string
-	displayName string
-	allowedRole []UserRole
+	passwordHash string
+	displayName  string
+	allowedRole  []UserRole
+	userID       string
 }
 
 type credentialSeed struct {
@@ -169,6 +246,9 @@ type Service struct {
 	refreshSessions   map[string]*refreshSession
 	revokedAccessJTIs map[string]time.Time
 	audit             []AuditEntry
+	stopCh            chan struct{}
+	allowSelfRegister bool
+	roleBindings      *RoleBindingStore // Multi-role context support
 }
 
 func NewService(config ServiceConfig) *Service {
@@ -186,7 +266,7 @@ func NewService(config ServiceConfig) *Service {
 		panic(fmt.Sprintf("auth credential configuration invalid: %v", err))
 	}
 
-	return &Service{
+	svc := &Service{
 		secret:            []byte(strings.TrimSpace(config.Secret)),
 		issuer:            strings.TrimSpace(config.Issuer),
 		accessTTL:         config.AccessTTL,
@@ -197,6 +277,36 @@ func NewService(config ServiceConfig) *Service {
 		refreshSessions:   make(map[string]*refreshSession),
 		revokedAccessJTIs: make(map[string]time.Time),
 		audit:             make([]AuditEntry, 0, auditLimit),
+		stopCh:            make(chan struct{}),
+		roleBindings:      NewRoleBindingStore(),
+	}
+
+	// Background cleanup goroutine
+	go func() {
+		ticker := time.NewTicker(cleanupInterval)
+		defer ticker.Stop()
+		for {
+			select {
+			case <-svc.stopCh:
+				return
+			case now := <-ticker.C:
+				svc.mu.Lock()
+				svc.cleanupLocked(now.UTC())
+				svc.mu.Unlock()
+			}
+		}
+	}()
+
+	return svc
+}
+
+// Stop terminates the background cleanup goroutine.
+func (s *Service) Stop() {
+	select {
+	case <-s.stopCh:
+		// already closed
+	default:
+		close(s.stopCh)
 	}
 }
 
@@ -218,11 +328,33 @@ func resolveCredentials(raw string, allowDemo bool) (map[string]userCredential, 
 	}
 
 	allowedRoles := map[UserRole]struct{}{
-		RoleAdmin:          {},
-		RoleBTC:            {},
-		RoleRefereeManager: {},
-		RoleReferee:        {},
-		RoleDelegate:       {},
+		RoleAdmin:               {},
+		RoleFederationPresident: {},
+		RoleFederationSecretary: {},
+		RoleProvincialAdmin:     {},
+		RoleTechnicalDirector:   {},
+		RoleBTC:                 {},
+		RoleRefereeManager:      {},
+		RoleReferee:             {},
+		RoleCoach:               {},
+		RoleDelegate:            {},
+		RoleAthlete:             {},
+		RoleMedicalStaff:        {},
+		// Provincial-level roles
+		RoleProvincialPresident:       {},
+		RoleProvincialVicePresident:   {},
+		RoleProvincialSecretary:       {},
+		RoleProvincialTechnicalHead:   {},
+		RoleProvincialRefereeHead:     {},
+		RoleProvincialCommitteeMember: {},
+		RoleProvincialAccountant:      {},
+		// Club-level roles
+		RoleClubLeader:     {},
+		RoleClubViceLeader: {},
+		RoleClubSecretary:  {},
+		RoleClubAccountant: {},
+		// Parent / Guardian
+		RoleParent: {},
 	}
 
 	credentials := make(map[string]userCredential, len(seeds))
@@ -250,10 +382,17 @@ func resolveCredentials(raw string, allowDemo bool) (map[string]userCredential, 
 			roles = append(roles, role)
 		}
 
+		// Hash password with bcrypt
+		hash, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+		if err != nil {
+			return nil, fmt.Errorf("failed to hash password for %q: %w", username, err)
+		}
+
 		credentials[username] = userCredential{
-			password:    password,
-			displayName: displayName,
-			allowedRole: roles,
+			passwordHash: string(hash),
+			displayName:  displayName,
+			allowedRole:  roles,
+			userID:       util.NewUUIDv7(),
 		}
 	}
 
@@ -261,31 +400,57 @@ func resolveCredentials(raw string, allowDemo bool) (map[string]userCredential, 
 }
 
 func demoCredentials() map[string]userCredential {
+	// Pre-hash demo passwords with bcrypt at startup.
+	hashOrPanic := func(pw string) string {
+		h, err := bcrypt.GenerateFromPassword([]byte(pw), bcrypt.DefaultCost)
+		if err != nil {
+			panic(fmt.Sprintf("demo credential hash failed: %v", err))
+		}
+		return string(h)
+	}
+
 	return map[string]userCredential{
 		"admin": {
-			password:    "Admin@123",
-			displayName: "Quản trị hệ thống",
-			allowedRole: []UserRole{RoleAdmin},
+			passwordHash: hashOrPanic("Admin@123"),
+			displayName:  "Quản trị hệ thống",
+			allowedRole:  []UserRole{RoleAdmin},
+			userID:       util.NewUUIDv7(),
 		},
 		"btc": {
-			password:    "Btc@123",
-			displayName: "Ban tổ chức",
-			allowedRole: []UserRole{RoleBTC},
+			passwordHash: hashOrPanic("Btc@123"),
+			displayName:  "Ban tổ chức",
+			allowedRole:  []UserRole{RoleBTC},
+			userID:       util.NewUUIDv7(),
 		},
 		"ref-manager": {
-			password:    "Ref@123",
-			displayName: "Điều phối trọng tài",
-			allowedRole: []UserRole{RoleRefereeManager},
+			passwordHash: hashOrPanic("Ref@123"),
+			displayName:  "Điều phối trọng tài",
+			allowedRole:  []UserRole{RoleRefereeManager},
+			userID:       util.NewUUIDv7(),
 		},
 		"referee": {
-			password:    "Judge@123",
-			displayName: "Trọng tài",
-			allowedRole: []UserRole{RoleReferee},
+			passwordHash: hashOrPanic("Judge@123"),
+			displayName:  "Trọng tài",
+			allowedRole:  []UserRole{RoleReferee},
+			userID:       util.NewUUIDv7(),
 		},
 		"delegate": {
-			password:    "Delegate@123",
-			displayName: "Cán bộ đoàn",
-			allowedRole: []UserRole{RoleDelegate},
+			passwordHash: hashOrPanic("Delegate@123"),
+			displayName:  "Cán bộ đoàn",
+			allowedRole:  []UserRole{RoleDelegate},
+			userID:       util.NewUUIDv7(),
+		},
+		"club-leader": {
+			passwordHash: hashOrPanic("Club@123"),
+			displayName:  "Chủ nhiệm CLB Thanh Long",
+			allowedRole:  []UserRole{RoleClubLeader},
+			userID:       util.NewUUIDv7(),
+		},
+		"parent": {
+			passwordHash: hashOrPanic("Parent@123"),
+			displayName:  "Nguyễn Thị Phụ Huynh",
+			allowedRole:  []UserRole{RoleParent},
+			userID:       util.NewUUIDv7(),
 		},
 	}
 }
@@ -295,10 +460,7 @@ func (s *Service) Login(input LoginRequest, requestCtx RequestContext) (LoginRes
 	password := strings.TrimSpace(input.Password)
 	role := input.Role
 	if username == "" || password == "" {
-		return LoginResult{}, wrapError(ErrBadRequest, "username và password là bắt buộc")
-	}
-	if role == "" {
-		return LoginResult{}, wrapError(ErrBadRequest, "role là bắt buộc")
+		return LoginResult{}, wrapCodedError(ErrBadRequest, CodeBadRequest, "username và password là bắt buộc")
 	}
 
 	now := time.Now().UTC()
@@ -307,18 +469,29 @@ func (s *Service) Login(input LoginRequest, requestCtx RequestContext) (LoginRes
 	s.cleanupLocked(now)
 
 	cred, ok := s.credentials[username]
-	passwordMatch := ok && subtle.ConstantTimeCompare([]byte(cred.password), []byte(password)) == 1
-	if !passwordMatch {
+	if !ok {
 		s.addAuditLocked("auth.login", false, requestCtx, AuthUser{Username: username, Role: role}, map[string]any{"reason": "invalid_credentials"})
-		return LoginResult{}, wrapError(ErrInvalidCredentials, "sai thông tin đăng nhập")
+		return LoginResult{}, wrapCodedError(ErrInvalidCredentials, CodeInvalidCredentials, "sai thông tin đăng nhập")
 	}
-	if !containsRole(cred.allowedRole, role) {
+	if err := bcrypt.CompareHashAndPassword([]byte(cred.passwordHash), []byte(password)); err != nil {
+		s.addAuditLocked("auth.login", false, requestCtx, AuthUser{Username: username, Role: role}, map[string]any{"reason": "invalid_credentials"})
+		return LoginResult{}, wrapCodedError(ErrInvalidCredentials, CodeInvalidCredentials, "sai thông tin đăng nhập")
+	}
+
+	// Auto-select role if not provided: use the user's first allowed role.
+	if role == "" {
+		if len(cred.allowedRole) > 0 {
+			role = cred.allowedRole[0]
+		} else {
+			return LoginResult{}, wrapCodedError(ErrForbidden, CodeForbidden, "tài khoản không có role nào được phép")
+		}
+	} else if !containsRole(cred.allowedRole, role) {
 		s.addAuditLocked("auth.login", false, requestCtx, AuthUser{Username: username, Role: role}, map[string]any{"reason": "invalid_role"})
-		return LoginResult{}, wrapError(ErrForbidden, "role không hợp lệ với tài khoản")
+		return LoginResult{}, wrapCodedError(ErrForbidden, CodeForbidden, "role không hợp lệ với tài khoản")
 	}
 
 	user := AuthUser{
-		ID:          "u-" + strings.ReplaceAll(username, " ", "-"),
+		ID:          cred.userID,
 		Username:    username,
 		DisplayName: cred.displayName,
 		Role:        role,
@@ -353,9 +526,19 @@ func (s *Service) Login(input LoginRequest, requestCtx RequestContext) (LoginRes
 		"operationShift": operationShift,
 	})
 
+	roles, perms, ws := resolveRBACForUser(user)
+
+	// Ensure multi-role store has at least the primary binding
+	if s.roleBindings != nil {
+		s.roleBindings.EnsureDefaultBinding(user)
+	}
+
 	return LoginResult{
 		TokenResponse:  response,
 		User:           user,
+		Roles:          roles,
+		Permissions:    perms,
+		Workspaces:     ws,
 		TournamentCode: tournamentCode,
 		OperationShift: operationShift,
 	}, nil
@@ -462,9 +645,14 @@ func (s *Service) Refresh(input RefreshRequest, requestCtx RequestContext) (Logi
 		"sessionId": session.ID,
 	})
 
+	roles, perms, ws := resolveRBACForUser(session.User)
+
 	return LoginResult{
 		TokenResponse:  response,
 		User:           session.User,
+		Roles:          roles,
+		Permissions:    perms,
+		Workspaces:     ws,
 		TournamentCode: session.TournamentCode,
 		OperationShift: session.OperationShift,
 	}, nil
@@ -557,6 +745,11 @@ func (s *Service) Me(principal Principal) LoginResult {
 		TournamentCode: principal.TournamentCode,
 		OperationShift: principal.OperationShift,
 	}
+
+	roles, perms, ws := resolveRBACForUser(principal.User)
+	result.Roles = roles
+	result.Permissions = perms
+	result.Workspaces = ws
 
 	s.mu.RLock()
 	session, ok := s.refreshSessions[principal.SessionID]
@@ -792,4 +985,395 @@ func randomID(size int) string {
 
 func wrapError(base error, message string) error {
 	return fmt.Errorf("%w: %s", base, message)
+}
+
+// wrapCodedError wraps an error with both a code and a human-readable message.
+// Format: "base: [CODE] message" — the code can be extracted by helpers.
+func wrapCodedError(base error, code string, message string) error {
+	return fmt.Errorf("%w: [%s] %s", base, code, message)
+}
+
+// Register creates a new user credential with bcrypt-hashed password and UUID v7 ID.
+func (s *Service) Register(input RegisterRequest, requestCtx RequestContext) (LoginResult, error) {
+	username := strings.TrimSpace(strings.ToLower(input.Username))
+	password := strings.TrimSpace(input.Password)
+	displayName := strings.TrimSpace(input.DisplayName)
+	role := input.Role
+
+	if username == "" || password == "" || displayName == "" {
+		return LoginResult{}, wrapCodedError(ErrBadRequest, CodeBadRequest, "username, password, và displayName là bắt buộc")
+	}
+	if len(password) < 8 {
+		return LoginResult{}, wrapCodedError(ErrBadRequest, CodeBadRequest, "mật khẩu phải có ít nhất 8 ký tự")
+	}
+	if role == "" {
+		role = RoleAthlete // default role for self-registration
+	}
+
+	// Only allow safe self-registration roles
+	safeRoles := map[UserRole]struct{}{
+		RoleAthlete: {}, RoleCoach: {}, RoleDelegate: {},
+	}
+	if _, ok := safeRoles[role]; !ok {
+		return LoginResult{}, wrapCodedError(ErrForbidden, CodeForbidden, "role này không cho phép tự đăng ký")
+	}
+
+	now := time.Now().UTC()
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	if _, exists := s.credentials[username]; exists {
+		s.addAuditLocked("auth.register", false, requestCtx, AuthUser{Username: username, Role: role}, map[string]any{"reason": "duplicate_username"})
+		return LoginResult{}, wrapCodedError(ErrConflict, CodeConflict, "tên đăng nhập đã tồn tại")
+	}
+
+	hash, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+	if err != nil {
+		return LoginResult{}, wrapCodedError(ErrBadRequest, CodeBadRequest, "không thể mã hóa mật khẩu")
+	}
+
+	userID := util.NewUUIDv7()
+	s.credentials[username] = userCredential{
+		passwordHash: string(hash),
+		displayName:  displayName,
+		allowedRole:  []UserRole{role},
+		userID:       userID,
+	}
+
+	user := AuthUser{
+		ID:          userID,
+		Username:    username,
+		DisplayName: displayName,
+		Role:        role,
+	}
+
+	sessionID := randomID(16)
+	refreshJTI := randomID(20)
+	response, issueErr := s.issueTokenPairLocked(user, "VCT-2026", "sang", sessionID, refreshJTI, now)
+	if issueErr != nil {
+		return LoginResult{}, issueErr
+	}
+
+	s.refreshSessions[sessionID] = &refreshSession{
+		ID:                sessionID,
+		User:              user,
+		TournamentCode:    "VCT-2026",
+		OperationShift:    "sang",
+		CurrentRefreshJTI: refreshJTI,
+		CreatedAt:         now,
+		ExpiresAt:         response.RefreshExpiresAt,
+		LastSeenAt:        now,
+		LastSeenIP:        requestCtx.IP,
+		LastSeenUA:        requestCtx.UserAgent,
+	}
+
+	s.addAuditLocked("auth.register", true, requestCtx, user, map[string]any{"sessionId": sessionID})
+
+	roles, perms, ws := resolveRBACForUser(user)
+
+	return LoginResult{
+		TokenResponse:  response,
+		User:           user,
+		Roles:          roles,
+		Permissions:    perms,
+		Workspaces:     ws,
+		TournamentCode: "VCT-2026",
+		OperationShift: "sang",
+	}, nil
+}
+
+// ── UUID-Centric RBAC Resolver ──────────────────────────────────
+// Resolves roles, permissions, and workspaces from the user's primary role.
+// TODO: Replace with database queries to core.user_roles + core.role_permissions
+// when the system is fully integrated with the PostgreSQL RBAC tables.
+
+func resolveRBACForUser(user AuthUser) ([]RoleAssignment, []string, []WorkspaceAccess) {
+	now := time.Now().UTC().Format(time.RFC3339)
+	role := user.Role
+
+	// Build role assignment
+	roles := []RoleAssignment{
+		{
+			RoleID:    fmt.Sprintf("role-%s", string(role)),
+			RoleName:  roleDisplayName(role),
+			RoleCode:  string(role),
+			ScopeType: roleScopeType(role),
+			GrantedAt: now,
+		},
+	}
+
+	// Build permissions
+	perms := resolvePermissionsForRole(role)
+
+	// Build workspaces
+	ws := resolveWorkspacesForRole(role)
+
+	return roles, perms, ws
+}
+
+func roleDisplayName(role UserRole) string {
+	switch role {
+	case RoleAdmin:
+		return "Quản trị hệ thống"
+	case RoleFederationPresident:
+		return "Chủ tịch Liên đoàn"
+	case RoleFederationSecretary:
+		return "Tổng thư ký"
+	case RoleProvincialAdmin:
+		return "Quản trị địa phương"
+	case RoleProvincialPresident:
+		return "Chủ tịch LĐ tỉnh"
+	case RoleProvincialVicePresident:
+		return "Phó chủ tịch LĐ tỉnh"
+	case RoleProvincialSecretary:
+		return "Thư ký LĐ tỉnh"
+	case RoleProvincialTechnicalHead:
+		return "Trưởng ban chuyên môn tỉnh"
+	case RoleProvincialRefereeHead:
+		return "Trưởng ban trọng tài tỉnh"
+	case RoleProvincialCommitteeMember:
+		return "Ủy viên BCH tỉnh"
+	case RoleProvincialAccountant:
+		return "Kế toán LĐ tỉnh"
+	case RoleTechnicalDirector:
+		return "Giám đốc kỹ thuật"
+	case RoleBTC:
+		return "Ban tổ chức"
+	case RoleRefereeManager:
+		return "Điều phối trọng tài"
+	case RoleReferee:
+		return "Trọng tài"
+	case RoleCoach:
+		return "Huấn luyện viên"
+	case RoleDelegate:
+		return "Cán bộ đoàn"
+	case RoleAthlete:
+		return "Vận động viên"
+	case RoleMedicalStaff:
+		return "Nhân viên y tế"
+	case RoleClubLeader:
+		return "Chủ nhiệm CLB"
+	case RoleClubViceLeader:
+		return "Phó chủ nhiệm CLB"
+	case RoleClubSecretary:
+		return "Thư ký CLB"
+	case RoleClubAccountant:
+		return "Thủ quỹ CLB"
+	case RoleParent:
+		return "Phụ huynh"
+	default:
+		return string(role)
+	}
+}
+
+func roleScopeType(role UserRole) string {
+	switch role {
+	case RoleAdmin:
+		return "SYSTEM"
+	case RoleFederationPresident, RoleFederationSecretary:
+		return "FEDERATION"
+	case RoleProvincialAdmin, RoleProvincialPresident, RoleProvincialVicePresident,
+		RoleProvincialSecretary, RoleProvincialTechnicalHead, RoleProvincialRefereeHead,
+		RoleProvincialCommitteeMember, RoleProvincialAccountant:
+		return "PROVINCE"
+	case RoleTechnicalDirector, RoleBTC, RoleRefereeManager, RoleReferee, RoleMedicalStaff:
+		return "TOURNAMENT"
+	case RoleCoach, RoleClubLeader, RoleClubViceLeader, RoleClubSecretary, RoleClubAccountant:
+		return "CLUB"
+	case RoleDelegate, RoleAthlete, RoleParent:
+		return "SELF"
+	default:
+		return "SELF"
+	}
+}
+
+func resolvePermissionsForRole(role UserRole) []string {
+	switch role {
+	case RoleAdmin:
+		return []string{"*"}
+	case RoleFederationPresident:
+		return []string{
+			"tournament.*", "athlete.*", "scoring.read", "heritage.*",
+			"training.*", "payment.*", "system.manage_config", "system.manage_users",
+			"system.view_audit", "community.*",
+		}
+	case RoleFederationSecretary:
+		return []string{
+			"tournament.*", "athlete.*", "scoring.read", "heritage.read",
+			"training.read", "payment.read", "system.view_audit", "community.*",
+		}
+	case RoleProvincialAdmin, RoleProvincialPresident:
+		return []string{
+			"provincial.*", "tournament.read", "tournament.create", "athlete.*",
+			"training.*", "payment.*", "heritage.read", "certification.*",
+			"discipline.*", "document.*", "club.*",
+		}
+	case RoleProvincialVicePresident:
+		return []string{
+			"provincial.read", "provincial.club.*", "provincial.personnel.read",
+			"tournament.read", "athlete.*", "training.*",
+			"certification.read", "discipline.read", "document.read", "club.*",
+		}
+	case RoleProvincialSecretary:
+		return []string{
+			"provincial.*", "tournament.read", "athlete.*",
+			"training.read", "document.*", "club.*",
+			"certification.read", "discipline.read",
+		}
+	case RoleProvincialTechnicalHead:
+		return []string{
+			"provincial.read", "provincial.athlete.*", "provincial.coach.*",
+			"tournament.read", "athlete.*", "training.*",
+			"certification.*", "heritage.read",
+		}
+	case RoleProvincialRefereeHead:
+		return []string{
+			"provincial.read", "provincial.referee.*",
+			"tournament.read", "scoring.read",
+			"certification.referee.*",
+		}
+	case RoleProvincialCommitteeMember:
+		return []string{
+			"provincial.read", "tournament.read", "athlete.read",
+			"training.read", "document.read",
+		}
+	case RoleProvincialAccountant:
+		return []string{
+			"provincial.read", "provincial.finance.*",
+			"payment.*",
+		}
+	case RoleTechnicalDirector:
+		return []string{
+			"tournament.*", "athlete.*", "scoring.*",
+			"training.*", "heritage.*",
+		}
+	case RoleBTC:
+		return []string{
+			"tournament.read", "tournament.create", "tournament.update",
+			"athlete.read", "athlete.create", "athlete.update",
+			"scoring.read", "payment.read", "payment.create",
+		}
+	case RoleRefereeManager:
+		return []string{
+			"tournament.read", "athlete.read",
+			"scoring.*",
+		}
+	case RoleReferee:
+		return []string{
+			"tournament.read", "athlete.read",
+			"scoring.read", "scoring.record",
+		}
+	case RoleCoach:
+		return []string{
+			"tournament.read", "athlete.read", "athlete.update",
+			"training.*", "scoring.read", "club.read", "club.class.*", "club.member.read",
+		}
+	case RoleClubLeader:
+		return []string{
+			"club.*", "tournament.read", "athlete.read", "athlete.update",
+			"training.*", "scoring.read", "certification.read",
+		}
+	case RoleClubViceLeader:
+		return []string{
+			"club.read", "club.member.*", "club.class.*",
+			"tournament.read", "athlete.read", "training.*",
+		}
+	case RoleClubSecretary:
+		return []string{
+			"club.read", "club.member.*", "club.class.read",
+			"tournament.read", "athlete.read",
+		}
+	case RoleClubAccountant:
+		return []string{
+			"club.read", "club.finance.*",
+		}
+	case RoleDelegate:
+		return []string{
+			"tournament.read", "athlete.read", "athlete.update",
+			"scoring.read",
+		}
+	case RoleAthlete:
+		return []string{
+			"tournament.read", "athlete.read",
+			"scoring.read", "training.read",
+		}
+	case RoleMedicalStaff:
+		return []string{
+			"tournament.read", "athlete.read",
+			"scoring.read",
+		}
+	case RoleParent:
+		return []string{
+			"athlete.read", "tournament.read", "scoring.read",
+			"training.read", "consent.*", "payment.read",
+		}
+	default:
+		return []string{"tournament.read"}
+	}
+}
+
+func resolveWorkspacesForRole(role UserRole) []WorkspaceAccess {
+	ws := []WorkspaceAccess{}
+
+	switch role {
+	case RoleAdmin:
+		ws = append(ws,
+			WorkspaceAccess{Type: "system_admin", ScopeID: "SYS", ScopeName: "Quản trị hệ thống", Role: "admin"},
+			WorkspaceAccess{Type: "federation_admin", ScopeID: "FED", ScopeName: "Liên đoàn VCT", Role: "admin"},
+			WorkspaceAccess{Type: "tournament_ops", ScopeID: "TOURN", ScopeName: "Giải đấu", Role: "admin"},
+			WorkspaceAccess{Type: "club_management", ScopeID: "CLUB", ScopeName: "CLB", Role: "admin"},
+		)
+	case RoleFederationPresident, RoleFederationSecretary:
+		ws = append(ws,
+			WorkspaceAccess{Type: "federation_admin", ScopeID: "FED", ScopeName: "Liên đoàn VCT", Role: string(role)},
+		)
+	case RoleProvincialAdmin, RoleProvincialPresident, RoleProvincialVicePresident,
+		RoleProvincialSecretary, RoleProvincialTechnicalHead, RoleProvincialRefereeHead,
+		RoleProvincialCommitteeMember, RoleProvincialAccountant:
+		ws = append(ws,
+			WorkspaceAccess{Type: "provincial_admin", ScopeID: "PROV", ScopeName: "Liên đoàn tỉnh", Role: string(role)},
+		)
+	case RoleTechnicalDirector:
+		ws = append(ws,
+			WorkspaceAccess{Type: "federation_admin", ScopeID: "FED", ScopeName: "Liên đoàn VCT", Role: string(role)},
+			WorkspaceAccess{Type: "tournament_ops", ScopeID: "TOURN", ScopeName: "Giải đấu", Role: string(role)},
+		)
+	case RoleBTC:
+		ws = append(ws,
+			WorkspaceAccess{Type: "tournament_ops", ScopeID: "TOURN", ScopeName: "Giải đấu", Role: "btc"},
+		)
+	case RoleRefereeManager, RoleReferee:
+		ws = append(ws,
+			WorkspaceAccess{Type: "referee_console", ScopeID: "TOURN", ScopeName: "Trọng tài", Role: string(role)},
+		)
+	case RoleCoach:
+		ws = append(ws,
+			WorkspaceAccess{Type: "club_management", ScopeID: "CLUB", ScopeName: "CLB", Role: "coach"},
+		)
+	case RoleClubLeader, RoleClubViceLeader, RoleClubSecretary, RoleClubAccountant:
+		ws = append(ws,
+			WorkspaceAccess{Type: "club_management", ScopeID: "CLUB", ScopeName: "Quản lý CLB", Role: string(role)},
+		)
+	case RoleDelegate:
+		ws = append(ws,
+			WorkspaceAccess{Type: "tournament_ops", ScopeID: "TOURN", ScopeName: "Giải đấu", Role: "delegate"},
+		)
+	case RoleAthlete:
+		ws = append(ws,
+			WorkspaceAccess{Type: "athlete_portal", ScopeID: "SELF", ScopeName: "Hồ sơ VĐV", Role: "athlete"},
+		)
+	case RoleMedicalStaff:
+		ws = append(ws,
+			WorkspaceAccess{Type: "tournament_ops", ScopeID: "TOURN", ScopeName: "Y tế giải", Role: "medical_staff"},
+		)
+	case RoleParent:
+		ws = append(ws,
+			WorkspaceAccess{Type: "parent_portal", ScopeID: "SELF", ScopeName: "Quản lý con em", Role: "parent"},
+		)
+	}
+
+	// Everyone gets public spectator
+	ws = append(ws, WorkspaceAccess{Type: "public_spectator", ScopeID: "PUBLIC", ScopeName: "Xem trực tiếp", Role: "viewer"})
+
+	return ws
 }

@@ -1,18 +1,11 @@
-'use client'
-import { Text, View } from 'react-native'
-import { useParams, useRouter } from 'solito/navigation'
+import { Page_admin_user_detail } from 'app/features/admin/Page_admin_user_detail'
 
-const useUserParams = useParams<{ userId: string }>
+interface UserDetailPageProps {
+  params: Promise<{ userId: string }> | { userId: string }
+}
 
-export default function Home() {
-  const { userId } = useUserParams()
-  const router = useRouter()
+export default async function UserDetailPage({ params }: UserDetailPageProps) {
+  const { userId } = await params
 
-  return (
-    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-      <Text onPress={() => router.back()}>
-        Hi {userId}, click me to go back
-      </Text>
-    </View>
-  )
+  return <Page_admin_user_detail userId={userId} />
 }

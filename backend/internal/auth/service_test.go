@@ -134,3 +134,102 @@ func TestAuditLogsFilterByActorAndAction(t *testing.T) {
 		t.Fatalf("expected auth.login action, got %s", ghostLoginAudit[0].Action)
 	}
 }
+
+func TestRegisterAndLogin(t *testing.T) {
+	service := newTestService()
+	ctx := testRequestContext()
+
+	// Register a new user
+	regResult, err := service.Register(RegisterRequest{
+		Username:    "newathlete",
+		Password:    "Strong@Pass123",
+		DisplayName: "New Athlete",
+		Role:        RoleAthlete,
+	}, ctx)
+	if err != nil {
+		t.Fatalf("register failed: %v", err)
+	}
+	if regResult.AccessToken == "" || regResult.RefreshToken == "" {
+		t.Fatalf("expected tokens from registration")
+	}
+	if regResult.User.Username != "newathlete" {
+		t.Fatalf("expected username 'newathlete', got %s", regResult.User.Username)
+	}
+	// User ID should be a UUID v7 (36 chars with hyphens)
+	if len(regResult.User.ID) != 36 {
+		t.Fatalf("expected UUID v7 user ID (36 chars), got %q (%d chars)", regResult.User.ID, len(regResult.User.ID))
+	}
+
+	// Login with the registered credentials
+	loginResult, err := service.Login(LoginRequest{
+		Username:       "newathlete",
+		Password:       "Strong@Pass123",
+		Role:           RoleAthlete,
+		TournamentCode: "VCT-2026",
+		OperationShift: "sang",
+	}, ctx)
+	if err != nil {
+		t.Fatalf("login after register failed: %v", err)
+	}
+	if loginResult.User.ID != regResult.User.ID {
+		t.Fatalf("expected same user ID after login, got %s vs %s", loginResult.User.ID, regResult.User.ID)
+	}
+}
+
+func TestRegisterDuplicateUsername(t *testing.T) {
+	service := newTestService()
+	ctx := testRequestContext()
+
+	_, err := service.Register(RegisterRequest{
+		Username:    "uniqueuser",
+		Password:    "Strong@Pass123",
+		DisplayName: "First User",
+		Role:        RoleAthlete,
+	}, ctx)
+	if err != nil {
+		t.Fatalf("first register failed: %v", err)
+	}
+
+	_, err = service.Register(RegisterRequest{
+		Username:    "uniqueuser",
+		Password:    "Another@Pass456",
+		DisplayName: "Second User",
+		Role:        RoleAthlete,
+	}, ctx)
+	if !errors.Is(err, ErrConflict) {
+		t.Fatalf("expected conflict error for duplicate username, got: %v", err)
+	}
+}
+
+func TestBcryptPasswordVerification(t *testing.T) {
+	service := newTestService()
+	ctx := testRequestContext()
+
+	// Demo user "admin" should still work with bcrypt-hashed password
+	result, err := service.Login(adminLoginRequest(), ctx)
+	if err != nil {
+		t.Fatalf("admin login with bcrypt failed: %v", err)
+	}
+	if result.User.Username != "admin" {
+		t.Fatalf("expected admin username, got %s", result.User.Username)
+	}
+	// User ID should be UUID v7, not "u-admin"
+	if result.User.ID == "u-admin" {
+		t.Fatalf("user ID should be UUID v7, not derived from username")
+	}
+	if len(result.User.ID) != 36 {
+		t.Fatalf("expected UUID v7 user ID (36 chars), got %q", result.User.ID)
+	}
+
+	// Wrong password should still fail
+	_, err = service.Login(LoginRequest{
+		Username:       "admin",
+		Password:       "WrongPassword",
+		Role:           RoleAdmin,
+		TournamentCode: "VCT-2026",
+		OperationShift: "sang",
+	}, ctx)
+	if !errors.Is(err, ErrInvalidCredentials) {
+		t.Fatalf("expected invalid credentials for wrong password, got: %v", err)
+	}
+}

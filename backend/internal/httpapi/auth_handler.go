@@ -115,3 +115,58 @@ func (s *Server) handleAuthAudit(w http.ResponseWriter, r *http.Request, princip
 		"count": len(auditLogs),
 	})
 }
+
+func (s *Server) handleAuthRegister(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		methodNotAllowed(w)
+		return
+	}
+
+	var input auth.RegisterRequest
+	if err := decodeJSON(r, &input); err != nil {
+		badRequest(w, err.Error())
+		return
+	}
+
+	result, err := s.authService.Register(input, requestContextFromRequest(r))
+	if err != nil {
+		writeAuthError(w, err)
+		return
+	}
+	success(w, http.StatusCreated, result)
+}
+
+// handleAuthSwitchContext handles POST /api/v1/auth/switch-context
+func (s *Server) handleAuthSwitchContext(w http.ResponseWriter, r *http.Request, p auth.Principal) {
+	if r.Method != http.MethodPost {
+		methodNotAllowed(w)
+		return
+	}
+
+	var input auth.SwitchContextRequest
+	if err := decodeJSON(r, &input); err != nil {
+		badRequest(w, err.Error())
+		return
+	}
+
+	result, err := s.authService.SwitchContext(p, input, requestContextFromRequest(r))
+	if err != nil {
+		writeAuthError(w, err)
+		return
+	}
+	success(w, http.StatusOK, result)
+}
+
+// handleAuthMyRoles handles GET /api/v1/auth/my-roles
+func (s *Server) handleAuthMyRoles(w http.ResponseWriter, r *http.Request, p auth.Principal) {
+	if r.Method != http.MethodGet {
+		methodNotAllowed(w)
+		return
+	}
+
+	roles := s.authService.ListMyRoles(p)
+	success(w, http.StatusOK, map[string]any{
+		"user_id":  p.User.ID,
+		"bindings": roles,
+	})
+}

@@ -15,6 +15,7 @@ export type RouteGroupId =
     | 'dieu_hanh_thi_dau'
     | 'ket_qua_tong_hop'
     | 'cong_dong'
+    | 'cap_tinh'
     | 'he_thong'
 
 export type RouteId =
@@ -51,11 +52,24 @@ export type RouteId =
     | 'appeals'
     | 'reports'
     | 'community'
-    | 'marketplace'
     | 'admin-dashboard'
     | 'audit-logs'
     | 'people'
     | 'user-detail'
+    | 'provincial-dashboard'
+    | 'provincial-associations'
+    | 'provincial-sub-associations'
+    | 'provincial-clubs'
+    | 'provincial-athletes'
+    | 'provincial-coaches'
+    | 'provincial-referees'
+    | 'provincial-personnel'
+    | 'provincial-tournaments'
+    | 'provincial-certifications'
+    | 'provincial-discipline'
+    | 'provincial-documents'
+    | 'provincial-finance'
+    | 'provincial-reports'
 
 export type RouteAction =
     | 'view'

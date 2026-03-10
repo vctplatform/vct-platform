@@ -3,10 +3,12 @@ import * as React from 'react';
 import { useState, useMemo, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-    VCT_Card, VCT_Badge, VCT_Button, VCT_Text, VCT_Stack, VCT_KpiCard,
+    VCT_Card, VCT_Badge, VCT_Button, VCT_Text, VCT_Stack,
     VCT_Toast, VCT_Modal, VCT_Divider, VCT_Input, VCT_Field, VCT_Select,
     VCT_ConfirmDialog, VCT_EmptyState, VCT_SearchInput
 } from '../components/vct-ui';
+import { VCT_PageContainer, VCT_StatRow } from '../components/vct-ui';
+import type { StatItem } from '../components/VCT_StatRow';
 import { VCT_Icons } from '../components/vct-icons';
 
 import { genId } from '../data/mock-data';
@@ -208,16 +210,16 @@ export const Page_san_dau = () => {
     };
 
     return (
-        <div className="mx-auto max-w-[1400px] pb-24">
+        <VCT_PageContainer size="wide" animated>
             <VCT_Toast isVisible={toast.show} message={toast.msg} type={toast.type} onClose={hideToast} />
 
             {/* ── KPI HEADER ── */}
-            <div className="vct-stagger mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
-                <VCT_KpiCard label="Tổng Sàn Đấu" value={arenas.length} icon={<VCT_Icons.Columns size={24} />} color="#0ea5e9" />
-                <VCT_KpiCard label="Đang thi đấu (LIVE)" value={liveArenas} icon={<VCT_Icons.Activity size={24} />} color="#ef4444" sub="Có nhịp tim" />
-                <VCT_KpiCard label="Tổng trận hôm nay" value={totalMatches} icon={<VCT_Icons.List size={24} />} color="#8b5cf6" sub={`Đã xong: ${totalDone}`} />
-                <VCT_KpiCard label="Sẵn sàng" value={arenas.filter(a => a.trang_thai === 'san_sang').length} icon={<VCT_Icons.Check size={24} />} color="#10b981" />
-            </div>
+            <VCT_StatRow items={[
+                { label: 'Tổng Sàn', value: arenas.length, icon: <VCT_Icons.Columns size={18} />, color: '#0ea5e9' },
+                { label: 'LIVE', value: liveArenas, icon: <VCT_Icons.Activity size={18} />, color: '#ef4444' },
+                { label: 'Trận hôm nay', value: totalMatches, icon: <VCT_Icons.List size={18} />, color: '#8b5cf6', sub: `Xong: ${totalDone}` },
+                { label: 'Sẵn sàng', value: arenas.filter(a => a.trang_thai === 'san_sang').length, icon: <VCT_Icons.Check size={18} />, color: '#10b981' },
+            ] as StatItem[]} className="mb-6" />
 
             {/* ── HEADER ── */}
             <VCT_Stack direction="row" justify="space-between" align="center" style={{ marginBottom: '24px' }}>
@@ -286,196 +288,196 @@ export const Page_san_dau = () => {
             ) : (
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(400px, 1fr))', gap: '24px' }}>
                     {filteredArenas.map(arena => {
-                    const isLive = arena.trang_thai === 'dang_thi_dau';
-                    const stMap = TRANG_THAI_SAN_MAP[arena.trang_thai];
-                    const Icon = stMap.icon;
-                    const isExpanded = expandedArenaId === arena.id;
+                        const isLive = arena.trang_thai === 'dang_thi_dau';
+                        const stMap = TRANG_THAI_SAN_MAP[arena.trang_thai];
+                        const Icon = stMap.icon;
+                        const isExpanded = expandedArenaId === arena.id;
 
-                    return (
-                        <VCT_Card key={arena.id} className={isLive ? 'vct-border-glow' : ''} style={{
-                            borderColor: isLive ? 'var(--vct-accent-cyan)' : 'var(--vct-border-subtle)',
-                            boxShadow: isLive ? '0 10px 40px rgba(34, 211, 238, 0.15)' : 'none',
-                            display: 'flex', flexDirection: 'column', padding: 0, overflow: 'hidden'
-                        }}>
-                            {/* OVERVIEW STRIP */}
-                            <div style={{ height: 4, background: stMap.color, width: '100%' }} />
+                        return (
+                            <VCT_Card key={arena.id} className={isLive ? 'vct-border-glow' : ''} style={{
+                                borderColor: isLive ? 'var(--vct-accent-cyan)' : 'var(--vct-border-subtle)',
+                                boxShadow: isLive ? '0 10px 40px rgba(34, 211, 238, 0.15)' : 'none',
+                                display: 'flex', flexDirection: 'column', padding: 0, overflow: 'hidden'
+                            }}>
+                                {/* OVERVIEW STRIP */}
+                                <div style={{ height: 4, background: stMap.color, width: '100%' }} />
 
-                            <div style={{ padding: '20px' }}>
-                                <VCT_Stack direction="row" justify="space-between" align="center" style={{ marginBottom: '16px' }}>
-                                    <VCT_Stack direction="row" align="center" gap={12}>
-                                        <div style={{ width: 44, height: 44, borderRadius: 12, background: 'var(--vct-bg-input)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 900, fontSize: '18px', color: stMap.color, border: '1px solid var(--vct-border-subtle)' }}>
-                                            {arena.ten.split(' ')[1] || arena.ten[0]}
+                                <div style={{ padding: '20px' }}>
+                                    <VCT_Stack direction="row" justify="space-between" align="center" style={{ marginBottom: '16px' }}>
+                                        <VCT_Stack direction="row" align="center" gap={12}>
+                                            <div style={{ width: 44, height: 44, borderRadius: 12, background: 'var(--vct-bg-input)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 900, fontSize: '18px', color: stMap.color, border: '1px solid var(--vct-border-subtle)' }}>
+                                                {arena.ten.split(' ')[1] || arena.ten[0]}
+                                            </div>
+                                            <div>
+                                                <VCT_Text variant="h2" style={{ fontSize: '16px' }}>{arena.ten} <span style={{ fontSize: 13, opacity: 0.5, fontWeight: 500 }}>({arena.kich_thuoc})</span></VCT_Text>
+                                                <VCT_Text variant="small" style={{ opacity: 0.5 }}>{arena.vi_tri} • {arena.loai === 'doi_khang' ? '🥊 Đối kháng' : arena.loai === 'quyen' ? '🥋 Quyền' : '⚔️ Cả hai'}</VCT_Text>
+                                            </div>
+                                        </VCT_Stack>
+                                        <VCT_Badge text={stMap.label} type={stMap.type as any} pulse={isLive} />
+                                    </VCT_Stack>
+
+                                    {/* PROGRESS HUB */}
+                                    <VCT_Stack direction="row" gap={12} style={{ marginBottom: '16px', background: 'var(--vct-bg-elevated)', padding: '12px', borderRadius: '12px', border: '1px solid var(--vct-border-subtle)' }}>
+                                        <div className="flex-1">
+                                            <VCT_Text variant="small" style={{ opacity: 0.5, fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Tiến độ</VCT_Text>
+                                            <div style={{ fontSize: '16px', fontWeight: 800 }}>{arena.done_today}/{arena.total_today} <span style={{ fontSize: '11px', fontWeight: 500, opacity: 0.5 }}>trận</span></div>
+                                            <div style={{ height: 4, background: 'var(--vct-border-subtle)', borderRadius: 2, marginTop: 4, overflow: 'hidden' }}>
+                                                <div style={{ height: '100%', width: `${(arena.done_today / arena.total_today) * 100}%`, background: 'var(--vct-accent-cyan)' }} />
+                                            </div>
                                         </div>
-                                        <div>
-                                            <VCT_Text variant="h2" style={{ fontSize: '16px' }}>{arena.ten} <span style={{ fontSize: 13, opacity: 0.5, fontWeight: 500 }}>({arena.kich_thuoc})</span></VCT_Text>
-                                            <VCT_Text variant="small" style={{ opacity: 0.5 }}>{arena.vi_tri} • {arena.loai === 'doi_khang' ? '🥊 Đối kháng' : arena.loai === 'quyen' ? '🥋 Quyền' : '⚔️ Cả hai'}</VCT_Text>
+                                        <VCT_Divider vertical />
+                                        <div className="flex-1">
+                                            <VCT_Text variant="small" style={{ opacity: 0.5, fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Đợi sân</VCT_Text>
+                                            <div style={{ fontSize: '16px', fontWeight: 800 }}>{arena.queue.length} <span style={{ fontSize: '11px', fontWeight: 500, opacity: 0.5 }}>trận</span></div>
                                         </div>
                                     </VCT_Stack>
-                                    <VCT_Badge text={stMap.label} type={stMap.type as any} pulse={isLive} />
-                                </VCT_Stack>
 
-                                {/* PROGRESS HUB */}
-                                <VCT_Stack direction="row" gap={12} style={{ marginBottom: '16px', background: 'var(--vct-bg-elevated)', padding: '12px', borderRadius: '12px', border: '1px solid var(--vct-border-subtle)' }}>
-                                    <div className="flex-1">
-                                        <VCT_Text variant="small" style={{ opacity: 0.5, fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Tiến độ</VCT_Text>
-                                        <div style={{ fontSize: '16px', fontWeight: 800 }}>{arena.done_today}/{arena.total_today} <span style={{ fontSize: '11px', fontWeight: 500, opacity: 0.5 }}>trận</span></div>
-                                        <div style={{ height: 4, background: 'var(--vct-border-subtle)', borderRadius: 2, marginTop: 4, overflow: 'hidden' }}>
-                                            <div style={{ height: '100%', width: `${(arena.done_today / arena.total_today) * 100}%`, background: 'var(--vct-accent-cyan)' }} />
-                                        </div>
-                                    </div>
-                                    <VCT_Divider vertical />
-                                    <div className="flex-1">
-                                        <VCT_Text variant="small" style={{ opacity: 0.5, fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Đợi sân</VCT_Text>
-                                        <div style={{ fontSize: '16px', fontWeight: 800 }}>{arena.queue.length} <span style={{ fontSize: '11px', fontWeight: 500, opacity: 0.5 }}>trận</span></div>
-                                    </div>
-                                </VCT_Stack>
+                                    {/* HEARTBEAT ANIMATION & LIVE MATCH */}
+                                    <div style={{ minHeight: '180px', display: 'flex', flexDirection: 'column', justifyContent: 'center', background: 'var(--vct-bg-input)', borderRadius: 16, padding: '16px', position: 'relative', overflow: 'hidden' }}>
+                                        {isLive && (
+                                            <motion.div
+                                                animate={{ opacity: [0.1, 0.3, 0.1], scale: [1, 1.05, 1] }}
+                                                transition={{ repeat: Infinity, duration: 2 }}
+                                                style={{ position: 'absolute', inset: 0, background: 'radial-gradient(circle at center, var(--vct-accent-cyan) 0%, transparent 60%)', pointerEvents: 'none' }}
+                                            />
+                                        )}
 
-                                {/* HEARTBEAT ANIMATION & LIVE MATCH */}
-                                <div style={{ minHeight: '180px', display: 'flex', flexDirection: 'column', justifyContent: 'center', background: 'var(--vct-bg-input)', borderRadius: 16, padding: '16px', position: 'relative', overflow: 'hidden' }}>
-                                    {isLive && (
-                                        <motion.div
-                                            animate={{ opacity: [0.1, 0.3, 0.1], scale: [1, 1.05, 1] }}
-                                            transition={{ repeat: Infinity, duration: 2 }}
-                                            style={{ position: 'absolute', inset: 0, background: 'radial-gradient(circle at center, var(--vct-accent-cyan) 0%, transparent 60%)', pointerEvents: 'none' }}
-                                        />
-                                    )}
+                                        {arena.match_live ? (
+                                            <>
+                                                <div style={{ textAlign: 'center', marginBottom: '12px', position: 'relative', zIndex: 1 }}>
+                                                    <VCT_Text variant="small" style={{ color: 'var(--vct-accent-cyan)', fontWeight: 800 }}>{arena.noi_dung}</VCT_Text>
+                                                    <div style={{ color: '#f59e0b', fontSize: 13, fontWeight: 700, marginTop: 4 }}>Hiệp {arena.match_live.hiep} • {arena.match_live.time}</div>
+                                                </div>
+                                                <VCT_Stack direction="row" gap={12} style={{ position: 'relative', zIndex: 1, marginBottom: '16px' }}>
+                                                    <LiveScoreboard
+                                                        color="red"
+                                                        name={arena.match_live.vdv1}
+                                                        score={arena.match_live.diem1}
+                                                        team="Đỏ"
+                                                        isWinner={arena.match_live.diem1 > arena.match_live.diem2}
+                                                    />
+                                                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: 0.4, fontWeight: 900, fontStyle: 'italic', fontSize: 12 }}>VS</div>
+                                                    <LiveScoreboard
+                                                        color="blue"
+                                                        name={arena.match_live.vdv2}
+                                                        score={arena.match_live.diem2}
+                                                        team="Xanh"
+                                                        isWinner={arena.match_live.diem2 > arena.match_live.diem1}
+                                                    />
+                                                </VCT_Stack>
 
-                                    {arena.match_live ? (
-                                        <>
-                                            <div style={{ textAlign: 'center', marginBottom: '12px', position: 'relative', zIndex: 1 }}>
-                                                <VCT_Text variant="small" style={{ color: 'var(--vct-accent-cyan)', fontWeight: 800 }}>{arena.noi_dung}</VCT_Text>
-                                                <div style={{ color: '#f59e0b', fontSize: 13, fontWeight: 700, marginTop: 4 }}>Hiệp {arena.match_live.hiep} • {arena.match_live.time}</div>
+                                                {/* QUICK CONTROLS - MOCK */}
+                                                <VCT_Stack direction="row" gap={8} style={{ zIndex: 1 }}>
+                                                    <VCT_Button
+                                                        size="small"
+                                                        variant="secondary"
+                                                        style={{ flex: 1, background: 'rgba(239, 68, 68, 0.1)', color: '#ef4444', borderColor: '#ef4444' }}
+                                                        onClick={() => showToast(`Dừng trận đấu tại ${arena.ten}`, 'info')}
+                                                    >Tạm dừng</VCT_Button>
+                                                    <VCT_Button
+                                                        size="small"
+                                                        style={{ flex: 1, background: '#10b981', borderColor: '#10b981' }}
+                                                        onClick={() => showToast(`Kết thúc trận đấu tại ${arena.ten}`, 'success')}
+                                                    >Kết thúc</VCT_Button>
+                                                </VCT_Stack>
+                                            </>
+                                        ) : (
+                                            <div style={{ textAlign: 'center', opacity: 0.4 }}>
+                                                <Icon size={40} style={{ marginBottom: 12, opacity: 0.5 }} />
+                                                <VCT_Text style={{ fontWeight: 600 }}>Sàn đang {stMap.label.toLowerCase()}</VCT_Text>
                                             </div>
-                                            <VCT_Stack direction="row" gap={12} style={{ position: 'relative', zIndex: 1, marginBottom: '16px' }}>
-                                                <LiveScoreboard
-                                                    color="red"
-                                                    name={arena.match_live.vdv1}
-                                                    score={arena.match_live.diem1}
-                                                    team="Đỏ"
-                                                    isWinner={arena.match_live.diem1 > arena.match_live.diem2}
-                                                />
-                                                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: 0.4, fontWeight: 900, fontStyle: 'italic', fontSize: 12 }}>VS</div>
-                                                <LiveScoreboard
-                                                    color="blue"
-                                                    name={arena.match_live.vdv2}
-                                                    score={arena.match_live.diem2}
-                                                    team="Xanh"
-                                                    isWinner={arena.match_live.diem2 > arena.match_live.diem1}
-                                                />
-                                            </VCT_Stack>
+                                        )}
+                                    </div>
 
-                                            {/* QUICK CONTROLS - MOCK */}
-                                            <VCT_Stack direction="row" gap={8} style={{ zIndex: 1 }}>
-                                                <VCT_Button
-                                                    size="small"
-                                                    variant="secondary"
-                                                    style={{ flex: 1, background: 'rgba(239, 68, 68, 0.1)', color: '#ef4444', borderColor: '#ef4444' }}
-                                                    onClick={() => showToast(`Dừng trận đấu tại ${arena.ten}`, 'info')}
-                                                >Tạm dừng</VCT_Button>
-                                                <VCT_Button
-                                                    size="small"
-                                                    style={{ flex: 1, background: '#10b981', borderColor: '#10b981' }}
-                                                    onClick={() => showToast(`Kết thúc trận đấu tại ${arena.ten}`, 'success')}
-                                                >Kết thúc</VCT_Button>
-                                            </VCT_Stack>
-                                        </>
-                                    ) : (
-                                        <div style={{ textAlign: 'center', opacity: 0.4 }}>
-                                            <Icon size={40} style={{ marginBottom: 12, opacity: 0.5 }} />
-                                            <VCT_Text style={{ fontWeight: 600 }}>Sàn đang {stMap.label.toLowerCase()}</VCT_Text>
+                                    {/* QUEUE STRIP */}
+                                    {arena.queue.length > 0 && (
+                                        <div style={{ marginTop: 16, display: 'flex', alignItems: 'center', gap: 12, padding: '10px 14px', background: 'var(--vct-bg-elevated)', borderRadius: 12, border: '1px solid var(--vct-border-subtle)' }}>
+                                            <VCT_Text variant="small" style={{ color: '#f59e0b', flexShrink: 0, fontWeight: 800 }}>TIẾP THEO</VCT_Text>
+                                            <div style={{ flex: 1, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                                                <span style={{ fontSize: 13, fontWeight: 700 }}>{arena.queue[0]?.vdv1} vs {arena.queue[0]?.vdv2}</span>
+                                                <span style={{ fontSize: 11, opacity: 0.5, marginLeft: 8 }}>({arena.queue[0]?.noi_dung})</span>
+                                            </div>
                                         </div>
                                     )}
+
+                                    {/* ACTION BUTTONS */}
+                                    <VCT_Stack direction="row" gap={8} className="mt-4">
+                                        <VCT_Button variant="secondary" onClick={() => openEditArena(arena)} style={{ width: 40, padding: 0, flexShrink: 0 }} title="Sửa thông tin sàn">
+                                            <VCT_Icons.Edit size={16} />
+                                        </VCT_Button>
+                                        <VCT_Button variant="secondary" onClick={() => setDeleteTarget(arena)} style={{ width: 40, padding: 0, color: '#ef4444', borderColor: 'rgba(239,68,68,0.35)', flexShrink: 0 }} title="Xóa sàn">
+                                            <VCT_Icons.Trash size={16} />
+                                        </VCT_Button>
+                                        <VCT_Button variant="secondary" onClick={() => setExpandedArenaId(isExpanded ? null : arena.id)} style={{ padding: '0 16px', flexShrink: 0, whiteSpace: 'nowrap' }}>
+                                            {isExpanded ? 'Thu gọn' : 'Chi tiết Sàn'}
+                                        </VCT_Button>
+                                        <div style={{ flex: 1, minWidth: 140 }}>
+                                            <VCT_Select
+                                                options={Object.keys(TRANG_THAI_SAN_MAP).map(k => ({ value: k, label: TRANG_THAI_SAN_MAP[k as TrangThaiSan].label }))}
+                                                value={arena.trang_thai}
+                                                onChange={(v: string) => handleStatusChange(arena.id, v as TrangThaiSan)}
+                                            />
+                                        </div>
+                                    </VCT_Stack>
                                 </div>
 
-                                {/* QUEUE STRIP */}
-                                {arena.queue.length > 0 && (
-                                    <div style={{ marginTop: 16, display: 'flex', alignItems: 'center', gap: 12, padding: '10px 14px', background: 'var(--vct-bg-elevated)', borderRadius: 12, border: '1px solid var(--vct-border-subtle)' }}>
-                                        <VCT_Text variant="small" style={{ color: '#f59e0b', flexShrink: 0, fontWeight: 800 }}>TIẾP THEO</VCT_Text>
-                                        <div style={{ flex: 1, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                                            <span style={{ fontSize: 13, fontWeight: 700 }}>{arena.queue[0]?.vdv1} vs {arena.queue[0]?.vdv2}</span>
-                                            <span style={{ fontSize: 11, opacity: 0.5, marginLeft: 8 }}>({arena.queue[0]?.noi_dung})</span>
-                                        </div>
-                                    </div>
-                                )}
-
-                                {/* ACTION BUTTONS */}
-                                <VCT_Stack direction="row" gap={8} className="mt-4">
-                                    <VCT_Button variant="secondary" onClick={() => openEditArena(arena)} style={{ width: 40, padding: 0, flexShrink: 0 }} title="Sửa thông tin sàn">
-                                        <VCT_Icons.Edit size={16} />
-                                    </VCT_Button>
-                                    <VCT_Button variant="secondary" onClick={() => setDeleteTarget(arena)} style={{ width: 40, padding: 0, color: '#ef4444', borderColor: 'rgba(239,68,68,0.35)', flexShrink: 0 }} title="Xóa sàn">
-                                        <VCT_Icons.Trash size={16} />
-                                    </VCT_Button>
-                                    <VCT_Button variant="secondary" onClick={() => setExpandedArenaId(isExpanded ? null : arena.id)} style={{ padding: '0 16px', flexShrink: 0, whiteSpace: 'nowrap' }}>
-                                        {isExpanded ? 'Thu gọn' : 'Chi tiết Sàn'}
-                                    </VCT_Button>
-                                    <div style={{ flex: 1, minWidth: 140 }}>
-                                        <VCT_Select
-                                            options={Object.keys(TRANG_THAI_SAN_MAP).map(k => ({ value: k, label: TRANG_THAI_SAN_MAP[k as TrangThaiSan].label }))}
-                                            value={arena.trang_thai}
-                                            onChange={(v: string) => handleStatusChange(arena.id, v as TrangThaiSan)}
-                                        />
-                                    </div>
-                                </VCT_Stack>
-                            </div>
-
-                            {/* EXPANDED DETAILS */}
-                            <AnimatePresence>
-                                {isExpanded && (
-                                    <motion.div initial={{ height: 0 }} animate={{ height: 'auto' }} exit={{ height: 0 }} style={{ overflow: 'hidden' }}>
-                                        <div style={{ padding: '0 20px 20px', borderTop: '1px dashed var(--vct-border-subtle)', background: 'var(--vct-bg-base)' }}>
-                                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24, marginTop: 16 }}>
-                                                {/* CÁN BỘ & TIẾN ĐỘ */}
-                                                <div>
-                                                    <div style={{ fontSize: 11, opacity: 0.5, fontWeight: 700, marginBottom: 8, textTransform: 'uppercase' }}>Thông tin phụ trách</div>
-                                                    <div style={{ fontSize: 13, fontWeight: 700 }}>{arena.phu_trach} <span style={{ opacity: 0.5 }}>({arena.phu_trach_sdt})</span></div>
-                                                    <div style={{ fontSize: 13, marginTop: 8 }}>Trọng tài: <span style={{ fontWeight: 600 }}>{arena.trong_tai.length} người</span></div>
-                                                    <div className="mt-4">
-                                                        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, marginBottom: 4, fontWeight: 600 }}>
-                                                            <span>Tiến độ trận ({arena.done_today}/{arena.total_today})</span>
-                                                            <span style={{ color: 'var(--vct-accent-cyan)' }}>{Math.round((arena.done_today / Math.max(1, arena.total_today)) * 100)}%</span>
+                                {/* EXPANDED DETAILS */}
+                                <AnimatePresence>
+                                    {isExpanded && (
+                                        <motion.div initial={{ height: 0 }} animate={{ height: 'auto' }} exit={{ height: 0 }} style={{ overflow: 'hidden' }}>
+                                            <div style={{ padding: '0 20px 20px', borderTop: '1px dashed var(--vct-border-subtle)', background: 'var(--vct-bg-base)' }}>
+                                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24, marginTop: 16 }}>
+                                                    {/* CÁN BỘ & TIẾN ĐỘ */}
+                                                    <div>
+                                                        <div style={{ fontSize: 11, opacity: 0.5, fontWeight: 700, marginBottom: 8, textTransform: 'uppercase' }}>Thông tin phụ trách</div>
+                                                        <div style={{ fontSize: 13, fontWeight: 700 }}>{arena.phu_trach} <span style={{ opacity: 0.5 }}>({arena.phu_trach_sdt})</span></div>
+                                                        <div style={{ fontSize: 13, marginTop: 8 }}>Trọng tài: <span style={{ fontWeight: 600 }}>{arena.trong_tai.length} người</span></div>
+                                                        <div className="mt-4">
+                                                            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, marginBottom: 4, fontWeight: 600 }}>
+                                                                <span>Tiến độ trận ({arena.done_today}/{arena.total_today})</span>
+                                                                <span style={{ color: 'var(--vct-accent-cyan)' }}>{Math.round((arena.done_today / Math.max(1, arena.total_today)) * 100)}%</span>
+                                                            </div>
+                                                            <div style={{ width: '100%', height: 6, background: 'var(--vct-bg-input)', borderRadius: 3, overflow: 'hidden' }}>
+                                                                <div style={{ width: `${(arena.done_today / Math.max(1, arena.total_today)) * 100}%`, height: '100%', background: 'var(--vct-accent-cyan)' }} />
+                                                            </div>
                                                         </div>
-                                                        <div style={{ width: '100%', height: 6, background: 'var(--vct-bg-input)', borderRadius: 3, overflow: 'hidden' }}>
-                                                            <div style={{ width: `${(arena.done_today / Math.max(1, arena.total_today)) * 100}%`, height: '100%', background: 'var(--vct-accent-cyan)' }} />
-                                                        </div>
+                                                    </div>
+
+                                                    {/* TRANG BỊ */}
+                                                    <div>
+                                                        <div style={{ fontSize: 11, opacity: 0.5, fontWeight: 700, marginBottom: 8, textTransform: 'uppercase' }}>Danh sách trang bị</div>
+                                                        <VCT_Stack gap={6}>
+                                                            {arena.trang_bi.map((tb, i) => (
+                                                                <div key={i} style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13, background: 'var(--vct-bg-elevated)', padding: '6px 12px', borderRadius: 6, border: '1px solid var(--vct-border-subtle)' }}>
+                                                                    <span style={{ fontWeight: 500 }}>{tb.ten} (x{tb.sl})</span>
+                                                                    <span style={{ color: TRANG_BI_MAP[tb.tt].color, fontWeight: 700 }}>{TRANG_BI_MAP[tb.tt].label}</span>
+                                                                </div>
+                                                            ))}
+                                                        </VCT_Stack>
                                                     </div>
                                                 </div>
 
-                                                {/* TRANG BỊ */}
-                                                <div>
-                                                    <div style={{ fontSize: 11, opacity: 0.5, fontWeight: 700, marginBottom: 8, textTransform: 'uppercase' }}>Danh sách trang bị</div>
+                                                {/* HOẠT ĐỘNG (TIMELINE) */}
+                                                <div className="mt-6">
+                                                    <div style={{ fontSize: 11, opacity: 0.5, fontWeight: 700, marginBottom: 8, textTransform: 'uppercase' }}>Lịch sử hoạt động</div>
                                                     <VCT_Stack gap={6}>
-                                                        {arena.trang_bi.map((tb, i) => (
-                                                            <div key={i} style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13, background: 'var(--vct-bg-elevated)', padding: '6px 12px', borderRadius: 6, border: '1px solid var(--vct-border-subtle)' }}>
-                                                                <span style={{ fontWeight: 500 }}>{tb.ten} (x{tb.sl})</span>
-                                                                <span style={{ color: TRANG_BI_MAP[tb.tt].color, fontWeight: 700 }}>{TRANG_BI_MAP[tb.tt].label}</span>
-                                                            </div>
-                                                        ))}
+                                                        {arena.history.length === 0 ? <div style={{ fontSize: 13, opacity: 0.5 }}>Chưa có hoạt động</div> :
+                                                            arena.history.slice(0, 3).map((h, i) => (
+                                                                <div key={i} style={{ display: 'flex', fontSize: 12, gap: 12, opacity: i === 0 ? 1 : 0.6 }}>
+                                                                    <span style={{ fontFamily: 'monospace', color: 'var(--vct-accent-cyan)' }}>{h.time.split(' ')[1]}</span>
+                                                                    <span style={{ fontWeight: 600, flex: 1 }}>{h.action}</span>
+                                                                    <span style={{ opacity: 0.5 }}>{h.by}</span>
+                                                                </div>
+                                                            ))
+                                                        }
                                                     </VCT_Stack>
                                                 </div>
                                             </div>
-
-                                            {/* HOẠT ĐỘNG (TIMELINE) */}
-                                            <div className="mt-6">
-                                                <div style={{ fontSize: 11, opacity: 0.5, fontWeight: 700, marginBottom: 8, textTransform: 'uppercase' }}>Lịch sử hoạt động</div>
-                                                <VCT_Stack gap={6}>
-                                                    {arena.history.length === 0 ? <div style={{ fontSize: 13, opacity: 0.5 }}>Chưa có hoạt động</div> :
-                                                        arena.history.slice(0, 3).map((h, i) => (
-                                                            <div key={i} style={{ display: 'flex', fontSize: 12, gap: 12, opacity: i === 0 ? 1 : 0.6 }}>
-                                                                <span style={{ fontFamily: 'monospace', color: 'var(--vct-accent-cyan)' }}>{h.time.split(' ')[1]}</span>
-                                                                <span style={{ fontWeight: 600, flex: 1 }}>{h.action}</span>
-                                                                <span style={{ opacity: 0.5 }}>{h.by}</span>
-                                                            </div>
-                                                        ))
-                                                    }
-                                                </VCT_Stack>
-                                            </div>
-                                        </div>
-                                    </motion.div>
-                                )}
-                            </AnimatePresence>
-                        </VCT_Card>
-                    );
+                                        </motion.div>
+                                    )}
+                                </AnimatePresence>
+                            </VCT_Card>
+                        );
                     })}
                 </div>
             )}
@@ -546,6 +548,6 @@ export const Page_san_dau = () => {
                 confirmLabel="Xóa"
                 confirmVariant="danger"
             />
-        </div>
+        </VCT_PageContainer>
     );
 };

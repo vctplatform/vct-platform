@@ -4,8 +4,10 @@ import { useState, useMemo, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
     VCT_Card, VCT_Badge, VCT_Button, VCT_Text, VCT_Stack, VCT_Toast,
-    VCT_KpiCard, VCT_Modal, VCT_EmptyState, VCT_Select, VCT_Tabs
+    VCT_Modal, VCT_EmptyState, VCT_Select, VCT_Tabs
 } from '../components/vct-ui';
+import { VCT_PageContainer, VCT_StatRow } from '../components/vct-ui';
+import type { StatItem } from '../components/VCT_StatRow';
 import { VCT_Icons } from '../components/vct-icons';
 import { HANG_CANS, genId } from '../data/mock-data';
 import type { VanDongVien } from '../data/types';
@@ -217,7 +219,7 @@ export const Page_boc_tham = () => {
     const displaySlots = existingDraw?.slots || (animPhase !== 'idle' ? tempSlots : []);
 
     return (
-        <div className="mx-auto max-w-[1400px] pb-24">
+        <VCT_PageContainer size="wide" animated>
             <VCT_Toast isVisible={toast.show} message={toast.msg} type={toast.type} onClose={hideToast} />
 
             {(registrationStore.uiState.error || athleteStore.uiState.error) && (
@@ -246,11 +248,11 @@ export const Page_boc_tham = () => {
                             Fisher-Yates Shuffle — Ràng buộc cùng đoàn không gặp nhau vòng 1
                         </VCT_Text>
                     </div>
-                    <VCT_Stack direction="row" gap={12}>
-                        <VCT_KpiCard label="Đã bốc" value={totalDrawn} icon={<VCT_Icons.Shuffle size={20} />} color="#3b82f6" style={{ minWidth: 120 }} />
-                        <VCT_KpiCard label="Xác nhận" value={totalConfirmed} icon={<VCT_Icons.CheckCircle size={20} />} color="#10b981" style={{ minWidth: 120 }} />
-                        <VCT_KpiCard label="Nháp" value={totalDraft} icon={<VCT_Icons.Edit size={20} />} color="#f59e0b" style={{ minWidth: 120 }} />
-                    </VCT_Stack>
+                    <VCT_StatRow items={[
+                        { label: 'Đã bốc', value: totalDrawn, icon: <VCT_Icons.Shuffle size={18} />, color: '#3b82f6' },
+                        { label: 'Xác nhận', value: totalConfirmed, icon: <VCT_Icons.CheckCircle size={18} />, color: '#10b981' },
+                        { label: 'Nháp', value: totalDraft, icon: <VCT_Icons.Edit size={18} />, color: '#f59e0b' },
+                    ] as StatItem[]} />
                 </VCT_Stack>
             </motion.div>
 
@@ -432,6 +434,6 @@ export const Page_boc_tham = () => {
                     </VCT_Card>
                 </motion.div>
             )}
-        </div>
+        </VCT_PageContainer>
     );
 };

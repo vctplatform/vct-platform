@@ -1,0 +1,41 @@
+{
+    "compilerOptions": {
+        "target": "ES2022",
+        "module": "ESNext",
+        "moduleResolution": "bundler",
+        "strict": true,
+        "esModuleInterop": true,
+        "skipLibCheck": true,
+        "forceConsistentCasingInFileNames": true,
+        "resolveJsonModule": true,
+        "isolatedModules": true,
+        "declaration": true,
+        "declarationMap": true,
+        "sourceMap": true,
+        "jsx": "react-jsx",
+        "paths": {
+            "@vct/shared-types": [
+                "./packages/shared-types/src"
+            ],
+            "@vct/shared-types/*": [
+                "./packages/shared-types/src/*"
+            ],
+            "@vct/shared-utils": [
+                "./packages/shared-utils/src"
+            ],
+            "@vct/shared-utils/*": [
+                "./packages/shared-utils/src/*"
+            ],
+            "@vct/ui": [
+                "./packages/ui/src"
+            ],
+            "@vct/ui/*": [
+                "./packages/ui/src/*"
+            ]
+        }
+    },
+    "include": [],
+    "exclude": [
+        "node_modules"
+    ]
+}

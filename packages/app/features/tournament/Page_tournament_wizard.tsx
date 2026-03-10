@@ -160,7 +160,7 @@ export const Page_tournament_wizard = () => {
                 </VCT_Stack>
             </div>
             <VCT_Text variant="small" style={{ color: 'var(--vct-text-secondary)', textAlign: 'center', marginTop: 12 }}>
-                Sau khi nhấn "Hoàn tất", hệ thống sẽ tạo một bản nháp cho Giải đấu này. Bạn có thể tiếp tục cấu hình các thông số chi tiết khác tại Trung tâm Điều hành.
+                {`Sau khi nhấn "Hoàn tất", hệ thống sẽ tạo một bản nháp cho Giải đấu này. Bạn có thể tiếp tục cấu hình các thông số chi tiết khác tại Trung tâm Điều hành.`}
             </VCT_Text>
         </VCT_Stack>
     );

@@ -3,10 +3,12 @@ import * as React from 'react';
 import { useState, useMemo, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import {
-    VCT_Badge, VCT_Button, VCT_KpiCard, VCT_Stack, VCT_Toast,
+    VCT_Badge, VCT_Button, VCT_Stack, VCT_Toast,
     VCT_SearchInput, VCT_EmptyState, VCT_AvatarLetter, VCT_SegmentedControl,
     VCT_Modal, VCT_Select, VCT_Input, VCT_Field
 } from '../components/vct-ui';
+import { VCT_PageContainer, VCT_PageHero, VCT_SectionCard, VCT_StatRow } from '../components/vct-ui';
+import type { StatItem } from '../components/VCT_StatRow';
 import { VCT_Icons } from '../components/vct-icons';
 import { TRAN_DAUS, LUOT_THI_QUYENS, genId } from '../data/mock-data';
 import type { VongDau } from '../data/types';
@@ -14,7 +16,7 @@ import { repositories, useEntityCollection, type ResultRecord } from '../data/re
 import { downloadRowsAsExcel, downloadTextFile, openPrintWindow, rowsToCsv } from '../data/export-utils';
 import { useRouteActionGuard } from '../hooks/use-route-action-guard';
 
-interface KetQuaItem extends ResultRecord {}
+interface KetQuaItem extends ResultRecord { }
 
 const VONG_MAP: Record<VongDau, string> = { vong_loai: 'Vòng loại', tu_ket: 'Tứ kết', ban_ket: 'Bán kết', chung_ket: 'Chung kết' };
 
@@ -181,16 +183,25 @@ export const Page_results = () => {
         showToast('Đã mở bản in kết quả');
     };
 
+    const kpis: StatItem[] = [
+        { label: 'Tổng kết quả', value: allResults.length, icon: <VCT_Icons.Award size={18} />, color: '#0ea5e9' },
+        { label: 'Đối kháng', value: allResults.filter(r => r.loai === 'doi_khang').length, icon: <VCT_Icons.Swords size={18} />, color: '#f59e0b' },
+        { label: 'Quyền', value: allResults.filter(r => r.loai === 'quyen').length, icon: <VCT_Icons.Award size={18} />, color: '#22d3ee' },
+        { label: 'Huy chương', value: allResults.filter(r => r.huy_chuong).length, icon: <VCT_Icons.Star size={18} />, color: '#fbbf24' },
+    ];
+
     return (
-        <div className="mx-auto max-w-[1400px] pb-24">
+        <VCT_PageContainer size="wide" animated>
+            <VCT_PageHero
+                icon={<VCT_Icons.Trophy size={24} />}
+                title="Kết Quả Thi Đấu"
+                subtitle="Tổng hợp kết quả toàn bộ nội dung thi đấu."
+                gradientFrom="rgba(14, 165, 233, 0.08)"
+                gradientTo="rgba(34, 211, 238, 0.06)"
+            />
             <VCT_Toast isVisible={toast.show} message={toast.msg} type={toast.type} onClose={() => setToast(p => ({ ...p, show: false }))} />
 
-            <div className="vct-stagger mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
-                <VCT_KpiCard label="Tổng kết quả" value={allResults.length} icon={<VCT_Icons.Award size={24} />} color="#0ea5e9" />
-                <VCT_KpiCard label="Đối kháng" value={allResults.filter(r => r.loai === 'doi_khang').length} icon={<VCT_Icons.Swords size={24} />} color="#f59e0b" />
-                <VCT_KpiCard label="Quyền" value={allResults.filter(r => r.loai === 'quyen').length} icon={<VCT_Icons.Award size={24} />} color="#22d3ee" />
-                <VCT_KpiCard label="Huy chương" value={allResults.filter(r => r.huy_chuong).length} icon={<VCT_Icons.Star size={24} />} color="#fbbf24" />
-            </div>
+            <VCT_StatRow items={kpis} className="mb-8" />
 
             <VCT_Stack direction="row" gap={16} align="center" style={{ marginBottom: 24, flexWrap: 'wrap' }}>
                 <VCT_SegmentedControl options={[{ value: 'all', label: 'Tất cả' }, { value: 'doi_khang', label: '🥊 Đối kháng' }, { value: 'quyen', label: '🥋 Quyền' }]} value={typeFilter} onChange={setTypeFilter} />
@@ -219,9 +230,9 @@ export const Page_results = () => {
             )}
 
             {/* Table */}
-            <div className="overflow-hidden rounded-2xl border border-[var(--vct-border-subtle)] bg-[var(--vct-bg-glass)]">
+            <VCT_SectionCard flush accentColor="#0ea5e9">
                 <table className="w-full border-collapse">
-                    <thead><tr className="border-b border-[var(--vct-border-strong)] bg-[var(--vct-bg-card)]">
+                    <thead><tr className="border-b border-vct-border bg-vct-elevated">
                         {['Loại', 'Nội dung', 'VĐV', 'Đoàn', 'Kết quả', 'Điểm', 'HC', ''].map((h, i) => (
                             <th key={i} style={{ padding: '14px 16px', textAlign: 'left', fontSize: 11, fontWeight: 700, textTransform: 'uppercase', opacity: 0.5 }}>{h}</th>
                         ))}
@@ -251,7 +262,7 @@ export const Page_results = () => {
                         ))}
                     </tbody>
                 </table>
-            </div>
+            </VCT_SectionCard>
 
             {filtered.length === 0 && <VCT_EmptyState title="Không có kết quả" description="Thử thay đổi bộ lọc hoặc nhập kết quả thủ công." icon="🏆" />}
 
@@ -317,6 +328,6 @@ export const Page_results = () => {
                     </VCT_Field>
                 </VCT_Stack>
             </VCT_Modal>
-        </div>
+        </VCT_PageContainer>
     );
 };

@@ -68,7 +68,7 @@ CREATE INDEX IF NOT EXISTS idx_entity_records_entity_updated_at
 	// Phase 2: Relational schema (typed tables for future per-entity repos)
 	const relational = `
 CREATE TABLE IF NOT EXISTS users (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v7(),
   username VARCHAR(50) UNIQUE NOT NULL,
   password_hash VARCHAR(255) NOT NULL,
   role VARCHAR(20) NOT NULL,
@@ -82,7 +82,7 @@ CREATE TABLE IF NOT EXISTS users (
 );
 
 CREATE TABLE IF NOT EXISTS tournaments (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v7(),
   name VARCHAR(200) NOT NULL,
   code VARCHAR(50) UNIQUE NOT NULL,
   level VARCHAR(20) NOT NULL,
@@ -100,7 +100,7 @@ CREATE TABLE IF NOT EXISTS tournaments (
 );
 
 CREATE TABLE IF NOT EXISTS age_groups (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v7(),
   tournament_id UUID REFERENCES tournaments(id) ON DELETE CASCADE,
   ten VARCHAR(100) NOT NULL,
   tuoi_min INT NOT NULL,
@@ -108,7 +108,7 @@ CREATE TABLE IF NOT EXISTS age_groups (
 );
 
 CREATE TABLE IF NOT EXISTS content_categories (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v7(),
   tournament_id UUID REFERENCES tournaments(id) ON DELETE CASCADE,
   ten VARCHAR(200) NOT NULL,
   loai VARCHAR(20) NOT NULL,
@@ -121,7 +121,7 @@ CREATE TABLE IF NOT EXISTS content_categories (
 );
 
 CREATE TABLE IF NOT EXISTS weight_classes (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v7(),
   tournament_id UUID REFERENCES tournaments(id) ON DELETE CASCADE,
   ten VARCHAR(100) NOT NULL,
   gioi_tinh VARCHAR(5) NOT NULL,
@@ -133,7 +133,7 @@ CREATE TABLE IF NOT EXISTS weight_classes (
 );
 
 CREATE TABLE IF NOT EXISTS teams (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v7(),
   tournament_id UUID REFERENCES tournaments(id) ON DELETE CASCADE,
   ten VARCHAR(200) NOT NULL,
   ma_doan VARCHAR(20) NOT NULL,
@@ -152,7 +152,7 @@ CREATE TABLE IF NOT EXISTS teams (
 );
 
 CREATE TABLE IF NOT EXISTS athletes (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v7(),
   tournament_id UUID REFERENCES tournaments(id) ON DELETE CASCADE,
   team_id UUID REFERENCES teams(id) ON DELETE CASCADE,
   ho_ten VARCHAR(200) NOT NULL,
@@ -170,7 +170,7 @@ CREATE TABLE IF NOT EXISTS athletes (
 );
 
 CREATE TABLE IF NOT EXISTS registrations (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v7(),
   tournament_id UUID REFERENCES tournaments(id) ON DELETE CASCADE,
   athlete_id UUID REFERENCES athletes(id) ON DELETE CASCADE,
   content_category_id UUID,
@@ -182,7 +182,7 @@ CREATE TABLE IF NOT EXISTS registrations (
 );
 
 CREATE TABLE IF NOT EXISTS referees (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v7(),
   tournament_id UUID REFERENCES tournaments(id) ON DELETE CASCADE,
   ho_ten VARCHAR(200) NOT NULL,
   cap_bac VARCHAR(20) NOT NULL,
@@ -198,7 +198,7 @@ CREATE TABLE IF NOT EXISTS referees (
 );
 
 CREATE TABLE IF NOT EXISTS arenas (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v7(),
   tournament_id UUID REFERENCES tournaments(id) ON DELETE CASCADE,
   ten VARCHAR(200) NOT NULL,
   loai VARCHAR(20) NOT NULL,
@@ -211,7 +211,7 @@ CREATE TABLE IF NOT EXISTS arenas (
 );
 
 CREATE TABLE IF NOT EXISTS referee_assignments (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v7(),
   tournament_id UUID,
   referee_id UUID,
   arena_id UUID,
@@ -222,7 +222,7 @@ CREATE TABLE IF NOT EXISTS referee_assignments (
 );
 
 CREATE TABLE IF NOT EXISTS combat_matches (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v7(),
   tournament_id UUID,
   content_category_id UUID,
   weight_class_id UUID,
@@ -247,7 +247,7 @@ CREATE TABLE IF NOT EXISTS combat_matches (
 );
 
 CREATE TABLE IF NOT EXISTS form_performances (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v7(),
   tournament_id UUID,
   content_category_id UUID,
   arena_id UUID,
@@ -265,7 +265,7 @@ CREATE TABLE IF NOT EXISTS form_performances (
 );
 
 CREATE TABLE IF NOT EXISTS weigh_ins (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v7(),
   tournament_id UUID,
   athlete_id UUID,
   weight_class_id UUID,
@@ -278,7 +278,7 @@ CREATE TABLE IF NOT EXISTS weigh_ins (
 );
 
 CREATE TABLE IF NOT EXISTS schedule_entries (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v7(),
   tournament_id UUID,
   ngay DATE NOT NULL,
   buoi VARCHAR(10) NOT NULL,
@@ -292,7 +292,7 @@ CREATE TABLE IF NOT EXISTS schedule_entries (
 );
 
 CREATE TABLE IF NOT EXISTS appeals (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v7(),
   tournament_id UUID,
   loai VARCHAR(20) NOT NULL,
   team_id UUID,
@@ -311,7 +311,7 @@ CREATE TABLE IF NOT EXISTS appeals (
 );
 
 CREATE TABLE IF NOT EXISTS notifications (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v7(),
   tournament_id UUID,
   user_id UUID,
   type VARCHAR(50) NOT NULL,
@@ -323,7 +323,7 @@ CREATE TABLE IF NOT EXISTS notifications (
 );
 
 CREATE TABLE IF NOT EXISTS medical_records (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v7(),
   tournament_id UUID,
   athlete_id UUID,
   match_id UUID,
@@ -337,7 +337,7 @@ CREATE TABLE IF NOT EXISTS medical_records (
 );
 
 CREATE TABLE IF NOT EXISTS media_files (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v7(),
   tournament_id UUID,
   uploaded_by UUID,
   type VARCHAR(20) NOT NULL,
@@ -352,7 +352,7 @@ CREATE TABLE IF NOT EXISTS media_files (
 );
 
 CREATE TABLE IF NOT EXISTS data_audit_log (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v7(),
   tournament_id UUID,
   entity_type VARCHAR(50) NOT NULL,
   entity_id UUID NOT NULL,

@@ -4,8 +4,10 @@ import * as React from 'react'
 import { useState, useMemo } from 'react'
 import {
     VCT_Badge, VCT_Button, VCT_Stack, VCT_SearchInput,
-    VCT_Select, VCT_EmptyState, VCT_Tabs, VCT_KpiCard
+    VCT_Select, VCT_EmptyState, VCT_Tabs
 } from '../components/vct-ui'
+import { VCT_PageContainer, VCT_PageHero, VCT_StatRow } from '../components/vct-ui'
+import type { StatItem } from '../components/VCT_StatRow'
 import { VCT_Icons } from '../components/vct-icons'
 
 // ════════════════════════════════════════
@@ -59,27 +61,27 @@ export const Page_training_plans = () => {
     }, [search, clubFilter, statusFilter])
 
     return (
-        <div className="mx-auto max-w-[1400px] p-4 pb-24">
-            <div className="mb-6 flex flex-wrap items-start justify-between gap-4">
-                <div>
-                    <h1 className="text-2xl font-bold tracking-tight text-[var(--vct-text-primary)]">Kế hoạch Giảng dạy</h1>
-                    <p className="text-sm text-[var(--vct-text-secondary)] mt-1">Lịch tập luyện, phân công HLV và nội dung giáo án.</p>
-                </div>
-                <VCT_Stack direction="row" gap={12}>
-                    <div className="flex bg-[var(--vct-bg-elevated)] border border-[var(--vct-border-subtle)] rounded-lg p-1">
+        <VCT_PageContainer size="wide" animated>
+            <VCT_PageHero
+                icon={<VCT_Icons.Calendar size={24} />}
+                title="Kế hoạch Giảng dạy"
+                subtitle="Lịch tập luyện, phân công HLV và nội dung giáo án."
+                gradientFrom="rgba(14, 165, 233, 0.08)"
+                gradientTo="rgba(139, 92, 246, 0.06)"
+                actions={
+                    <div className="flex bg-vct-elevated border border-vct-border rounded-lg p-1">
                         <button onClick={() => setViewMode('list')} className={`px-4 py-2 text-sm font-semibold rounded-md transition-colors ${viewMode === 'list' ? 'bg-[var(--vct-accent-cyan)] text-black' : 'text-[var(--vct-text-secondary)] hover:text-white'}`}>Danh sách</button>
                         <button onClick={() => setViewMode('calendar')} className={`px-4 py-2 text-sm font-semibold rounded-md transition-colors ${viewMode === 'calendar' ? 'bg-[var(--vct-accent-cyan)] text-black' : 'text-[var(--vct-text-secondary)] hover:text-white'}`}>Lịch trực quan</button>
                     </div>
-                </VCT_Stack>
-            </div>
+                }
+            />
 
-            {/* ── KPI ── */}
-            <div className="vct-stagger mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                <VCT_KpiCard label="Buổi tập hôm nay" value={2} icon={<VCT_Icons.Calendar size={24} />} color="#0ea5e9" />
-                <VCT_KpiCard label="Buổi tập tuần này" value={14} icon={<VCT_Icons.Activity size={24} />} color="#f59e0b" />
-                <VCT_KpiCard label="Tổng võ sinh tham gia" value={120} icon={<VCT_Icons.Users size={24} />} color="#10b981" />
-                <VCT_KpiCard label="HLV trực sự" value={5} icon={<VCT_Icons.Award size={24} />} color="#8b5cf6" />
-            </div>
+            <VCT_StatRow items={[
+                { label: 'Buổi tập hôm nay', value: 2, icon: <VCT_Icons.Calendar size={18} />, color: '#0ea5e9' },
+                { label: 'Buổi tập tuần', value: 14, icon: <VCT_Icons.Activity size={18} />, color: '#f59e0b' },
+                { label: 'Võ sinh tham gia', value: 120, icon: <VCT_Icons.Users size={18} />, color: '#10b981' },
+                { label: 'HLV trực', value: 5, icon: <VCT_Icons.Award size={18} />, color: '#8b5cf6' },
+            ] as StatItem[]} className="mb-6" />
 
             {/* ── TOOLBAR ── */}
             <div className="mb-6 grid grid-cols-1 md:grid-cols-4 gap-4 bg-[var(--vct-bg-elevated)] p-4 rounded-xl border border-[var(--vct-border-subtle)]">
@@ -156,6 +158,6 @@ export const Page_training_plans = () => {
                     <p className="text-[var(--vct-text-secondary)] mt-2">Tính năng kéo thả và xem tổng quan theo tháng sẽ sớm ra mắt.</p>
                 </div>
             )}
-        </div>
+        </VCT_PageContainer>
     )
 }

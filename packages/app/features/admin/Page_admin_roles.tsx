@@ -3,9 +3,11 @@
 import * as React from 'react'
 import { useState, useMemo, useCallback } from 'react'
 import {
-    VCT_Badge, VCT_Button, VCT_KpiCard, VCT_Stack, VCT_Toast,
-    VCT_SearchInput, VCT_Modal, VCT_Input, VCT_Field
+    VCT_Badge, VCT_Button, VCT_Stack, VCT_Toast,
+    VCT_SearchInput, VCT_Modal, VCT_Input, VCT_Field,
+    VCT_PageContainer, VCT_StatRow
 } from '../components/vct-ui'
+import type { StatItem } from '../components/VCT_StatRow'
 import { VCT_Icons } from '../components/vct-icons'
 
 // ════════════════════════════════════════
@@ -121,7 +123,7 @@ export const Page_admin_roles = () => {
     const totalUsers = roles.reduce((s, r) => s + r.user_count, 0)
 
     return (
-        <div className="mx-auto max-w-[1400px] p-4 pb-24">
+        <VCT_PageContainer size="wide" animated>
             <VCT_Toast isVisible={toast.show} message={toast.msg} type={toast.type} onClose={() => setToast(prev => ({ ...prev, show: false }))} />
 
             <div className="mb-6 flex flex-wrap items-start justify-between gap-4">
@@ -133,12 +135,12 @@ export const Page_admin_roles = () => {
             </div>
 
             {/* ── KPI ── */}
-            <div className="vct-stagger mb-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                <VCT_KpiCard label="Tổng vai trò" value={roles.length} icon={<VCT_Icons.Shield size={24} />} color="#8b5cf6" />
-                <VCT_KpiCard label="Tổng người dùng" value={totalUsers.toLocaleString()} icon={<VCT_Icons.Users size={24} />} color="#0ea5e9" />
-                <VCT_KpiCard label="Quyền hệ thống" value={PERMISSIONS.length} icon={<VCT_Icons.ShieldCheck size={24} />} color="#10b981" />
-                <VCT_KpiCard label="Vai trò tùy chỉnh" value={roles.filter(r => !r.is_system).length} icon={<VCT_Icons.Settings size={24} />} color="#f59e0b" />
-            </div>
+            <VCT_StatRow items={[
+                { label: 'Vai trò', value: roles.length, icon: <VCT_Icons.Shield size={18} />, color: '#8b5cf6' },
+                { label: 'Người dùng', value: totalUsers.toLocaleString(), icon: <VCT_Icons.Users size={18} />, color: '#0ea5e9' },
+                { label: 'Quyền HT', value: PERMISSIONS.length, icon: <VCT_Icons.ShieldCheck size={18} />, color: '#10b981' },
+                { label: 'Tùy chỉnh', value: roles.filter(r => !r.is_system).length, icon: <VCT_Icons.Settings size={18} />, color: '#f59e0b' },
+            ] as StatItem[]} className="mb-8" />
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 {/* ── ROLES LIST ── */}
@@ -243,6 +245,6 @@ export const Page_admin_roles = () => {
                     <VCT_Field label="Mô tả"><VCT_Input value={form.description} onChange={(e: any) => setForm({ ...form, description: e.target.value })} placeholder="Mô tả ngắn gọn vai trò" /></VCT_Field>
                 </VCT_Stack>
             </VCT_Modal>
-        </div>
+        </VCT_PageContainer>
     )
 }

@@ -2,73 +2,35 @@
 
 import * as React from 'react'
 import { useState, useMemo, useCallback } from 'react'
+import { useRouter } from 'next/navigation'
 import { AnimatePresence } from 'framer-motion'
 import {
-    VCT_Badge, VCT_Button, VCT_KpiCard, VCT_Stack, VCT_Toast,
+    VCT_Badge, VCT_Button, VCT_Stack, VCT_Toast,
     VCT_SearchInput, VCT_Modal, VCT_Input, VCT_Field, VCT_Select,
     VCT_ConfirmDialog, VCT_AvatarLetter, VCT_EmptyState, VCT_Tabs,
-    VCT_BulkActionsBar
+    VCT_BulkActionsBar, VCT_PageContainer, VCT_StatRow
 } from '../components/vct-ui'
+import type { StatItem } from '../components/VCT_StatRow'
 import { VCT_Icons } from '../components/vct-icons'
+import {
+    ROLE_OPTIONS,
+    ROLE_COLORS,
+    STATUS_MAP,
+    MOCK_USERS,
+    getRoleLabel,
+    type SystemUser,
+} from './admin-users.data'
 
 // ════════════════════════════════════════
 // TYPES & MOCK DATA
 // ════════════════════════════════════════
-interface SystemUser {
-    id: string
-    name: string
-    email: string
-    phone: string
-    role: string
-    scope: string
-    status: 'active' | 'inactive' | 'locked'
-    last_login: string
-    created_at: string
-    avatar_letter: string
-}
-
-const ROLE_OPTIONS = [
-    { value: 'SYSTEM_ADMIN', label: 'Quản trị viên' },
-    { value: 'FEDERATION_ADMIN', label: 'Quản lý Liên đoàn' },
-    { value: 'CLUB_MANAGER', label: 'Chủ nhiệm CLB' },
-    { value: 'REFEREE', label: 'Trọng tài' },
-    { value: 'COACH', label: 'Huấn luyện viên' },
-    { value: 'ATHLETE', label: 'Vận động viên' },
-    { value: 'VIEWER', label: 'Người xem' },
-]
-
-const ROLE_COLORS: Record<string, string> = {
-    SYSTEM_ADMIN: '#ef4444',
-    FEDERATION_ADMIN: '#8b5cf6',
-    CLUB_MANAGER: '#0ea5e9',
-    REFEREE: '#f59e0b',
-    COACH: '#10b981',
-    ATHLETE: '#06b6d4',
-    VIEWER: '#94a3b8',
-}
-
-const STATUS_MAP: Record<string, { label: string; type: 'success' | 'warning' | 'error' | 'neutral' }> = {
-    active: { label: 'Hoạt động', type: 'success' },
-    inactive: { label: 'Vô hiệu', type: 'neutral' },
-    locked: { label: 'Bị khóa', type: 'error' },
-}
-
-const MOCK_USERS: SystemUser[] = [
-    { id: 'USR-001', name: 'Nguyễn Văn Admin', email: 'admin@vct.vn', phone: '0901234567', role: 'SYSTEM_ADMIN', scope: 'Toàn hệ thống', status: 'active', last_login: '10/03/2024 08:30', created_at: '01/01/2024', avatar_letter: 'A' },
-    { id: 'USR-002', name: 'Trần Thị Liên', email: 'lien@ldvt-hcm.vn', phone: '0912345678', role: 'FEDERATION_ADMIN', scope: 'LĐ Võ thuật TP.HCM', status: 'active', last_login: '09/03/2024 14:25', created_at: '15/01/2024', avatar_letter: 'L' },
-    { id: 'USR-003', name: 'Lê Minh Đức', email: 'duc@clb-sonlong.vn', phone: '0923456789', role: 'CLUB_MANAGER', scope: 'CLB Sơn Long Quyền', status: 'active', last_login: '09/03/2024 20:10', created_at: '20/02/2024', avatar_letter: 'Đ' },
-    { id: 'USR-004', name: 'Phạm Hồng Hà', email: 'ha@vct.vn', phone: '0934567890', role: 'REFEREE', scope: 'Giải QG 2024', status: 'active', last_login: '08/03/2024 09:00', created_at: '01/03/2024', avatar_letter: 'H' },
-    { id: 'USR-005', name: 'Võ Thanh Tùng', email: 'tung@vct.vn', phone: '0945678901', role: 'COACH', scope: 'CLB Long An', status: 'inactive', last_login: '01/02/2024 11:45', created_at: '10/01/2024', avatar_letter: 'T' },
-    { id: 'USR-006', name: 'Đặng Mai Phương', email: 'phuong@vct.vn', phone: '0956789012', role: 'ATHLETE', scope: 'CLB Q.12', status: 'locked', last_login: '—', created_at: '05/03/2024', avatar_letter: 'P' },
-    { id: 'USR-007', name: 'Bùi Ngọc Sơn', email: 'son@vct.vn', phone: '0967890123', role: 'VIEWER', scope: '—', status: 'active', last_login: '10/03/2024 00:12', created_at: '08/03/2024', avatar_letter: 'S' },
-]
-
 const BLANK_FORM = { name: '', email: '', phone: '', role: 'VIEWER', scope: '' }
 
 // ════════════════════════════════════════
 // MAIN COMPONENT
 // ════════════════════════════════════════
 export const Page_admin_users = () => {
+    const router = useRouter()
     const [users, setUsers] = useState<SystemUser[]>(MOCK_USERS)
     const [search, setSearch] = useState('')
     const [roleFilter, setRoleFilter] = useState('all')
@@ -105,6 +67,10 @@ export const Page_admin_users = () => {
         setForm({ name: user.name, email: user.email, phone: user.phone, role: user.role, scope: user.scope })
         setShowModal(true)
     }, [])
+
+    const openUserDetail = useCallback((userId: string) => {
+        router.push(`/users/${userId}`)
+    }, [router])
 
     const handleSave = () => {
         if (!form.name || !form.email) { showToast('Vui lòng nhập họ tên và email', 'error'); return }
@@ -158,7 +124,7 @@ export const Page_admin_users = () => {
     ], [selectedIds, showToast])
 
     return (
-        <div className="mx-auto max-w-[1400px] p-4 pb-24">
+        <VCT_PageContainer size="wide" animated>
             <VCT_Toast isVisible={toast.show} message={toast.msg} type={toast.type} onClose={() => setToast(prev => ({ ...prev, show: false }))} />
 
             <div className="mb-6 flex flex-wrap items-start justify-between gap-4">
@@ -173,12 +139,12 @@ export const Page_admin_users = () => {
             </div>
 
             {/* ── KPI ── */}
-            <div className="vct-stagger mb-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                <VCT_KpiCard label="Tổng tài khoản" value={users.length} icon={<VCT_Icons.Users size={24} />} color="#0ea5e9" />
-                <VCT_KpiCard label="Đang hoạt động" value={users.filter(u => u.status === 'active').length} icon={<VCT_Icons.CheckCircle size={24} />} color="#10b981" />
-                <VCT_KpiCard label="Bị khóa" value={users.filter(u => u.status === 'locked').length} icon={<VCT_Icons.Shield size={24} />} color="#ef4444" />
-                <VCT_KpiCard label="Online hôm nay" value={128} icon={<VCT_Icons.Activity size={24} />} color="#f59e0b" />
-            </div>
+            <VCT_StatRow items={[
+                { label: 'Tổng TK', value: users.length, icon: <VCT_Icons.Users size={18} />, color: '#0ea5e9' },
+                { label: 'Hoạt động', value: users.filter(u => u.status === 'active').length, icon: <VCT_Icons.CheckCircle size={18} />, color: '#10b981' },
+                { label: 'Bị khóa', value: users.filter(u => u.status === 'locked').length, icon: <VCT_Icons.Shield size={18} />, color: '#ef4444' },
+                { label: 'Online', value: 128, icon: <VCT_Icons.Activity size={18} />, color: '#f59e0b' },
+            ] as StatItem[]} className="mb-8" />
 
             {/* ── TABS & SEARCH ── */}
             <div className="mb-6 flex flex-wrap items-center justify-between gap-4 border-b border-[var(--vct-border-subtle)] pb-4">
@@ -221,14 +187,20 @@ export const Page_admin_users = () => {
                                         <VCT_Stack direction="row" gap={10} align="center">
                                             <VCT_AvatarLetter name={user.name} size={36} />
                                             <div>
-                                                <div style={{ fontWeight: 700, fontSize: 13, color: 'var(--vct-text-primary)' }}>{user.name}</div>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => openUserDetail(user.id)}
+                                                    className="text-left text-[13px] font-bold text-[var(--vct-text-primary)] transition-colors hover:text-[var(--vct-accent-cyan)]"
+                                                >
+                                                    {user.name}
+                                                </button>
                                                 <div style={{ fontSize: 11, opacity: 0.6 }}>{user.email} • {user.phone}</div>
                                             </div>
                                         </VCT_Stack>
                                     </td>
                                     <td style={{ padding: '14px 16px' }}>
                                         <span style={{ fontSize: 11, fontWeight: 700, padding: '3px 8px', borderRadius: 6, color: ROLE_COLORS[user.role] || '#94a3b8', background: `${ROLE_COLORS[user.role] || '#94a3b8'}15` }}>
-                                            {ROLE_OPTIONS.find(r => r.value === user.role)?.label || user.role}
+                                            {getRoleLabel(user.role)}
                                         </span>
                                     </td>
                                     <td style={{ padding: '14px 16px', fontSize: 13, color: 'var(--vct-text-secondary)' }}>{user.scope}</td>
@@ -240,8 +212,9 @@ export const Page_admin_users = () => {
                                     </td>
                                     <td style={{ padding: '14px 16px', textAlign: 'right' }}>
                                         <VCT_Stack direction="row" gap={4} justify="flex-end">
-                                            <button onClick={() => openEditModal(user)} className="p-1.5 text-[var(--vct-text-tertiary)] hover:text-white opacity-0 group-hover:opacity-100 transition-all rounded-md hover:bg-white/10"><VCT_Icons.Edit size={16} /></button>
-                                            <button onClick={() => setDeleteTarget(user)} className="p-1.5 text-[#ef4444] opacity-0 group-hover:opacity-100 transition-all rounded-md hover:bg-[#ef444420]"><VCT_Icons.Trash size={16} /></button>
+                                            <button type="button" onClick={() => openUserDetail(user.id)} className="p-1.5 text-[var(--vct-text-tertiary)] hover:text-white opacity-0 group-hover:opacity-100 transition-all rounded-md hover:bg-white/10"><VCT_Icons.Eye size={16} /></button>
+                                            <button type="button" onClick={() => openEditModal(user)} className="p-1.5 text-[var(--vct-text-tertiary)] hover:text-white opacity-0 group-hover:opacity-100 transition-all rounded-md hover:bg-white/10"><VCT_Icons.Edit size={16} /></button>
+                                            <button type="button" onClick={() => setDeleteTarget(user)} className="p-1.5 text-[#ef4444] opacity-0 group-hover:opacity-100 transition-all rounded-md hover:bg-[#ef444420]"><VCT_Icons.Trash size={16} /></button>
                                         </VCT_Stack>
                                     </td>
                                 </tr>
@@ -280,6 +253,6 @@ export const Page_admin_users = () => {
             <VCT_ConfirmDialog isOpen={!!deleteTarget} onClose={() => setDeleteTarget(null)} onConfirm={handleDelete}
                 title="Vô hiệu hóa tài khoản" message={`Bạn có chắc muốn vô hiệu hóa tài khoản "${deleteTarget?.name}"? Tài khoản sẽ không thể đăng nhập cho đến khi được kích hoạt lại.`}
                 confirmLabel="Vô hiệu hóa" />
-        </div>
+        </VCT_PageContainer>
     )
 }

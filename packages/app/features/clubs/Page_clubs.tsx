@@ -4,11 +4,13 @@ import * as React from 'react'
 import { useState, useMemo, useCallback } from 'react'
 import { AnimatePresence } from 'framer-motion'
 import {
-    VCT_Badge, VCT_Button, VCT_KpiCard, VCT_Stack, VCT_Toast,
+    VCT_Badge, VCT_Button, VCT_Stack, VCT_Toast,
     VCT_SearchInput, VCT_Modal, VCT_Input, VCT_Field, VCT_Select,
     VCT_ConfirmDialog, VCT_AvatarLetter, VCT_EmptyState, VCT_FilterChips,
-    VCT_BulkActionsBar
+    VCT_BulkActionsBar, VCT_PageContainer, VCT_PageHeader, VCT_PageToolbar,
+    VCT_StatRow
 } from '../components/vct-ui'
+import type { StatItem } from '../components/VCT_StatRow'
 import { VCT_Icons } from '../components/vct-icons'
 
 // ════════════════════════════════════════
@@ -242,45 +244,46 @@ export const Page_clubs = () => {
     ]
 
     return (
-        <div className="mx-auto max-w-[1400px] p-4 pb-24">
+        <VCT_PageContainer size="wide">
             <VCT_Toast isVisible={toast.show} message={toast.msg} type={toast.type} onClose={() => setToast(prev => ({ ...prev, show: false }))} />
 
-            <div className="mb-6">
-                <h1 className="text-2xl font-bold tracking-tight text-[var(--vct-text-primary)]">Câu lạc bộ & Võ đường</h1>
-                <p className="text-sm text-[var(--vct-text-secondary)] mt-1">Nơi quản lý các đơn vị huấn luyện cơ sở, các phân đường và võ đường trực thuộc.</p>
-            </div>
+            <VCT_PageHeader
+                title="Câu lạc bộ & Võ đường"
+                description="Nơi quản lý các đơn vị huấn luyện cơ sở, các phân đường và võ đường trực thuộc."
+            />
 
             {/* ── KPI ROW ── */}
-            <div className="vct-stagger mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
-                <VCT_KpiCard label="Tổng CLB/Võ đường" value={clubs.length} icon={<VCT_Icons.Building2 size={24} />} color="#0ea5e9" />
-                <VCT_KpiCard label="Lớp đang mở" value={totalClasses} icon={<VCT_Icons.Users size={24} />} color="#f59e0b" />
-                <VCT_KpiCard label="Tổng Võ sinh" value={totalMembers.toLocaleString('vi-VN')} icon={<VCT_Icons.User size={24} />} color="#10b981" />
-                <VCT_KpiCard label="Tạm đình chỉ/Đóng cửa" value={clubs.filter(c => c.status !== 'active').length} icon={<VCT_Icons.Alert size={24} />} color="#ef4444" />
-            </div>
+            <VCT_StatRow items={[
+                { label: 'CLB/Võ đường', value: clubs.length, icon: <VCT_Icons.Building2 size={18} />, color: '#0ea5e9' },
+                { label: 'Lớp đang mở', value: totalClasses, icon: <VCT_Icons.Users size={18} />, color: '#f59e0b' },
+                { label: 'Võ sinh', value: totalMembers.toLocaleString('vi-VN'), icon: <VCT_Icons.User size={18} />, color: '#10b981' },
+                { label: 'Đình chỉ/Đóng', value: clubs.filter(c => c.status !== 'active').length, icon: <VCT_Icons.Alert size={18} />, color: '#ef4444' },
+            ] as StatItem[]} className="mb-6" />
 
             {/* ── FILTER CHIPS ── */}
             <VCT_FilterChips filters={activeFilters} onRemove={removeFilter} onClearAll={() => { setStatusFilter(null); setTypeFilter(null); setSearch(''); }} />
 
             {/* ── TOOLBAR ── */}
-            <VCT_Stack direction="row" gap={16} align="center" justify="space-between" className="mb-5 flex-wrap">
-                <VCT_Stack direction="row" gap={12} align="center" className="flex-1 min-w-[300px]">
-                    <div className="w-full max-w-[300px]">
-                        <VCT_SearchInput value={search} onChange={setSearch} onClear={() => setSearch('')} placeholder="Tìm CLB, mã, chủ nhiệm..." />
-                    </div>
-                    <select
-                        value={typeFilter || ''}
-                        onChange={(e) => setTypeFilter(e.target.value || null)}
-                        className="bg-[var(--vct-bg-elevated)] border border-[var(--vct-border-subtle)] text-[var(--vct-text-primary)] text-sm rounded-lg px-3 py-2 outline-none focus:border-[var(--vct-accent-cyan)] transition-colors"
-                    >
-                        <option value="">Tất cả mô hình</option>
-                        {Object.entries(TYPE_MAP).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
-                    </select>
-                </VCT_Stack>
-                <VCT_Stack direction="row" gap={12} align="center">
-                    <VCT_Button icon={<VCT_Icons.Download size={16} />} variant="secondary" onClick={() => showToast('Đang xuất Excel...', 'info')}>Xuất file</VCT_Button>
-                    <VCT_Button icon={<VCT_Icons.Plus size={16} />} onClick={openAddModal}>Thêm CLB</VCT_Button>
-                </VCT_Stack>
-            </VCT_Stack>
+            <VCT_PageToolbar
+                actions={
+                    <>
+                        <VCT_Button icon={<VCT_Icons.Download size={16} />} variant="secondary" onClick={() => showToast('Đang xuất Excel...', 'info')}>Xuất file</VCT_Button>
+                        <VCT_Button icon={<VCT_Icons.Plus size={16} />} onClick={openAddModal}>Thêm CLB</VCT_Button>
+                    </>
+                }
+            >
+                <div className="w-full max-w-[300px]">
+                    <VCT_SearchInput value={search} onChange={setSearch} onClear={() => setSearch('')} placeholder="Tìm CLB, mã, chủ nhiệm..." />
+                </div>
+                <select
+                    value={typeFilter || ''}
+                    onChange={(e) => setTypeFilter(e.target.value || null)}
+                    className="bg-vct-elevated border border-vct-border text-vct-text text-sm rounded-lg px-3 py-2 outline-none focus:border-vct-accent transition-colors"
+                >
+                    <option value="">Tất cả mô hình</option>
+                    {Object.entries(TYPE_MAP).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
+                </select>
+            </VCT_PageToolbar>
 
             {/* ── TABLE ── */}
             {filtered.length === 0 ? (
@@ -353,6 +356,6 @@ export const Page_clubs = () => {
             <VCT_ConfirmDialog isOpen={!!deleteTarget} onClose={() => setDeleteTarget(null)} onConfirm={handleDelete}
                 title="Xác nhận xóa" message={`Bạn có chắc muốn xóa CLB "${deleteTarget?.name}"? Hệ thống khuyến khích đóng cửa (giải thể) thay vì xóa hoàn toàn.`}
                 confirmLabel="Xóa vĩnh viễn" />
-        </div>
+        </VCT_PageContainer>
     )
 }

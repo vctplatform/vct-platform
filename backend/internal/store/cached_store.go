@@ -32,7 +32,7 @@ func (s *CachedStore) List(entity string) []map[string]any {
 	}
 
 	rows := s.source.List(entity)
-	s.cache.Set(cacheKey, cloneMapSlice(rows))
+	s.cache.SetForEntity(entity, cacheKey, cloneMapSlice(rows))
 	return rows
 }
 
@@ -46,7 +46,7 @@ func (s *CachedStore) GetByID(entity, id string) (map[string]any, bool) {
 
 	row, found := s.source.GetByID(entity, id)
 	if found {
-		s.cache.Set(cacheKey, cloneMap(row))
+		s.cache.SetForEntity(entity, cacheKey, cloneMap(row))
 	}
 	return row, found
 }
@@ -100,7 +100,7 @@ func (s *CachedStore) ExportJSON(entity string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	s.cache.Set(cacheKey, body)
+	s.cache.SetForEntity(entity, cacheKey, body)
 	return body, nil
 }
 
@@ -115,7 +115,7 @@ func (s *CachedStore) ExportCSV(entity string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	s.cache.Set(cacheKey, body)
+	s.cache.SetForEntity(entity, cacheKey, body)
 	return body, nil
 }
 

@@ -1,7 +1,8 @@
 'use client'
 
 import * as React from 'react'
-import { VCT_KpiCard } from '../components/vct-ui'
+import { VCT_PageContainer, VCT_StatRow } from '../components/vct-ui'
+import type { StatItem } from '../components/VCT_StatRow'
 import { VCT_Icons } from '../components/vct-icons'
 
 // ════════════════════════════════════════
@@ -29,19 +30,19 @@ const RECENT_ACTIVITIES = [
 // ════════════════════════════════════════
 export const Page_admin_dashboard = () => {
     return (
-        <div className="mx-auto max-w-[1400px] p-4 pb-24">
+        <VCT_PageContainer size="wide" animated>
             <div className="mb-6">
                 <h1 className="text-2xl font-bold tracking-tight text-[var(--vct-text-primary)]">Bảng Điều Khiển Hệ Thống</h1>
                 <p className="text-sm text-[var(--vct-text-secondary)] mt-1">Giám sát tình trạng, hiệu suất và bảo mật hệ thống.</p>
             </div>
 
             {/* ── KPI ── */}
-            <div className="vct-stagger mb-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                <VCT_KpiCard label="Uptime trung bình" value="99.9%" icon={<VCT_Icons.Activity size={24} />} color="#10b981" />
-                <VCT_KpiCard label="Người dùng Online" value={128} icon={<VCT_Icons.Users size={24} />} color="#0ea5e9" />
-                <VCT_KpiCard label="Request / phút" value="2.4k" icon={<VCT_Icons.TrendingUp size={24} />} color="#f59e0b" />
-                <VCT_KpiCard label="Cảnh báo mở" value={1} icon={<VCT_Icons.Alert size={24} />} color="#ef4444" />
-            </div>
+            <VCT_StatRow items={[
+                { label: 'Uptime TB', value: '99.9%', icon: <VCT_Icons.Activity size={18} />, color: '#10b981' },
+                { label: 'Online', value: 128, icon: <VCT_Icons.Users size={18} />, color: '#0ea5e9' },
+                { label: 'Req/phút', value: '2.4k', icon: <VCT_Icons.TrendingUp size={18} />, color: '#f59e0b' },
+                { label: 'Cảnh báo', value: 1, icon: <VCT_Icons.Alert size={18} />, color: '#ef4444' },
+            ] as StatItem[]} className="mb-8" />
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 {/* ── SERVICE STATUS ── */}
@@ -116,6 +117,6 @@ export const Page_admin_dashboard = () => {
                     </div>
                 </div>
             </div>
-        </div>
+        </VCT_PageContainer>
     )
 }

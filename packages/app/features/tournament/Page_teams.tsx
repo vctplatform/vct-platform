@@ -3,11 +3,13 @@ import * as React from 'react';
 import { useState, useMemo, useCallback, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-    VCT_Card, VCT_Badge, VCT_Button, VCT_KpiCard, VCT_Text, VCT_Stack, VCT_Toast,
+    VCT_Card, VCT_Badge, VCT_Button, VCT_Text, VCT_Stack, VCT_Toast,
     VCT_Table, VCT_SearchInput, VCT_Modal, VCT_Input, VCT_Field, VCT_Select,
     VCT_ConfirmDialog, VCT_StatusPipeline, VCT_FilterChips, VCT_BulkActionsBar,
     VCT_ProgressBar, VCT_Tabs, VCT_AvatarLetter, VCT_EmptyState
 } from '../components/vct-ui';
+import { VCT_PageContainer, VCT_StatRow } from '../components/vct-ui';
+import type { StatItem } from '../components/VCT_StatRow';
 import { VCT_Icons } from '../components/vct-icons';
 import { getVDVsByDoan, genId } from '../data/mock-data';
 import { TOURNAMENT_CONFIG } from '../data/tournament-config';
@@ -392,17 +394,16 @@ export const Page_teams = () => {
     ];
 
     return (
-        <div className="mx-auto max-w-[1400px] pb-24">
+        <VCT_PageContainer size="wide" animated>
             <VCT_Toast isVisible={toast.show} message={toast.msg} type={toast.type} onClose={() => setToast(prev => ({ ...prev, show: false }))} />
 
             {/* ── KPI ROW ── */}
-            <div className="vct-stagger mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-5">
-                <VCT_KpiCard label="Tổng đơn vị" value={teams.length} icon={<VCT_Icons.Building2 size={24} />} color="#0ea5e9" sub={`Quota: ${teams.length}/${TOURNAMENT_CONFIG.quota.max_doan}`} />
-                <VCT_KpiCard label="Tổng VĐV" value={totalVdv} icon={<VCT_Icons.Users size={24} />} color="#f59e0b" sub={`${totalNam} Nam — ${totalNu} Nữ`} />
-                <VCT_KpiCard label="Đã xác nhận" value={teams.filter(t => t.trang_thai === 'da_xac_nhan' || t.trang_thai === 'da_checkin').length} icon={<VCT_Icons.Check size={24} />} color="#10b981" />
-                <VCT_KpiCard label="Chờ duyệt" value={teams.filter(t => t.trang_thai === 'cho_duyet').length} icon={<VCT_Icons.Clock size={24} />} color="#f59e0b" />
-                <VCT_KpiCard label="Cần bổ sung" value={teams.filter(t => t.trang_thai === 'yeu_cau_bo_sung' || t.trang_thai === 'nhap').length} icon={<VCT_Icons.Alert size={24} />} color="#ef4444" />
-            </div>
+            <VCT_StatRow items={[
+                { label: 'Tổng đơn vị', value: teams.length, icon: <VCT_Icons.Building2 size={18} />, color: '#0ea5e9', sub: `Quota: ${teams.length}/${TOURNAMENT_CONFIG.quota.max_doan}` },
+                { label: 'Tổng VĐV', value: totalVdv, icon: <VCT_Icons.Users size={18} />, color: '#f59e0b', sub: `${totalNam} Nam — ${totalNu} Nữ` },
+                { label: 'Xác nhận', value: teams.filter(t => t.trang_thai === 'da_xac_nhan' || t.trang_thai === 'da_checkin').length, icon: <VCT_Icons.Check size={18} />, color: '#10b981' },
+                { label: 'Chờ duyệt', value: teams.filter(t => t.trang_thai === 'cho_duyet').length, icon: <VCT_Icons.Clock size={18} />, color: '#f59e0b' },
+            ] as StatItem[]} className="mb-6" />
 
             {/* ── STATUS PIPELINE ── */}
             <VCT_StatusPipeline stages={pipelineStages} activeStage={statusFilter} onStageClick={setStatusFilter} />
@@ -511,6 +512,6 @@ export const Page_teams = () => {
                 title="Xác nhận xóa" message={`Bạn có chắc muốn xóa đơn vị "${deleteTarget?.ten}"? Hành động này không thể hoàn tác.`}
                 preview={deleteTarget && <VCT_Stack direction="row" gap={10} align="center"><VCT_AvatarLetter name={deleteTarget.ten} size={28} /><span>{deleteTarget.ten} ({deleteTarget.ma})</span></VCT_Stack>}
                 confirmLabel="Xóa vĩnh viễn" />
-        </div>
+        </VCT_PageContainer>
     );
 };

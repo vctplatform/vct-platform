@@ -3,17 +3,19 @@ import * as React from 'react';
 import { useState, useMemo, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-    VCT_Badge, VCT_Button, VCT_KpiCard, VCT_Stack, VCT_Toast,
+    VCT_Badge, VCT_Button, VCT_Stack, VCT_Toast,
     VCT_Modal, VCT_Select, VCT_Field, VCT_EmptyState, VCT_AvatarLetter,
     VCT_ConfirmDialog, VCT_Card, VCT_ProgressBar, VCT_Text
 } from '../components/vct-ui';
+import { VCT_PageContainer, VCT_StatRow } from '../components/vct-ui';
+import type { StatItem } from '../components/VCT_StatRow';
 import { VCT_Icons } from '../components/vct-icons';
 import { TRONG_TAIS, SAN_DAUS, genId } from '../data/mock-data';
 import { CAP_BAC_TT_MAP, type TrongTai } from '../data/types';
 import { repositories, useEntityCollection, type RefereeAssignmentRecord } from '../data/repository';
 import { useRouteActionGuard } from '../hooks/use-route-action-guard';
 
-interface Assignment extends RefereeAssignmentRecord {}
+interface Assignment extends RefereeAssignmentRecord { }
 
 const VAI_TRO_OPTIONS = [
     { value: 'chinh', label: 'Trọng tài chính' },
@@ -221,15 +223,15 @@ export const Page_referee_assignments = () => {
     );
 
     return (
-        <div className="mx-auto max-w-[1400px] pb-24">
+        <VCT_PageContainer size="wide" animated>
             <VCT_Toast isVisible={toast.show} message={toast.msg} type={toast.type} onClose={() => setToast(p => ({ ...p, show: false }))} />
 
-            <div className="vct-stagger mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
-                <VCT_KpiCard label="Tổng phân công" value={assignments.length} icon={<VCT_Icons.Users size={24} />} color="#0ea5e9" />
-                <VCT_KpiCard label="TT tham gia" value={new Set(assignments.map(a => a.tt_id)).size} icon={<VCT_Icons.Shield size={24} />} color="#10b981" sub={`/${ttsActive.length} TT sẵn sàng`} />
-                <VCT_KpiCard label="Sàn có TT" value={bySan.size} icon={<VCT_Icons.Layout size={24} />} color="#22d3ee" sub={`/${sanActive.length} sàn`} />
-                <VCT_KpiCard label="TT chưa phân" value={ttsActive.length - new Set(assignments.map(a => a.tt_id)).size} icon={<VCT_Icons.Clock size={24} />} color="#f59e0b" />
-            </div>
+            <VCT_StatRow items={[
+                { label: 'Phân công', value: assignments.length, icon: <VCT_Icons.Users size={18} />, color: '#0ea5e9' },
+                { label: 'TT tham gia', value: new Set(assignments.map(a => a.tt_id)).size, icon: <VCT_Icons.Shield size={18} />, color: '#10b981', sub: `/${ttsActive.length} TT` },
+                { label: 'Sàn có TT', value: bySan.size, icon: <VCT_Icons.Layout size={18} />, color: '#22d3ee', sub: `/${sanActive.length} sàn` },
+                { label: 'Chưa phân', value: ttsActive.length - new Set(assignments.map(a => a.tt_id)).size, icon: <VCT_Icons.Clock size={18} />, color: '#f59e0b' },
+            ] as StatItem[]} className="mb-6" />
 
             {/* Toolbar */}
             <VCT_Stack direction="row" justify="space-between" align="center" className="mb-6">
@@ -374,6 +376,6 @@ export const Page_referee_assignments = () => {
 
             <VCT_ConfirmDialog isOpen={!!deleteTarget} onClose={() => setDeleteTarget(null)} onConfirm={handleDelete}
                 title="Hủy phân công" message="Bạn có chắc muốn hủy phân công trọng tài này?" confirmLabel="Hủy phân công" />
-        </div>
+        </VCT_PageContainer>
     );
 };

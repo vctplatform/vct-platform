@@ -3,9 +3,11 @@ import * as React from 'react';
 import { useState, useMemo, useCallback, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-    VCT_Badge, VCT_Button, VCT_KpiCard, VCT_Text, VCT_Stack, VCT_Toast,
+    VCT_Badge, VCT_Button, VCT_Text, VCT_Stack, VCT_Toast,
     VCT_Modal, VCT_StatusPipeline, VCT_EmptyState, VCT_SegmentedControl, VCT_Card
 } from '../components/vct-ui';
+import { VCT_PageContainer, VCT_StatRow } from '../components/vct-ui';
+import type { StatItem } from '../components/VCT_StatRow';
 import { VCT_Icons } from '../components/vct-icons';
 import type { TranDauDK, TrangThaiTranDau, VongDau } from '../data/types';
 import { repositories, useEntityCollection } from '../data/repository';
@@ -325,7 +327,7 @@ export const Page_combat = () => {
     };
 
     return (
-        <div className="mx-auto max-w-[1400px] pb-24">
+        <VCT_PageContainer size="wide" animated>
             <VCT_Toast isVisible={toast.show} message={toast.msg} type={toast.type} onClose={hideToast} />
 
             {uiState.error && (
@@ -334,12 +336,12 @@ export const Page_combat = () => {
                 </div>
             )}
 
-            <div className="vct-stagger mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
-                <VCT_KpiCard label="Tổng trận" value={matches.length} icon={<VCT_Icons.Swords size={24} />} color="#0ea5e9" />
-                <VCT_KpiCard label="Đang thi đấu" value={matches.filter(m => m.trang_thai === 'dang_dau').length} icon={<VCT_Icons.Play size={24} />} color="#ef4444" sub="🔴 LIVE" />
-                <VCT_KpiCard label="Đã kết thúc" value={matches.filter(m => m.trang_thai === 'ket_thuc').length} icon={<VCT_Icons.Check size={24} />} color="#10b981" />
-                <VCT_KpiCard label="Chờ thi đấu" value={matches.filter(m => m.trang_thai === 'chua_dau').length} icon={<VCT_Icons.Clock size={24} />} color="#f59e0b" />
-            </div>
+            <VCT_StatRow items={[
+                { label: 'Tổng trận', value: matches.length, icon: <VCT_Icons.Swords size={18} />, color: '#0ea5e9' },
+                { label: 'LIVE', value: matches.filter(m => m.trang_thai === 'dang_dau').length, icon: <VCT_Icons.Play size={18} />, color: '#ef4444', sub: '🔴 LIVE' },
+                { label: 'Kết thúc', value: matches.filter(m => m.trang_thai === 'ket_thuc').length, icon: <VCT_Icons.Check size={18} />, color: '#10b981' },
+                { label: 'Chờ', value: matches.filter(m => m.trang_thai === 'chua_dau').length, icon: <VCT_Icons.Clock size={18} />, color: '#f59e0b' },
+            ] as StatItem[]} className="mb-6" />
 
             <VCT_StatusPipeline stages={pStages} activeStage={filter === 'all' ? null : filter} onStageClick={(k) => setFilter(k || 'all')} />
 
@@ -354,6 +356,6 @@ export const Page_combat = () => {
                     {filtered.map(m => renderMatchCard(m))}
                 </VCT_Stack>
             )}
-        </div>
+        </VCT_PageContainer>
     );
 };

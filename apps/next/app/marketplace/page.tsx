@@ -1,5 +1,8 @@
-import { Page_marketplace } from 'app/features/community/Page_marketplace'
+'use client'
+import { redirect } from 'next/navigation'
 
-export default function Page() {
-    return <Page_marketplace />
+// Marketplace đã bị loại bỏ khỏi hệ thống (không thuộc core business)
+// Redirect về trang cộng đồng thay thế
+export default function MarketplacePage() {
+    redirect('/community')
 }

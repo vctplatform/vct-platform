@@ -3,9 +3,11 @@ import * as React from 'react';
 import { useState, useMemo, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-    VCT_Card, VCT_Badge, VCT_Button, VCT_Text, VCT_Stack, VCT_KpiCard,
+    VCT_Card, VCT_Badge, VCT_Button, VCT_Text, VCT_Stack,
     VCT_Toast, VCT_SearchInput, VCT_Table, VCT_EmptyState, VCT_ConfirmDialog, VCT_Modal
 } from '../components/vct-ui';
+import { VCT_PageContainer, VCT_StatRow } from '../components/vct-ui';
+import type { StatItem } from '../components/VCT_StatRow';
 import { VCT_Icons } from '../components/vct-icons';
 import { HANG_CANS, NOI_DUNG_QUYENS } from '../data/mock-data';
 import type { DangKy, VanDongVien, TrangThaiDK } from '../data/types';
@@ -67,11 +69,11 @@ export const Page_technical_meeting = () => {
     }, [data]);
 
     return (
-        <div style={{ maxWidth: '1200px', margin: '0 auto', paddingBottom: '100px' }}>
+        <VCT_PageContainer size="wide" animated>
             <VCT_Toast isVisible={toast.show} message={toast.msg} type={toast.type} onClose={hideToast} />
 
             {(registrationStore.uiState.error || athleteStore.uiState.error || teamStore.uiState.error) && (
-                <div style={{ marginBottom: 16, padding: '12px 14px', borderRadius: 12, border: '1px solid rgba(239,68,68,0.25)', background: 'rgba(239,68,68,0.08)', color: '#ef4444', fontSize: 13, fontWeight: 700 }}>
+                <div className="mb-4 rounded-xl border border-red-500/25 bg-red-500/[0.08] px-3.5 py-3 text-[13px] font-bold text-red-500">
                     Không thể tải đủ dữ liệu họp chuyên môn.
                 </div>
             )}
@@ -91,12 +93,12 @@ export const Page_technical_meeting = () => {
             </div>
 
             {/* KPI STATS */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px', marginBottom: '24px' }}>
-                <VCT_KpiCard label="Đoàn tham dự" value={stats.countDoan} icon={<VCT_Icons.Flag size={24} />} color="#f59e0b" />
-                <VCT_KpiCard label="VĐV Đủ điều kiện thi" value={stats.totalVdv} icon={<VCT_Icons.Users size={24} />} color="#10b981" />
-                <VCT_KpiCard label="Số lượt dự thi Quyền" value={stats.totalQuyen} icon={<VCT_Icons.Activity size={24} />} color="#22d3ee" />
-                <VCT_KpiCard label="Số lượt thi Đ.Kháng" value={stats.totalDK} icon={<VCT_Icons.Shuffle size={24} />} color="#ef4444" />
-            </div>
+            <VCT_StatRow items={[
+                { label: 'Đoàn tham dự', value: stats.countDoan, icon: <VCT_Icons.Flag size={18} />, color: '#f59e0b' },
+                { label: 'VĐV đủ ĐK', value: stats.totalVdv, icon: <VCT_Icons.Users size={18} />, color: '#10b981' },
+                { label: 'Quyền', value: stats.totalQuyen, icon: <VCT_Icons.Activity size={18} />, color: '#22d3ee' },
+                { label: 'Đ.Kháng', value: stats.totalDK, icon: <VCT_Icons.Shuffle size={18} />, color: '#ef4444' },
+            ] as StatItem[]} className="mb-6" />
 
             {/* TOOLBAR */}
             <VCT_Stack direction="row" gap={16} align="center" style={{ marginBottom: '24px', flexWrap: 'wrap' }}>
@@ -170,6 +172,6 @@ export const Page_technical_meeting = () => {
                     .vct-table * { visibility: visible !important; color: black !important; }
                 }
             `}</style>
-        </div>
+        </VCT_PageContainer>
     );
 };

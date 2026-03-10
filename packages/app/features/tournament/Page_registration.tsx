@@ -3,10 +3,12 @@ import * as React from 'react';
 import { useState, useMemo, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-    VCT_Card, VCT_Badge, VCT_Button, VCT_Text, VCT_Stack, VCT_KpiCard,
+    VCT_Card, VCT_Badge, VCT_Button, VCT_Text, VCT_Stack,
     VCT_Toast, VCT_Modal, VCT_SearchInput, VCT_Table, VCT_AvatarLetter,
     VCT_ConfirmDialog, VCT_EmptyState
 } from '../components/vct-ui';
+import { VCT_PageContainer, VCT_PageHero, VCT_SectionCard, VCT_StatRow } from '../components/vct-ui';
+import type { StatItem } from '../components/VCT_StatRow';
 import { VCT_Icons } from '../components/vct-icons';
 import { NOI_DUNG_QUYENS, HANG_CANS, genId } from '../data/mock-data';
 import { TOURNAMENT_CONFIG } from '../data/tournament-config';
@@ -326,17 +328,25 @@ export const Page_registration = () => {
         { k: 'da_duyet', l: 'Đã duyệt', c: '#10b981', i: <VCT_Icons.Check size={14} /> },
     ];
 
+    const kpis: StatItem[] = [
+        { label: 'Tổng Lượt ĐK', value: data.length, icon: <VCT_Icons.List size={18} />, color: '#22d3ee', sub: `${data.filter(r => r.loai === 'quyen').length} Quyền - ${data.filter(r => r.loai === 'doi_khang').length} Đối kháng` },
+        { label: 'Số VĐV có thẻ', value: new Set(data.map(d => d.vdv_id)).size, icon: <VCT_Icons.Users size={18} />, color: '#a78bfa', sub: `Max ${TOURNAMENT_CONFIG.quota.max_nd_per_vdv} thẻ / VĐV` },
+        { label: 'Quota lấp đầy', value: `${Math.round((new Set(data.map(d => d.doan_id)).size / Math.max(1, teams.length)) * 100)}%`, icon: <VCT_Icons.Activity size={18} />, color: '#f59e0b', sub: 'Đoàn đã đăng ký' },
+        { label: 'Tỷ lệ duyệt', value: `${Math.round((data.filter(r => r.trang_thai === 'da_duyet').length / Math.max(1, data.length)) * 100)}%`, icon: <VCT_Icons.Check size={18} />, color: '#10b981', sub: `${data.filter(r => r.trang_thai === 'cho_duyet').length} chờ duyệt` },
+    ];
+
     return (
-        <div style={{ maxWidth: '1200px', margin: '0 auto', paddingBottom: '100px' }}>
+        <VCT_PageContainer size="wide" animated>
+            <VCT_PageHero
+                icon={<VCT_Icons.FileText size={24} />}
+                title="Đăng Ký Thi Đấu"
+                subtitle="Quản lý đăng ký vận động viên, nội dung thi đấu và phê duyệt."
+                gradientFrom="rgba(34, 211, 238, 0.08)"
+                gradientTo="rgba(167, 139, 250, 0.06)"
+            />
             <VCT_Toast isVisible={toast.show} message={toast.msg} type={toast.type} onClose={() => setToast(prev => ({ ...prev, show: false }))} />
 
-            {/* KPI STATS */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px', marginBottom: '24px' }}>
-                <VCT_KpiCard label="Tổng Lượt Đăng Ký" value={data.length} icon={<VCT_Icons.List size={24} />} color="#22d3ee" sub={`${data.filter(r => r.loai === 'quyen').length} Quyền - ${data.filter(r => r.loai === 'doi_khang').length} Đối kháng`} />
-                <VCT_KpiCard label="Số VĐV có thẻ" value={new Set(data.map(d => d.vdv_id)).size} icon={<VCT_Icons.Users size={24} />} color="#a78bfa" sub={`Max ${TOURNAMENT_CONFIG.quota.max_nd_per_vdv} thẻ / VĐV`} />
-                <VCT_KpiCard label="Tỷ lệ lấp đầy Quota" value={`${Math.round((new Set(data.map(d => d.doan_id)).size / Math.max(1, teams.length)) * 100)}%`} icon={<VCT_Icons.Activity size={24} />} color="#f59e0b" sub="Đoàn đã đăng ký thi đấu" />
-                <VCT_KpiCard label="Tỷ lệ phê duyệt" value={`${Math.round((data.filter(r => r.trang_thai === 'da_duyet').length / Math.max(1, data.length)) * 100)}%`} icon={<VCT_Icons.Check size={24} />} color="#10b981" sub={`${data.filter(r => r.trang_thai === 'cho_duyet').length} chờ duyệt`} />
-            </div>
+            <VCT_StatRow items={kpis} className="mb-8" />
 
             {/* DEADLINE WARNING */}
             <div style={{ padding: '16px 20px', background: 'rgba(239, 68, 68, 0.1)', border: '1px dashed #ef4444', borderRadius: '12px', display: 'flex', alignItems: 'center', gap: 16, marginBottom: 24 }}>
@@ -453,6 +463,6 @@ export const Page_registration = () => {
                     requireAction('update', 'lưu thẻ đăng ký');
                 }}
             />
-        </div>
+        </VCT_PageContainer>
     );
 };

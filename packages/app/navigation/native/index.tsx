@@ -16,7 +16,7 @@ import {
   AthletesMobileScreen,
   CombatMobileScreen,
   FormsMobileScreen,
-  MobileModuleOverviewScreen,
+  MobileOpsBoardScreen,
   RegistrationMobileScreen,
   RefereeAssignmentsMobileScreen,
   RefereesMobileScreen,
@@ -68,7 +68,8 @@ function renderModuleScreen(route: (typeof MOBILE_ROUTE_REGISTRY)[number]) {
       {RouteScreen ? (
         <RouteScreen />
       ) : (
-        <MobileModuleOverviewScreen
+        <MobileOpsBoardScreen
+          routeId={route.routeId}
           title={route.title}
           subtitle={route.subtitle}
           webPath={route.webPath}

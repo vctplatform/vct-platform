@@ -3,9 +3,11 @@
 import * as React from 'react'
 import { useState, useMemo } from 'react'
 import {
-    VCT_Button, VCT_Stack, VCT_SearchInput, VCT_KpiCard, VCT_Badge, VCT_Tabs
+    VCT_Button, VCT_Stack, VCT_SearchInput, VCT_Badge, VCT_Tabs
 } from '../components/vct-ui'
+import { VCT_PageContainer, VCT_PageHero, VCT_SectionCard, VCT_StatRow } from '../components/vct-ui'
 import { VCT_Icons } from '../components/vct-icons'
+import type { StatItem } from '../components/VCT_StatRow'
 
 // ════════════════════════════════════════
 // MOCK DATA
@@ -56,29 +58,35 @@ export const Page_people = () => {
         return data
     }, [search, roleFilter])
 
+    const kpis: StatItem[] = [
+        { label: 'Tổng VĐV', value: MOCK_PEOPLE.filter(p => p.role === 'athlete').length, icon: <VCT_Icons.Users size={18} />, color: '#0ea5e9' },
+        { label: 'HLV', value: MOCK_PEOPLE.filter(p => p.role === 'coach').length, icon: <VCT_Icons.UserCheck size={18} />, color: '#10b981' },
+        { label: 'Trọng tài', value: MOCK_PEOPLE.filter(p => p.role === 'referee').length, icon: <VCT_Icons.Shield size={18} />, color: '#f59e0b' },
+        { label: 'Hồ sơ chờ duyệt', value: MOCK_PEOPLE.filter(p => p.status === 'pending').length, icon: <VCT_Icons.Clock size={18} />, color: '#ef4444' },
+    ]
+
     return (
-        <div className="mx-auto max-w-[1400px] p-4 pb-24">
-            <div className="mb-6 flex flex-wrap items-start justify-between gap-4">
-                <div>
-                    <h1 className="text-2xl font-bold tracking-tight text-[var(--vct-text-primary)]">Quản lý Nhân sự & Con người</h1>
-                    <p className="text-sm text-[var(--vct-text-secondary)] mt-1">Toàn bộ VĐV, HLV, Trọng tài và nhân sự trong hệ thống.</p>
-                </div>
-                <VCT_Stack direction="row" gap={12}>
-                    <VCT_Button variant="outline" icon={<VCT_Icons.Download size={16} />}>Xuất Excel</VCT_Button>
-                    <VCT_Button icon={<VCT_Icons.Plus size={16} />}>Thêm hồ sơ</VCT_Button>
-                </VCT_Stack>
-            </div>
+        <VCT_PageContainer size="wide" animated>
+            {/* ── Hero ── */}
+            <VCT_PageHero
+                icon={<VCT_Icons.Users size={24} />}
+                title="Quản lý Nhân sự & Con người"
+                subtitle="Toàn bộ VĐV, HLV, Trọng tài và nhân sự trong hệ thống VCT."
+                gradientFrom="rgba(14, 165, 233, 0.06)"
+                gradientTo="rgba(139, 92, 246, 0.06)"
+                actions={
+                    <VCT_Stack direction="row" gap={12}>
+                        <VCT_Button variant="outline" icon={<VCT_Icons.Download size={16} />}>Xuất Excel</VCT_Button>
+                        <VCT_Button icon={<VCT_Icons.Plus size={16} />}>Thêm hồ sơ</VCT_Button>
+                    </VCT_Stack>
+                }
+            />
 
             {/* ── KPI ── */}
-            <div className="vct-stagger mb-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                <VCT_KpiCard label="Tổng VĐV" value={MOCK_PEOPLE.filter(p => p.role === 'athlete').length} icon={<VCT_Icons.Users size={24} />} color="#0ea5e9" />
-                <VCT_KpiCard label="HLV" value={MOCK_PEOPLE.filter(p => p.role === 'coach').length} icon={<VCT_Icons.UserCheck size={24} />} color="#10b981" />
-                <VCT_KpiCard label="Trọng tài" value={MOCK_PEOPLE.filter(p => p.role === 'referee').length} icon={<VCT_Icons.Shield size={24} />} color="#f59e0b" />
-                <VCT_KpiCard label="Hồ sơ chờ duyệt" value={MOCK_PEOPLE.filter(p => p.status === 'pending').length} icon={<VCT_Icons.Clock size={24} />} color="#ef4444" />
-            </div>
+            <VCT_StatRow items={kpis} className="mb-8" />
 
             {/* ── TABS & SEARCH ── */}
-            <div className="mb-6 flex flex-wrap items-center justify-between gap-4 border-b border-[var(--vct-border-subtle)] pb-4">
+            <div className="mb-6 flex flex-wrap items-center justify-between gap-4 border-b border-vct-border pb-4">
                 <VCT_Tabs
                     tabs={[
                         { key: 'all', label: 'Tất cả' },
@@ -96,10 +104,10 @@ export const Page_people = () => {
             </div>
 
             {/* ── TABLE ── */}
-            <div className="bg-[var(--vct-bg-card)] border border-[var(--vct-border-strong)] rounded-2xl overflow-hidden">
+            <VCT_SectionCard flush accentColor="#0ea5e9">
                 <table className="w-full text-left border-collapse">
                     <thead>
-                        <tr className="bg-[var(--vct-bg-elevated)] border-b border-[var(--vct-border-strong)] text-[11px] uppercase tracking-wider text-[var(--vct-text-tertiary)] font-bold">
+                        <tr className="bg-vct-elevated border-b border-vct-border text-[11px] uppercase tracking-wider text-vct-text-muted font-bold">
                             <th className="p-4">Họ tên</th>
                             <th className="p-4 w-24">Vai trò</th>
                             <th className="p-4">Đơn vị</th>
@@ -109,40 +117,40 @@ export const Page_people = () => {
                             <th className="p-4 w-16"></th>
                         </tr>
                     </thead>
-                    <tbody className="divide-y divide-[var(--vct-border-subtle)]">
+                    <tbody className="divide-y divide-vct-border">
                         {filtered.map(person => (
-                            <tr key={person.id} className="hover:bg-white/5 transition-colors group">
+                            <tr key={person.id} className="hover:bg-vct-accent/[0.03] transition-colors group cursor-pointer">
                                 <td className="p-4">
                                     <div className="flex items-center gap-3">
-                                        <div className="w-9 h-9 rounded-full flex items-center justify-center font-bold text-white text-xs shrink-0" style={{ background: ROLE_MAP[person.role]?.color ?? '#94a3b8' }}>
+                                        <div className="w-9 h-9 rounded-full flex items-center justify-center font-bold text-white text-xs shrink-0 shadow-md" style={{ background: ROLE_MAP[person.role]?.color ?? '#94a3b8' }}>
                                             {person.name.split(' ').pop()?.[0]}
                                         </div>
                                         <div>
-                                            <div className="font-bold text-sm text-[var(--vct-text-primary)]">{person.name}</div>
-                                            <div className="text-[10px] text-[var(--vct-text-tertiary)] font-mono">{person.id}</div>
+                                            <div className="font-bold text-sm text-vct-text">{person.name}</div>
+                                            <div className="text-[10px] text-vct-text-muted font-mono">{person.id}</div>
                                         </div>
                                     </div>
                                 </td>
                                 <td className="p-4">
-                                    <span className="text-[11px] font-bold px-2 py-0.5 rounded" style={{ color: ROLE_MAP[person.role]?.color, background: `${ROLE_MAP[person.role]?.color}15` }}>
+                                    <span className="text-[11px] font-bold px-2 py-0.5 rounded-md border" style={{ color: ROLE_MAP[person.role]?.color, background: `${ROLE_MAP[person.role]?.color}12`, borderColor: `${ROLE_MAP[person.role]?.color}25` }}>
                                         {ROLE_MAP[person.role]?.label}
                                     </span>
                                 </td>
-                                <td className="p-4 text-sm text-[var(--vct-text-secondary)]">{person.org}</td>
-                                <td className="p-4 text-sm text-[var(--vct-text-secondary)]">{person.belt || '—'}</td>
+                                <td className="p-4 text-sm text-vct-text-secondary">{person.org}</td>
+                                <td className="p-4 text-sm text-vct-text-secondary">{person.belt || '—'}</td>
                                 <td className="p-4 text-center">
                                     {person.status === 'active' && <VCT_Badge type="success" text="Hoạt động" />}
                                     {person.status === 'pending' && <VCT_Badge type="warning" text="Chờ duyệt" />}
                                     {person.status === 'inactive' && <VCT_Badge type="neutral" text="Ngưng" />}
                                 </td>
                                 <td className="p-4">
-                                    <div className="text-[11px] text-[var(--vct-text-tertiary)]">
+                                    <div className="text-[11px] text-vct-text-muted space-y-0.5">
                                         <div className="flex items-center gap-1"><VCT_Icons.Phone size={10} /> {person.phone}</div>
-                                        <div className="flex items-center gap-1 mt-0.5"><VCT_Icons.Mail size={10} /> {person.email}</div>
+                                        <div className="flex items-center gap-1"><VCT_Icons.Mail size={10} /> {person.email}</div>
                                     </div>
                                 </td>
                                 <td className="p-4 text-center">
-                                    <button className="p-1.5 text-[var(--vct-text-tertiary)] hover:text-white opacity-0 group-hover:opacity-100 transition-all rounded-md hover:bg-white/10">
+                                    <button className="p-1.5 text-vct-text-muted hover:text-vct-text opacity-0 group-hover:opacity-100 transition-all rounded-lg hover:bg-vct-input">
                                         <VCT_Icons.MoreVertical size={16} />
                                     </button>
                                 </td>
@@ -150,7 +158,7 @@ export const Page_people = () => {
                         ))}
                     </tbody>
                 </table>
-            </div>
-        </div>
+            </VCT_SectionCard>
+        </VCT_PageContainer>
     )
 }

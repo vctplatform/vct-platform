@@ -4,8 +4,10 @@ import * as React from 'react'
 import { useState, useMemo } from 'react'
 import {
     VCT_Badge, VCT_Button, VCT_Stack, VCT_SearchInput,
-    VCT_Select, VCT_EmptyState, VCT_KpiCard
+    VCT_Select, VCT_EmptyState
 } from '../components/vct-ui'
+import { VCT_PageContainer, VCT_PageHero, VCT_StatRow } from '../components/vct-ui'
+import type { StatItem } from '../components/VCT_StatRow'
 import { VCT_Icons } from '../components/vct-icons'
 
 // ════════════════════════════════════════
@@ -70,44 +72,27 @@ export const Page_attendance = () => {
     }
 
     return (
-        <div className="mx-auto max-w-[1200px] p-4 pb-24">
-            <div className="mb-6 flex flex-wrap items-start justify-between gap-4">
-                <div>
-                    <h1 className="text-2xl font-bold tracking-tight text-[var(--vct-text-primary)] mb-2">Điểm danh Lớp học</h1>
-                    <div className="flex flex-wrap items-center gap-3 text-sm">
-                        <span className="text-[var(--vct-text-secondary)] font-medium bg-[var(--vct-bg-elevated)] px-3 py-1 rounded-md border border-[var(--vct-border-subtle)] flex items-center gap-2">
-                            <VCT_Icons.Users size={16} className="text-[#8b5cf6]" /> {MOCK_CLASS.name}
-                        </span>
-                        <span className="text-[var(--vct-text-secondary)] font-medium bg-[var(--vct-bg-elevated)] px-3 py-1 rounded-md border border-[var(--vct-border-subtle)] flex items-center gap-2">
-                            <VCT_Icons.Calendar size={16} className="text-[#0ea5e9]" /> {MOCK_CLASS.date} | {MOCK_CLASS.time}
-                        </span>
-                    </div>
-                </div>
-                <VCT_Stack direction="row" gap={12}>
-                    <VCT_Button icon={<VCT_Icons.Camera size={16} />} variant="secondary">Quét QR</VCT_Button>
-                    <VCT_Button icon={<VCT_Icons.Check size={16} />} onClick={markAllPresent}>Tất cả Có mặt</VCT_Button>
-                </VCT_Stack>
-            </div>
+        <VCT_PageContainer animated>
+            <VCT_PageHero
+                icon={<VCT_Icons.Users size={24} />}
+                title="Điểm danh Lớp học"
+                subtitle={`${MOCK_CLASS.name} • ${MOCK_CLASS.date} | ${MOCK_CLASS.time}`}
+                gradientFrom="rgba(59, 130, 246, 0.08)"
+                gradientTo="rgba(16, 185, 129, 0.06)"
+                actions={
+                    <VCT_Stack direction="row" gap={12}>
+                        <VCT_Button icon={<VCT_Icons.Camera size={16} />} variant="secondary">Quét QR</VCT_Button>
+                        <VCT_Button icon={<VCT_Icons.Check size={16} />} onClick={markAllPresent}>Tất cả Có mặt</VCT_Button>
+                    </VCT_Stack>
+                }
+            />
 
-            {/* ── KPI ── */}
-            <div className="vct-stagger mb-6 grid grid-cols-2 lg:grid-cols-4 gap-4">
-                <div className="bg-[var(--vct-bg-card)] border-l-4 border-l-[#3b82f6] rounded-r-xl p-4 border-y border-r border-[#1e293b]">
-                    <div className="text-xs font-bold text-[#94a3b8] uppercase">TỔNG Võ Sinh</div>
-                    <div className="text-2xl font-black text-white mt-1">{stats.total}</div>
-                </div>
-                <div className="bg-[var(--vct-bg-card)] border-l-4 border-l-[#10b981] rounded-r-xl p-4 border-y border-r border-[#1e293b]">
-                    <div className="text-xs font-bold text-[#94a3b8] uppercase">Có Mặt</div>
-                    <div className="text-2xl font-black text-[#10b981] mt-1">{stats.present}</div>
-                </div>
-                <div className="bg-[var(--vct-bg-card)] border-l-4 border-l-[#f59e0b] rounded-r-xl p-4 border-y border-r border-[#1e293b]">
-                    <div className="text-xs font-bold text-[#94a3b8] uppercase">Đi Trễ</div>
-                    <div className="text-2xl font-black text-[#f59e0b] mt-1">{stats.late}</div>
-                </div>
-                <div className="bg-[var(--vct-bg-card)] border-l-4 border-l-[#ef4444] rounded-r-xl p-4 border-y border-r border-[#1e293b]">
-                    <div className="text-xs font-bold text-[#94a3b8] uppercase">Vắng Mặt</div>
-                    <div className="text-2xl font-black text-[#ef4444] mt-1">{stats.absent}</div>
-                </div>
-            </div>
+            <VCT_StatRow items={[
+                { label: 'Tổng Võ sinh', value: stats.total, icon: <VCT_Icons.Users size={18} />, color: '#3b82f6' },
+                { label: 'Có mặt', value: stats.present, icon: <VCT_Icons.Check size={18} />, color: '#10b981' },
+                { label: 'Đi trễ', value: stats.late, icon: <VCT_Icons.Clock size={18} />, color: '#f59e0b' },
+                { label: 'Vắng mặt', value: stats.absent, icon: <VCT_Icons.X size={18} />, color: '#ef4444' },
+            ] as StatItem[]} className="mb-6" />
 
             {/* ── TOOLBAR ── */}
             <div className="mb-6 bg-[var(--vct-bg-elevated)] p-4 rounded-xl border border-[var(--vct-border-subtle)]">
@@ -187,6 +172,6 @@ export const Page_attendance = () => {
                     <VCT_EmptyState title="Không tìm thấy võ sinh" description="Thử thay đổi từ khóa tìm kiếm." icon="🔍" />
                 </div>
             )}
-        </div>
+        </VCT_PageContainer>
     )
 }

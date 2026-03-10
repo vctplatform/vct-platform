@@ -28,6 +28,7 @@ export interface VCTTextProps extends React.HTMLAttributes<HTMLParagraphElement>
   children: ReactNode
   variant?: 'h1' | 'h2' | 'h3' | 'body' | 'small' | 'mono'
   as?: 'p' | 'span' | 'div' | 'h1' | 'h2' | 'h3'
+  weight?: CSSProperties['fontWeight']
 }
 
 export interface VCTButtonProps
@@ -45,6 +46,10 @@ export interface VCTCardProps
   title?: ReactNode
   headerAction?: ReactNode
   footer?: ReactNode
+  /** Make the card body collapsible */
+  collapsible?: boolean
+  /** Starting collapsed state (only when collapsible=true) */
+  defaultCollapsed?: boolean
 }
 
 export interface VCTResponsiveGridProps
@@ -229,6 +234,7 @@ export const VCT_Text = ({
   children,
   variant = 'body',
   as = 'p',
+  weight,
   className,
   style,
   ...rest
@@ -237,7 +243,7 @@ export const VCT_Text = ({
   return (
     <Component
       className={cn(TEXT_VARIANT_CLASS[variant], className ?? '')}
-      style={style}
+      style={{ ...(weight ? { fontWeight: weight } : null), ...style }}
       {...rest}
     >
       {children}
@@ -285,32 +291,69 @@ export const VCT_Card = ({
   title,
   headerAction,
   footer,
+  collapsible = false,
+  defaultCollapsed = false,
   className,
   style,
   ...rest
-}: VCTCardProps) => (
-  <section
-    className={cn(
-      'rounded-2xl border border-vct-border bg-vct-elevated shadow-[var(--vct-shadow-sm)]',
-      className ?? ''
-    )}
-    style={style}
-    {...rest}
-  >
-    {(title || headerAction) && (
-      <header className="flex items-center justify-between gap-4 border-b border-vct-border px-5 py-4">
-        <div className="text-sm font-extrabold uppercase tracking-[0.03em] text-vct-text">
-          {title}
-        </div>
-        {headerAction}
-      </header>
-    )}
-    <div className="px-5 py-4">{children}</div>
-    {footer ? (
-      <footer className="border-t border-vct-border px-5 py-4">{footer}</footer>
-    ) : null}
-  </section>
-)
+}: VCTCardProps) => {
+  const [collapsed, setCollapsed] = React.useState(defaultCollapsed && collapsible)
+
+  return (
+    <section
+      className={cn(
+        'rounded-2xl border border-vct-border bg-vct-elevated shadow-[var(--vct-shadow-sm)]',
+        className ?? ''
+      )}
+      style={style}
+      {...rest}
+    >
+      {(title || headerAction) && (
+        <header
+          className={cn(
+            'flex items-center justify-between gap-4 border-b border-vct-border px-5 py-4',
+            collapsible && 'cursor-pointer select-none hover:bg-vct-input/40 transition'
+          )}
+          onClick={collapsible ? () => setCollapsed((p) => !p) : undefined}
+          role={collapsible ? 'button' : undefined}
+          aria-expanded={collapsible ? !collapsed : undefined}
+        >
+          <div className="flex items-center gap-2 text-sm font-extrabold uppercase tracking-[0.03em] text-vct-text">
+            {collapsible ? (
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 16 16"
+                fill="none"
+                className={cn(
+                  'shrink-0 transition-transform duration-200',
+                  collapsed ? '-rotate-90' : 'rotate-0'
+                )}
+              >
+                <path d="M4 6L8 10L12 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            ) : null}
+            {title}
+          </div>
+          {headerAction ? (
+            <div onClick={(e) => e.stopPropagation()}>{headerAction}</div>
+          ) : null}
+        </header>
+      )}
+      <div
+        className={cn(
+          'overflow-hidden transition-all duration-200',
+          collapsible && collapsed ? 'max-h-0' : 'max-h-[9999px]'
+        )}
+      >
+        <div className="px-5 py-4">{children}</div>
+        {footer ? (
+          <footer className="border-t border-vct-border px-5 py-4">{footer}</footer>
+        ) : null}
+      </div>
+    </section>
+  )
+}
 
 export const VCT_ResponsiveGrid = ({
   children,

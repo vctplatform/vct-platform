@@ -2,7 +2,8 @@
 
 import * as React from 'react'
 import { useState } from 'react'
-import { VCT_Badge, VCT_Button, VCT_KpiCard, VCT_Stack, VCT_AvatarLetter, VCT_Tabs } from '../components/vct-ui'
+import { VCT_Badge, VCT_Button, VCT_Stack, VCT_AvatarLetter, VCT_Tabs } from '../components/vct-ui'
+import { VCT_PageContainer } from '../components/vct-ui'
 import { VCT_Icons } from '../components/vct-icons'
 
 // ════════════════════════════════════════

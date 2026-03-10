@@ -3,10 +3,12 @@ import * as React from 'react';
 import { useState, useMemo, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import {
-    VCT_Badge, VCT_Button, VCT_KpiCard, VCT_Text, VCT_Stack, VCT_Toast,
+    VCT_Badge, VCT_Button, VCT_Text, VCT_Stack, VCT_Toast,
     VCT_SearchInput, VCT_Modal, VCT_Input, VCT_Field,
     VCT_StatusPipeline, VCT_EmptyState, VCT_AvatarLetter, VCT_Card
 } from '../components/vct-ui';
+import { VCT_PageContainer, VCT_StatRow } from '../components/vct-ui';
+import type { StatItem } from '../components/VCT_StatRow';
 import { VCT_Icons } from '../components/vct-icons';
 import type { LuotThiQuyen, TrangThaiQuyen } from '../data/types';
 import { repositories, useEntityCollection } from '../data/repository';
@@ -186,7 +188,7 @@ export const Page_forms = () => {
     const liveScoreResult = liveScores.length >= 3 ? calcQuyenScore(liveScores.length === numJ ? liveScores : [...liveScores, ...Array(Math.max(0, numJ - liveScores.length)).fill(0)]) : null;
     const liveAvg = liveScoreResult?.avg ?? null;
     return (
-        <div className="mx-auto max-w-[1400px] pb-24">
+        <VCT_PageContainer size="wide" animated>
             <VCT_Toast isVisible={toast.show} message={toast.msg} type={toast.type} onClose={hideToast} />
 
             {uiState.error && (
@@ -196,12 +198,12 @@ export const Page_forms = () => {
             )}
 
             {/* KPI */}
-            <div className="vct-stagger mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
-                <VCT_KpiCard label="Tổng lượt thi" value={entries.length} icon={<VCT_Icons.Award size={24} />} color="#22d3ee" />
-                <VCT_KpiCard label="Đã chấm" value={entries.filter(e => e.trang_thai === 'da_cham').length} icon={<VCT_Icons.Check size={24} />} color="#10b981" />
-                <VCT_KpiCard label="Chờ thi" value={entries.filter(e => e.trang_thai === 'cho_thi').length} icon={<VCT_Icons.Clock size={24} />} color="#f59e0b" />
-                <VCT_KpiCard label="Điểm Tổng cao nhất" value={rankedFlat.length > 0 ? Array.from(rankedFlat).sort((a, b) => b.diem_tb - a.diem_tb)[0]?.diem_tb.toFixed(2) : '—'} icon={<VCT_Icons.Star size={24} />} color="#a78bfa" sub={rankedFlat.length > 0 ? Array.from(rankedFlat).sort((a, b) => b.diem_tb - a.diem_tb)[0]?.vdv_ten : ''} />
-            </div>
+            <VCT_StatRow items={[
+                { label: 'Lượt thi', value: entries.length, icon: <VCT_Icons.Award size={18} />, color: '#22d3ee' },
+                { label: 'Đã chấm', value: entries.filter(e => e.trang_thai === 'da_cham').length, icon: <VCT_Icons.Check size={18} />, color: '#10b981' },
+                { label: 'Chờ thi', value: entries.filter(e => e.trang_thai === 'cho_thi').length, icon: <VCT_Icons.Clock size={18} />, color: '#f59e0b' },
+                { label: 'Điểm cao nhất', value: rankedFlat.length > 0 ? Array.from(rankedFlat).sort((a, b) => b.diem_tb - a.diem_tb)[0]?.diem_tb.toFixed(2) : '—', icon: <VCT_Icons.Star size={18} />, color: '#a78bfa', sub: rankedFlat.length > 0 ? Array.from(rankedFlat).sort((a, b) => b.diem_tb - a.diem_tb)[0]?.vdv_ten : '' },
+            ] as StatItem[]} className="mb-6" />
 
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 24, marginBottom: 24, justifyContent: 'space-between', alignItems: 'flex-start', background: 'var(--vct-bg-card)', padding: '20px 24px', borderRadius: 16, border: '1px solid var(--vct-border-subtle)' }}>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
@@ -392,6 +394,6 @@ export const Page_forms = () => {
                     </VCT_Stack>
                 )}
             </VCT_Modal>
-        </div>
+        </VCT_PageContainer>
     );
 };

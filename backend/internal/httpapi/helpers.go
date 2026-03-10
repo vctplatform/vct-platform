@@ -58,9 +58,35 @@ func internalError(w http.ResponseWriter, err error) {
 	success(w, http.StatusInternalServerError, map[string]string{"message": err.Error()})
 }
 
+func conflict(w http.ResponseWriter, message string) {
+	success(w, http.StatusConflict, map[string]string{"message": message})
+}
+
+func notFoundError(w http.ResponseWriter, message string) {
+	success(w, http.StatusNotFound, map[string]string{"message": message})
+}
+
+func forbidden(w http.ResponseWriter, message string) {
+	success(w, http.StatusForbidden, map[string]string{"message": message})
+}
+
+// requireRole checks if the principal has one of the allowed roles.
+// Returns true if access is denied (caller should return immediately).
+func requireRole(w http.ResponseWriter, p auth.Principal, roles ...string) bool {
+	for _, r := range roles {
+		if string(p.User.Role) == r {
+			return false // access granted
+		}
+	}
+	forbidden(w, "Bạn không có quyền thực hiện thao tác này")
+	return true // access denied
+}
+
 func writeAuthError(w http.ResponseWriter, err error) {
 	status := http.StatusUnauthorized
 	switch {
+	case errors.Is(err, auth.ErrConflict):
+		status = http.StatusConflict
 	case errors.Is(err, auth.ErrBadRequest):
 		status = http.StatusBadRequest
 	case errors.Is(err, auth.ErrInvalidCredentials):

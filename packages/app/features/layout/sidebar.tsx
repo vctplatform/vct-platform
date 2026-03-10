@@ -6,7 +6,20 @@ import { VCT_Tooltip } from '../components/VCT_Tooltip'
 import { VCT_IconButton } from '../components/vct-ui'
 import { VCT_Icons } from '../components/vct-icons'
 import { getSidebarGroups } from './route-registry'
+import { useI18n } from '../i18n'
 import type { UserRole } from '../auth/types'
+
+interface SidebarNavItem {
+  path: string
+  label: string
+  icon: string
+}
+
+interface SidebarNavGroup {
+  id: string
+  label: string
+  items: SidebarNavItem[]
+}
 
 interface SidebarProps {
   id?: string
@@ -20,6 +33,13 @@ interface SidebarProps {
   role: UserRole
   userName: string
   roleLabel: string
+  navGroups?: SidebarNavGroup[]
+  workspaceLabel?: string
+}
+
+const isItemActive = (currentPath: string, itemPath: string) => {
+  if (itemPath === '/') return currentPath === '/'
+  return currentPath === itemPath || currentPath.startsWith(`${itemPath}/`)
 }
 
 export const VCT_Sidebar = ({
@@ -34,8 +54,11 @@ export const VCT_Sidebar = ({
   role,
   userName,
   roleLabel,
+  navGroups,
+  workspaceLabel,
 }: SidebarProps) => {
-  const groups = getSidebarGroups(role)
+  const { t } = useI18n()
+  const groups = navGroups ?? getSidebarGroups(role)
   const sidebarWidth = isCollapsed ? 88 : 272
   const initials = userName
     .split(' ')
@@ -49,7 +72,7 @@ export const VCT_Sidebar = ({
   return (
     <motion.aside
       id={id}
-      aria-label="Điều hướng chính"
+      aria-label={t('shell.mainNav')}
       animate={compactMode ? { x: mobileOpen ? 0 : -340 } : { width: sidebarWidth }}
       transition={{ duration: 0.22, ease: [0.4, 0, 0.2, 1] }}
       className={`${compactMode ? 'fixed inset-y-0 left-0 z-[90]' : 'relative z-30'
@@ -61,7 +84,7 @@ export const VCT_Sidebar = ({
     >
       {!compactMode && (
         <VCT_IconButton
-          ariaLabel={isCollapsed ? 'Mở rộng thanh điều hướng' : 'Thu gọn thanh điều hướng'}
+          ariaLabel={isCollapsed ? t('shell.sidebarExpand') : t('shell.sidebarCollapse')}
           onClick={onToggleCollapse}
           size="sm"
           icon={
@@ -79,7 +102,7 @@ export const VCT_Sidebar = ({
       >
         {compactMode && (
           <VCT_IconButton
-            ariaLabel="Đóng điều hướng"
+            ariaLabel={t('shell.closeMobileNav')}
             onClick={onCloseMobile}
             size="sm"
             icon={<VCT_Icons.x size={14} />}
@@ -99,7 +122,7 @@ export const VCT_Sidebar = ({
               <div className="inline-flex flex-col items-center">
                 <UI_Logo size={36} />
                 <span className="mt-1 text-[9px] font-bold uppercase tracking-[0.1em] text-vct-text-muted">
-                  Nền tảng quản trị võ thuật
+                  {t('shell.platformSubtitle')}
                 </span>
               </div>
             </motion.div>
@@ -117,31 +140,45 @@ export const VCT_Sidebar = ({
         </AnimatePresence>
       </div>
 
+      {workspaceLabel && (!isCollapsed || compactMode) && (
+        <div className="border-b border-vct-border px-4 py-3">
+            <div className="rounded-xl border border-vct-border bg-vct-input px-3 py-2">
+              <div className="text-[10px] font-extrabold uppercase tracking-[0.12em] text-vct-text-muted">
+                {t('shell.currentWorkspace')}
+              </div>
+              <div className="mt-1 truncate text-sm font-bold text-vct-text">
+                {workspaceLabel}
+            </div>
+          </div>
+        </div>
+      )}
+
       <nav
-        aria-label="Danh mục chức năng"
+        aria-label={t('shell.navCategories')}
         className="vct-hide-scrollbar flex-1 overflow-y-auto overflow-x-hidden px-0 py-4"
       >
         {groups.map((group) => (
           <div key={group.id} className="mb-6">
             {(!isCollapsed || compactMode) && (
               <h2 className="mb-2 px-6 text-[10px] font-extrabold uppercase tracking-[0.12em] text-vct-text-muted">
-                {group.label}
+                {t(group.label)}
               </h2>
             )}
 
             <div className="flex flex-col gap-1 px-3">
               {group.items.map((item) => {
-                const isActive = activeModule === item.path
+                const isActive = isItemActive(activeModule, item.path)
                 const iconMap = VCT_Icons as Record<string, React.ComponentType<any>>
                 const IconComponent = iconMap[item.icon] ?? VCT_Icons.Activity
                 const showTooltip = isCollapsed && !compactMode
+                const translatedLabel = t(item.label)
 
                 const btn = (
                   <button
                     key={item.path}
                     type="button"
                     aria-current={isActive ? 'page' : undefined}
-                    aria-label={item.label}
+                    aria-label={translatedLabel}
                     onClick={() => {
                       onNavigate(item.path)
                       if (compactMode) onCloseMobile()
@@ -167,7 +204,7 @@ export const VCT_Sidebar = ({
                           exit={{ opacity: 0, width: 0 }}
                           className="ml-3 overflow-hidden whitespace-nowrap text-sm font-semibold"
                         >
-                          {item.label}
+                          {translatedLabel}
                         </motion.span>
                       )}
                     </AnimatePresence>
@@ -175,7 +212,7 @@ export const VCT_Sidebar = ({
                 )
 
                 return showTooltip ? (
-                  <VCT_Tooltip key={item.path} content={item.label} position="right" delay={200}>
+                  <VCT_Tooltip key={item.path} content={translatedLabel} position="right" delay={200}>
                     {btn}
                   </VCT_Tooltip>
                 ) : (

@@ -3,8 +3,10 @@ import * as React from 'react';
 import { useState, useMemo, useRef, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import {
-    VCT_Card, VCT_Button, VCT_Text, VCT_Stack, VCT_Badge, VCT_KpiCard, VCT_EmptyState, VCT_Toast
+    VCT_Card, VCT_Button, VCT_Text, VCT_Stack, VCT_Badge, VCT_EmptyState, VCT_Toast
 } from '../components/vct-ui';
+import { VCT_PageContainer, VCT_StatRow } from '../components/vct-ui';
+import type { StatItem } from '../components/VCT_StatRow';
 import { VCT_Icons } from '../components/vct-icons';
 import { HANG_CANS, NOI_DUNG_QUYENS } from '../data/mock-data';
 import { repositories, useEntityCollection } from '../data/repository';
@@ -589,7 +591,7 @@ export const Page_bracket = () => {
     };
 
     return (
-        <div style={{ maxWidth: 1600, margin: '0 auto', paddingBottom: 100 }}>
+        <VCT_PageContainer size="wide" animated>
             <VCT_Toast isVisible={toast.show} message={toast.msg} type={toast.type} onClose={() => setToast(prev => ({ ...prev, show: false }))} />
             {/* Header */}
             <VCT_Stack direction="row" justify="space-between" align="center" style={{ marginBottom: 24, flexWrap: 'wrap', gap: 16 }}>
@@ -610,12 +612,12 @@ export const Page_bracket = () => {
             </VCT_Stack>
 
             {/* KPI */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 16, marginBottom: 24 }}>
-                <VCT_KpiCard label="Schema" value={`${selectedSchema} VĐV`} icon={<VCT_Icons.GitMerge size={24} />} color="#8b5cf6" />
-                <VCT_KpiCard label="Số vòng" value={numRounds} icon={<VCT_Icons.LayoutGrid size={24} />} color="#0ea5e9" />
-                <VCT_KpiCard label="Tổng trận" value={totalMatches} icon={<VCT_Icons.Swords size={24} />} color="#f59e0b" />
-                <VCT_KpiCard label="Zoom" value={`${Math.round(zoom * 100)}%`} icon={<VCT_Icons.Search size={24} />} color="#10b981" />
-            </div>
+            <VCT_StatRow items={[
+                { label: 'Schema', value: `${selectedSchema} VĐV`, icon: <VCT_Icons.GitMerge size={18} />, color: '#8b5cf6' },
+                { label: 'Số vòng', value: numRounds, icon: <VCT_Icons.LayoutGrid size={18} />, color: '#0ea5e9' },
+                { label: 'Tổng trận', value: totalMatches, icon: <VCT_Icons.Swords size={18} />, color: '#f59e0b' },
+                { label: 'Zoom', value: `${Math.round(zoom * 100)}%`, icon: <VCT_Icons.Search size={18} />, color: '#10b981' },
+            ] as StatItem[]} className="mb-6" />
 
             {/* Toolbar */}
             <VCT_Card>
@@ -747,6 +749,6 @@ export const Page_bracket = () => {
                     </div>
                 </motion.div>
             )}
-        </div>
+        </VCT_PageContainer>
     );
 };

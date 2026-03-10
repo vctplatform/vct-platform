@@ -1,9 +1,13 @@
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native'
+import * as React from 'react'
+import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native'
 import { useRouter } from 'solito/navigation'
-import { useMemo } from 'react'
+import { useCallback, useMemo } from 'react'
 import { useAuth } from '../auth/AuthProvider'
 import { USER_ROLE_OPTIONS } from '../auth/types'
-import { getAccessibleMobileRoutes } from '../mobile/mobile-routes'
+import {
+  getAccessibleMobileRoutes,
+  type MobileRouteItem,
+} from '../mobile/mobile-routes'
 import { MobileModuleCard } from '../mobile/tournament-screens'
 
 const styles = StyleSheet.create({
@@ -14,6 +18,7 @@ const styles = StyleSheet.create({
   content: {
     padding: 16,
     gap: 10,
+    paddingBottom: 28,
   },
   title: {
     fontSize: 24,
@@ -29,7 +34,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
     gap: 8,
-    marginBottom: 6,
+    marginBottom: 2,
   },
   roleButton: {
     borderRadius: 999,
@@ -51,6 +56,47 @@ const styles = StyleSheet.create({
   roleButtonTextActive: {
     color: '#0369a1',
   },
+  moduleSeparator: {
+    height: 8,
+  },
+  emptyBox: {
+    marginTop: 12,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#fecaca',
+    backgroundColor: '#fef2f2',
+    padding: 14,
+  },
+  emptyTitle: {
+    color: '#991b1b',
+    fontWeight: '700',
+    marginBottom: 6,
+  },
+  emptyText: {
+    color: '#b91c1c',
+    fontSize: 12,
+  },
+})
+
+const RoleButton = React.memo(function RoleButton({
+  label,
+  active,
+  onPress,
+}: {
+  label: string
+  active: boolean
+  onPress: () => void
+}) {
+  return (
+    <Pressable
+      style={[styles.roleButton, active && styles.roleButtonActive]}
+      onPress={onPress}
+    >
+      <Text style={[styles.roleButtonText, active && styles.roleButtonTextActive]}>
+        {label}
+      </Text>
+    </Pressable>
+  )
 })
 
 export function HomeScreen() {
@@ -62,69 +108,74 @@ export function HomeScreen() {
     [currentUser.role]
   )
 
-  return (
-    <ScrollView style={styles.page} contentContainerStyle={styles.content}>
+  const roleLabel = useMemo(
+    () =>
+      USER_ROLE_OPTIONS.find((item) => item.value === currentUser.role)?.label ??
+      currentUser.role,
+    [currentUser.role]
+  )
+
+  const renderModuleCard = useCallback(
+    ({ item }: { item: MobileRouteItem }) => (
+      <MobileModuleCard
+        title={item.title}
+        subtitle={item.subtitle}
+        onPress={() => router.push(`/${item.nativePath}`)}
+      />
+    ),
+    [router]
+  )
+
+  const rolePanel = useMemo(
+    () => (
       <View>
         <Text style={styles.title}>VCT Platform</Text>
         <Text style={styles.subtitle}>
-          Điều hướng nhanh các module chính trên mobile
+          Điều hướng nhanh toàn bộ module nghiệp vụ trên mobile
         </Text>
-      </View>
 
-      <View>
         <Text style={[styles.subtitle, { marginBottom: 8 }]}>
-          Quyền hiện tại: {USER_ROLE_OPTIONS.find((item) => item.value === currentUser.role)?.label}
+          Quyền hiện tại: {roleLabel}
         </Text>
         <View style={styles.roleWrap}>
-          {USER_ROLE_OPTIONS.map((roleOption) => {
-            const active = roleOption.value === currentUser.role
-            return (
-              <Pressable
-                key={roleOption.value}
-                style={[styles.roleButton, active && styles.roleButtonActive]}
-                onPress={() => setRole(roleOption.value)}
-              >
-                <Text
-                  style={[
-                    styles.roleButtonText,
-                    active && styles.roleButtonTextActive,
-                  ]}
-                >
-                  {roleOption.label}
-                </Text>
-              </Pressable>
-            )
-          })}
+          {USER_ROLE_OPTIONS.map((roleOption) => (
+            <RoleButton
+              key={roleOption.value}
+              label={roleOption.label}
+              active={roleOption.value === currentUser.role}
+              onPress={() => setRole(roleOption.value)}
+            />
+          ))}
         </View>
       </View>
+    ),
+    [currentUser.role, roleLabel, setRole]
+  )
 
-      {modules.length === 0 ? (
-        <View
-          style={{
-            borderRadius: 12,
-            borderWidth: 1,
-            borderColor: '#fecaca',
-            backgroundColor: '#fef2f2',
-            padding: 14,
-          }}
-        >
-          <Text style={{ color: '#991b1b', fontWeight: '700', marginBottom: 6 }}>
-            Role hiện tại chưa được cấp module mobile.
-          </Text>
-          <Text style={{ color: '#b91c1c', fontSize: 12 }}>
-            Hãy đổi sang role khác để tiếp tục.
-          </Text>
-        </View>
-      ) : (
-        modules.map((module) => (
-          <MobileModuleCard
-            key={module.key}
-            title={module.title}
-            subtitle={module.subtitle}
-            onPress={() => router.push(`/${module.nativePath}`)}
-          />
-        ))
-      )}
-    </ScrollView>
+  const emptyState = useMemo(
+    () => (
+      <View style={styles.emptyBox}>
+        <Text style={styles.emptyTitle}>
+          Vai trò hiện tại chưa được cấp module mobile.
+        </Text>
+        <Text style={styles.emptyText}>
+          Hãy đổi role khác để tiếp tục.
+        </Text>
+      </View>
+    ),
+    []
+  )
+
+  return (
+    <FlatList
+      data={modules}
+      style={styles.page}
+      contentContainerStyle={styles.content}
+      keyExtractor={(item) => item.key}
+      renderItem={renderModuleCard}
+      ItemSeparatorComponent={() => <View style={styles.moduleSeparator} />}
+      ListHeaderComponent={rolePanel}
+      ListEmptyComponent={emptyState}
+    />
   )
 }

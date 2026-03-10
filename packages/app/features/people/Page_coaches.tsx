@@ -3,9 +3,11 @@
 import * as React from 'react'
 import { useState, useMemo } from 'react'
 import {
-    VCT_Badge, VCT_Button, VCT_KpiCard, VCT_Stack,
+    VCT_Badge, VCT_Button, VCT_Stack,
     VCT_SearchInput, VCT_AvatarLetter, VCT_EmptyState, VCT_Tabs
 } from '../components/vct-ui'
+import { VCT_PageContainer, VCT_PageHero, VCT_StatRow } from '../components/vct-ui'
+import type { StatItem } from '../components/VCT_StatRow'
 import { VCT_Icons } from '../components/vct-icons'
 
 // ════════════════════════════════════════
@@ -67,29 +69,34 @@ export const Page_coaches = () => {
     const totalStudents = MOCK_COACHES.reduce((s, c) => s + c.students, 0)
     const avgExperience = Math.round(MOCK_COACHES.reduce((s, c) => s + c.experience_years, 0) / MOCK_COACHES.length)
 
+    const kpis: StatItem[] = [
+        { label: 'Tổng HLV', value: MOCK_COACHES.length, icon: <VCT_Icons.UserCheck size={18} />, color: '#8b5cf6' },
+        { label: 'Đang hoạt động', value: MOCK_COACHES.filter(c => c.status === 'active').length, icon: <VCT_Icons.CheckCircle size={18} />, color: '#10b981' },
+        { label: 'Tổng học trò', value: totalStudents, icon: <VCT_Icons.Users size={18} />, color: '#0ea5e9' },
+        { label: 'KN trung bình', value: `${avgExperience} năm`, icon: <VCT_Icons.Award size={18} />, color: '#f59e0b' },
+    ]
+
     return (
-        <div className="mx-auto max-w-[1400px] p-4 pb-24">
-            <div className="mb-6 flex flex-wrap items-start justify-between gap-4">
-                <div>
-                    <h1 className="text-2xl font-bold tracking-tight text-[var(--vct-text-primary)]">Huấn Luyện Viên</h1>
-                    <p className="text-sm text-[var(--vct-text-secondary)] mt-1">Quản lý danh sách HLV, chứng chỉ, và phân công đào tạo.</p>
-                </div>
-                <VCT_Stack direction="row" gap={12}>
-                    <VCT_Button variant="outline" icon={<VCT_Icons.Download size={16} />}>Xuất danh sách</VCT_Button>
-                    <VCT_Button icon={<VCT_Icons.Plus size={16} />}>Thêm HLV</VCT_Button>
-                </VCT_Stack>
-            </div>
+        <VCT_PageContainer size="wide" animated>
+            <VCT_PageHero
+                icon={<VCT_Icons.UserCheck size={24} />}
+                title="Huấn Luyện Viên"
+                subtitle="Quản lý danh sách HLV, chứng chỉ, và phân công đào tạo."
+                gradientFrom="rgba(139, 92, 246, 0.08)"
+                gradientTo="rgba(16, 185, 129, 0.06)"
+                actions={
+                    <VCT_Stack direction="row" gap={12}>
+                        <VCT_Button variant="outline" icon={<VCT_Icons.Download size={16} />}>Xuất danh sách</VCT_Button>
+                        <VCT_Button icon={<VCT_Icons.Plus size={16} />}>Thêm HLV</VCT_Button>
+                    </VCT_Stack>
+                }
+            />
 
             {/* ── KPI ── */}
-            <div className="vct-stagger mb-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                <VCT_KpiCard label="Tổng HLV" value={MOCK_COACHES.length} icon={<VCT_Icons.UserCheck size={24} />} color="#8b5cf6" />
-                <VCT_KpiCard label="Đang hoạt động" value={MOCK_COACHES.filter(c => c.status === 'active').length} icon={<VCT_Icons.CheckCircle size={24} />} color="#10b981" />
-                <VCT_KpiCard label="Tổng học trò" value={totalStudents} icon={<VCT_Icons.Users size={24} />} color="#0ea5e9" />
-                <VCT_KpiCard label="KN trung bình" value={`${avgExperience} năm`} icon={<VCT_Icons.Award size={24} />} color="#f59e0b" />
-            </div>
+            <VCT_StatRow items={kpis} className="mb-8" />
 
             {/* ── FILTER ── */}
-            <div className="mb-6 flex flex-wrap items-center justify-between gap-4 border-b border-[var(--vct-border-subtle)] pb-4">
+            <div className="mb-6 flex flex-wrap items-center justify-between gap-4 border-b border-vct-border pb-4">
                 <VCT_Tabs
                     tabs={[{ key: 'all', label: 'Tất cả' }, { key: 'active', label: 'Đang dạy' }, { key: 'pending', label: 'Chờ duyệt' }, { key: 'inactive', label: 'Tạm nghỉ' }]}
                     activeTab={statusFilter}
@@ -106,18 +113,18 @@ export const Page_coaches = () => {
             ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
                     {filtered.map(coach => (
-                        <div key={coach.id} className="bg-[var(--vct-bg-elevated)] border border-[var(--vct-border-strong)] rounded-2xl p-5 hover:border-[var(--vct-accent-cyan)] transition-all cursor-pointer group">
+                        <div key={coach.id} className="bg-vct-elevated border border-vct-border rounded-2xl p-5 hover:border-vct-accent transition-all cursor-pointer group hover:shadow-[var(--vct-shadow-md)] vct-card-press">
                             {/* Header */}
                             <div className="flex items-start justify-between mb-4">
                                 <VCT_Stack direction="row" gap={12} align="center">
                                     <div className="relative">
                                         <VCT_AvatarLetter name={coach.name} size={48} />
-                                        <div className="absolute -bottom-1 -right-1 w-4 h-4 rounded-full border-2 border-[var(--vct-bg-elevated)]"
+                                        <div className="absolute -bottom-1 -right-1 w-4 h-4 rounded-full border-2 border-vct-elevated"
                                             style={{ background: coach.status === 'active' ? '#10b981' : coach.status === 'pending' ? '#f59e0b' : '#94a3b8' }}></div>
                                     </div>
                                     <div>
-                                        <div className="font-bold text-[var(--vct-text-primary)] group-hover:text-[var(--vct-accent-cyan)] transition-colors">{coach.name}</div>
-                                        <div className="text-[11px] text-[var(--vct-text-tertiary)]">{coach.id}</div>
+                                        <div className="font-bold text-vct-text group-hover:text-vct-accent transition-colors">{coach.name}</div>
+                                        <div className="text-[11px] text-vct-text-muted">{coach.id}</div>
                                     </div>
                                 </VCT_Stack>
                                 <VCT_Badge text={STATUS_MAP[coach.status]?.label || ''} type={STATUS_MAP[coach.status]?.type || 'neutral'} />
@@ -125,44 +132,44 @@ export const Page_coaches = () => {
 
                             {/* Belt + Certification */}
                             <div className="flex items-center gap-2 mb-3">
-                                <span className="text-xs font-bold px-2 py-1 rounded-lg" style={{ color: BELT_COLORS[coach.belt_rank] || '#64748b', background: `${BELT_COLORS[coach.belt_rank] || '#64748b'}15`, border: `1px solid ${BELT_COLORS[coach.belt_rank] || '#64748b'}30` }}>
+                                <span className="text-xs font-bold px-2 py-1 rounded-lg border" style={{ color: BELT_COLORS[coach.belt_rank] || '#64748b', background: `${BELT_COLORS[coach.belt_rank] || '#64748b'}12`, borderColor: `${BELT_COLORS[coach.belt_rank] || '#64748b'}25` }}>
                                     {coach.belt_rank}
                                 </span>
-                                <span className="text-[11px] text-[var(--vct-text-secondary)]">{coach.certification}</span>
+                                <span className="text-[11px] text-vct-text-secondary">{coach.certification}</span>
                             </div>
 
                             {/* Club */}
-                            <div className="flex items-center gap-2 mb-3 text-sm text-[var(--vct-text-secondary)]">
-                                <VCT_Icons.Building2 size={14} className="text-[var(--vct-text-tertiary)]" />
+                            <div className="flex items-center gap-2 mb-3 text-sm text-vct-text-secondary">
+                                <VCT_Icons.Building2 size={14} className="text-vct-text-muted" />
                                 <span>{coach.club}</span>
-                                <span className="text-[var(--vct-text-tertiary)]">• {coach.club_city}</span>
+                                <span className="text-vct-text-muted">• {coach.club_city}</span>
                             </div>
 
                             {/* Specialties */}
                             <div className="flex flex-wrap gap-1 mb-4">
                                 {coach.specialties.map(s => (
-                                    <span key={s} className="text-[10px] font-medium px-2 py-0.5 rounded bg-[var(--vct-accent-cyan)]/10 text-[var(--vct-accent-cyan)] border border-[var(--vct-accent-cyan)]/20">{s}</span>
+                                    <span key={s} className="text-[10px] font-medium px-2 py-0.5 rounded bg-vct-accent/10 text-vct-accent border border-vct-accent/20">{s}</span>
                                 ))}
                             </div>
 
                             {/* Stats */}
-                            <div className="grid grid-cols-3 gap-2 pt-3 border-t border-[var(--vct-border-subtle)]">
+                            <div className="grid grid-cols-3 gap-2 pt-3 border-t border-vct-border">
                                 <div className="text-center">
-                                    <div className="text-lg font-black text-[var(--vct-text-primary)]">{coach.students}</div>
-                                    <div className="text-[10px] text-[var(--vct-text-tertiary)]">Học trò</div>
+                                    <div className="text-lg font-black text-vct-text">{coach.students}</div>
+                                    <div className="text-[10px] text-vct-text-muted">Học trò</div>
                                 </div>
                                 <div className="text-center">
-                                    <div className="text-lg font-black text-[var(--vct-text-primary)]">{coach.experience_years}</div>
-                                    <div className="text-[10px] text-[var(--vct-text-tertiary)]">Năm KN</div>
+                                    <div className="text-lg font-black text-vct-text">{coach.experience_years}</div>
+                                    <div className="text-[10px] text-vct-text-muted">Năm KN</div>
                                 </div>
                                 <div className="text-center">
-                                    <div className="text-lg font-black text-[var(--vct-text-primary)]">{coach.specialties.length}</div>
-                                    <div className="text-[10px] text-[var(--vct-text-tertiary)]">Chuyên môn</div>
+                                    <div className="text-lg font-black text-vct-text">{coach.specialties.length}</div>
+                                    <div className="text-[10px] text-vct-text-muted">Chuyên môn</div>
                                 </div>
                             </div>
 
                             {/* Contact */}
-                            <div className="flex items-center gap-3 mt-3 pt-3 border-t border-[var(--vct-border-subtle)] text-[11px] text-[var(--vct-text-tertiary)]">
+                            <div className="flex items-center gap-3 mt-3 pt-3 border-t border-vct-border text-[11px] text-vct-text-muted">
                                 <span className="flex items-center gap-1"><VCT_Icons.Phone size={10} /> {coach.phone}</span>
                                 <span className="flex items-center gap-1"><VCT_Icons.Mail size={10} /> {coach.email}</span>
                             </div>
@@ -170,6 +177,6 @@ export const Page_coaches = () => {
                     ))}
                 </div>
             )}
-        </div>
+        </VCT_PageContainer>
     )
 }

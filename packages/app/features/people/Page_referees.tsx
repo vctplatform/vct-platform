@@ -3,9 +3,11 @@
 import * as React from 'react'
 import { useState, useMemo } from 'react'
 import {
-    VCT_Badge, VCT_Button, VCT_KpiCard, VCT_Stack,
+    VCT_Badge, VCT_Button, VCT_Stack,
     VCT_SearchInput, VCT_AvatarLetter, VCT_EmptyState, VCT_Tabs
 } from '../components/vct-ui'
+import { VCT_PageContainer, VCT_PageHero, VCT_SectionCard, VCT_StatRow } from '../components/vct-ui'
+import type { StatItem } from '../components/VCT_StatRow'
 import { VCT_Icons } from '../components/vct-icons'
 
 // ════════════════════════════════════════
@@ -63,27 +65,32 @@ export const Page_referees = () => {
         return data
     }, [certFilter, search])
 
+    const kpis: StatItem[] = [
+        { label: 'Tổng trọng tài', value: MOCK_REFEREES.length, icon: <VCT_Icons.UserCheck size={18} />, color: '#8b5cf6' },
+        { label: 'Cấp quốc tế', value: MOCK_REFEREES.filter(r => r.certification_level === 'Quốc tế').length, icon: <VCT_Icons.Award size={18} />, color: '#ef4444' },
+        { label: 'Rating TB', value: (MOCK_REFEREES.reduce((s, r) => s + r.rating, 0) / MOCK_REFEREES.length).toFixed(1), icon: <VCT_Icons.Star size={18} />, color: '#f59e0b' },
+        { label: 'Giải đã điều', value: MOCK_REFEREES.reduce((s, r) => s + r.tournaments_judged, 0), icon: <VCT_Icons.Trophy size={18} />, color: '#0ea5e9' },
+    ]
+
     return (
-        <div className="mx-auto max-w-[1400px] p-4 pb-24">
-            <div className="mb-6 flex flex-wrap items-start justify-between gap-4">
-                <div>
-                    <h1 className="text-2xl font-bold tracking-tight text-[var(--vct-text-primary)]">Trọng Tài</h1>
-                    <p className="text-sm text-[var(--vct-text-secondary)] mt-1">Quản lý danh sách trọng tài, cấp chứng nhận và phân công giải đấu.</p>
-                </div>
-                <VCT_Stack direction="row" gap={12}>
-                    <VCT_Button variant="outline" icon={<VCT_Icons.Download size={16} />}>Xuất danh sách</VCT_Button>
-                    <VCT_Button icon={<VCT_Icons.Plus size={16} />}>Đăng ký TT mới</VCT_Button>
-                </VCT_Stack>
-            </div>
+        <VCT_PageContainer size="wide" animated>
+            <VCT_PageHero
+                icon={<VCT_Icons.Shield size={24} />}
+                title="Trọng Tài"
+                subtitle="Quản lý danh sách trọng tài, cấp chứng nhận và phân công giải đấu."
+                gradientFrom="rgba(245, 158, 11, 0.08)"
+                gradientTo="rgba(139, 92, 246, 0.06)"
+                actions={
+                    <VCT_Stack direction="row" gap={12}>
+                        <VCT_Button variant="outline" icon={<VCT_Icons.Download size={16} />}>Xuất danh sách</VCT_Button>
+                        <VCT_Button icon={<VCT_Icons.Plus size={16} />}>Đăng ký TT mới</VCT_Button>
+                    </VCT_Stack>
+                }
+            />
 
-            <div className="vct-stagger mb-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                <VCT_KpiCard label="Tổng trọng tài" value={MOCK_REFEREES.length} icon={<VCT_Icons.UserCheck size={24} />} color="#8b5cf6" />
-                <VCT_KpiCard label="Cấp quốc tế" value={MOCK_REFEREES.filter(r => r.certification_level === 'Quốc tế').length} icon={<VCT_Icons.Award size={24} />} color="#ef4444" />
-                <VCT_KpiCard label="Rating TB" value={(MOCK_REFEREES.reduce((s, r) => s + r.rating, 0) / MOCK_REFEREES.length).toFixed(1)} icon={<VCT_Icons.Star size={24} />} color="#f59e0b" />
-                <VCT_KpiCard label="Giải đã điều" value={MOCK_REFEREES.reduce((s, r) => s + r.tournaments_judged, 0)} icon={<VCT_Icons.Trophy size={24} />} color="#0ea5e9" />
-            </div>
+            <VCT_StatRow items={kpis} className="mb-8" />
 
-            <div className="mb-6 flex flex-wrap items-center justify-between gap-4 border-b border-[var(--vct-border-subtle)] pb-4">
+            <div className="mb-6 flex flex-wrap items-center justify-between gap-4 border-b border-vct-border pb-4">
                 <VCT_Tabs
                     tabs={[{ key: 'all', label: 'Tất cả' }, ...Object.keys(CERT_COLORS).map(k => ({ key: k, label: k }))]}
                     activeTab={certFilter}
@@ -97,50 +104,50 @@ export const Page_referees = () => {
             {filtered.length === 0 ? (
                 <VCT_EmptyState title="Không tìm thấy trọng tài" description="Thử thay đổi bộ lọc hoặc từ khóa." icon="⚖️" />
             ) : (
-                <div className="overflow-hidden rounded-2xl border border-[var(--vct-border-subtle)] bg-[var(--vct-bg-glass)]">
+                <VCT_SectionCard flush accentColor="#f59e0b">
                     <table className="w-full border-collapse">
                         <thead>
-                            <tr className="border-b border-[var(--vct-border-strong)] bg-[var(--vct-bg-card)] text-[11px] uppercase tracking-wider font-bold text-[var(--vct-text-tertiary)]">
+                            <tr className="border-b border-vct-border bg-vct-elevated text-[11px] uppercase tracking-wider font-bold text-vct-text-muted">
                                 <th className="p-4 text-left">Trọng tài</th><th className="p-4 text-left">Cấp chứng nhận</th><th className="p-4 text-left">Liên đoàn</th><th className="p-4 text-center">Giải đã điều</th><th className="p-4 text-center">Rating</th><th className="p-4 text-center">Trạng thái</th><th className="p-4 text-left">Chuyên môn</th>
                             </tr>
                         </thead>
-                        <tbody className="divide-y divide-[var(--vct-border-subtle)]">
+                        <tbody className="divide-y divide-vct-border">
                             {filtered.map(ref => (
-                                <tr key={ref.id} className="hover:bg-white/5 transition-colors cursor-pointer group">
+                                <tr key={ref.id} className="hover:bg-vct-accent/[0.03] transition-colors cursor-pointer group">
                                     <td className="p-4">
                                         <VCT_Stack direction="row" gap={10} align="center">
                                             <VCT_AvatarLetter name={ref.name} size={36} />
                                             <div>
-                                                <div className="font-bold text-sm text-[var(--vct-text-primary)] group-hover:text-[var(--vct-accent-cyan)] transition-colors">{ref.name}</div>
-                                                <div className="text-[11px] text-[var(--vct-text-tertiary)]">{ref.id} • {ref.city}</div>
+                                                <div className="font-bold text-sm text-vct-text group-hover:text-vct-accent transition-colors">{ref.name}</div>
+                                                <div className="text-[11px] text-vct-text-muted">{ref.id} • {ref.city}</div>
                                             </div>
                                         </VCT_Stack>
                                     </td>
                                     <td className="p-4">
-                                        <span className="text-xs font-bold px-2 py-1 rounded-lg" style={{ color: CERT_COLORS[ref.certification_level] || '#64748b', background: `${CERT_COLORS[ref.certification_level] || '#64748b'}15` }}>
+                                        <span className="text-xs font-bold px-2 py-1 rounded-lg border" style={{ color: CERT_COLORS[ref.certification_level] || '#64748b', background: `${CERT_COLORS[ref.certification_level] || '#64748b'}12`, borderColor: `${CERT_COLORS[ref.certification_level] || '#64748b'}25` }}>
                                             {ref.certification_level}
                                         </span>
                                     </td>
-                                    <td className="p-4 text-sm text-[var(--vct-text-secondary)]">{ref.federation}</td>
-                                    <td className="p-4 text-center font-black text-sm text-[var(--vct-text-primary)]">{ref.tournaments_judged}</td>
+                                    <td className="p-4 text-sm text-vct-text-secondary">{ref.federation}</td>
+                                    <td className="p-4 text-center font-black text-sm text-vct-text">{ref.tournaments_judged}</td>
                                     <td className="p-4 text-center">
                                         <div className="flex items-center justify-center gap-1">
-                                            <VCT_Icons.Star size={14} className="text-[#f59e0b]" />
-                                            <span className="font-bold text-sm text-[var(--vct-text-primary)]">{ref.rating}</span>
+                                            <VCT_Icons.Star size={14} className="text-amber-500" />
+                                            <span className="font-bold text-sm text-vct-text">{ref.rating}</span>
                                         </div>
                                     </td>
                                     <td className="p-4 text-center"><VCT_Badge text={STATUS_MAP[ref.status]?.label || ''} type={STATUS_MAP[ref.status]?.type || 'neutral'} /></td>
                                     <td className="p-4">
                                         <div className="flex flex-wrap gap-1">
-                                            {ref.specialties.map(s => <span key={s} className="text-[10px] px-1.5 py-0.5 rounded bg-white/5 text-[var(--vct-text-tertiary)]">{s}</span>)}
+                                            {ref.specialties.map(s => <span key={s} className="text-[10px] px-1.5 py-0.5 rounded bg-vct-accent/10 text-vct-accent border border-vct-accent/20">{s}</span>)}
                                         </div>
                                     </td>
                                 </tr>
                             ))}
                         </tbody>
                     </table>
-                </div>
+                </VCT_SectionCard>
             )}
-        </div>
+        </VCT_PageContainer>
     )
 }

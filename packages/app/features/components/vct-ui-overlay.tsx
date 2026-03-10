@@ -2,6 +2,7 @@
 import * as React from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import type { CSSProperties, FC, ReactNode } from 'react'
+import { createPortal } from 'react-dom'
 import { cn, VCT_Button } from './vct-ui-layout'
 
 export interface VCTLoadingOverlayProps {
@@ -112,6 +113,11 @@ export const VCT_Modal = ({
   style,
 }: VCTModalProps) => {
   const titleId = React.useId()
+  const [isMounted, setIsMounted] = React.useState(false)
+
+  React.useEffect(() => {
+    setIsMounted(true)
+  }, [])
 
   React.useEffect(() => {
     if (!isOpen) return
@@ -130,7 +136,11 @@ export const VCT_Modal = ({
     }
   }, [isOpen, onClose])
 
-  return (
+  if (!isMounted) {
+    return null
+  }
+
+  const modalNode = (
     <AnimatePresence>
       {isOpen ? (
         <>
@@ -181,6 +191,8 @@ export const VCT_Modal = ({
       ) : null}
     </AnimatePresence>
   )
+
+  return createPortal(modalNode, document.body)
 }
 
 export const VCT_Toast = ({

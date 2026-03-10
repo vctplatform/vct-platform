@@ -5,8 +5,10 @@ import { motion } from 'framer-motion';
 import {
     VCT_Card, VCT_Badge, VCT_Button, VCT_Text, VCT_Field, VCT_Input,
     VCT_Select, VCT_Stack, VCT_Toast, VCT_Modal, VCT_Table, VCT_Tabs,
-    VCT_ConfirmDialog, VCT_KpiCard
+    VCT_ConfirmDialog
 } from '../components/vct-ui';
+import { VCT_StatRow } from '../components/vct-ui';
+import type { StatItem } from '../components/VCT_StatRow';
 import { VCT_Icons } from '../components/vct-icons';
 import { TOURNAMENT_CONFIG } from '../data/tournament-config';
 import type { TournamentConfig, TrangThaiGiai } from '../data/types';
@@ -667,12 +669,12 @@ export const Page_giai_dau = () => {
             </motion.div>
 
             {/* 2. LIVE STATS */}
-            <VCT_Stack direction="row" gap={16} style={{ marginBottom: 24, flexWrap: 'wrap' }}>
-                <VCT_KpiCard className="flex-1" label="Đoàn tham dự" value={stats.doan} icon={<VCT_Icons.Users size={24} />} color="#22d3ee" sub={`Quota: ${config.quota.max_doan}`} />
-                <VCT_KpiCard className="flex-1" label="Vận động viên" value={stats.vdv} icon={<VCT_Icons.User size={24} />} color="#f59e0b" />
-                <VCT_KpiCard className="flex-1" label="Trọng tài" value={stats.trong_tai} icon={<VCT_Icons.Shield size={24} />} color="#10b981" />
-                <VCT_KpiCard className="flex-1" label="Sàn đang đấu" value={`${stats.san_active}/${stats.san}`} icon={<VCT_Icons.Columns size={24} />} color="#a78bfa" />
-            </VCT_Stack>
+            <VCT_StatRow items={[
+                { label: 'Đoàn tham dự', value: stats.doan, icon: <VCT_Icons.Users size={18} />, color: '#22d3ee', sub: `Quota: ${config.quota.max_doan}` },
+                { label: 'Vận động viên', value: stats.vdv, icon: <VCT_Icons.User size={18} />, color: '#f59e0b' },
+                { label: 'Trọng tài', value: stats.trong_tai, icon: <VCT_Icons.Shield size={18} />, color: '#10b981' },
+                { label: 'Sàn đang đấu', value: `${stats.san_active}/${stats.san}`, icon: <VCT_Icons.Columns size={18} />, color: '#a78bfa' },
+            ] as StatItem[]} className="mb-6" />
 
             {/* 3. TABS CONTENT */}
             <VCT_Tabs tabs={[

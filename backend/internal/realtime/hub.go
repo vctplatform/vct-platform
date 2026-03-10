@@ -31,13 +31,18 @@ type presenceInfo struct {
 // ── Client ────────────────────────────────────────────────────
 
 type clientConn struct {
-	conn     *websocket.Conn
-	mu       sync.Mutex
-	channels map[string]bool // channels the client subscribed to
-	presence *presenceInfo   // who this client is (set after auth)
+	conn          *websocket.Conn
+	mu            sync.Mutex
+	channels      map[string]bool // channels the client subscribed to
+	presence      *presenceInfo   // who this client is (set after auth)
+	authenticated bool            // true after successful first-message auth
 }
 
 // ── Hub ───────────────────────────────────────────────────────
+
+// AuthValidator is a callback to validate JWT tokens for WebSocket auth.
+// Returns nil if the token is valid, error otherwise.
+type AuthValidator func(token string) error
 
 type Hub struct {
 	mu             sync.RWMutex
@@ -45,6 +50,7 @@ type Hub struct {
 	channels       map[string]map[*websocket.Conn]bool // channel → set of conns
 	allowedOrigins map[string]struct{}
 	upgrader       websocket.Upgrader
+	authValidator  AuthValidator // optional: if set, clients must auth before commands
 }
 
 func NewHub(allowedOrigins []string) *Hub {
@@ -141,8 +147,9 @@ func (h *Hub) ServeWS(w http.ResponseWriter, r *http.Request) error {
 // ── Client Commands ───────────────────────────────────────────
 
 type clientCommand struct {
-	Action  string `json:"action"`  // subscribe | unsubscribe | presence
-	Channel string `json:"channel"` // e.g. "scoring:match-123"
+	Action  string `json:"action"`          // auth | subscribe | unsubscribe | presence
+	Channel string `json:"channel"`         // e.g. "scoring:match-123"
+	Token   string `json:"token,omitempty"` // JWT for auth action
 	UserID  string `json:"userId,omitempty"`
 	Name    string `json:"name,omitempty"`
 	Role    string `json:"role,omitempty"`
@@ -154,6 +161,28 @@ func (h *Hub) handleClientMessage(conn *websocket.Conn, raw []byte) {
 		return
 	}
 
+	// Handle auth command first — always allowed
+	if cmd.Action == "auth" {
+		h.handleAuth(conn, cmd.Token)
+		return
+	}
+
+	// Gate other commands behind authentication if authValidator is set
+	if h.authValidator != nil {
+		h.mu.RLock()
+		client, exists := h.clients[conn]
+		h.mu.RUnlock()
+		if !exists || !client.authenticated {
+			_ = h.write(conn, EntityEvent{
+				Type:      "system.error",
+				Action:    "auth_required",
+				Timestamp: time.Now().UTC(),
+				Payload:   map[string]any{"message": "Authentication required. Send {\"action\":\"auth\",\"token\":\"xxx\"} first."},
+			})
+			return
+		}
+	}
+
 	switch cmd.Action {
 	case "subscribe":
 		h.subscribe(conn, cmd.Channel)
@@ -162,6 +191,48 @@ func (h *Hub) handleClientMessage(conn *websocket.Conn, raw []byte) {
 	case "presence":
 		h.setPresence(conn, cmd.UserID, cmd.Name, cmd.Role)
 	}
+}
+
+func (h *Hub) handleAuth(conn *websocket.Conn, token string) {
+	h.mu.RLock()
+	client, exists := h.clients[conn]
+	h.mu.RUnlock()
+	if !exists {
+		return
+	}
+
+	// If no validator configured, auto-accept
+	if h.authValidator == nil {
+		client.authenticated = true
+		_ = h.write(conn, EntityEvent{
+			Type:      "system.auth",
+			Action:    "authenticated",
+			Timestamp: time.Now().UTC(),
+		})
+		return
+	}
+
+	if err := h.authValidator(token); err != nil {
+		_ = h.write(conn, EntityEvent{
+			Type:      "system.error",
+			Action:    "auth_failed",
+			Timestamp: time.Now().UTC(),
+			Payload:   map[string]any{"message": "Invalid token"},
+		})
+		return
+	}
+
+	client.authenticated = true
+	_ = h.write(conn, EntityEvent{
+		Type:      "system.auth",
+		Action:    "authenticated",
+		Timestamp: time.Now().UTC(),
+	})
+}
+
+// SetAuthValidator sets the callback to validate JWT tokens for WS first-message auth.
+func (h *Hub) SetAuthValidator(validator AuthValidator) {
+	h.authValidator = validator
 }
 
 func (h *Hub) subscribe(conn *websocket.Conn, channel string) {
@@ -282,7 +353,26 @@ func (h *Hub) CountClients() int {
 	return len(h.clients)
 }
 
-// ── Internal Helpers ──────────────────────────────────────────
+// Close gracefully closes all WebSocket connections and clears internal state.
+func (h *Hub) Close() {
+	h.mu.Lock()
+	conns := make([]*websocket.Conn, 0, len(h.clients))
+	for conn := range h.clients {
+		conns = append(conns, conn)
+	}
+	h.clients = make(map[*websocket.Conn]*clientConn)
+	h.channels = make(map[string]map[*websocket.Conn]bool)
+	h.mu.Unlock()
+
+	for _, conn := range conns {
+		_ = conn.WriteControl(
+			websocket.CloseMessage,
+			websocket.FormatCloseMessage(websocket.CloseGoingAway, "server shutting down"),
+			time.Now().Add(2*time.Second),
+		)
+		_ = conn.Close()
+	}
+}
 
 func (h *Hub) removeClient(conn *websocket.Conn) {
 	h.mu.Lock()

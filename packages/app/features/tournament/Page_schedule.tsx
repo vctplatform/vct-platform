@@ -3,9 +3,11 @@ import * as React from 'react';
 import { useState, useMemo, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-    VCT_Badge, VCT_Button, VCT_KpiCard, VCT_Stack, VCT_Toast, VCT_Card,
+    VCT_Badge, VCT_Button, VCT_Stack, VCT_Toast, VCT_Card,
     VCT_StatusPipeline, VCT_EmptyState, VCT_Tabs, VCT_Modal, VCT_Select, VCT_Text
 } from '../components/vct-ui';
+import { VCT_PageContainer, VCT_StatRow } from '../components/vct-ui';
+import type { StatItem } from '../components/VCT_StatRow';
 import { VCT_Icons } from '../components/vct-icons';
 import { SAN_DAUS, HANG_CANS, NOI_DUNG_QUYENS, genId } from '../data/mock-data';
 import type { LichThiDau, TrangThaiLich, PhienThi, SanDau } from '../data/types';
@@ -228,16 +230,16 @@ export const Page_schedule = () => {
     };
 
     return (
-        <div className="mx-auto max-w-[1400px] pb-24">
+        <VCT_PageContainer size="wide" animated>
             <VCT_Toast isVisible={toast.show} message={toast.msg} type={toast.type} onClose={() => setToast(p => ({ ...p, show: false }))} />
 
             {/* KPIs */}
-            <div className="vct-stagger mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
-                <VCT_KpiCard label="Tổng phiên" value={totalSessions} icon={<VCT_Icons.Calendar size={24} />} color="#0ea5e9" />
-                <VCT_KpiCard label="Tổng trận" value={totalMatches} icon={<VCT_Icons.Swords size={24} />} color="#f59e0b" />
-                <VCT_KpiCard label="Đang diễn ra" value={liveCount} icon={<VCT_Icons.Play size={24} />} color="#ef4444" sub="🔴 LIVE" />
-                <VCT_KpiCard label="Sàn hoạt động" value={activeSans} icon={<VCT_Icons.Layout size={24} />} color="#22d3ee" />
-            </div>
+            <VCT_StatRow items={[
+                { label: 'Tổng phiên', value: totalSessions, icon: <VCT_Icons.Calendar size={18} />, color: '#0ea5e9' },
+                { label: 'Tổng trận', value: totalMatches, icon: <VCT_Icons.Swords size={18} />, color: '#f59e0b' },
+                { label: 'Đang diễn ra', value: liveCount, icon: <VCT_Icons.Play size={18} />, color: '#ef4444', sub: '🔴 LIVE' },
+                { label: 'Sàn hoạt động', value: activeSans, icon: <VCT_Icons.Layout size={18} />, color: '#22d3ee' },
+            ] as StatItem[]} className="mb-6" />
 
             <VCT_StatusPipeline stages={pStages} activeStage={null} onStageClick={() => { }} />
 
@@ -374,6 +376,6 @@ export const Page_schedule = () => {
                     </VCT_Button>
                 </VCT_Stack>
             </VCT_Modal>
-        </div>
+        </VCT_PageContainer>
     );
 };

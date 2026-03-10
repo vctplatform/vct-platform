@@ -14,19 +14,25 @@ import { VCT_Icons } from '../components/vct-icons'
 import { ThemeProvider, useTheme } from '../theme/ThemeProvider'
 import { AuthProvider, useAuth } from '../auth/AuthProvider'
 import { type UserRole, USER_ROLE_OPTIONS } from '../auth/types'
+import { useI18n, I18nProvider } from '../i18n'
 import {
   getBreadcrumbs,
   getDefaultRouteForRole,
   getPageTitle,
+  getSidebarGroups,
   isRouteAccessible,
 } from './route-registry'
+import { getFilteredSidebar } from './workspace-resolver'
+import { WORKSPACE_META } from './workspace-types'
 
 const MOBILE_MAX_WIDTH = 767
 const TABLET_MAX_WIDTH = 1199
-const PUBLIC_ROUTES = ['/login']
+const PUBLIC_ROUTES = ['/login', '/portal', '/register', '/forgot-password']
 const SHELL_SIDEBAR_ID = 'vct-shell-sidebar'
 
 type ViewportMode = 'mobile' | 'tablet' | 'desktop'
+type ShellNavItem = { path: string; label: string; icon: string }
+type ShellNavGroup = { id: string; label: string; items: ShellNavItem[] }
 
 const getViewportMode = (width: number): ViewportMode => {
   if (width <= MOBILE_MAX_WIDTH) return 'mobile'
@@ -34,23 +40,75 @@ const getViewportMode = (width: number): ViewportMode => {
   return 'desktop'
 }
 
+const matchesNavPath = (currentPath: string, itemPath: string) => {
+  if (itemPath === '/') return currentPath === '/'
+  return currentPath === itemPath || currentPath.startsWith(`${itemPath}/`)
+}
+
+const findCurrentNavMatch = (
+  groups: ShellNavGroup[],
+  currentPath: string
+) => {
+  let currentGroup: ShellNavGroup | null = null
+  let currentItem: ShellNavItem | null = null
+
+  for (const group of groups) {
+    for (const item of group.items) {
+      if (!matchesNavPath(currentPath, item.path)) continue
+      if (!currentItem || item.path.length > currentItem.path.length) {
+        currentGroup = group
+        currentItem = item
+      }
+    }
+  }
+
+  if (!currentGroup || !currentItem) return null
+
+  return { group: currentGroup, item: currentItem }
+}
+
 const ThemeToggle = () => {
   const { theme, toggleTheme } = useTheme()
+  const { t } = useI18n()
   const isDark = theme === 'dark'
 
   return (
     <button
       type="button"
-      aria-label={isDark ? 'Chuyển sang chế độ sáng' : 'Chuyển sang chế độ tối'}
+      aria-label={isDark ? t('shell.toLight') : t('shell.toDark')}
       onClick={toggleTheme}
-      title={isDark ? 'Chuyển sang chế độ sáng' : 'Chuyển sang chế độ tối'}
-      className={`inline-flex items-center gap-2 rounded-full border px-3 py-2 text-xs font-extrabold transition ${isDark
-        ? 'border-cyan-400/30 bg-cyan-300/10 text-cyan-300'
-        : 'border-amber-500/30 bg-amber-300/15 text-amber-700'
+      title={isDark ? t('shell.toLight') : t('shell.toDark')}
+      className={`inline-flex h-9 w-9 items-center justify-center rounded-full border transition hover:scale-105 ${isDark
+        ? 'border-cyan-400/25 bg-cyan-300/10 text-cyan-300 hover:bg-cyan-300/20'
+        : 'border-amber-500/25 bg-amber-100/60 text-amber-600 hover:bg-amber-200/60'
         }`}
     >
       {isDark ? <VCT_Icons.Moon size={16} /> : <VCT_Icons.Sun size={16} />}
-      <span>{isDark ? 'Tối' : 'Sáng'}</span>
+    </button>
+  )
+}
+
+const LangToggle = () => {
+  const { lang, setLang, t } = useI18n()
+
+  return (
+    <button
+      type="button"
+      aria-label={t('shell.toggleLang')}
+      onClick={() => setLang(lang === 'vi' ? 'en' : 'vi')}
+      title={t('shell.toggleLang')}
+      className="inline-flex h-9 items-center gap-0 overflow-hidden rounded-full border border-emerald-500/25 text-xs font-extrabold transition hover:border-emerald-400/40"
+    >
+      <span
+        className={`px-2 py-1.5 transition-all ${lang === 'vi' ? 'bg-emerald-500/15 text-emerald-500' : 'text-slate-400'}`}
+      >
+        VI
+      </span>
+      <span
+        className={`px-2 py-1.5 transition-all ${lang === 'en' ? 'bg-emerald-500/15 text-emerald-500' : 'text-slate-400'}`}
+      >
+        EN
+      </span>
     </button>
   )
 }
@@ -61,25 +119,28 @@ const RoleSwitcher = ({
 }: {
   role: UserRole
   onChange: (next: UserRole) => void
-}) => (
-  <div className="min-w-[180px]">
-    <label htmlFor="vct-role-switcher" className="sr-only">
-      Vai trò đăng nhập
-    </label>
-    <select
-      id="vct-role-switcher"
-      value={role}
-      onChange={(event) => onChange(event.target.value as UserRole)}
-      className="w-full cursor-pointer rounded-lg border border-vct-border bg-vct-elevated px-2.5 py-2 text-xs font-bold text-[var(--vct-text-secondary)]"
-    >
-      {USER_ROLE_OPTIONS.map((item) => (
-        <option key={item.value} value={item.value}>
-          {item.label}
-        </option>
-      ))}
-    </select>
-  </div>
-)
+}) => {
+  const { t } = useI18n()
+  return (
+    <div className="min-w-[180px]">
+      <label htmlFor="vct-role-switcher" className="sr-only">
+        {t('shell.loginRole')}
+      </label>
+      <select
+        id="vct-role-switcher"
+        value={role}
+        onChange={(event) => onChange(event.target.value as UserRole)}
+        className="w-full cursor-pointer rounded-lg border border-vct-border bg-vct-elevated px-2.5 py-2 text-xs font-bold text-[var(--vct-text-secondary)]"
+      >
+        {USER_ROLE_OPTIONS.map((item) => (
+          <option key={item.value} value={item.value}>
+            {item.label}
+          </option>
+        ))}
+      </select>
+    </div>
+  )
+}
 
 const AccessDenied = ({
   role,
@@ -87,31 +148,34 @@ const AccessDenied = ({
 }: {
   role: UserRole
   onBack: () => void
-}) => (
-  <div className="mx-auto mt-20 grid max-w-3xl gap-3 rounded-2xl border border-red-500/30 bg-red-500/10 p-6">
-    <h2 className="m-0 text-2xl font-black text-red-500">Không có quyền truy cập</h2>
-    <p className="m-0 leading-7 text-[var(--vct-text-secondary)]">
-      Vai trò hiện tại không có quyền mở module này. Hãy đổi vai trò hoặc quay về
-      màn hình được phân quyền.
-    </p>
-    <div className="flex flex-wrap items-center gap-3">
-      <span className="rounded-full border border-red-500/30 bg-red-500/15 px-3 py-1 text-xs font-extrabold text-red-500">
-        Vai trò: {USER_ROLE_OPTIONS.find((item) => item.value === role)?.label}
-      </span>
-      <button
-        type="button"
-        onClick={onBack}
-        className="rounded-lg border border-vct-border bg-vct-elevated px-3 py-2 text-sm font-bold text-vct-text transition hover:bg-vct-input"
-      >
-        Về màn hình hợp lệ
-      </button>
+}) => {
+  const { t } = useI18n()
+  return (
+    <div className="mx-auto mt-20 grid max-w-3xl gap-3 rounded-2xl border border-red-500/30 bg-red-500/10 p-6">
+      <h2 className="m-0 text-2xl font-black text-red-500">{t('shell.accessDeniedTitle')}</h2>
+      <p className="m-0 leading-7 text-[var(--vct-text-secondary)]">
+        {t('shell.accessDeniedDesc')}
+      </p>
+      <div className="flex flex-wrap items-center gap-3">
+        <span className="rounded-full border border-red-500/30 bg-red-500/15 px-3 py-1 text-xs font-extrabold text-red-500">
+          {t('shell.accessDeniedRole')}: {USER_ROLE_OPTIONS.find((item) => item.value === role)?.label}
+        </span>
+        <button
+          type="button"
+          onClick={onBack}
+          className="rounded-lg border border-vct-border bg-vct-elevated px-3 py-2 text-sm font-bold text-vct-text transition hover:bg-vct-input"
+        >
+          {t('shell.accessDeniedBack')}
+        </button>
+      </div>
     </div>
-  </div>
-)
+  )
+}
 
 const ShellLayout = ({ children }: { children: React.ReactNode }) => {
   const pathname = usePathname()
   const router = useRouter()
+  const { t } = useI18n()
   const {
     currentUser,
     setRole,
@@ -119,8 +183,7 @@ const ShellLayout = ({ children }: { children: React.ReactNode }) => {
     isAuthenticated,
     isHydrating,
     logout,
-    tournamentCode,
-    operationShift,
+    activeWorkspace,
   } = useAuth()
   const [viewportMode, setViewportMode] = useState<ViewportMode>('desktop')
   const [mobileNavOpen, setMobileNavOpen] = useState(false)
@@ -165,22 +228,65 @@ const ShellLayout = ({ children }: { children: React.ReactNode }) => {
     [currentUser.role]
   )
 
+  const navigationGroups = useMemo<ShellNavGroup[]>(() => {
+    if (activeWorkspace) {
+      const filtered = getFilteredSidebar(activeWorkspace.type, currentUser).groups
+      if (filtered.length > 0) return filtered
+    }
+    return getSidebarGroups(currentUser.role)
+  }, [activeWorkspace, currentUser])
+
+  const currentNavMatch = useMemo(
+    () => findCurrentNavMatch(navigationGroups, pathname),
+    [navigationGroups, pathname]
+  )
+
+  const currentWorkspaceMeta = useMemo(
+    () => (activeWorkspace ? WORKSPACE_META[activeWorkspace.type] : null),
+    [activeWorkspace]
+  )
+
   const canAccessCurrentRoute = useMemo(
     () => canAccessRoute(pathname),
     [canAccessRoute, pathname]
   )
 
   const breadcrumbs = useMemo(
-    () =>
-      canAccessCurrentRoute
-        ? getBreadcrumbs(pathname)
-        : [{ label: 'VCT PLATFORM', href: '/' }, { label: 'Không có quyền' }],
-    [pathname, canAccessCurrentRoute]
+    () => {
+      if (!canAccessCurrentRoute) {
+        return [{ label: 'VCT PLATFORM', href: '/' }, { label: t('shell.noPermission') }]
+      }
+
+      if (currentNavMatch) {
+        const items = activeWorkspace
+          ? [
+            { label: t('shell.portalHub'), href: '/portal' },
+            { label: activeWorkspace.scopeName },
+          ]
+          : [{ label: 'VCT PLATFORM', href: '/' }]
+
+        const groupLabel = t(currentNavMatch.group.label)
+        const itemLabel = t(currentNavMatch.item.label)
+        // Avoid duplicate breadcrumb when group and item translate to the same text
+        if (groupLabel !== itemLabel) {
+          items.push({ label: groupLabel })
+        }
+        items.push({ label: itemLabel })
+        return items
+      }
+
+      const raw = getBreadcrumbs(pathname).map((b) => ({ ...b, label: t(b.label) }))
+      // Deduplicate consecutive breadcrumb items with same translated label
+      return raw.filter((item, idx) => idx === 0 || item.label !== raw[idx - 1]!.label)
+    },
+    [pathname, canAccessCurrentRoute, currentNavMatch, activeWorkspace, t]
   )
 
   const pageTitle = canAccessCurrentRoute
-    ? getPageTitle(pathname)
-    : 'KHÔNG CÓ QUYỀN TRUY CẬP'
+    ? currentNavMatch
+      ? t(currentNavMatch.item.label)
+      : t(getPageTitle(pathname))
+    : t('shell.accessDeniedTitle').toUpperCase()
 
   const userInitials = currentUser.name
     .split(' ')
@@ -199,8 +305,8 @@ const ShellLayout = ({ children }: { children: React.ReactNode }) => {
         <div className="grid min-h-dvh place-items-center bg-vct-bg text-[var(--vct-text-secondary)]">
           <div className="w-full max-w-md px-6 text-center">
             <div className="mx-auto mb-6 h-12 w-12 rounded-2xl vct-skeleton" />
-            <div className="mb-2 text-lg font-black">Đang xác thực phiên làm việc</div>
-            <div className="text-sm opacity-70">Vui lòng chờ trong giây lát...</div>
+            <div className="mb-2 text-lg font-black">{t('shell.authenticating')}</div>
+            <div className="text-sm opacity-70">{t('shell.pleaseWait')}</div>
             <div className="mt-8 space-y-3">
               <div className="h-10 w-full vct-skeleton" />
               <div className="flex gap-3">
@@ -218,7 +324,7 @@ const ShellLayout = ({ children }: { children: React.ReactNode }) => {
   return (
     <VCT_Provider>
       <a href="#vct-main-content" className="vct-skip-link">
-        Bỏ qua điều hướng
+        {t('shell.skipNav')}
       </a>
 
       <div className="relative flex h-dvh w-full overflow-hidden bg-vct-bg text-vct-text">
@@ -237,12 +343,14 @@ const ShellLayout = ({ children }: { children: React.ReactNode }) => {
           role={currentUser.role}
           userName={currentUser.name}
           roleLabel={roleLabel}
+          navGroups={navigationGroups}
+          workspaceLabel={activeWorkspace?.scopeName}
         />
 
         {compactNavigation && mobileNavOpen && (
           <button
             type="button"
-            aria-label="Đóng menu điều hướng"
+            aria-label={t('shell.closeMobileMenu')}
             onClick={() => setMobileNavOpen(false)}
             className="fixed inset-0 z-[80] border-none bg-slate-900/50"
           />
@@ -251,14 +359,14 @@ const ShellLayout = ({ children }: { children: React.ReactNode }) => {
         <div className="relative z-20 flex min-w-0 flex-1 flex-col overflow-hidden">
           <header
             role="banner"
-            className={`vct-glass flex shrink-0 items-center justify-between gap-3 border-b border-vct-border shadow-[var(--vct-shadow-sm)] ${isMobile ? 'h-16 px-4' : 'h-[74px] px-6'
-              }`}
+            className={`vct-glass flex shrink-0 items-center justify-between border-b border-vct-border shadow-[var(--vct-shadow-sm)] ${isMobile ? 'h-14 gap-2 px-4' : 'h-14 gap-4 px-6'}`}
           >
+            {/* ── Left: mobile hamburger + breadcrumbs ── */}
             <div className="flex min-w-0 items-center gap-3">
               {compactNavigation && (
                 <VCT_IconButton
-                  ariaLabel="Mở menu điều hướng"
-                  aria-label="Mở menu điều hướng"
+                  ariaLabel={t('shell.openMobileNav')}
+                  aria-label={t('shell.openMobileNav')}
                   aria-controls={SHELL_SIDEBAR_ID}
                   aria-expanded={mobileNavOpen}
                   onClick={() => setMobileNavOpen((prev) => !prev)}
@@ -267,65 +375,53 @@ const ShellLayout = ({ children }: { children: React.ReactNode }) => {
                 />
               )}
 
-              <div className="min-w-0">
-                <h1 className="m-0 truncate text-base font-black uppercase tracking-wide tablet:text-xl">
-                  {pageTitle}
-                </h1>
-                {!isMobile && (
-                  <div className="mt-1">
-                    <VCT_Breadcrumbs items={breadcrumbs} />
-                    <div className="mt-1 flex items-center gap-2 text-[11px] font-bold text-vct-text-muted">
-                      <span className="rounded-full border border-vct-border bg-vct-input px-2 py-0.5">
-                        Mã giải: {tournamentCode}
-                      </span>
-                      <span className="rounded-full border border-vct-border bg-vct-input px-2 py-0.5">
-                        Ca: {operationShift}
-                      </span>
-                    </div>
-                  </div>
-                )}
-              </div>
+              {!isMobile && (
+                <VCT_Breadcrumbs items={breadcrumbs} />
+              )}
+              {isMobile && (
+                <span className="truncate text-sm font-bold">{pageTitle}</span>
+              )}
             </div>
 
-            <div className="flex items-center gap-2 tablet:gap-3">
+            {/* ── Right: search, controls, avatar ── */}
+            <div className="flex shrink-0 items-center gap-2">
               {isDesktop && (
-                <>
-                  <RoleSwitcher role={currentUser.role} onChange={setRole} />
-                  <div className="relative w-64">
-                    <label htmlFor="global-search" className="sr-only">
-                      Tìm kiếm vận động viên hoặc đơn vị
-                    </label>
-                    <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-vct-text-muted">
-                      <VCT_Icons.Search size={16} />
-                    </span>
-                    <input
-                      id="global-search"
-                      type="text"
-                      placeholder="Tìm kiếm VĐV, Đơn vị..."
-                      className="w-full rounded-full border border-vct-border bg-vct-elevated py-2 pl-9 pr-3 text-sm text-vct-text outline-none transition focus:border-vct-accent"
-                    />
-                  </div>
-                </>
+                <div className="relative w-56">
+                  <label htmlFor="global-search" className="sr-only">
+                    {t('shell.searchLabel')}
+                  </label>
+                  <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-vct-text-muted">
+                    <VCT_Icons.Search size={14} />
+                  </span>
+                  <input
+                    id="global-search"
+                    type="text"
+                    placeholder={t('shell.searchPlaceholder')}
+                    className="w-full rounded-full border border-vct-border bg-vct-elevated py-1.5 pl-8 pr-3 text-xs text-vct-text outline-none transition placeholder:text-vct-text-muted focus:border-vct-accent"
+                  />
+                </div>
               )}
 
+              <LangToggle />
               <ThemeToggle />
-
               <NotificationCenter />
 
               <VCT_Dropdown
                 trigger={
                   <span
-                    className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-red-700 to-emerald-700 text-xs font-black text-white shadow-md"
-                    title={roleLabel}
+                    className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-red-700 to-emerald-700 text-[11px] font-black text-white shadow-md cursor-pointer transition hover:scale-105"
+                    title={`${currentUser.name} — ${roleLabel}`}
                   >
                     {userInitials}
                   </span>
                 }
                 items={[
-                  { label: `${currentUser.name} (${roleLabel})`, icon: <VCT_Icons.User size={16} />, onClick: () => { } },
-                  { label: 'Cài đặt', icon: <VCT_Icons.Settings size={16} />, onClick: () => { } },
+                  { label: `${currentUser.name} (${roleLabel})`, icon: <VCT_Icons.User size={16} />, onClick: () => { router.push('/profile') } },
+                  { label: t('shell.notifications'), icon: <VCT_Icons.Bell size={16} />, onClick: () => { router.push('/notifications') } },
+                  { label: t('shell.portalHub'), icon: <VCT_Icons.LayoutGrid size={16} />, onClick: () => { router.push('/portal') } },
+                  { label: t('shell.settings'), icon: <VCT_Icons.Settings size={16} />, onClick: () => { router.push('/settings') } },
                   {
-                    label: 'Đăng xuất',
+                    label: t('shell.logout'),
                     icon: <VCT_Icons.LogOut size={16} />,
                     danger: true,
                     onClick: () => { void logout().then(() => { router.replace('/login') }) },
@@ -366,9 +462,11 @@ const ShellLayout = ({ children }: { children: React.ReactNode }) => {
 }
 
 export const VCT_AppShell = ({ children }: { children: React.ReactNode }) => (
-  <ThemeProvider>
-    <AuthProvider>
-      <ShellLayout>{children}</ShellLayout>
-    </AuthProvider>
-  </ThemeProvider>
+  <I18nProvider>
+    <ThemeProvider>
+      <AuthProvider>
+        <ShellLayout>{children}</ShellLayout>
+      </AuthProvider>
+    </ThemeProvider>
+  </I18nProvider>
 )

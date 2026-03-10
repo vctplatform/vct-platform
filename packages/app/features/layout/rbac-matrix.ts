@@ -1,6 +1,7 @@
 // ════════════════════════════════════════════════════════════════
 // VCT PLATFORM — RBAC Matrix
 // Role → Route → Actions capability mapping
+// Updated with 12 roles for National Federation management
 // ════════════════════════════════════════════════════════════════
 
 import type { UserRole } from '../auth/types'
@@ -14,180 +15,260 @@ const capability = (
     note,
 })
 
-export const ROUTE_ROLE_CAPABILITIES: Record<UserRole, RoleRouteCapabilities> = {
-    admin: {
-        'command-center': capability(
-            ['monitor', 'export'],
-            'Toan quyen theo doi dieu hanh, KPI va canh bao tong calculations the giai dau'
-        ),
-        organizations: capability(
-            ['create', 'update', 'delete', 'approve', 'publish'],
-            'Quan tri lien doan va co cau to chuc'
-        ),
-        clubs: capability(
-            ['create', 'update', 'delete', 'approve', 'publish'],
-            'Quan tri cau lac bo, vo duong, chi nhanh'
-        ),
-        curriculum: capability(['create', 'update', 'delete', 'approve', 'publish'], 'Quan ly dien tien va bai quyen'),
-        techniques: capability(['create', 'update', 'delete', 'approve', 'publish'], 'Quan ly thu vien ky thuat, video'),
-        'training-plans': capability(['create', 'update', 'delete', 'approve', 'publish'], 'Tao ke hoach huan luyen'),
-        attendance: capability(['create', 'update', 'delete'], 'Quan tri diem danh, lich su chuyen can'),
-        'belt-exams': capability(['create', 'update', 'delete', 'approve', 'publish'], 'Quan tri ky thi thang cap dai'),
-        elearning: capability(['create', 'update', 'delete', 'approve'], 'Quan tri he thong e-learning'),
-        rankings: capability(['create', 'update', 'delete', 'approve', 'publish'], 'Quan tri bang xep hang quoc gia'),
-        heritage: capability(['create', 'update', 'delete', 'approve', 'publish'], 'Quan tri di san, pha he va van hoa vo thuat'),
-        finance: capability(['create', 'update', 'delete', 'approve', 'publish', 'export'], 'Quan tri giao dich, phi thanh vien va ngan sach'),
-        community: capability(['create', 'update', 'delete', 'approve', 'publish'], 'Quan tri tin tuc cong dong va su kien'),
-        marketplace: capability(['create', 'update', 'delete', 'approve', 'publish'], 'Quan tri san giao dich trang thiet bi vo thuat'),
-        'admin-dashboard': capability(['monitor', 'manage'], 'Giam sat he thong, hieu suat va dich vu'),
-        'audit-logs': capability(['monitor', 'export'], 'Xem va xuat nhat ky hoat dong he thong'),
-        people: capability(['create', 'update', 'delete', 'approve', 'export'], 'Quan ly VDV, HLV, trong tai va nhan su'),
-        'tournament-config': capability(
-            ['create', 'update', 'approve', 'publish', 'lock'],
-            'Toan quyen cau hinh giai, dieu le, quota va khoa mo giai doan'
-        ),
-        'tournament-wizard': capability(
-            ['create'],
-            'Khoi tao giai dau moi'
-        ),
-        'content-categories': capability(
-            ['create', 'update', 'delete', 'approve', 'publish'],
-            'Quan tri noi dung quyen, hang can va cau hinh danh muc thi dau'
-        ),
-        arenas: capability(
-            ['create', 'update', 'delete', 'assign', 'approve', 'monitor'],
-            'Quan tri san dau, nang luc van hanh, phu trach va trang thai truc tiep'
-        ),
-        referees: capability(
-            ['create', 'update', 'delete', 'assign', 'approve', 'export'],
-            'Quan tri ho so trong tai va nang luc dieu phoi theo san/phien'
-        ),
-        teams: capability(
-            ['create', 'update', 'delete', 'approve', 'import', 'export'],
-            'Quan tri don vi, xet duyet tham gia, doi soat ho so va du lieu nhap lo'
-        ),
-        athletes: capability(
-            ['create', 'update', 'delete', 'approve', 'import', 'export'],
-            'Quan tri ho so VDV, duyet dieu kien va xu ly import theo mau'
-        ),
-        registration: capability(
-            ['create', 'update', 'delete', 'approve', 'import', 'export'],
-            'Quan tri dang ky noi dung thi dau va duyet phan bo suat thi'
-        ),
-        'technical-meeting': capability(
-            ['create', 'update', 'approve', 'publish'],
-            'Chot danh sach ky thuat, bien ban hop chuyen mon va cong bo ket luan'
-        ),
-        draw: capability(
-            ['create', 'update', 'approve', 'publish'],
-            'Thuc hien boc tham, xac nhan ket qua va phat hanh danh sach xep nhanh'
-        ),
-        'weigh-in': capability(
-            ['create', 'update', 'approve', 'monitor', 'export'],
-            'Quan ly can ky, xac nhan dat/khong dat va giam sat bat thuong can nang'
-        ),
-        schedule: capability(
-            ['create', 'update', 'delete', 'approve', 'publish', 'export'],
-            'Lap lich thi dau, dieu phoi theo san/phien va cong bo lich chinh thuc'
-        ),
-        'referee-assignments': capability(
-            ['create', 'update', 'delete', 'assign', 'approve', 'publish'],
-            'Phan cong to trong tai theo noi dung, phien va nang luc'
-        ),
-        combat: capability(
-            ['create', 'update', 'approve', 'monitor', 'publish'],
-            'Dieu hanh tran doi khang, cap nhat diem va xac nhan ket qua tung tran'
-        ),
-        forms: capability(
-            ['create', 'update', 'approve', 'monitor', 'publish'],
-            'Dieu hanh luot thi quyen, cham diem va cong bo ket qua so bo'
-        ),
-        bracket: capability(
-            ['create', 'update', 'approve', 'publish', 'export'],
-            'Quan tri so do nhanh, cap nhat nguoi thang va dong bo lich vong dau'
-        ),
-        results: capability(
-            ['create', 'update', 'delete', 'approve', 'publish', 'export'],
-            'Tong hop ket qua chinh thuc, xac nhan trang thai cong bo va doi soat'
-        ),
-        medals: capability(
-            ['update', 'approve', 'publish', 'export'],
-            'Quan tri bang huy chuong va xep hang toan doan theo quy che'
-        ),
-        appeals: capability(
-            ['create', 'update', 'approve', 'publish', 'export'],
-            'Xu ly khieu nai/khang nghi, theo doi SLA va phat hanh ket luan'
-        ),
-        reports: capability(
-            ['export', 'publish'],
-            'Phat hanh bao cao tong hop, in an va trich xuat du lieu van hanh'
-        ),
-        'user-detail': capability(
-            ['create', 'update', 'delete', 'manage'],
-            'Quan tri tai khoan he thong, vai tro va truy vet thao tac theo nguoi dung'
-        ),
+// Full admin has all capabilities on all routes
+const ADMIN_CAPS: RoleRouteCapabilities = {
+    'command-center': capability(['monitor', 'export'], 'Toàn quyền điều hành, KPI và cảnh báo'),
+    organizations: capability(['create', 'update', 'delete', 'approve', 'publish'], 'Quản trị liên đoàn và cơ cấu tổ chức'),
+    clubs: capability(['create', 'update', 'delete', 'approve', 'publish'], 'Quản trị CLB, võ đường'),
+    curriculum: capability(['create', 'update', 'delete', 'approve', 'publish'], 'Quản lý giáo trình và bài quyền'),
+    techniques: capability(['create', 'update', 'delete', 'approve', 'publish'], 'Quản lý thư viện kỹ thuật'),
+    'training-plans': capability(['create', 'update', 'delete', 'approve', 'publish'], 'Tạo kế hoạch huấn luyện'),
+    attendance: capability(['create', 'update', 'delete'], 'Quản trị điểm danh'),
+    'belt-exams': capability(['create', 'update', 'delete', 'approve', 'publish'], 'Quản trị thi thăng cấp'),
+    elearning: capability(['create', 'update', 'delete', 'approve'], 'Quản trị E-Learning'),
+    rankings: capability(['create', 'update', 'delete', 'approve', 'publish'], 'Quản trị BXH quốc gia'),
+    heritage: capability(['create', 'update', 'delete', 'approve', 'publish'], 'Quản trị di sản và gia phả'),
+    finance: capability(['create', 'update', 'delete', 'approve', 'publish', 'export'], 'Quản trị tài chính'),
+    community: capability(['create', 'update', 'delete', 'approve', 'publish'], 'Quản trị cộng đồng'),
+    'admin-dashboard': capability(['monitor', 'manage'], 'Giám sát hệ thống'),
+    'audit-logs': capability(['monitor', 'export'], 'Xem nhật ký hoạt động'),
+    people: capability(['create', 'update', 'delete', 'approve', 'export'], 'Quản lý nhân sự'),
+    'tournament-config': capability(['create', 'update', 'approve', 'publish', 'lock'], 'Toàn quyền cấu hình giải'),
+    'tournament-wizard': capability(['create'], 'Khởi tạo giải đấu mới'),
+    'content-categories': capability(['create', 'update', 'delete', 'approve', 'publish'], 'Quản trị nội dung thi đấu'),
+    arenas: capability(['create', 'update', 'delete', 'assign', 'approve', 'monitor'], 'Quản trị sàn đấu'),
+    referees: capability(['create', 'update', 'delete', 'assign', 'approve', 'export'], 'Quản trị hồ sơ trọng tài'),
+    teams: capability(['create', 'update', 'delete', 'approve', 'import', 'export'], 'Quản trị đơn vị'),
+    athletes: capability(['create', 'update', 'delete', 'approve', 'import', 'export'], 'Quản trị hồ sơ VĐV'),
+    registration: capability(['create', 'update', 'delete', 'approve', 'import', 'export'], 'Quản trị đăng ký nội dung'),
+    'technical-meeting': capability(['create', 'update', 'approve', 'publish'], 'Chốt họp chuyên môn'),
+    draw: capability(['create', 'update', 'approve', 'publish'], 'Thực hiện bốc thăm'),
+    'weigh-in': capability(['create', 'update', 'approve', 'monitor', 'export'], 'Quản lý cân ký'),
+    schedule: capability(['create', 'update', 'delete', 'approve', 'publish', 'export'], 'Lập lịch thi đấu'),
+    'referee-assignments': capability(['create', 'update', 'delete', 'assign', 'approve', 'publish'], 'Phân công trọng tài'),
+    combat: capability(['create', 'update', 'approve', 'monitor', 'publish'], 'Điều hành đối kháng'),
+    forms: capability(['create', 'update', 'approve', 'monitor', 'publish'], 'Điều hành quyền'),
+    bracket: capability(['create', 'update', 'approve', 'publish', 'export'], 'Quản trị sơ đồ nhánh'),
+    results: capability(['create', 'update', 'delete', 'approve', 'publish', 'export'], 'Tổng hợp kết quả'),
+    medals: capability(['update', 'approve', 'publish', 'export'], 'Quản trị bảng huy chương'),
+    appeals: capability(['create', 'update', 'approve', 'publish', 'export'], 'Xử lý khiếu nại'),
+    reports: capability(['export', 'publish'], 'Phát hành báo cáo'),
+    'user-detail': capability(['create', 'update', 'delete', 'manage'], 'Quản trị tài khoản hệ thống'),
+}
+
+export const ROUTE_ROLE_CAPABILITIES: Record<string, RoleRouteCapabilities> = {
+    admin: ADMIN_CAPS,
+
+    federation_president: {
+        'command-center': capability(['monitor', 'export'], 'Tổng quan KPI liên đoàn, phê duyệt chiến lược'),
+        organizations: capability(['create', 'update', 'approve', 'publish'], 'Phê duyệt cơ cấu tổ chức'),
+        clubs: capability(['approve', 'publish'], 'Phê duyệt CLB mới, thu hồi'),
+        people: capability(['approve', 'export'], 'Phê duyệt nhân sự cấp cao'),
+        rankings: capability(['approve', 'publish'], 'Phê duyệt BXH chính thức'),
+        heritage: capability(['create', 'update', 'approve', 'publish'], 'Quản trị di sản cấp quốc gia'),
+        finance: capability(['approve', 'export'], 'Phê duyệt ngân sách, xem báo cáo'),
+        'tournament-config': capability(['approve'], 'Phê duyệt giải cấp quốc gia'),
+        results: capability(['approve', 'publish'], 'Phê duyệt kết quả chính thức'),
+        medals: capability(['approve', 'publish'], 'Phê duyệt huy chương'),
+        reports: capability(['export'], 'Xem báo cáo tổng hợp'),
+        community: capability(['approve', 'publish'], 'Phê duyệt tin tức chính thức'),
     },
+
+    federation_secretary: {
+        'command-center': capability(['monitor', 'export'], 'Điều phối hành chính liên đoàn'),
+        organizations: capability(['create', 'update', 'export'], 'Quản lý hồ sơ tổ chức'),
+        clubs: capability(['create', 'update', 'export'], 'Quản lý hồ sơ CLB'),
+        people: capability(['create', 'update', 'import', 'export'], 'Quản lý nhân sự, văn bản'),
+        rankings: capability(['update', 'export'], 'Cập nhật dữ liệu BXH'),
+        heritage: capability(['create', 'update'], 'Cập nhật hồ sơ di sản'),
+        finance: capability(['create', 'update', 'export'], 'Quản lý thu chi, công nợ'),
+        'tournament-config': capability(['update'], 'Cập nhật thông tin giải'),
+        teams: capability(['create', 'update', 'import', 'export'], 'Quản lý đơn vị tham gia'),
+        athletes: capability(['create', 'update', 'import', 'export'], 'Quản lý hồ sơ VĐV'),
+        registration: capability(['create', 'update', 'import', 'export'], 'Điều phối đăng ký'),
+        results: capability(['export'], 'Xuất báo cáo kết quả'),
+        medals: capability(['export'], 'Xuất bảng huy chương'),
+        reports: capability(['export', 'publish'], 'Phát hành văn bản, báo cáo'),
+        community: capability(['create', 'update', 'publish'], 'Quản trị tin tức'),
+    },
+
+    provincial_admin: {
+        'command-center': capability(['monitor'], 'Theo dõi hoạt động cấp tỉnh'),
+        organizations: capability(['update'], 'Cập nhật thông tin LĐ tỉnh'),
+        clubs: capability(['create', 'update'], 'Quản lý CLB trong tỉnh'),
+        people: capability(['create', 'update', 'import', 'export'], 'Quản lý nhân sự cấp tỉnh'),
+        rankings: capability([], 'Xem BXH'),
+        'tournament-config': capability(['create', 'update'], 'Tổ chức giải cấp tỉnh'),
+        teams: capability(['create', 'update', 'import', 'export'], 'Quản lý đoàn tỉnh'),
+        athletes: capability(['create', 'update', 'import', 'export'], 'Quản lý VĐV tỉnh'),
+        registration: capability(['create', 'update', 'import', 'export'], 'Đăng ký nội dung'),
+        schedule: capability([], 'Xem lịch thi đấu'),
+        results: capability([], 'Xem kết quả'),
+        medals: capability([], 'Xem huy chương'),
+        reports: capability(['export'], 'Xuất báo cáo cho tỉnh'),
+        finance: capability(['create', 'update'], 'Quản lý tài chính tỉnh'),
+    },
+
+    technical_director: {
+        'command-center': capability([], 'Theo dõi tổng quan chuyên môn'),
+        curriculum: capability(['create', 'update', 'delete', 'approve', 'publish'], 'Toàn quyền giáo trình'),
+        techniques: capability(['create', 'update', 'delete', 'approve', 'publish'], 'Toàn quyền kho kỹ thuật'),
+        'belt-exams': capability(['create', 'update', 'approve', 'publish'], 'Phê duyệt thi thăng cấp'),
+        elearning: capability(['create', 'update', 'approve'], 'Quản trị E-Learning'),
+        heritage: capability(['create', 'update', 'approve'], 'Quản trị di sản kỹ thuật'),
+        rankings: capability(['update'], 'Cập nhật tiêu chí BXH'),
+        'content-categories': capability(['create', 'update', 'approve'], 'Định nghĩa nội dung thi'),
+        'tournament-config': capability([], 'Xem thông tin giải'),
+        results: capability([], 'Xem kết quả'),
+        forms: capability(['monitor'], 'Theo dõi chấm quyền'),
+        combat: capability(['monitor'], 'Theo dõi đối kháng'),
+    },
+
     btc: {
-        'command-center': capability(['monitor', 'export'], 'Dieu hanh tac nghiep hieu suat giai dau theo ca truc'),
-        'tournament-config': capability(['update', 'approve', 'publish'], 'Cap nhat thong tin giai va xac nhan cau hinh van hanh'),
-        'content-categories': capability(['create', 'update', 'approve', 'publish'], 'Cap nhat danh muc noi dung thi dau theo ke hoach'),
-        arenas: capability(['create', 'update', 'assign', 'monitor'], 'To chuc van hanh san dau va dieu phoi nguon luc'),
-        referees: capability(['create', 'update', 'assign', 'approve'], 'Quan ly danh sach trong tai va xac nhan san sang truc'),
-        teams: capability(['create', 'update', 'approve', 'import', 'export'], 'Xu ly ho so doan, duyet tham gia va doi soat'),
-        athletes: capability(['create', 'update', 'approve', 'import', 'export'], 'Quan ly ho so VDV va tien trinh hoan thien dieu kien'),
-        registration: capability(['create', 'update', 'approve', 'import', 'export'], 'Dieu phoi dang ky noi dung va xac nhan phan bo'),
-        'technical-meeting': capability(['create', 'update', 'approve', 'publish'], 'Tong hop ket luan hop chuyen mon'),
-        draw: capability(['create', 'update', 'approve', 'publish'], 'To chuc boc tham va xac nhan ket qua'),
-        'weigh-in': capability(['create', 'update', 'approve', 'monitor', 'export'], 'Van hanh can ky thuc dia'),
-        schedule: capability(['create', 'update', 'approve', 'publish', 'export'], 'Lap, dieu chinh va cong bo lich thi dau'),
-        'referee-assignments': capability(['create', 'update', 'assign', 'approve', 'publish'], 'Phan cong trong tai tac nghiep'),
-        combat: capability(['update', 'approve', 'monitor', 'publish'], 'Theo doi tran doi khang va xac nhan ket qua'),
-        forms: capability(['update', 'approve', 'monitor', 'publish'], 'Dieu phoi cham diem quyen'),
-        bracket: capability(['update', 'approve', 'publish', 'export'], 'Cap nhat so do nhanh va ket qua vong dau'),
-        results: capability(['create', 'update', 'approve', 'publish', 'export'], 'Tong hop va cong bo ket qua'),
-        medals: capability(['update', 'approve', 'publish', 'export'], 'Cap nhat bang huy chuong va cong bo xep hang'),
-        appeals: capability(['create', 'update', 'approve', 'publish', 'export'], 'Xu ly khieu nai/khang nghi theo quy che BTC'),
-        reports: capability(['export', 'publish'], 'Xuat bao cao tong hop va bo ho so tong ket'),
+        'command-center': capability(['monitor', 'export'], 'Điều hành tác nghiệp giải đấu'),
+        'tournament-config': capability(['update', 'approve', 'publish'], 'Cập nhật thông tin giải'),
+        'content-categories': capability(['create', 'update', 'approve', 'publish'], 'Cập nhật danh mục nội dung'),
+        arenas: capability(['create', 'update', 'assign', 'monitor'], 'Tổ chức vận hành sàn đấu'),
+        referees: capability(['create', 'update', 'assign', 'approve'], 'Quản lý trọng tài'),
+        teams: capability(['create', 'update', 'approve', 'import', 'export'], 'Xử lý hồ sơ đoàn'),
+        athletes: capability(['create', 'update', 'approve', 'import', 'export'], 'Quản lý VĐV'),
+        registration: capability(['create', 'update', 'approve', 'import', 'export'], 'Điều phối đăng ký'),
+        'technical-meeting': capability(['create', 'update', 'approve', 'publish'], 'Tổng hợp họp chuyên môn'),
+        draw: capability(['create', 'update', 'approve', 'publish'], 'Tổ chức bốc thăm'),
+        'weigh-in': capability(['create', 'update', 'approve', 'monitor', 'export'], 'Vận hành cân ký'),
+        schedule: capability(['create', 'update', 'approve', 'publish', 'export'], 'Lập lịch thi đấu'),
+        'referee-assignments': capability(['create', 'update', 'assign', 'approve', 'publish'], 'Phân công trọng tài'),
+        combat: capability(['update', 'approve', 'monitor', 'publish'], 'Theo dõi đối kháng'),
+        forms: capability(['update', 'approve', 'monitor', 'publish'], 'Điều phối chấm quyền'),
+        bracket: capability(['update', 'approve', 'publish', 'export'], 'Cập nhật sơ đồ nhánh'),
+        results: capability(['create', 'update', 'approve', 'publish', 'export'], 'Tổng hợp kết quả'),
+        medals: capability(['update', 'approve', 'publish', 'export'], 'Cập nhật huy chương'),
+        appeals: capability(['create', 'update', 'approve', 'publish', 'export'], 'Xử lý khiếu nại'),
+        reports: capability(['export', 'publish'], 'Xuất báo cáo tổng hợp'),
     },
+
     referee_manager: {
-        'command-center': capability([], 'Theo doi tien do thi dau de dieu phoi trong tai'),
-        referees: capability(['update', 'assign', 'approve'], 'Quan ly nang luc va trang thai san sang trong tai'),
-        'technical-meeting': capability(['update'], 'Cap nhat noi dung hop chuyen mon lien quan trong tai'),
-        draw: capability([], 'Theo doi ket qua boc tham de bo tri to trong tai'),
-        'weigh-in': capability([], 'Theo doi ket qua can ky de bo tri noi dung phu hop'),
-        schedule: capability(['update'], 'Dieu chinh lich truong hop can doi trong tai'),
-        'referee-assignments': capability(
-            ['create', 'update', 'assign', 'approve', 'publish'],
-            'Toan quyen tac nghiep phan cong trong tai'
-        ),
-        combat: capability(['update', 'monitor'], 'Theo doi va ghi nhan bien dong tran doi khang'),
-        forms: capability(['update', 'monitor'], 'Theo doi va ho tro nghiep vu cham quyen'),
-        bracket: capability([], 'Theo doi nhanh dau de dieu phoi trong tai'),
-        results: capability([], 'Xem ket qua da xac nhan'),
-        medals: capability([], 'Xem bang huy chuong phuc vu tong hop'),
-        appeals: capability(['update', 'approve'], 'Phoi hop xu ly khieu nai theo tham quyen'),
-        reports: capability(['export'], 'Trich xuat bao cao nghiep vu trong tai'),
+        'command-center': capability([], 'Theo dõi tiến độ thi đấu'),
+        referees: capability(['update', 'assign', 'approve'], 'Quản lý năng lực trọng tài'),
+        'technical-meeting': capability(['update'], 'Cập nhật nội dung liên quan TT'),
+        draw: capability([], 'Theo dõi kết quả bốc thăm'),
+        'weigh-in': capability([], 'Theo dõi cân ký'),
+        schedule: capability(['update'], 'Điều chỉnh lịch khi cần đổi TT'),
+        'referee-assignments': capability(['create', 'update', 'assign', 'approve', 'publish'], 'Toàn quyền phân công TT'),
+        combat: capability(['update', 'monitor'], 'Theo dõi đối kháng'),
+        forms: capability(['update', 'monitor'], 'Theo dõi chấm quyền'),
+        bracket: capability([], 'Theo dõi nhánh đấu'),
+        results: capability([], 'Xem kết quả'),
+        medals: capability([], 'Xem huy chương'),
+        appeals: capability(['update', 'approve'], 'Phối hợp xử lý khiếu nại'),
+        reports: capability(['export'], 'Trích xuất báo cáo TT'),
     },
+
     referee: {
-        'command-center': capability([], 'Theo doi thong bao van hanh va lenh dieu dong'),
-        'technical-meeting': capability([], 'Xem ket luan hop chuyen mon'),
-        draw: capability([], 'Xem ket qua boc tham theo noi dung duoc phan cong'),
-        'weigh-in': capability(['update'], 'Ghi nhan ket qua can ky khi duoc uy quyen'),
-        schedule: capability([], 'Xem lich thi dau theo ca truc'),
-        combat: capability(['update', 'monitor'], 'Nhap diem va cap nhat trang thai tran dau'),
-        forms: capability(['update', 'monitor'], 'Nhap diem luot thi quyen'),
-        bracket: capability([], 'Xem nhanh dau va cap nhat doi thu'),
-        results: capability([], 'Xem ket qua tong hop'),
+        'command-center': capability([], 'Theo dõi thông báo vận hành'),
+        'technical-meeting': capability([], 'Xem kết luận họp chuyên môn'),
+        draw: capability([], 'Xem kết quả bốc thăm'),
+        'weigh-in': capability(['update'], 'Ghi nhận cân ký khi được ủy quyền'),
+        schedule: capability([], 'Xem lịch thi đấu'),
+        combat: capability(['update', 'monitor'], 'Nhập điểm đối kháng'),
+        forms: capability(['update', 'monitor'], 'Nhập điểm quyền'),
+        bracket: capability([], 'Xem sơ đồ nhánh'),
+        results: capability([], 'Xem kết quả'),
     },
+
+    coach: {
+        'command-center': capability([], 'Theo dõi thông báo'),
+        people: capability(['create', 'update'], 'Quản lý võ sinh trong CLB'),
+        curriculum: capability([], 'Xem giáo trình'),
+        techniques: capability([], 'Xem kho kỹ thuật'),
+        'training-plans': capability(['create', 'update'], 'Lập kế hoạch tập luyện'),
+        attendance: capability(['create', 'update'], 'Điểm danh'),
+        'belt-exams': capability([], 'Xem lịch thi thăng cấp'),
+        elearning: capability([], 'Xem E-Learning'),
+        teams: capability(['create', 'update'], 'Quản lý đội'),
+        athletes: capability(['create', 'update', 'import', 'export'], 'Quản lý VĐV'),
+        registration: capability(['create', 'update'], 'Đăng ký nội dung cho VĐV'),
+        schedule: capability([], 'Xem lịch thi đấu'),
+        results: capability([], 'Xem kết quả'),
+        medals: capability([], 'Xem huy chương'),
+    },
+
     delegate: {
-        'command-center': capability([], 'Theo doi thong bao chung cua giai'),
-        teams: capability(['create', 'update', 'import', 'export'], 'Quan ly thong tin don vi cua doan'),
-        athletes: capability(['create', 'update', 'import', 'export'], 'Quan ly ho so VDV cua doan'),
-        registration: capability(['create', 'update', 'import', 'export'], 'Dang ky noi dung thi dau cho VDV cua doan'),
-        schedule: capability([], 'Xem lich thi dau duoc cong bo'),
-        results: capability([], 'Xem ket qua VDV va noi dung thi dau'),
-        medals: capability([], 'Xem bang huy chuong va xep hang'),
-        appeals: capability(['create'], 'Nop khieu nai/khang nghi theo quy che'),
-        reports: capability(['export'], 'Tai ve bao cao cong bo cho doan'),
+        'command-center': capability([], 'Theo dõi thông báo giải'),
+        teams: capability(['create', 'update', 'import', 'export'], 'Quản lý thông tin đoàn'),
+        athletes: capability(['create', 'update', 'import', 'export'], 'Quản lý VĐV của đoàn'),
+        registration: capability(['create', 'update', 'import', 'export'], 'Đăng ký nội dung cho VĐV'),
+        schedule: capability([], 'Xem lịch thi đấu'),
+        results: capability([], 'Xem kết quả'),
+        medals: capability([], 'Xem huy chương'),
+        appeals: capability(['create'], 'Nộp khiếu nại/kháng nghị'),
+        reports: capability(['export'], 'Tải về báo cáo cho đoàn'),
+    },
+
+    athlete: {
+        'command-center': capability([], 'Xem thông báo cá nhân'),
+        schedule: capability([], 'Xem lịch thi đấu'),
+        results: capability([], 'Xem kết quả cá nhân'),
+        medals: capability([], 'Xem huy chương'),
+        rankings: capability([], 'Xem BXH cá nhân'),
+        community: capability([], 'Xem tin tức'),
+    },
+
+    medical_staff: {
+        'command-center': capability([], 'Theo dõi thông báo y tế'),
+        athletes: capability(['update'], 'Cập nhật sức khỏe VĐV'),
+        'weigh-in': capability(['update', 'monitor'], 'Hỗ trợ cân ký, kiểm tra y tế'),
+        schedule: capability([], 'Xem lịch để bố trí y tế'),
+        results: capability([], 'Xem kết quả phục vụ báo cáo'),
+    },
+
+    vice_president: {
+        'command-center': capability(['monitor', 'export'], 'Giám sát KPI theo lĩnh vực phụ trách'),
+        organizations: capability(['update', 'approve'], 'Phê duyệt cơ cấu tổ chức theo ủy quyền'),
+        clubs: capability(['approve'], 'Phê duyệt CLB theo ủy quyền'),
+        people: capability(['approve', 'export'], 'Phê duyệt nhân sự'),
+        rankings: capability(['approve'], 'Phê duyệt BXH theo ủy quyền'),
+        heritage: capability(['approve'], 'Phê duyệt di sản'),
+        finance: capability(['approve', 'export'], 'Phê duyệt tài chính theo ủy quyền'),
+        'tournament-config': capability(['approve'], 'Phê duyệt giải theo ủy quyền'),
+        results: capability(['approve'], 'Phê duyệt kết quả'),
+        reports: capability(['export'], 'Xem báo cáo'),
+        community: capability(['approve'], 'Phê duyệt tin tức'),
+    },
+
+    discipline_board: {
+        'command-center': capability([], 'Theo dõi vụ việc kỷ luật'),
+        athletes: capability([], 'Xem hồ sơ VĐV liên quan'),
+        clubs: capability([], 'Xem CLB liên quan'),
+        people: capability([], 'Xem nhân sự liên quan'),
+        results: capability([], 'Tra cứu kết quả phục vụ xét xử'),
+        appeals: capability(['create', 'update', 'approve'], 'Xét xử, quyết định kỷ luật'),
+    },
+
+    inspector: {
+        'command-center': capability([], 'Theo dõi nhiệm vụ thanh tra'),
+        athletes: capability([], 'Xem hồ sơ VĐV điều tra'),
+        clubs: capability([], 'Xem CLB điều tra'),
+        people: capability([], 'Xem nhân sự điều tra'),
+        results: capability([], 'Tra cứu kết quả'),
+    },
+
+    pr_manager: {
+        'command-center': capability([], 'Theo dõi nội dung truyền thông'),
+        community: capability(['create', 'update', 'publish'], 'Quản trị tin tức, truyền thông'),
+        heritage: capability([], 'Xem di sản để viết bài'),
+        rankings: capability(['export'], 'Xuất BXH cho truyền thông'),
+        results: capability(['export'], 'Xuất kết quả cho truyền thông'),
+        reports: capability(['export'], 'Tải báo cáo phục vụ PR'),
+    },
+
+    international_liaison: {
+        'command-center': capability([], 'Theo dõi sự kiện quốc tế'),
+        athletes: capability(['export'], 'Xuất hồ sơ VĐV đi thi quốc tế'),
+        heritage: capability([], 'Xem di sản giới thiệu quốc tế'),
+        rankings: capability(['export'], 'Xuất BXH cho đối tác'),
+        results: capability(['export'], 'Xuất kết quả cho đối tác'),
+        'tournament-config': capability([], 'Xem giải quốc tế'),
+        reports: capability(['export'], 'Xuất báo cáo đối ngoại'),
     },
 }

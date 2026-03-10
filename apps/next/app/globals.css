@@ -445,6 +445,44 @@ textarea {
   animation-delay: 420ms;
 }
 
+.vct-stagger>*:nth-child(9) {
+  animation-delay: 480ms;
+}
+
+.vct-stagger>*:nth-child(10) {
+  animation-delay: 540ms;
+}
+
+.vct-stagger>*:nth-child(11) {
+  animation-delay: 600ms;
+}
+
+.vct-stagger>*:nth-child(12) {
+  animation-delay: 660ms;
+}
+
+/* ── Gradient text utility ── */
+.vct-gradient-text {
+  background: var(--vct-accent-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ── Interactive card press ── */
+.vct-card-press {
+  transition: transform var(--vct-duration-fast) var(--vct-ease-out);
+}
+
+.vct-card-press:active {
+  transform: scale(0.98);
+}
+
+/* ── Accent dot indicator ── */
+.vct-dot-pulse {
+  animation: vct-pulse 2s ease-in-out infinite;
+}
+
 @media (prefers-reduced-motion: reduce) {
 
   *,

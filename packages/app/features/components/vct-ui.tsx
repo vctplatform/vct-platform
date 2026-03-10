@@ -15,6 +15,15 @@ export * from './VCT_PageTransition'
 export * from './VCT_ShortcutsPanel'
 export * from './VCT_ResponsiveTable'
 
+// Page Layout Building Blocks
+export { VCT_PageContainer, VCT_PageHero } from './VCT_PageContainer'
+export { VCT_PageHeader } from './VCT_PageHeader'
+export { VCT_PageToolbar } from './VCT_PageToolbar'
+export { VCT_SectionCard } from './VCT_SectionCard'
+export { VCT_EmptyState } from './VCT_EmptyState'
+export { VCT_StatRow } from './VCT_StatRow'
+export type { StatItem } from './VCT_StatRow'
+
 // Phase 6 - UI/UX Upgrade Components
 export * from './VCT_DataGrid'
 export { VCT_Drawer } from './VCT_Drawer'

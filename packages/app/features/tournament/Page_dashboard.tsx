@@ -2,17 +2,19 @@
 
 import * as React from 'react';
 import { useMemo, useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { useRouter } from 'next/navigation';
 import {
-    VCT_Card, VCT_Badge, VCT_KpiCard, VCT_Text, VCT_Stack, VCT_Button, VCT_AvatarLetter
+    VCT_Badge, VCT_Text, VCT_Stack, VCT_Button, VCT_AvatarLetter
 } from '../components/vct-ui';
+import { VCT_PageContainer, VCT_PageHero, VCT_SectionCard, VCT_StatRow } from '../components/vct-ui';
 import { VCT_Timeline, type TimelineEvent } from '../components/VCT_Timeline';
 import { VCT_Icons } from '../components/vct-icons';
+import { TournamentWorkflowStepper } from './TournamentWorkflowStepper';
 import { TOURNAMENT_CONFIG } from '../data/tournament-config';
 import { repositories, useEntityCollection } from '../data/repository';
+import type { StatItem } from '../components/VCT_StatRow';
 
-// Mock activity feed (real-time in Phase 3)
 const ACTIVITY_FEED: TimelineEvent[] = [
     { time: '2 phút trước', title: 'Trận #12 kết thúc', description: 'Nguyễn Văn A thắng điểm 7-5', color: 'var(--vct-success)' },
     { time: '8 phút trước', title: 'Cân ký hoàn tất', description: '42/45 VĐV đạt cân nặng', color: 'var(--vct-info)' },
@@ -36,12 +38,10 @@ export const Page_dashboard = () => {
     const VAN_DONG_VIENS = athletesStore.items;
     const TRONG_TAIS = refereesStore.items;
     const TRAN_DAUS = combatStore.items;
-    const LUOT_THI_QUYENS = formsStore.items;
     const CAN_KYS = weighStore.items;
     const KHIEU_NAIS = appealsStore.items;
     const SAN_DAUS = arenasStore.items;
 
-    // Data Aggregation
     const kpis = useMemo(() => {
         const totalMatches = TRAN_DAUS.length;
         const finishedMatches = TRAN_DAUS.filter(t => t.trang_thai === 'ket_thuc').length;
@@ -49,7 +49,6 @@ export const Page_dashboard = () => {
 
         const medalsByDoan = DON_VIS.map(d => {
             let hcv = 0, hcb = 0, hcd = 0;
-            // Count from combat
             TRAN_DAUS.filter(t => t.trang_thai === 'ket_thuc' && (t.vdv_do.doan === d.tat || t.vdv_xanh.doan === d.tat)).forEach(t => {
                 if (t.diem_do > t.diem_xanh && t.vdv_do.doan === d.tat) hcv++;
                 if (t.diem_xanh > t.diem_do && t.vdv_xanh.doan === d.tat) hcv++;
@@ -75,179 +74,202 @@ export const Page_dashboard = () => {
         };
     }, [CAN_KYS, DON_VIS, KHIEU_NAIS, SAN_DAUS, TRAN_DAUS, TRONG_TAIS, VAN_DONG_VIENS]);
 
-    // Live Blinker
     const [tick, setTick] = useState(false);
     useEffect(() => { const int = setInterval(() => setTick(t => !t), 1000); return () => clearInterval(int); }, []);
 
+    const hasError = teamsStore.uiState.error || athletesStore.uiState.error || refereesStore.uiState.error ||
+        combatStore.uiState.error || formsStore.uiState.error || weighStore.uiState.error ||
+        appealsStore.uiState.error || arenasStore.uiState.error;
+
+    const progressPct = kpis.tran_dau.tong > 0 ? Math.round((kpis.tran_dau.da_xong / kpis.tran_dau.tong) * 100) : 0;
+
+    const topStats: StatItem[] = [
+        { label: 'Đoàn tham gia', value: kpis.doan, icon: <VCT_Icons.Building2 size={18} />, color: '#0ea5e9' },
+        { label: 'Tổng VĐV', value: kpis.vdv.tong, icon: <VCT_Icons.Users size={18} />, color: '#f59e0b', sub: `♂ ${kpis.vdv.nam} — ♀ ${kpis.vdv.nu}` },
+        { label: 'Trọng Tài', value: kpis.trong_tai, icon: <VCT_Icons.UserCheck size={18} />, color: '#10b981' },
+        { label: 'Trận đấu', value: kpis.tran_dau.tong, icon: <VCT_Icons.Swords size={18} />, color: '#a78bfa', sub: `${kpis.tran_dau.da_xong} xong · ${kpis.tran_dau.dang_dien} đang đấu` },
+    ];
+
     return (
-        <div className="mx-auto flex max-w-[1400px] flex-col gap-6 pb-20">
-            {(teamsStore.uiState.error || athletesStore.uiState.error || refereesStore.uiState.error || combatStore.uiState.error || formsStore.uiState.error || weighStore.uiState.error || appealsStore.uiState.error || arenasStore.uiState.error) && (
-                <div className="rounded-xl border border-red-500/25 bg-red-500/[0.08] px-3.5 py-3 text-[13px] font-bold text-red-500">
+        <VCT_PageContainer size="wide" animated>
+            {hasError && (
+                <div className="mb-4 rounded-xl border border-red-500/25 bg-red-500/[0.08] px-4 py-3 text-[13px] font-bold text-red-500">
                     Một số nguồn dữ liệu dashboard chưa tải được. Số liệu có thể chưa đầy đủ.
                 </div>
             )}
 
             {/* 1. HERO BANNER */}
-            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}
-                style={{ padding: '32px', borderRadius: '24px', position: 'relative', overflow: 'hidden', background: 'linear-gradient(135deg, rgba(34, 211, 238, 0.1), rgba(139, 92, 246, 0.05))', border: '1px solid rgba(34, 211, 238, 0.2)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '24px' }}
-            >
-                <div style={{ position: 'absolute', top: 0, right: 0, bottom: 0, width: '50%', opacity: 0.03, backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 20px, currentColor 20px, currentColor 21px)' }} />
-                <div style={{ position: 'relative', zIndex: 1 }}>
-                    <VCT_Stack direction="row" gap={12} align="center" style={{ marginBottom: '16px' }}>
-                        <span style={{ fontSize: '32px' }}>🏆</span>
-                        <VCT_Badge text="🔴 LIVE TOURNAMENT" type="warning" pulse />
-                        <VCT_Badge text={`Tiến độ Đối kháng: ${Math.round((kpis.tran_dau.da_xong / kpis.tran_dau.tong) * 100) || 0}%`} type="success" />
-                    </VCT_Stack>
-                    <VCT_Text variant="h1" style={{ marginBottom: '8px', fontSize: '36px', letterSpacing: '-0.02em', background: 'var(--vct-accent-gradient)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
-                        {TOURNAMENT_CONFIG.ten_giai}
-                    </VCT_Text>
-                    <VCT_Stack direction="row" gap={24} style={{ opacity: 0.7 }}>
-                        <VCT_Stack direction="row" gap={8} align="center"><VCT_Icons.MapPin size={16} /> <VCT_Text>{TOURNAMENT_CONFIG.dia_diem}</VCT_Text></VCT_Stack>
-                        <VCT_Stack direction="row" gap={8} align="center"><VCT_Icons.Clock size={16} /> <VCT_Text>{TOURNAMENT_CONFIG.ngay_bat_dau} → {TOURNAMENT_CONFIG.ngay_ket_thuc}</VCT_Text></VCT_Stack>
-                    </VCT_Stack>
-                </div>
-                <div style={{ position: 'relative', zIndex: 1, display: 'flex', gap: '16px' }}>
-                    <VCT_Button icon={<VCT_Icons.Settings size={18} />} onClick={() => router.push('/giai-dau')} variant="secondary">Cấu hình giải</VCT_Button>
-                    <VCT_Button icon={<VCT_Icons.Download size={18} />} onClick={() => router.push('/reports')}>Báo cáo tổng hợp</VCT_Button>
-                </div>
-            </motion.div>
+            <VCT_PageHero
+                icon={<span className="text-2xl">🏆</span>}
+                title={TOURNAMENT_CONFIG.ten_giai}
+                subtitle={`${TOURNAMENT_CONFIG.dia_diem} · ${TOURNAMENT_CONFIG.ngay_bat_dau} → ${TOURNAMENT_CONFIG.ngay_ket_thuc}`}
+                badge="🔴 LIVE"
+                badgeType="warning"
+                gradientFrom="rgba(34, 211, 238, 0.08)"
+                gradientTo="rgba(139, 92, 246, 0.05)"
+                actions={
+                    <>
+                        <VCT_Button icon={<VCT_Icons.Settings size={18} />} onClick={() => router.push('/giai-dau')} variant="secondary">Cấu hình giải</VCT_Button>
+                        <VCT_Button icon={<VCT_Icons.Download size={18} />} onClick={() => router.push('/reports')}>Báo cáo</VCT_Button>
+                    </>
+                }
+            />
 
-            {/* 2. KPI ROW */}
-            <div className="vct-stagger grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-4">
-                <VCT_KpiCard label="Đoàn tham gia" value={kpis.doan} icon={<VCT_Icons.Building2 size={28} />} color="#0ea5e9" />
-                <VCT_KpiCard label="Tổng VĐV" value={kpis.vdv.tong} icon={<VCT_Icons.Users size={28} />} color="#f59e0b" sub={`♂ ${kpis.vdv.nam} — ♀ ${kpis.vdv.nu}`} />
-                <VCT_KpiCard label="Trọng Tài" value={kpis.trong_tai} icon={<VCT_Icons.UserCheck size={28} />} color="#10b981" />
-
-                <div style={{ background: 'var(--vct-bg-card)', borderRadius: '20px', padding: '24px', border: '1px solid var(--vct-border-subtle)', position: 'relative', overflow: 'hidden', cursor: 'pointer' }} onClick={() => router.push('/combat')}>
-                    <div style={{ position: 'absolute', right: '-20px', bottom: '-20px', opacity: 0.05 }}><VCT_Icons.Swords size={120} /></div>
-                    <VCT_Text variant="small" style={{ textTransform: 'uppercase', opacity: 0.5, fontWeight: 700, marginBottom: 8 }}>Trận Đối Kháng</VCT_Text>
-                    <div style={{ fontSize: '32px', fontWeight: 900, color: '#a78bfa', lineHeight: 1, marginBottom: 12 }}>{kpis.tran_dau.tong}</div>
-                    <VCT_Stack direction="row" justify="space-between" style={{ fontSize: 12, fontWeight: 600 }}>
-                        <span style={{ color: '#10b981' }}>{kpis.tran_dau.da_xong} Xong</span>
-                        <span style={{ color: '#ef4444' }}>{kpis.tran_dau.dang_dien} Đang đấu {tick ? '🔴' : '⚪'}</span>
-                        <span style={{ opacity: 0.5 }}>{kpis.tran_dau.sap_dien} Chờ</span>
-                    </VCT_Stack>
-                    <div style={{ height: 6, background: 'var(--vct-border-strong)', borderRadius: 3, marginTop: 8, overflow: 'hidden', display: 'flex' }}>
-                        <div style={{ width: `${(kpis.tran_dau.da_xong / kpis.tran_dau.tong) * 100}%`, background: '#10b981' }} />
-                        <div style={{ width: `${(kpis.tran_dau.dang_dien / kpis.tran_dau.tong) * 100}%`, background: '#ef4444' }} />
+            {/* ── Progress bar ── */}
+            <div className="mb-6 flex items-center gap-4 rounded-xl border border-vct-border bg-vct-elevated px-5 py-3.5">
+                <span className="text-sm font-bold text-vct-text-muted">Tiến độ Đối kháng</span>
+                <div className="flex-1 overflow-hidden rounded-full bg-vct-input" style={{ height: 8 }}>
+                    <div className="flex h-full transition-all duration-500">
+                        <div className="bg-emerald-500 transition-all" style={{ width: `${progressPct}%` }} />
+                        <div className="bg-red-500 transition-all" style={{ width: `${kpis.tran_dau.tong > 0 ? (kpis.tran_dau.dang_dien / kpis.tran_dau.tong) * 100 : 0}%` }} />
                     </div>
                 </div>
+                <span className="text-sm font-black vct-gradient-text">{progressPct}%</span>
+            </div>
+
+            {/* 2. KPI ROW */}
+            <VCT_StatRow items={topStats} className="mb-6" />
+
+            {/* 2.5 WORKFLOW STEPPER */}
+            <div className="mb-6">
+                <TournamentWorkflowStepper compact />
             </div>
 
             {/* 3. MIDDLE SECTION */}
-            <div className="grid grid-cols-1 items-stretch gap-6 desktop:grid-cols-[1fr_350px]">
-                <VCT_Card title="🔴 Sàn đấu trực tiếp (LIVE)" headerAction={<VCT_Button variant="secondary" onClick={() => router.push('/combat')}>Quản lý thi đấu</VCT_Button>} style={{ height: '100%' }}>
-                    <VCT_Stack gap={16}>
+            <div className="mb-6 grid grid-cols-1 items-stretch gap-6 desktop:grid-cols-[1fr_350px]">
+                {/* Live Arenas */}
+                <VCT_SectionCard
+                    title="🔴 Sàn đấu trực tiếp"
+                    accentColor="#ef4444"
+                    headerAction={<VCT_Button variant="secondary" onClick={() => router.push('/combat')}>Quản lý</VCT_Button>}
+                >
+                    <div className="space-y-4">
                         {kpis.san_live.map(san => (
-                            <div key={san.id} style={{ padding: '16px', borderRadius: '16px', background: 'var(--vct-bg-elevated)', border: `1px solid ${san.match ? 'rgba(239, 68, 68, 0.3)' : 'var(--vct-border-subtle)'}`, position: 'relative', overflow: 'hidden' }}>
-                                {san.match && <div style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: 4, background: '#ef4444' }} />}
-                                <VCT_Stack direction="row" justify="space-between" align="center" style={{ marginBottom: san.match ? 16 : 0 }}>
-                                    <VCT_Stack direction="row" gap={12} align="center">
-                                        <VCT_Text style={{ fontWeight: 900, fontSize: 18 }}>{san.ten}</VCT_Text>
+                            <div key={san.id} className={`relative overflow-hidden rounded-2xl border p-4 transition-all ${san.match ? 'border-red-500/30 bg-red-500/[0.02]' : 'border-vct-border bg-vct-bg'}`}>
+                                {san.match && <div className="absolute bottom-0 left-0 top-0 w-1 bg-red-500" />}
+                                <div className="flex items-center justify-between" style={{ marginBottom: san.match ? 16 : 0 }}>
+                                    <div className="flex items-center gap-3">
+                                        <span className="text-lg font-black">{san.ten}</span>
                                         <VCT_Badge text={san.match ? san.match.hang_can : 'Trống'} type="info" />
-                                    </VCT_Stack>
+                                    </div>
                                     <VCT_Badge text={san.match ? 'Đang đấu' : 'Đang nghỉ'} type={san.match ? 'warning' : 'info'} pulse={!!san.match} />
-                                </VCT_Stack>
+                                </div>
                                 {san.match && (
-                                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '24px', background: 'var(--vct-bg-glass)', padding: '16px', borderRadius: '12px' }}>
-                                        <div style={{ flex: 1, textAlign: 'center' }}>
-                                            <div style={{ width: 12, height: 12, borderRadius: '50%', background: '#3b82f6', margin: '0 auto 8px', boxShadow: '0 0 8px rgba(59,130,246,0.5)' }} />
-                                            <div style={{ fontWeight: 800, fontSize: 14 }}>{san.match.vdv_xanh.ten}</div>
-                                            <div className="text-[11px] opacity-50">{san.match.vdv_xanh.doan}</div>
+                                    <div className="flex items-center justify-center gap-6 rounded-xl bg-vct-glass p-4">
+                                        <div className="flex-1 text-center">
+                                            <div className="mx-auto mb-2 h-3 w-3 rounded-full bg-blue-500 shadow-[0_0_8px_rgba(59,130,246,0.5)]" />
+                                            <div className="text-sm font-extrabold">{san.match.vdv_xanh.ten}</div>
+                                            <div className="text-[11px] text-vct-text-muted">{san.match.vdv_xanh.doan}</div>
                                         </div>
-                                        <div style={{ fontSize: 32, fontWeight: 900, fontFamily: 'monospace', color: '#10b981', display: 'flex', gap: 12, alignItems: 'center' }}>
-                                            <span style={{ color: '#3b82f6' }}>{san.match.diem_xanh}</span>
-                                            <span style={{ opacity: 0.2 }}>:</span>
-                                            <span style={{ color: '#ef4444' }}>{san.match.diem_do}</span>
+                                        <div className="flex items-center gap-3 font-mono text-3xl font-black">
+                                            <span className="text-blue-500">{san.match.diem_xanh}</span>
+                                            <span className="text-vct-text-muted/20">:</span>
+                                            <span className="text-red-500">{san.match.diem_do}</span>
                                         </div>
-                                        <div style={{ flex: 1, textAlign: 'center' }}>
-                                            <div style={{ width: 12, height: 12, borderRadius: '50%', background: '#ef4444', margin: '0 auto 8px', boxShadow: '0 0 8px rgba(239,68,68,0.5)' }} />
-                                            <div style={{ fontWeight: 800, fontSize: 14 }}>{san.match.vdv_do.ten}</div>
-                                            <div className="text-[11px] opacity-50">{san.match.vdv_do.doan}</div>
+                                        <div className="flex-1 text-center">
+                                            <div className="mx-auto mb-2 h-3 w-3 rounded-full bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.5)]" />
+                                            <div className="text-sm font-extrabold">{san.match.vdv_do.ten}</div>
+                                            <div className="text-[11px] text-vct-text-muted">{san.match.vdv_do.doan}</div>
                                         </div>
                                     </div>
                                 )}
                             </div>
                         ))}
-                    </VCT_Stack>
-                </VCT_Card>
+                    </div>
+                </VCT_SectionCard>
 
-                <VCT_Stack gap={24}>
-                    {/* Cân ký overview */}
-                    <VCT_Card title="⚖️ Tiến trình Cân ký" style={{ flex: 1, cursor: 'pointer' }} onClick={() => router.push('/weigh-in')}>
-                        <VCT_Stack justify="center" style={{ height: '100%', padding: '12px 0' }}>
-                            <VCT_Stack direction="row" justify="space-between" align="center" style={{ marginBottom: 8 }}>
-                                <VCT_Text>Đã cân / Tổng số</VCT_Text>
-                                <VCT_Text style={{ fontWeight: 900 }}>{kpis.can_ky.hoan_thanh} / {kpis.can_ky.tong}</VCT_Text>
-                            </VCT_Stack>
-                            <div style={{ height: 12, background: 'var(--vct-border-strong)', borderRadius: 6, overflow: 'hidden', display: 'flex', marginBottom: 16 }}>
-                                <div style={{ width: `${(kpis.can_ky.hoan_thanh / kpis.can_ky.tong) * 100}%`, background: '#22d3ee' }} />
+                <div className="flex flex-col gap-6">
+                    {/* Weigh-in progress */}
+                    <VCT_SectionCard title="⚖️ Tiến trình Cân ký" accentColor="#22d3ee" hover onClick={() => router.push('/weigh-in')}>
+                        <div className="flex items-center justify-between text-sm mb-2">
+                            <span className="text-vct-text-muted">Đã cân / Tổng số</span>
+                            <span className="font-black">{kpis.can_ky.hoan_thanh} / {kpis.can_ky.tong}</span>
+                        </div>
+                        <div className="mb-4 h-3 overflow-hidden rounded-full bg-vct-input">
+                            <div className="h-full bg-cyan-400 transition-all" style={{ width: `${kpis.can_ky.tong > 0 ? (kpis.can_ky.hoan_thanh / kpis.can_ky.tong) * 100 : 0}%` }} />
+                        </div>
+                        <div className="grid grid-cols-2 gap-3">
+                            <div className={`rounded-xl border p-3 text-center ${kpis.can_ky.vuot > 0 ? 'border-red-500/30 bg-red-500/5' : 'border-vct-border bg-vct-bg'}`}>
+                                <div className={`text-xl font-black ${kpis.can_ky.vuot > 0 ? 'text-red-500' : 'text-vct-text-muted'}`}>{kpis.can_ky.vuot}</div>
+                                <div className="text-[11px] font-bold text-vct-text-muted">Lố cân</div>
                             </div>
-                            <VCT_Stack direction="row" gap={12}>
-                                <div style={{ flex: 1, padding: 12, borderRadius: 12, background: 'rgba(239, 68, 68, 0.05)', border: `1px solid ${kpis.can_ky.vuot > 0 ? '#ef4444' : 'rgba(239, 68, 68, 0.2)'}`, textAlign: 'center' }}>
-                                    <div style={{ fontSize: 20, fontWeight: 900, color: kpis.can_ky.vuot > 0 ? '#ef4444' : 'var(--vct-text-tertiary)' }}>{kpis.can_ky.vuot}</div>
-                                    <VCT_Text variant="small">Lố cân</VCT_Text>
-                                </div>
-                                <div style={{ flex: 1, padding: 12, borderRadius: 12, background: 'rgba(245, 158, 11, 0.05)', border: `1px solid ${kpis.can_ky.cho > 0 ? '#f59e0b' : 'rgba(245, 158, 11, 0.2)'}`, textAlign: 'center' }}>
-                                    <div style={{ fontSize: 20, fontWeight: 900, color: kpis.can_ky.cho > 0 ? '#f59e0b' : 'var(--vct-text-tertiary)' }}>{kpis.can_ky.cho}</div>
-                                    <VCT_Text variant="small">Chờ cân</VCT_Text>
-                                </div>
-                            </VCT_Stack>
-                        </VCT_Stack>
-                    </VCT_Card>
+                            <div className={`rounded-xl border p-3 text-center ${kpis.can_ky.cho > 0 ? 'border-amber-500/30 bg-amber-500/5' : 'border-vct-border bg-vct-bg'}`}>
+                                <div className={`text-xl font-black ${kpis.can_ky.cho > 0 ? 'text-amber-500' : 'text-vct-text-muted'}`}>{kpis.can_ky.cho}</div>
+                                <div className="text-[11px] font-bold text-vct-text-muted">Chờ cân</div>
+                            </div>
+                        </div>
+                    </VCT_SectionCard>
 
-                    {/* Khiếu nại */}
-                    <VCT_Card title="⚠️ Cảnh báo Khiếu nại" style={{ flex: 1, border: kpis.khieu_nai.cho > 0 ? '1px solid rgba(239, 68, 68, 0.5)' : undefined, cursor: 'pointer' }} onClick={() => router.push('/appeals')}>
-                        <VCT_Stack justify="center" align="center" style={{ height: '100%', textAlign: 'center', padding: '16px' }}>
+                    {/* Complaints */}
+                    <VCT_SectionCard
+                        title="⚠️ Khiếu nại"
+                        accentColor={kpis.khieu_nai.cho > 0 ? '#ef4444' : '#10b981'}
+                        hover
+                        onClick={() => router.push('/appeals')}
+                    >
+                        <div className="flex flex-col items-center py-4 text-center">
                             {kpis.khieu_nai.cho > 0 ? (
                                 <>
-                                    <motion.div animate={{ scale: [1, 1.1, 1] }} transition={{ repeat: Infinity, duration: 1.5 }} style={{ width: 64, height: 64, borderRadius: '50%', background: 'rgba(239, 68, 68, 0.1)', color: '#ef4444', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 12 }}>
-                                        <VCT_Icons.AlertCircle size={32} />
+                                    <motion.div
+                                        animate={{ scale: [1, 1.1, 1] }}
+                                        transition={{ repeat: Infinity, duration: 1.5 }}
+                                        className="mb-3 flex h-14 w-14 items-center justify-center rounded-full bg-red-500/10 text-red-500"
+                                    >
+                                        <VCT_Icons.AlertCircle size={28} />
                                     </motion.div>
-                                    <VCT_Text variant="h2" style={{ color: '#ef4444', marginBottom: 4 }}>{kpis.khieu_nai.cho} Khiếu nại mới</VCT_Text>
-                                    <VCT_Text variant="small" style={{ opacity: 0.7 }}>Cần Tổng trọng tài xử lý</VCT_Text>
+                                    <div className="text-2xl font-black text-red-500">{kpis.khieu_nai.cho}</div>
+                                    <div className="mt-1 text-xs font-bold text-vct-text-muted">Khiếu nại mới — Cần xử lý</div>
                                 </>
                             ) : (
                                 <>
-                                    <div style={{ width: 64, height: 64, borderRadius: '50%', background: 'rgba(16, 185, 129, 0.1)', color: '#10b981', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 12 }}>
-                                        <VCT_Icons.Check size={32} />
+                                    <div className="mb-3 flex h-14 w-14 items-center justify-center rounded-full bg-emerald-500/10 text-emerald-500">
+                                        <VCT_Icons.Check size={28} />
                                     </div>
-                                    <VCT_Text style={{ fontWeight: 700, color: '#10b981' }}>Không có khiếu nại kịch trần</VCT_Text>
+                                    <div className="text-sm font-bold text-emerald-500">Không có khiếu nại</div>
                                 </>
                             )}
-                        </VCT_Stack>
-                    </VCT_Card>
-                </VCT_Stack>
+                        </div>
+                    </VCT_SectionCard>
+                </div>
 
                 {/* Activity Feed */}
-                <VCT_Card title="📋 Hoạt động gần đây">
+                <VCT_SectionCard title="📋 Hoạt động gần đây" accentColor="#0ea5e9">
                     <VCT_Timeline events={ACTIVITY_FEED} maxHeight={280} />
-                </VCT_Card>
+                </VCT_SectionCard>
             </div>
 
-            {/* 4. LEADERBOARD (Top 3 Medals) */}
-            <VCT_Card title="🏆 Top 3 Đoàn Xuất Sắc" headerAction={<VCT_Button variant="secondary" onClick={() => router.push('/medals')}>Theo dõi bảng tổng sắp</VCT_Button>}>
+            {/* 4. LEADERBOARD */}
+            <VCT_SectionCard
+                title="🏆 Top 3 Đoàn Xuất Sắc"
+                accentColor="#eab308"
+                headerAction={<VCT_Button variant="secondary" onClick={() => router.push('/medals')}>Bảng tổng sắp</VCT_Button>}
+            >
                 {kpis.top_huy_chuong.length > 0 ? (
                     <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-                        {kpis.top_huy_chuong.map((m, i) => (
-                            <div key={m.id} className="vct-card-hover flex items-center gap-4 rounded-xl border bg-[var(--vct-bg-elevated)] p-4" style={{ borderColor: i === 0 ? '#eab30850' : i === 1 ? '#94a3b850' : '#b4530950' }}>
-                                <div className="text-[32px] font-black" style={{ color: i === 0 ? '#eab308' : i === 1 ? '#94a3b8' : '#b45309' }}>{i + 1}</div>
-                                <VCT_AvatarLetter name={m.ten} size={48} />
-                                <div className="flex-1">
-                                    <div style={{ fontWeight: 800, fontSize: 14 }}>{m.ten}</div>
-                                    <div style={{ fontSize: 12, display: 'flex', gap: 12, marginTop: 4 }}>
-                                        <span style={{ color: '#eab308', fontWeight: 700 }}>🥇 {m.hcv}</span>
-                                        <span style={{ color: '#94a3b8', fontWeight: 700 }}>🥈 {m.hcb}</span>
-                                        <span style={{ color: '#b45309', fontWeight: 700 }}>🥉 {m.hcd}</span>
+                        {kpis.top_huy_chuong.map((m, i) => {
+                            const colors = ['#eab308', '#94a3b8', '#b45309'];
+                            return (
+                                <div key={m.id} className="vct-card-hover flex items-center gap-4 rounded-xl border border-vct-border bg-vct-bg p-4"
+                                    style={{ borderColor: `${colors[i]}30` }}
+                                >
+                                    <div className="text-[32px] font-black" style={{ color: colors[i] }}>{i + 1}</div>
+                                    <VCT_AvatarLetter name={m.ten} size={48} />
+                                    <div className="flex-1 min-w-0">
+                                        <div className="truncate text-sm font-extrabold">{m.ten}</div>
+                                        <div className="mt-1 flex gap-3 text-xs">
+                                            <span className="font-bold text-amber-500">🥇 {m.hcv}</span>
+                                            <span className="font-bold text-slate-400">🥈 {m.hcb}</span>
+                                            <span className="font-bold text-orange-700">🥉 {m.hcd}</span>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        ))}
+                            );
+                        })}
                     </div>
                 ) : (
-                    <div style={{ padding: 40, textAlign: 'center', opacity: 0.5, fontWeight: 700 }}>Chưa có huy chương nào được trao.</div>
+                    <div className="py-10 text-center text-sm font-bold text-vct-text-muted">Chưa có huy chương nào được trao.</div>
                 )}
-            </VCT_Card>
-        </div>
+            </VCT_SectionCard>
+        </VCT_PageContainer>
     );
 };

@@ -5,6 +5,7 @@ import {
     LayoutDashboard,
     Search,
     Settings,
+    House,
     Trophy,
     Swords,
     Medal,
@@ -12,6 +13,7 @@ import {
     Users,
     UserCircle,
     Plus,
+    PlusCircle as PlusCircleIcon,
     Edit2,
     Trash2,
     Check,
@@ -25,6 +27,8 @@ import {
     Download,
     Upload,
     FileText,
+    CreditCard,
+    Database,
     ShieldCheck,
     Shield,
     Phone,
@@ -60,8 +64,10 @@ import {
     Flag,
     ClipboardList,
     LogOut,
+    RefreshCw,
     Bell,
     MoreVertical,
+    SquareCheckBig,
     Layers,
     TrendingUp,
     TrendingDown,
@@ -114,6 +120,7 @@ export const VCT_Icons = {
     Dashboard: (p: IconProps) => <LayoutDashboard {...defaultProps} {...p} />,
     Search: (p: IconProps) => <Search {...defaultProps} {...p} />,
     Settings: (p: IconProps) => <Settings {...defaultProps} {...p} />,
+    Home: (p: IconProps) => <House {...defaultProps} {...p} />,
     x: (p: IconProps) => <X {...defaultProps} {...p} />, // Chữ x thường để tương thích code cũ
     X: (p: IconProps) => <X {...defaultProps} {...p} />,
     Close: (p: IconProps) => <X {...defaultProps} {...p} />,
@@ -128,27 +135,35 @@ export const VCT_Icons = {
     Medal: (p: IconProps) => <Medal {...defaultProps} {...p} />,
     Scale: (p: IconProps) => <Scale {...defaultProps} {...p} />,   // Thích hợp cho cân nặng
     TV: (p: IconProps) => <MonitorPlay {...defaultProps} {...p} />, // Cho chế độ TV Dashboard
+    Monitor: (p: IconProps) => <MonitorPlay {...defaultProps} {...p} />,
 
     // --- Nhân sự & Đoàn (Personnel & Teams) ---
     Users: (p: IconProps) => <Users {...defaultProps} {...p} />,
     User: (p: IconProps) => <UserCircle {...defaultProps} {...p} />,
     UserCircle: (p: IconProps) => <UserCircle {...defaultProps} {...p} />,
     Referee: (p: IconProps) => <UserCircle {...defaultProps} {...p} />, // Cần thay bằng icon trọng tài nếu có
+    Lock: (p: IconProps) => <Shield {...defaultProps} {...p} />,
 
     // --- Tương tác (Actions) ---
     Plus: (p: IconProps) => <Plus {...defaultProps} {...p} />,
+    PlusCircle: (p: IconProps) => <PlusCircleIcon {...defaultProps} {...p} />,
     Edit: (p: IconProps) => <Edit2 {...defaultProps} {...p} />,
     Trash: (p: IconProps) => <Trash2 {...defaultProps} {...p} />,
     Check: (p: IconProps) => <Check {...defaultProps} {...p} />,
     Chevron: (p: IconProps) => <ChevronRight {...defaultProps} {...p} />, // Mặc định trỏ phải
+    ChevronRight: (p: IconProps) => <ChevronRight {...defaultProps} {...p} />,
     ChevronDown: (p: IconProps) => <ChevronDown {...defaultProps} {...p} />,
+    ExpandMore: (p: IconProps) => <ChevronDown {...defaultProps} {...p} />,
     ChevronLeft: (p: IconProps) => <ChevronLeft {...defaultProps} {...p} />,
+    ArrowRight: (p: IconProps) => <ChevronRight {...defaultProps} {...p} />,
     Copy: (p: IconProps) => <Copy {...defaultProps} {...p} />,
     Download: (p: IconProps) => <Download {...defaultProps} {...p} />,
     Upload: (p: IconProps) => <Upload {...defaultProps} {...p} />,
+    Refresh: (p: IconProps) => <RefreshCw {...defaultProps} {...p} />,
 
     // --- Thời gian, Trạng thái & Môi trường ---
     Clock: (p: IconProps) => <Clock {...defaultProps} {...p} />,
+    CheckSquare: (p: IconProps) => <SquareCheckBig {...defaultProps} {...p} />,
     Alert: (p: IconProps) => <AlertTriangle {...defaultProps} {...p} />,
     Moon: (p: IconProps) => <Moon {...defaultProps} {...p} />,
     Sun: (p: IconProps) => <Sun {...defaultProps} {...p} />,
@@ -159,6 +174,7 @@ export const VCT_Icons = {
 
     // --- Liên hệ & Hồ sơ (Contact & Documents) ---
     File: (p: IconProps) => <FileText {...defaultProps} {...p} />,
+    Database: (p: IconProps) => <Database {...defaultProps} {...p} />,
     ShieldCheck: (p: IconProps) => <ShieldCheck {...defaultProps} {...p} />, // Phù hợp cho Pháp lý/Bảo hiểm
     Phone: (p: IconProps) => <Phone {...defaultProps} {...p} />,
     Mail: (p: IconProps) => <Mail {...defaultProps} {...p} />,
@@ -186,6 +202,7 @@ export const VCT_Icons = {
     CheckCircle: (p: IconProps) => <CheckCircle {...defaultProps} {...p} />,
     RotateCcw: (p: IconProps) => <RotateCcw {...defaultProps} {...p} />,
     Eye: (p: IconProps) => <Eye {...defaultProps} {...p} />,
+    EyeOff: (p: IconProps) => <Eye {...defaultProps} {...p} />,
     Flag: (p: IconProps) => <Flag {...defaultProps} {...p} />,
     ClipboardList: (p: IconProps) => <ClipboardList {...defaultProps} {...p} />,
 
@@ -198,6 +215,7 @@ export const VCT_Icons = {
     Layers: (p: IconProps) => <Layers {...defaultProps} {...p} />,
     TrendingUp: (p: IconProps) => <TrendingUp {...defaultProps} {...p} />,
     TrendingDown: (p: IconProps) => <TrendingDown {...defaultProps} {...p} />,
+    CreditCard: (p: IconProps) => <CreditCard {...defaultProps} {...p} />,
     DollarSign: (p: IconProps) => <DollarSign {...defaultProps} {...p} />,
     ArrowDownLeft: (p: IconProps) => <ArrowDownLeft {...defaultProps} {...p} />,
     ArrowUpRight: (p: IconProps) => <ArrowUpRight {...defaultProps} {...p} />,
@@ -207,6 +225,7 @@ export const VCT_Icons = {
     Library: (p: IconProps) => <Library {...defaultProps} {...p} />,
     ZoomIn: (p: IconProps) => <ZoomIn {...defaultProps} {...p} />,
     ZoomOut: (p: IconProps) => <ZoomOut {...defaultProps} {...p} />,
+    BarChart: (p: IconProps) => <BarChart2 {...defaultProps} {...p} />,
     BarChart2: (p: IconProps) => <BarChart2 {...defaultProps} {...p} />,
     Laptop: (p: IconProps) => <Laptop {...defaultProps} {...p} />,
     ShoppingBag: (p: IconProps) => <ShoppingBag {...defaultProps} {...p} />,

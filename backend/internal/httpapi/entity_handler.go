@@ -6,6 +6,7 @@ import (
 
 	"vct-platform/backend/internal/auth"
 	"vct-platform/backend/internal/authz"
+	"vct-platform/backend/internal/pkg"
 )
 
 // ── Entity CRUD Handlers ─────────────────────────────────────
@@ -58,7 +59,9 @@ func (s *Server) handleEntityCollection(entity string, principal *auth.Principal
 			writeAuthError(w, err)
 			return
 		}
-		success(w, http.StatusOK, s.store.List(entity))
+		items := s.store.List(entity)
+		pageReq := pkg.ParsePagination(r)
+		success(w, http.StatusOK, pkg.Paginate(items, pageReq))
 	case http.MethodPost:
 		if err := s.authorizeEntityAction(principal, entity, authz.ActionCreate); err != nil {
 			writeAuthError(w, err)

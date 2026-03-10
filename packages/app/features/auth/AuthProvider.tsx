@@ -9,9 +9,10 @@ import {
   useRef,
   useState,
 } from 'react'
+import { ENTITY_AUTHZ_ROLES } from './entity-authz.generated'
 import { isRouteAccessible } from '../layout/route-registry'
 import { authClient, isAuthClientError } from './auth-client'
-import type { AuthSession, AuthUser, LoginInput, UserRole } from './types'
+import type { AuthSession, AuthUser, LoginInput, UserRole, WorkspaceAccess } from './types'
 
 interface AuthContextValue {
   currentUser: AuthUser
@@ -24,24 +25,40 @@ interface AuthContextValue {
   logout: () => Promise<void>
   setRole: (role: UserRole) => void
   canAccessRoute: (path: string) => boolean
+  /** O(1) permission check using flattened permission Set */
+  hasPermission: (resource: string, action: string) => boolean
+  /** Currently active workspace context */
+  activeWorkspace: WorkspaceAccess | null
+  /** Switch active workspace */
+  setActiveWorkspace: (workspace: WorkspaceAccess | null) => void
 }
 
 const STORAGE_KEY = 'vct:auth-session'
 const GUEST_ROLE_KEY = 'vct:guest-role'
+const WORKSPACE_STORAGE_KEY = 'vct:active-workspace'
+const LEGACY_WORKSPACE_STORAGE_KEY = 'vct-workspace'
 const ACCESS_TOKEN_REFRESH_SKEW_MS = 45 * 1000
+const memoryStorage = new Map<string, string>()
 
-const USER_ROLES: UserRole[] = [
-  'admin',
-  'btc',
-  'referee_manager',
-  'referee',
-  'delegate',
-]
+const USER_ROLES: UserRole[] = [...ENTITY_AUTHZ_ROLES]
+const WORKSPACE_TYPES = new Set([
+  'federation_admin',
+  'tournament_ops',
+  'club_management',
+  'referee_console',
+  'athlete_portal',
+  'public_spectator',
+  'system_admin',
+])
+
 const DEFAULT_USER: AuthUser = {
   id: 'guest',
   name: 'Khách vận hành',
   username: 'guest',
   role: 'delegate',
+  roles: [],
+  permissions: [],
+  workspaces: [],
 }
 
 const isRecord = (value: unknown): value is Record<string, unknown> =>
@@ -50,10 +67,13 @@ const isRecord = (value: unknown): value is Record<string, unknown> =>
 const isRole = (value: unknown): value is UserRole =>
   typeof value === 'string' && USER_ROLES.includes(value as UserRole)
 
-const normalizeShift = (value: unknown): 'sang' | 'chieu' | 'toi' => {
-  if (value === 'chieu' || value === 'toi') return value
-  return 'sang'
-}
+const isWorkspaceAccessShape = (value: unknown): value is WorkspaceAccess =>
+  isRecord(value) &&
+  typeof value.type === 'string' &&
+  WORKSPACE_TYPES.has(value.type) &&
+  typeof value.scopeId === 'string' &&
+  typeof value.scopeName === 'string' &&
+  typeof value.role === 'string'
 
 const normalizeTimestamp = (value: unknown, fallbackMs: number): string => {
   if (typeof value === 'string') {
@@ -89,7 +109,16 @@ const normalizeStoredSession = (value: unknown): AuthSession | null => {
     id: rawUser.id,
     name: typeof rawUser.name === 'string' ? rawUser.name : 'Người dùng',
     username: typeof rawUser.username === 'string' ? rawUser.username : undefined,
+    email: typeof rawUser.email === 'string' ? rawUser.email : undefined,
+    avatarUrl: typeof rawUser.avatarUrl === 'string' ? rawUser.avatarUrl : undefined,
+    tenantId: typeof rawUser.tenantId === 'string' ? rawUser.tenantId : undefined,
+    locale: typeof rawUser.locale === 'string' ? rawUser.locale : undefined,
+    timezone: typeof rawUser.timezone === 'string' ? rawUser.timezone : undefined,
     role: rawUser.role,
+    roles: Array.isArray(rawUser.roles) ? (rawUser.roles as AuthUser['roles']) : [],
+    permissions: Array.isArray(rawUser.permissions) ? (rawUser.permissions as string[]) : [],
+    workspaces: Array.isArray(rawUser.workspaces) ? (rawUser.workspaces as AuthUser['workspaces']) : [],
+    metadata: isRecord(rawUser.metadata) ? rawUser.metadata : undefined,
   }
 
   return {
@@ -98,17 +127,106 @@ const normalizeStoredSession = (value: unknown): AuthSession | null => {
     refreshToken,
     tokenType: 'Bearer',
     user,
-    tournamentCode:
-      typeof value.tournamentCode === 'string' && value.tournamentCode.trim()
-        ? value.tournamentCode.trim()
-        : 'VCT-2026',
-    operationShift: normalizeShift(value.operationShift),
     expiresAt: normalizeTimestamp(value.expiresAt, 5 * 60 * 1000),
     refreshExpiresAt: normalizeTimestamp(
       value.refreshExpiresAt,
       24 * 60 * 60 * 1000
     ),
   }
+}
+
+const normalizeStoredWorkspace = (value: unknown): WorkspaceAccess | null => {
+  if (isWorkspaceAccessShape(value)) {
+    return value
+  }
+
+  if (!isRecord(value)) return null
+
+  const activeWorkspace = isRecord(value.activeWorkspace)
+    ? value.activeWorkspace
+    : isRecord(value.state) && isRecord(value.state.activeWorkspace)
+      ? value.state.activeWorkspace
+      : null
+
+  if (!activeWorkspace) return null
+  if (
+    typeof activeWorkspace.type !== 'string' ||
+    !WORKSPACE_TYPES.has(activeWorkspace.type)
+  ) {
+    return null
+  }
+
+  const scope = isRecord(activeWorkspace.scope) ? activeWorkspace.scope : null
+  const scopeId =
+    typeof activeWorkspace.scopeId === 'string'
+      ? activeWorkspace.scopeId
+      : typeof scope?.id === 'string'
+        ? scope.id
+        : null
+  const scopeName =
+    typeof activeWorkspace.scopeName === 'string'
+      ? activeWorkspace.scopeName
+      : typeof scope?.name === 'string'
+        ? scope.name
+        : typeof activeWorkspace.label === 'string'
+          ? activeWorkspace.label
+          : null
+
+  if (!scopeId || !scopeName) return null
+
+  return {
+    type: activeWorkspace.type as WorkspaceAccess['type'],
+    scopeId,
+    scopeName,
+    role:
+      typeof activeWorkspace.role === 'string'
+        ? activeWorkspace.role
+        : 'viewer',
+  }
+}
+
+const getWebStorage = () => {
+  if (typeof window === 'undefined') return null
+  if (typeof window.localStorage === 'undefined') return null
+  return window.localStorage
+}
+
+const readPersisted = (key: string) => {
+  const storage = getWebStorage()
+  if (storage) {
+    try {
+      return storage.getItem(key)
+    } catch {
+      return memoryStorage.get(key) ?? null
+    }
+  }
+  return memoryStorage.get(key) ?? null
+}
+
+const writePersisted = (key: string, value: string) => {
+  const storage = getWebStorage()
+  if (storage) {
+    try {
+      storage.setItem(key, value)
+      return
+    } catch {
+      // fallback below
+    }
+  }
+  memoryStorage.set(key, value)
+}
+
+const removePersisted = (key: string) => {
+  const storage = getWebStorage()
+  if (storage) {
+    try {
+      storage.removeItem(key)
+      return
+    } catch {
+      // fallback below
+    }
+  }
+  memoryStorage.delete(key)
 }
 
 const AuthContext = createContext<AuthContextValue>({
@@ -122,11 +240,13 @@ const AuthContext = createContext<AuthContextValue>({
   logout: async () => undefined,
   setRole: () => undefined,
   canAccessRoute: () => true,
+  hasPermission: () => false,
+  activeWorkspace: null,
+  setActiveWorkspace: () => undefined,
 })
 
 const readStoredSession = (): AuthSession | null => {
-  if (typeof window === 'undefined') return null
-  const raw = window.localStorage.getItem(STORAGE_KEY)
+  const raw = readPersisted(STORAGE_KEY)
   if (!raw) return null
 
   try {
@@ -136,19 +256,37 @@ const readStoredSession = (): AuthSession | null => {
   }
 }
 
+const readStoredWorkspace = (): WorkspaceAccess | null => {
+  for (const key of [WORKSPACE_STORAGE_KEY, LEGACY_WORKSPACE_STORAGE_KEY]) {
+    const raw = readPersisted(key)
+    if (!raw) continue
+
+    try {
+      const workspace = normalizeStoredWorkspace(JSON.parse(raw))
+      if (workspace) return workspace
+    } catch {
+      // ignore malformed persisted workspace
+    }
+  }
+
+  return null
+}
+
 export const useAuth = () => useContext(AuthContext)
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [session, setSession] = useState<AuthSession | null>(null)
   const [guestRole, setGuestRole] = useState<UserRole>('delegate')
   const [isHydrating, setIsHydrating] = useState(true)
+  const [activeWorkspace, setActiveWorkspaceState] = useState<WorkspaceAccess | null>(null)
   const refreshInFlightRef = useRef<Promise<AuthSession> | null>(null)
 
   const clearSession = useCallback(() => {
     setSession(null)
-    if (typeof window !== 'undefined') {
-      window.localStorage.removeItem(STORAGE_KEY)
-    }
+    setActiveWorkspaceState(null)
+    removePersisted(STORAGE_KEY)
+    removePersisted(WORKSPACE_STORAGE_KEY)
+    removePersisted(LEGACY_WORKSPACE_STORAGE_KEY)
   }, [])
 
   const refreshSession = useCallback(async (source: AuthSession) => {
@@ -157,10 +295,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
 
     const request = authClient
-      .refresh(source.refreshToken, {
-        tournamentCode: source.tournamentCode,
-        operationShift: source.operationShift,
-      })
+      .refresh(source.refreshToken)
       .then((next) => {
         setSession(next)
         return next
@@ -179,11 +314,14 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       return
     }
 
-    const savedGuestRole = window.localStorage.getItem(GUEST_ROLE_KEY) as
-      | UserRole
-      | null
+    const savedGuestRole = readPersisted(GUEST_ROLE_KEY) as UserRole | null
     if (savedGuestRole && isRole(savedGuestRole)) {
       setGuestRole(savedGuestRole)
+    }
+
+    const storedWorkspace = readStoredWorkspace()
+    if (storedWorkspace) {
+      setActiveWorkspaceState(storedWorkspace)
     }
 
     const stored = readStoredSession()
@@ -208,13 +346,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           working = await refreshSession(working)
         }
 
-        let me = await authClient.me(working.accessToken)
+        const me = await authClient.me(working.accessToken)
         const nextSession: AuthSession = {
           ...working,
           token: working.accessToken,
           user: me.user,
-          tournamentCode: me.tournamentCode,
-          operationShift: me.operationShift,
           expiresAt: me.expiresAt,
           refreshExpiresAt: me.refreshExpiresAt || working.refreshExpiresAt,
         }
@@ -233,8 +369,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
               ...refreshed,
               token: refreshed.accessToken,
               user: me.user,
-              tournamentCode: me.tournamentCode,
-              operationShift: me.operationShift,
               expiresAt: me.expiresAt,
               refreshExpiresAt: me.refreshExpiresAt || refreshed.refreshExpiresAt,
             })
@@ -276,32 +410,30 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       return
     }
 
-    const timer = window.setTimeout(() => {
+    const timer = setTimeout(() => {
       void refreshSession(session).catch(() => {
         clearSession()
       })
     }, msUntilRefresh)
-    return () => window.clearTimeout(timer)
+    return () => clearTimeout(timer)
   }, [clearSession, refreshSession, session])
 
   useEffect(() => {
     if (typeof window === 'undefined') return
     if (isHydrating) return
     if (!session) {
-      window.localStorage.removeItem(STORAGE_KEY)
+      removePersisted(STORAGE_KEY)
       return
     }
-    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(session))
+    writePersisted(STORAGE_KEY, JSON.stringify(session))
   }, [isHydrating, session])
 
   const login = useCallback(async (input: LoginInput) => {
     const nextSession = await authClient.login(input)
     setSession(nextSession)
     setGuestRole(nextSession.user.role)
-    if (typeof window !== 'undefined') {
-      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(nextSession))
-      window.localStorage.setItem(GUEST_ROLE_KEY, nextSession.user.role)
-    }
+    writePersisted(STORAGE_KEY, JSON.stringify(nextSession))
+    writePersisted(GUEST_ROLE_KEY, nextSession.user.role)
   }, [])
 
   const logout = useCallback(async () => {
@@ -321,21 +453,19 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       setSession((prev) =>
         prev
           ? {
-              ...prev,
-              user: {
-                ...prev.user,
-                role,
-              },
-            }
+            ...prev,
+            user: {
+              ...prev.user,
+              role,
+            },
+          }
           : prev
       )
     } else {
       setGuestRole(role)
     }
 
-    if (typeof window !== 'undefined') {
-      window.localStorage.setItem(GUEST_ROLE_KEY, role)
-    }
+    writePersisted(GUEST_ROLE_KEY, role)
   }, [session])
 
   const currentUser: AuthUser = useMemo(() => {
@@ -351,6 +481,41 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     [currentUser.role]
   )
 
+  // O(1) permission Set built once per user change
+  const permissionSet = useMemo(() => {
+    const set = new Set<string>()
+    if (currentUser.permissions) {
+      for (const p of currentUser.permissions) set.add(p)
+    }
+    return set
+  }, [currentUser.permissions])
+
+  const hasPermission = useCallback(
+    (resource: string, action: string): boolean => {
+      if (currentUser.role === 'admin') return true
+      return (
+        permissionSet.has('*') ||
+        permissionSet.has(`${resource}.*`) ||
+        permissionSet.has(`${resource}.${action}`)
+      )
+    },
+    [currentUser.role, permissionSet]
+  )
+
+  const setActiveWorkspace = useCallback(
+    (workspace: WorkspaceAccess | null) => {
+      setActiveWorkspaceState(workspace)
+      if (workspace) {
+        writePersisted(WORKSPACE_STORAGE_KEY, JSON.stringify(workspace))
+        removePersisted(LEGACY_WORKSPACE_STORAGE_KEY)
+      } else {
+        removePersisted(WORKSPACE_STORAGE_KEY)
+        removePersisted(LEGACY_WORKSPACE_STORAGE_KEY)
+      }
+    },
+    []
+  )
+
   const value = useMemo(
     () => ({
       currentUser,
@@ -363,17 +528,23 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       logout,
       setRole,
       canAccessRoute,
+      hasPermission,
+      activeWorkspace,
+      setActiveWorkspace,
     }),
     [
       canAccessRoute,
       currentUser,
+      hasPermission,
+      activeWorkspace,
+      setActiveWorkspace,
       isHydrating,
       login,
       logout,
-      setRole,
-      session?.accessToken,
       session?.operationShift,
       session?.tournamentCode,
+      setRole,
+      session?.accessToken,
     ]
   )
 

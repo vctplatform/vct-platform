@@ -4,11 +4,13 @@ import * as React from 'react'
 import { useState, useMemo, useCallback, useEffect } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import {
-    VCT_Badge, VCT_Button, VCT_KpiCard, VCT_Stack, VCT_Toast,
+    VCT_Badge, VCT_Button, VCT_Stack, VCT_Toast,
     VCT_SearchInput, VCT_Modal, VCT_Input, VCT_Field, VCT_Select,
     VCT_ConfirmDialog, VCT_AvatarLetter, VCT_EmptyState, VCT_FilterChips,
     VCT_BulkActionsBar
 } from '../components/vct-ui'
+import { VCT_PageContainer, VCT_StatRow } from '../components/vct-ui'
+import type { StatItem } from '../components/VCT_StatRow'
 import { VCT_Icons } from '../components/vct-icons'
 
 // ════════════════════════════════════════
@@ -243,7 +245,7 @@ export const Page_organizations = () => {
     ]
 
     return (
-        <div className="mx-auto max-w-[1400px] p-4 pb-24">
+        <VCT_PageContainer size="wide" animated>
             <VCT_Toast isVisible={toast.show} message={toast.msg} type={toast.type} onClose={() => setToast(prev => ({ ...prev, show: false }))} />
 
             <div className="mb-6">
@@ -252,12 +254,12 @@ export const Page_organizations = () => {
             </div>
 
             {/* ── KPI ROW ── */}
-            <div className="vct-stagger mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
-                <VCT_KpiCard label="Tổng tổ chức" value={orgs.length} icon={<VCT_Icons.Building2 size={24} />} color="#0ea5e9" />
-                <VCT_KpiCard label="Tổng CLB trực thuộc" value={totalClubs} icon={<VCT_Icons.Building2 size={24} />} color="#f59e0b" />
-                <VCT_KpiCard label="Hội viên" value={totalMembers.toLocaleString('vi-VN')} icon={<VCT_Icons.Users size={24} />} color="#10b981" />
-                <VCT_KpiCard label="Đang hoạt động" value={orgs.filter(o => o.status === 'active').length} icon={<VCT_Icons.Activity size={24} />} color="#8b5cf6" />
-            </div>
+            <VCT_StatRow items={[
+                { label: 'Tổng tổ chức', value: orgs.length, icon: <VCT_Icons.Building2 size={18} />, color: '#0ea5e9' },
+                { label: 'CLB trực thuộc', value: totalClubs, icon: <VCT_Icons.Building2 size={18} />, color: '#f59e0b' },
+                { label: 'Hội viên', value: totalMembers.toLocaleString('vi-VN'), icon: <VCT_Icons.Users size={18} />, color: '#10b981' },
+                { label: 'Đang hoạt động', value: orgs.filter(o => o.status === 'active').length, icon: <VCT_Icons.Activity size={18} />, color: '#8b5cf6' },
+            ] as StatItem[]} className="mb-6" />
 
             {/* ── FILTER CHIPS ── */}
             <VCT_FilterChips filters={activeFilters} onRemove={removeFilter} onClearAll={() => { setStatusFilter(null); setTypeFilter(null); setSearch(''); }} />
@@ -354,6 +356,6 @@ export const Page_organizations = () => {
             <VCT_ConfirmDialog isOpen={!!deleteTarget} onClose={() => setDeleteTarget(null)} onConfirm={handleDelete}
                 title="Xác nhận xóa" message={`Bạn có chắc muốn xóa tổ chức "${deleteTarget?.name}"? Hệ thống sẽ ẩn tổ chức này thay vì xóa hoàn toàn để giữ toàn vẹn dữ liệu lịch sử.`}
                 confirmLabel="Xóa" />
-        </div>
+        </VCT_PageContainer>
     )
 }

@@ -36,6 +36,10 @@ export interface ApiAdapterConfig {
   headers?: Record<string, string>
   getAuthToken?: () => string | null | undefined
   endpoints?: ApiEndpointMap
+  /** Request timeout in ms (default: 30000) */
+  requestTimeout?: number
+  /** Max retry attempts for idempotent requests (default: 3) */
+  maxRetries?: number
 }
 
 const memoryStore = new Map<string, string>()
@@ -214,6 +218,11 @@ export const createApiAdapter = <T extends { id: string }>(
     responseCache.clear()
   }
 
+  const requestTimeout = config.requestTimeout ?? 30_000
+  const maxRetries = config.maxRetries ?? 3
+
+  const sleep = (ms: number) => new Promise<void>((resolve) => setTimeout(resolve, ms))
+
   const request = async <R>(
     method: HttpMethod,
     path: string,
@@ -248,37 +257,73 @@ export const createApiAdapter = <T extends { id: string }>(
       }
     }
 
-    const response = await fetch(`${baseUrl}${path}${query}`, {
-      method,
-      headers,
-      body:
-        options.body === undefined ? undefined : JSON.stringify(options.body),
-    })
+    // Retry logic: retry GET and 5xx errors with exponential backoff
+    const isIdempotent = method === 'GET' || method === 'PUT' || method === 'DELETE'
+    const attempts = isIdempotent ? maxRetries : 1
+    let lastError: Error | null = null
 
-    if (!response.ok) {
-      let reason = response.statusText
-      try {
-        const payload = (await response.json()) as { message?: string }
-        if (payload?.message) reason = payload.message
-      } catch {
-        // fallback to status text
+    for (let attempt = 0; attempt < attempts; attempt++) {
+      if (attempt > 0) {
+        await sleep(Math.min(1000 * Math.pow(2, attempt - 1), 8000))
       }
-      throw new Error(
-        `ApiAdapter "${entityName}" lỗi ${response.status}: ${reason}`
-      )
+
+      const controller = new AbortController()
+      const timeout = setTimeout(() => controller.abort(), requestTimeout)
+
+      try {
+        const response = await fetch(`${baseUrl}${path}${query}`, {
+          method,
+          headers,
+          body:
+            options.body === undefined ? undefined : JSON.stringify(options.body),
+          signal: controller.signal,
+        })
+
+        clearTimeout(timeout)
+
+        if (!response.ok) {
+          // Retry on 5xx server errors for idempotent requests
+          if (response.status >= 500 && attempt < attempts - 1 && isIdempotent) {
+            lastError = new Error(
+              `ApiAdapter "${entityName}" lỗi ${response.status}: ${response.statusText}`
+            )
+            continue
+          }
+
+          let reason = response.statusText
+          try {
+            const payload = (await response.json()) as { message?: string }
+            if (payload?.message) reason = payload.message
+          } catch {
+            // fallback to status text
+          }
+          throw new Error(
+            `ApiAdapter "${entityName}" lỗi ${response.status}: ${reason}`
+          )
+        }
+
+        if (options.parseAs === 'text') {
+          return (await response.text()) as R
+        }
+        if (response.status === 204) {
+          return undefined as R
+        }
+        const payload = (await response.json()) as R
+        if (isCacheable) {
+          writeCache(key, payload)
+        }
+        return payload
+      } catch (error) {
+        clearTimeout(timeout)
+        if (error instanceof DOMException && error.name === 'AbortError') {
+          lastError = new Error(`ApiAdapter "${entityName}" request timeout (${requestTimeout}ms)`)
+          if (attempt < attempts - 1 && isIdempotent) continue
+        }
+        throw error instanceof Error ? error : (lastError ?? new Error('Unknown error'))
+      }
     }
 
-    if (options.parseAs === 'text') {
-      return (await response.text()) as R
-    }
-    if (response.status === 204) {
-      return undefined as R
-    }
-    const payload = (await response.json()) as R
-    if (isCacheable) {
-      writeCache(key, payload)
-    }
-    return payload
+    throw lastError ?? new Error(`ApiAdapter "${entityName}" request failed after ${attempts} attempts`)
   }
 
   return {

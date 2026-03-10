@@ -3,18 +3,22 @@ import * as React from 'react'
 import type { CSSProperties, FC, ReactNode } from 'react'
 import { cn, VCT_Button, VCT_Text } from './vct-ui-layout'
 
-type BadgeTone = 'success' | 'warning' | 'danger' | 'info'
+type BadgeTone = 'success' | 'warning' | 'danger' | 'info' | 'neutral'
 
 const BADGE_CLASS: Record<BadgeTone, string> = {
   success: 'border-emerald-500/30 bg-emerald-500/10 text-emerald-600',
   warning: 'border-amber-500/30 bg-amber-500/10 text-amber-600',
   danger: 'border-red-500/30 bg-red-500/10 text-red-600',
   info: 'border-sky-500/30 bg-sky-500/10 text-sky-600',
+  neutral: 'border-gray-400/30 bg-gray-400/10 text-gray-500',
 }
 
 export interface VCTBadgeProps {
-  text: ReactNode
+  text?: ReactNode
+  children?: ReactNode
   type?: BadgeTone | string
+  variant?: BadgeTone | string
+  size?: 'sm' | 'md' | 'lg' | string
   pulse?: boolean
   style?: CSSProperties
   className?: string
@@ -26,6 +30,7 @@ export interface VCTKpiCardProps {
   icon?: ReactNode
   color?: string
   sub?: ReactNode
+  change?: ReactNode
   style?: CSSProperties
   className?: string
 }
@@ -134,6 +139,8 @@ export interface VCTTabsProps {
   tabs: TabItem[]
   activeTab: string
   onChange: (tab: string) => void
+  /** Visual variant — pill (default) or underline */
+  variant?: 'pill' | 'underline'
   className?: string
 }
 
@@ -156,26 +163,39 @@ const textAlignClass = (align?: 'left' | 'center' | 'right') => {
 
 export const VCT_Badge = ({
   text,
+  children,
   type = 'success',
+  variant,
+  size = 'md',
   pulse = true,
   style,
   className,
 }: VCTBadgeProps) => {
-  const tone = (['success', 'warning', 'danger', 'info'].includes(type)
-    ? type
+  const toneCandidate = variant ?? type
+  const tone = (['success', 'warning', 'danger', 'info', 'neutral'].includes(toneCandidate)
+    ? toneCandidate
     : 'success') as BadgeTone
+  const content = text ?? children
+
+  const sizeClass =
+    size === 'sm'
+      ? 'px-2 py-0.5 text-[10px]'
+      : size === 'lg'
+        ? 'px-3 py-1.5 text-xs'
+        : 'px-2.5 py-1 text-[11px]'
 
   return (
     <span
       className={cn(
-        'inline-flex items-center gap-1 rounded-full border px-2.5 py-1 text-[11px] font-extrabold uppercase tracking-[0.06em]',
+        'inline-flex items-center gap-1 rounded-full border font-extrabold uppercase tracking-[0.06em]',
+        sizeClass,
         BADGE_CLASS[tone],
         className ?? ''
       )}
       style={style}
     >
       {pulse ? <span className="h-1.5 w-1.5 rounded-full bg-current opacity-80" /> : null}
-      {text}
+      {content}
     </span>
   )
 }
@@ -186,6 +206,7 @@ export const VCT_KpiCard = ({
   icon,
   color = 'var(--vct-accent-cyan)',
   sub,
+  change,
   style,
   className,
 }: VCTKpiCardProps) => (
@@ -211,6 +232,7 @@ export const VCT_KpiCard = ({
       {value}
     </div>
     {sub ? <div className="mt-1 text-xs text-vct-text-muted">{sub}</div> : null}
+    {change ? <div className="mt-1 text-xs font-bold text-vct-text-muted">{change}</div> : null}
   </article>
 )
 
@@ -283,9 +305,9 @@ export const VCT_AvatarGroup = ({
   const source = names
     ? names
     : (users ?? []).map((item) => {
-        if (typeof item === 'string') return item
-        return item.name ?? 'U'
-      })
+      if (typeof item === 'string') return item
+      return item.name ?? 'U'
+    })
 
   const visible = source.slice(0, max)
   const remain = Math.max(0, source.length - visible.length)
@@ -530,42 +552,62 @@ export const VCT_Tabs = ({
   tabs,
   activeTab,
   onChange,
+  variant: tabVariant = 'pill',
   className,
-}: VCTTabsProps) => (
-  <div
-    role="tablist"
-    className={cn(
-      'inline-flex flex-wrap items-center gap-1 rounded-2xl border border-vct-border bg-vct-input p-1',
-      className ?? ''
-    )}
-  >
-    {tabs.map((tab, index) => {
-      const tabValue = tab.key ?? tab.id ?? `${index}`
-      const active = tabValue === activeTab
-      return (
-        <button
-          key={tabValue}
-          type="button"
-          role="tab"
-          aria-selected={active}
-          onClick={() => onChange(tabValue)}
-          className={cn(
-            'inline-flex items-center gap-1.5 rounded-xl px-3 py-2 text-sm font-bold transition',
-            active ? 'bg-vct-elevated text-vct-text shadow-sm' : 'text-vct-text-muted hover:bg-vct-elevated/70'
-          )}
-        >
-          {tab.icon ? <span aria-hidden="true">{tab.icon}</span> : null}
-          <span>{tab.label}</span>
-          {typeof tab.count === 'number' ? (
-            <span className="rounded-md bg-vct-input px-1.5 py-0.5 text-[10px]">
-              {tab.count}
-            </span>
-          ) : null}
-        </button>
-      )
-    })}
-  </div>
-)
+}: VCTTabsProps) => {
+  const isUnderline = tabVariant === 'underline'
+
+  return (
+    <div
+      role="tablist"
+      className={cn(
+        'inline-flex flex-wrap items-center',
+        isUnderline
+          ? 'gap-0 border-b-2 border-vct-border'
+          : 'gap-1 rounded-2xl border border-vct-border bg-vct-input p-1',
+        className ?? ''
+      )}
+    >
+      {tabs.map((tab, index) => {
+        const tabValue = tab.key ?? tab.id ?? `${index}`
+        const active = tabValue === activeTab
+        return (
+          <button
+            key={tabValue}
+            type="button"
+            role="tab"
+            aria-selected={active}
+            onClick={() => onChange(tabValue)}
+            className={cn(
+              'inline-flex items-center gap-1.5 text-sm font-bold transition',
+              isUnderline
+                ? cn(
+                  'px-4 py-3 -mb-[2px] border-b-2',
+                  active
+                    ? 'border-vct-accent text-vct-accent'
+                    : 'border-transparent text-vct-text-muted hover:text-vct-text hover:border-vct-border'
+                )
+                : cn(
+                  'rounded-xl px-3 py-2',
+                  active
+                    ? 'bg-vct-elevated text-vct-text shadow-sm'
+                    : 'text-vct-text-muted hover:bg-vct-elevated/70'
+                )
+            )}
+          >
+            {tab.icon ? <span aria-hidden="true">{tab.icon}</span> : null}
+            <span>{tab.label}</span>
+            {typeof tab.count === 'number' ? (
+              <span className="rounded-md bg-vct-input px-1.5 py-0.5 text-[10px]">
+                {tab.count}
+              </span>
+            ) : null}
+          </button>
+        )
+      })}
+    </div>
+  )
+}
 
 export const VCT_AvatarLetter = ({
   name,

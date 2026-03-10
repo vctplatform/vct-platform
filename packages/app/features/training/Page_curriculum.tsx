@@ -4,11 +4,13 @@ import * as React from 'react'
 import { useState, useMemo, useCallback } from 'react'
 import { AnimatePresence } from 'framer-motion'
 import {
-    VCT_Badge, VCT_Button, VCT_KpiCard, VCT_Stack, VCT_Toast,
+    VCT_Badge, VCT_Button, VCT_Stack, VCT_Toast,
     VCT_SearchInput, VCT_Modal, VCT_Input, VCT_Field, VCT_Select,
     VCT_ConfirmDialog, VCT_EmptyState, VCT_FilterChips,
     VCT_BulkActionsBar, VCT_Tabs
 } from '../components/vct-ui'
+import { VCT_PageContainer, VCT_PageHero, VCT_StatRow } from '../components/vct-ui'
+import type { StatItem } from '../components/VCT_StatRow'
 import { VCT_Icons } from '../components/vct-icons'
 
 // ════════════════════════════════════════
@@ -251,21 +253,23 @@ export const Page_curriculum = () => {
     ]
 
     return (
-        <div className="mx-auto max-w-[1400px] p-4 pb-24">
+        <VCT_PageContainer size="wide" animated>
             <VCT_Toast isVisible={toast.show} message={toast.msg} type={toast.type} onClose={() => setToast(prev => ({ ...prev, show: false }))} />
 
-            <div className="mb-6">
-                <h1 className="text-2xl font-bold tracking-tight text-[var(--vct-text-primary)]">Giáo trình & Bài quyền</h1>
-                <p className="text-sm text-[var(--vct-text-secondary)] mt-1">Xây dựng và quản lý chương trình huấn luyện, tiêu chuẩn chuyên môn các cấp.</p>
-            </div>
+            <VCT_PageHero
+                icon={<VCT_Icons.Book size={24} />}
+                title="Giáo trình & Bài quyền"
+                subtitle="Xây dựng và quản lý chương trình huấn luyện, tiêu chuẩn chuyên môn các cấp."
+                gradientFrom="rgba(14, 165, 233, 0.08)"
+                gradientTo="rgba(245, 158, 11, 0.06)"
+            />
 
-            {/* ── KPI ROW ── */}
-            <div className="vct-stagger mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
-                <VCT_KpiCard label="Giáo trình hiện hành" value={civs.filter(c => c.status === 'published').length} icon={<VCT_Icons.Book size={24} />} color="#0ea5e9" />
-                <VCT_KpiCard label="Tổng Bài quyền" value={totalForms} icon={<VCT_Icons.Video size={24} />} color="#f59e0b" />
-                <VCT_KpiCard label="Kỹ thuật cơ bản" value={totalTechniques} icon={<VCT_Icons.Activity size={24} />} color="#10b981" />
-                <VCT_KpiCard label="Cấp đai quản lý" value={Object.keys(BELT_MAP).length} icon={<VCT_Icons.Award size={24} />} color="#8b5cf6" />
-            </div>
+            <VCT_StatRow items={[
+                { label: 'Hiện hành', value: civs.filter(c => c.status === 'published').length, icon: <VCT_Icons.Book size={18} />, color: '#0ea5e9' },
+                { label: 'Bài quyền', value: totalForms, icon: <VCT_Icons.Video size={18} />, color: '#f59e0b' },
+                { label: 'Kỹ thuật', value: totalTechniques, icon: <VCT_Icons.Activity size={18} />, color: '#10b981' },
+                { label: 'Cấp đai', value: Object.keys(BELT_MAP).length, icon: <VCT_Icons.Award size={18} />, color: '#8b5cf6' },
+            ] as StatItem[]} className="mb-6" />
 
             {/* ── FILTER CHIPS ── */}
             <VCT_FilterChips filters={activeFilters} onRemove={removeFilter} onClearAll={() => { setStatusFilter(null); setSearch(''); }} />
@@ -371,6 +375,6 @@ export const Page_curriculum = () => {
             <VCT_ConfirmDialog isOpen={!!deleteTarget} onClose={() => setDeleteTarget(null)} onConfirm={handleDelete}
                 title="Xác nhận xóa" message={`Bạn có chắc muốn xóa giáo trình "${deleteTarget?.title}"? Các CLB đang áp dụng giáo trình này sẽ bị ảnh hưởng.`}
                 confirmLabel="Khẳng định xóa" />
-        </div>
+        </VCT_PageContainer>
     )
 }

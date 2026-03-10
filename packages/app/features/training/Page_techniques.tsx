@@ -4,11 +4,13 @@ import * as React from 'react'
 import { useState, useMemo, useCallback } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import {
-    VCT_Badge, VCT_Button, VCT_KpiCard, VCT_Stack, VCT_Toast,
+    VCT_Badge, VCT_Button, VCT_Stack, VCT_Toast,
     VCT_SearchInput, VCT_Modal, VCT_Input, VCT_Field, VCT_Select,
     VCT_ConfirmDialog, VCT_EmptyState, VCT_FilterChips,
     VCT_Tabs
 } from '../components/vct-ui'
+import { VCT_PageContainer, VCT_PageHero, VCT_StatRow } from '../components/vct-ui'
+import type { StatItem } from '../components/VCT_StatRow'
 import { VCT_Icons } from '../components/vct-icons'
 
 // ════════════════════════════════════════
@@ -176,21 +178,23 @@ export const Page_techniques = () => {
     }
 
     return (
-        <div className="mx-auto max-w-[1400px] p-4 pb-24">
+        <VCT_PageContainer size="wide" animated>
             <VCT_Toast isVisible={toast.show} message={toast.msg} type={toast.type} onClose={() => setToast(prev => ({ ...prev, show: false }))} />
 
-            <div className="mb-6">
-                <h1 className="text-2xl font-bold tracking-tight text-[var(--vct-text-primary)]">Kho Kỹ Thuật</h1>
-                <p className="text-sm text-[var(--vct-text-secondary)] mt-1">Hệ thống hóa các nhóm kỹ thuật, thế võ, binh khí với tài nguyên video trực quan.</p>
-            </div>
+            <VCT_PageHero
+                icon={<VCT_Icons.Layers size={24} />}
+                title="Kho Kỹ Thuật"
+                subtitle="Hệ thống hóa các nhóm kỹ thuật, thế võ, binh khí với video trực quan."
+                gradientFrom="rgba(14, 165, 233, 0.08)"
+                gradientTo="rgba(139, 92, 246, 0.06)"
+            />
 
-            {/* ── KPI ── */}
-            <div className="vct-stagger mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
-                <VCT_KpiCard label="Tổng kỹ thuật" value={techs.length} icon={<VCT_Icons.Layers size={24} />} color="#0ea5e9" />
-                <VCT_KpiCard label="Kỹ thuật cơ bản" value={techs.filter(t => t.difficulty === 'co_ban').length} icon={<VCT_Icons.Check size={24} />} color="#10b981" />
-                <VCT_KpiCard label="Kỹ thuật nâng cao" value={techs.filter(t => t.difficulty !== 'co_ban').length} icon={<VCT_Icons.Activity size={24} />} color="#ef4444" />
-                <VCT_KpiCard label="Video hướng dẫn" value={totalVideos} sub={`${Math.round((totalVideos / techs.length) * 100 || 0)}% bao phủ`} icon={<VCT_Icons.Video size={24} />} color="#8b5cf6" />
-            </div>
+            <VCT_StatRow items={[
+                { label: 'Tổng kỹ thuật', value: techs.length, icon: <VCT_Icons.Layers size={18} />, color: '#0ea5e9' },
+                { label: 'Cơ bản', value: techs.filter(t => t.difficulty === 'co_ban').length, icon: <VCT_Icons.Check size={18} />, color: '#10b981' },
+                { label: 'Nâng cao', value: techs.filter(t => t.difficulty !== 'co_ban').length, icon: <VCT_Icons.Activity size={18} />, color: '#ef4444' },
+                { label: 'Video', value: totalVideos, sub: `${Math.round((totalVideos / techs.length) * 100 || 0)}% bao phủ`, icon: <VCT_Icons.Video size={18} />, color: '#8b5cf6' },
+            ] as StatItem[]} className="mb-6" />
 
             {/* ── FILTER CHIPS ── */}
             <VCT_FilterChips filters={activeFilters} onRemove={removeFilter} onClearAll={() => { setCategoryFilter(null); setSearch(''); }} />
@@ -333,6 +337,6 @@ export const Page_techniques = () => {
             <VCT_ConfirmDialog isOpen={!!deleteTarget} onClose={() => setDeleteTarget(null)} onConfirm={handleDelete}
                 title="Xác nhận xóa" message={`Bạn có chắc muốn xóa kỹ thuật "${deleteTarget?.name}"?`}
                 confirmLabel="Xóa" />
-        </div>
+        </VCT_PageContainer>
     )
 }

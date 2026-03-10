@@ -54,11 +54,9 @@ const resolveWebSocketUrl = () => {
     wsBase = `ws://${wsBase}`
   }
 
-  const wsUrl = wsBase.includes('/api/v1') ? `${wsBase}/ws` : `${wsBase}/api/v1/ws`
-  const token = getStoredAuthToken()
-  if (!token) return wsUrl
-  const separator = wsUrl.includes('?') ? '&' : '?'
-  return `${wsUrl}${separator}token=${encodeURIComponent(token)}`
+  // Security: Do NOT append token to URL query string.
+  // Token is sent via first-message authentication after connect.
+  return wsBase.includes('/api/v1') ? `${wsBase}/ws` : `${wsBase}/api/v1/ws`
 }
 
 const hasAnyListeners = () => channelHandlers.size > 0 || globalHandlers.size > 0
@@ -102,6 +100,13 @@ const sendCommand = (action: string, channel: string) => {
   socket.send(JSON.stringify({ action, channel }))
 }
 
+/** Send auth token as first message after WS connection opens */
+const sendAuth = () => {
+  const token = getStoredAuthToken()
+  if (!token || !socket || socket.readyState !== WebSocket.OPEN) return
+  socket.send(JSON.stringify({ action: 'auth', token }))
+}
+
 const connect = () => {
   if (typeof window === 'undefined') return
   if (socket || !hasAnyListeners()) return
@@ -111,6 +116,9 @@ const connect = () => {
   socket = new WebSocket(url)
 
   socket.onopen = () => {
+    // First-message authentication — send token before anything else
+    sendAuth()
+
     // Re-subscribe to all active channels
     channelHandlers.forEach((_, channel) => {
       sendCommand('subscribe', channel)

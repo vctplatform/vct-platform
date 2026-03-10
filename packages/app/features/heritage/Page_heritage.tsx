@@ -3,9 +3,10 @@
 import * as React from 'react'
 import { useState } from 'react'
 import {
-    VCT_Button, VCT_Stack, VCT_SearchInput,
-    VCT_KpiCard
+    VCT_Button, VCT_Stack, VCT_SearchInput
 } from '../components/vct-ui'
+import { VCT_PageContainer, VCT_PageHero, VCT_StatRow } from '../components/vct-ui'
+import type { StatItem } from '../components/VCT_StatRow'
 import { VCT_Icons } from '../components/vct-icons'
 
 // ════════════════════════════════════════
@@ -120,26 +121,30 @@ const TreeNode = ({ node }: { node: any }) => {
 export const Page_heritage = () => {
     const [search, setSearch] = useState('')
 
-    return (
-        <div className="mx-auto max-w-[1400px] p-4 pb-24">
-            <div className="mb-6 flex flex-wrap items-start justify-between gap-4">
-                <div>
-                    <h1 className="text-2xl font-bold tracking-tight text-[var(--vct-text-primary)]">Di Sản & Gia Phả</h1>
-                    <p className="text-sm text-[var(--vct-text-secondary)] mt-1">Lưu trữ truyền thống, hệ phái và tôn vinh các bậc tiền nhân.</p>
-                </div>
-                <VCT_Stack direction="row" gap={12}>
-                    <VCT_Button icon={<VCT_Icons.Download size={16} />} variant="secondary">Xuất Gia Phả</VCT_Button>
-                    <VCT_Button icon={<VCT_Icons.Plus size={16} />}>Thêm Cây Gia Phả</VCT_Button>
-                </VCT_Stack>
-            </div>
+    const kpis: StatItem[] = [
+        { label: 'Hệ Phái ĐK', value: 15, icon: <VCT_Icons.Network size={18} />, color: '#0ea5e9' },
+        { label: 'Đại Võ Sư', value: 45, icon: <VCT_Icons.Star size={18} />, color: '#f59e0b' },
+        { label: 'Hồng Đai', value: 320, icon: <VCT_Icons.Award size={18} />, color: '#ef4444' },
+        { label: 'Di Sản Lưu Trữ', value: '2.5k', icon: <VCT_Icons.Library size={18} />, color: '#8b5cf6' },
+    ]
 
-            {/* ── KPI ── */}
-            <div className="vct-stagger mb-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                <VCT_KpiCard label="Hệ Phái Đăng Ký" value={15} icon={<VCT_Icons.Network size={24} />} color="#0ea5e9" />
-                <VCT_KpiCard label="Đại Võ Sư" value={45} icon={<VCT_Icons.Star size={24} />} color="#f59e0b" />
-                <VCT_KpiCard label="Hồng Đai / Chuẩn Hồng Đai" value={320} icon={<VCT_Icons.Award size={24} />} color="#ef4444" />
-                <VCT_KpiCard label="Di Sản Lưu Trữ" value="2.5k" icon={<VCT_Icons.Library size={24} />} color="#8b5cf6" />
-            </div>
+    return (
+        <VCT_PageContainer size="wide" animated>
+            <VCT_PageHero
+                icon={<VCT_Icons.Library size={24} />}
+                title="Di Sản & Gia Phả"
+                subtitle="Lưu trữ truyền thống, hệ phái và tôn vinh các bậc tiền nhân."
+                gradientFrom="rgba(139, 92, 246, 0.08)"
+                gradientTo="rgba(245, 158, 11, 0.06)"
+                actions={
+                    <VCT_Stack direction="row" gap={12}>
+                        <VCT_Button icon={<VCT_Icons.Download size={16} />} variant="secondary">Xuất Gia Phả</VCT_Button>
+                        <VCT_Button icon={<VCT_Icons.Plus size={16} />}>Thêm Cây Gia Phả</VCT_Button>
+                    </VCT_Stack>
+                }
+            />
+
+            <VCT_StatRow items={kpis} className="mb-8" />
 
             {/* ── TOOLBAR ── */}
             <div className="mb-8 flex flex-wrap items-center justify-between gap-4 bg-[var(--vct-bg-elevated)] p-4 rounded-xl border border-[var(--vct-border-subtle)]">
@@ -164,6 +169,6 @@ export const Page_heritage = () => {
                 </div>
             </div>
 
-        </div>
+        </VCT_PageContainer>
     )
 }

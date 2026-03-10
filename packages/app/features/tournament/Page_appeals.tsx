@@ -3,10 +3,12 @@ import * as React from 'react';
 import { useState, useMemo, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-    VCT_Badge, VCT_Button, VCT_KpiCard, VCT_Text, VCT_Stack, VCT_Toast,
+    VCT_Badge, VCT_Button, VCT_Text, VCT_Stack, VCT_Toast,
     VCT_Modal, VCT_Input, VCT_Field, VCT_Select,
     VCT_StatusPipeline, VCT_EmptyState, VCT_AvatarLetter
 } from '../components/vct-ui';
+import { VCT_PageContainer, VCT_StatRow } from '../components/vct-ui';
+import type { StatItem } from '../components/VCT_StatRow';
 import { VCT_Icons } from '../components/vct-icons';
 import { genId } from '../data/mock-data';
 import { TRANG_THAI_KN_MAP, type KhieuNai, type TrangThaiKN, type LoaiKN } from '../data/types';
@@ -68,7 +70,7 @@ export const Page_appeals = () => {
     };
 
     return (
-        <div className="mx-auto max-w-[1400px] pb-24">
+        <VCT_PageContainer size="wide" animated>
             <VCT_Toast isVisible={toast.show} message={toast.msg} type={toast.type} onClose={hideToast} />
             {uiState.error && (
                 <div className="mb-4 rounded-xl border border-red-500/25 bg-red-500/[0.08] px-3.5 py-3 text-[13px] font-bold text-red-500">
@@ -81,12 +83,12 @@ export const Page_appeals = () => {
                 </div>
             )}
 
-            <div className="vct-stagger mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
-                <VCT_KpiCard label="Tổng" value={items.length} icon={<VCT_Icons.Alert size={24} />} color="#0ea5e9" />
-                <VCT_KpiCard label="Mới" value={items.filter(i => i.trang_thai === 'moi').length} icon={<VCT_Icons.Alert size={24} />} color="#ef4444" sub="Cần xử lý ngay" />
-                <VCT_KpiCard label="Đang xử lý" value={items.filter(i => i.trang_thai === 'dang_xu_ly').length} icon={<VCT_Icons.Clock size={24} />} color="#f59e0b" />
-                <VCT_KpiCard label="Đã giải quyết" value={items.filter(i => i.trang_thai === 'chap_nhan' || i.trang_thai === 'bac_bo').length} icon={<VCT_Icons.Check size={24} />} color="#10b981" />
-            </div>
+            <VCT_StatRow items={[
+                { label: 'Tổng', value: items.length, icon: <VCT_Icons.Alert size={18} />, color: '#0ea5e9' },
+                { label: 'Mới', value: items.filter(i => i.trang_thai === 'moi').length, icon: <VCT_Icons.Alert size={18} />, color: '#ef4444', sub: 'Cần xử lý ngay' },
+                { label: 'Đang xử lý', value: items.filter(i => i.trang_thai === 'dang_xu_ly').length, icon: <VCT_Icons.Clock size={18} />, color: '#f59e0b' },
+                { label: 'Giải quyết', value: items.filter(i => i.trang_thai === 'chap_nhan' || i.trang_thai === 'bac_bo').length, icon: <VCT_Icons.Check size={18} />, color: '#10b981' },
+            ] as StatItem[]} className="mb-6" />
 
             <VCT_StatusPipeline stages={pStages} activeStage={filter} onStageClick={setFilter} />
 
@@ -175,6 +177,6 @@ export const Page_appeals = () => {
                     </VCT_Stack>
                 )}
             </VCT_Modal>
-        </div>
+        </VCT_PageContainer>
     );
 };

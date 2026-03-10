@@ -3,10 +3,11 @@
 import * as React from 'react'
 import { useState, useMemo, useCallback } from 'react'
 import {
-    VCT_Badge, VCT_Button, VCT_KpiCard, VCT_Stack, VCT_Toast,
+    VCT_Badge, VCT_Button, VCT_Stack, VCT_Toast,
     VCT_SearchInput, VCT_Modal, VCT_Input, VCT_Field, VCT_Tabs,
-    VCT_ConfirmDialog
+    VCT_ConfirmDialog, VCT_PageContainer, VCT_StatRow
 } from '../components/vct-ui'
+import type { StatItem } from '../components/VCT_StatRow'
 import { VCT_Icons } from '../components/vct-icons'
 
 // ════════════════════════════════════════
@@ -155,7 +156,7 @@ export const Page_admin_reference_data = () => {
     }
 
     return (
-        <div className="mx-auto max-w-[1400px] p-4 pb-24">
+        <VCT_PageContainer size="wide" animated>
             <VCT_Toast isVisible={toast.show} message={toast.msg} type={toast.type} onClose={() => setToast(prev => ({ ...prev, show: false }))} />
 
             <div className="mb-6 flex flex-wrap items-start justify-between gap-4">
@@ -167,12 +168,12 @@ export const Page_admin_reference_data = () => {
             </div>
 
             {/* ── KPI ── */}
-            <div className="vct-stagger mb-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                <VCT_KpiCard label="Bảng tham chiếu" value={tables.length} icon={<VCT_Icons.Layers size={24} />} color="#8b5cf6" />
-                <VCT_KpiCard label="Tổng mục" value={totalItems} icon={<VCT_Icons.List size={24} />} color="#0ea5e9" />
-                <VCT_KpiCard label="Đang hoạt động" value={tables.reduce((s, t) => s + t.items.filter(i => i.is_active).length, 0)} icon={<VCT_Icons.CheckCircle size={24} />} color="#10b981" />
-                <VCT_KpiCard label="Đã ẩn" value={tables.reduce((s, t) => s + t.items.filter(i => !i.is_active).length, 0)} icon={<VCT_Icons.Eye size={24} />} color="#f59e0b" />
-            </div>
+            <VCT_StatRow items={[
+                { label: 'Bảng TC', value: tables.length, icon: <VCT_Icons.Layers size={18} />, color: '#8b5cf6' },
+                { label: 'Tổng mục', value: totalItems, icon: <VCT_Icons.List size={18} />, color: '#0ea5e9' },
+                { label: 'Hoạt động', value: tables.reduce((s, t) => s + t.items.filter(i => i.is_active).length, 0), icon: <VCT_Icons.CheckCircle size={18} />, color: '#10b981' },
+                { label: 'Đã ẩn', value: tables.reduce((s, t) => s + t.items.filter(i => !i.is_active).length, 0), icon: <VCT_Icons.Eye size={18} />, color: '#f59e0b' },
+            ] as StatItem[]} className="mb-8" />
 
             {/* ── TABS ── */}
             <div className="mb-6 border-b border-[var(--vct-border-subtle)] pb-4 flex flex-wrap items-center justify-between gap-4">
@@ -252,6 +253,6 @@ export const Page_admin_reference_data = () => {
             <VCT_ConfirmDialog isOpen={!!deleteTarget} onClose={() => setDeleteTarget(null)} onConfirm={handleDelete}
                 title="Ẩn mục tham chiếu" message={`Bạn có chắc muốn ẩn "${deleteTarget?.name_vi}"? Mục này sẽ không bị xóa mà chỉ bị ẩn khỏi danh sách lựa chọn.`}
                 confirmLabel="Ẩn mục này" />
-        </div>
+        </VCT_PageContainer>
     )
 }

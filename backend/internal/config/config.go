@@ -28,6 +28,9 @@ type Config struct {
 	DBAutoMigrate      bool
 	CacheTTL           time.Duration
 	CacheMaxEntries    int
+	PGPoolMaxConns     int
+	PGPoolMinConns     int
+	PGPoolMaxIdleTime  time.Duration
 }
 
 func Load() Config {
@@ -50,6 +53,9 @@ func Load() Config {
 	dbAutoMigrate := parseBool(getEnv("VCT_DB_AUTO_MIGRATE", "true"), true)
 	cacheTTL := parseDuration(getEnv("VCT_CACHE_TTL", "30s"), 30*time.Second)
 	cacheMaxEntries := parseInt(getEnv("VCT_CACHE_MAX_ENTRIES", "2000"), 2000)
+	pgPoolMaxConns := parseInt(getEnv("VCT_PG_POOL_MAX_CONNS", "25"), 25)
+	pgPoolMinConns := parseInt(getEnv("VCT_PG_POOL_MIN_CONNS", "5"), 5)
+	pgPoolMaxIdleTime := parseDuration(getEnv("VCT_PG_POOL_MAX_IDLE_TIME", "30m"), 30*time.Minute)
 
 	return Config{
 		Environment:        environment,
@@ -69,6 +75,9 @@ func Load() Config {
 		DBAutoMigrate:      dbAutoMigrate,
 		CacheTTL:           cacheTTL,
 		CacheMaxEntries:    cacheMaxEntries,
+		PGPoolMaxConns:     pgPoolMaxConns,
+		PGPoolMinConns:     pgPoolMinConns,
+		PGPoolMaxIdleTime:  pgPoolMaxIdleTime,
 	}
 }
 

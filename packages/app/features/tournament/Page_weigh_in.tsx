@@ -3,11 +3,13 @@ import * as React from 'react';
 import { useState, useMemo, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-    VCT_Badge, VCT_Button, VCT_KpiCard, VCT_Text, VCT_Stack, VCT_Toast,
+    VCT_Badge, VCT_Button, VCT_Text, VCT_Stack, VCT_Toast,
     VCT_SearchInput, VCT_Modal, VCT_Input, VCT_Field,
     VCT_StatusPipeline, VCT_FilterChips, VCT_ProgressBar, VCT_EmptyState,
     VCT_AvatarLetter, VCT_SegmentedControl
 } from '../components/vct-ui';
+import { VCT_PageContainer, VCT_StatRow } from '../components/vct-ui';
+import type { StatItem } from '../components/VCT_StatRow';
 import { VCT_Icons } from '../components/vct-icons';
 import type { CanKy, KetQuaCan } from '../data/types';
 import { repositories, useEntityCollection } from '../data/repository';
@@ -73,7 +75,7 @@ export const Page_weigh_in = () => {
     };
 
     return (
-        <div className="mx-auto max-w-[1400px] pb-24">
+        <VCT_PageContainer size="wide" animated>
             <VCT_Toast isVisible={toast.show} message={toast.msg} type={toast.type} onClose={hideToast} />
 
             {uiState.error && (
@@ -83,13 +85,13 @@ export const Page_weigh_in = () => {
             )}
 
             {/* KPI Row */}
-            <div className="vct-stagger mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-5">
-                <VCT_KpiCard label="Tổng VĐV cần cân" value={records.length} icon={<VCT_Icons.Activity size={24} />} color="#0ea5e9" />
-                <VCT_KpiCard label="Đã cân" value={daCan} icon={<VCT_Icons.Check size={24} />} color="#10b981" sub={`${Math.round((daCan / Math.max(1, records.length)) * 100)}% hoàn thành`} />
-                <VCT_KpiCard label="Đạt cân" value={records.filter(r => r.ket_qua === 'dat').length} icon={<VCT_Icons.Check size={24} />} color="#22d3ee" />
-                <VCT_KpiCard label="Lố cân" value={records.filter(r => r.ket_qua === 'khong_dat').length} icon={<VCT_Icons.Alert size={24} />} color="#ef4444" sub="Cần xử lý" />
-                <VCT_KpiCard label="Chờ cân" value={records.filter(r => r.ket_qua === 'cho_can').length} icon={<VCT_Icons.Clock size={24} />} color="#f59e0b" />
-            </div>
+            <VCT_StatRow items={[
+                { label: 'Tổng VĐV cần cân', value: records.length, icon: <VCT_Icons.Activity size={18} />, color: '#0ea5e9' },
+                { label: 'Đã cân', value: daCan, icon: <VCT_Icons.Check size={18} />, color: '#10b981', sub: `${Math.round((daCan / Math.max(1, records.length)) * 100)}% hoàn thành` },
+                { label: 'Đạt cân', value: records.filter(r => r.ket_qua === 'dat').length, icon: <VCT_Icons.Check size={18} />, color: '#22d3ee' },
+                { label: 'Lố cân', value: records.filter(r => r.ket_qua === 'khong_dat').length, icon: <VCT_Icons.Alert size={18} />, color: '#ef4444', sub: 'Cần xử lý' },
+                { label: 'Chờ cân', value: records.filter(r => r.ket_qua === 'cho_can').length, icon: <VCT_Icons.Clock size={18} />, color: '#f59e0b' },
+            ] as StatItem[]} className="mb-6" />
 
             {/* Progress */}
             <div className="mb-5">
@@ -317,6 +319,6 @@ export const Page_weigh_in = () => {
                     </VCT_Stack>
                 )}
             </VCT_Modal>
-        </div>
+        </VCT_PageContainer>
     );
 };

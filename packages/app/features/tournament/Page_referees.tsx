@@ -3,11 +3,13 @@ import * as React from 'react';
 import { useState, useMemo, useCallback, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-    VCT_Badge, VCT_Button, VCT_KpiCard, VCT_Text, VCT_Stack, VCT_Toast,
+    VCT_Badge, VCT_Button, VCT_Text, VCT_Stack, VCT_Toast,
     VCT_SearchInput, VCT_Modal, VCT_Input, VCT_Field, VCT_Select,
     VCT_ConfirmDialog, VCT_StatusPipeline, VCT_FilterChips, VCT_BulkActionsBar,
     VCT_EmptyState, VCT_AvatarLetter, VCT_SegmentedControl
 } from '../components/vct-ui';
+import { VCT_PageContainer, VCT_StatRow } from '../components/vct-ui';
+import type { StatItem } from '../components/VCT_StatRow';
 import { VCT_Icons } from '../components/vct-icons';
 import { genId } from '../data/mock-data';
 import { TRANG_THAI_TT_MAP, CAP_BAC_TT_MAP, type TrongTai, type TrangThaiTT, type CapBacTT, type ChuyenMonTT } from '../data/types';
@@ -115,7 +117,7 @@ export const Page_referees = () => {
     const toggleSelect = (id: string) => setSelectedIds(p => { const n = new Set(p); n.has(id) ? n.delete(id) : n.add(id); return n; });
 
     return (
-        <div className="mx-auto max-w-[1400px] pb-24">
+        <VCT_PageContainer size="wide" animated>
             <VCT_Toast isVisible={toast.show} message={toast.msg} type={toast.type} onClose={hideToast} />
             {uiState.error && (
                 <div className="mb-4 rounded-xl border border-red-500/25 bg-red-500/[0.08] px-3.5 py-3 text-[13px] font-bold text-red-500">
@@ -128,14 +130,12 @@ export const Page_referees = () => {
                 </div>
             )}
 
-            {/* KPI Row */}
-            <div className="vct-stagger mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
-                <VCT_KpiCard label="Tổng trọng tài" value={refs.length} icon={<VCT_Icons.Shield size={24} />} color="#0ea5e9" />
-                <VCT_KpiCard label="Đã xác nhận" value={refs.filter(r => r.trang_thai === 'xac_nhan').length} icon={<VCT_Icons.Check size={24} />} color="#10b981" />
-                <VCT_KpiCard label="Quốc gia" value={refs.filter(r => r.cap_bac === 'quoc_gia').length} icon={<VCT_Icons.Star size={24} />} color="#a78bfa" sub="Cấp bậc cao nhất" />
-                <VCT_KpiCard label="Đối kháng" value={refs.filter(r => r.chuyen_mon === 'doi_khang' || r.chuyen_mon === 'ca_hai').length} icon={<VCT_Icons.Swords size={24} />} color="#f59e0b" />
-                <VCT_KpiCard label="Quyền" value={refs.filter(r => r.chuyen_mon === 'quyen' || r.chuyen_mon === 'ca_hai').length} icon={<VCT_Icons.Award size={24} />} color="#22d3ee" />
-            </div>
+            <VCT_StatRow items={[
+                { label: 'Tổng TT', value: refs.length, icon: <VCT_Icons.Shield size={18} />, color: '#0ea5e9' },
+                { label: 'Xác nhận', value: refs.filter(r => r.trang_thai === 'xac_nhan').length, icon: <VCT_Icons.Check size={18} />, color: '#10b981' },
+                { label: 'Quốc gia', value: refs.filter(r => r.cap_bac === 'quoc_gia').length, icon: <VCT_Icons.Star size={18} />, color: '#a78bfa', sub: 'Cấp bậc cao nhất' },
+                { label: 'Đối kháng', value: refs.filter(r => r.chuyen_mon === 'doi_khang' || r.chuyen_mon === 'ca_hai').length, icon: <VCT_Icons.Swords size={18} />, color: '#f59e0b' },
+            ] as StatItem[]} className="mb-6" />
 
             {/* Pipeline */}
             <VCT_StatusPipeline stages={pStages} activeStage={statusFilter} onStageClick={setStatusFilter} />
@@ -260,6 +260,6 @@ export const Page_referees = () => {
                 title="Xóa trọng tài" message={`Bạn có chắc muốn xóa trọng tài "${deleteTarget?.ho_ten}"?`}
                 preview={deleteTarget && <VCT_Stack direction="row" gap={10} align="center"><VCT_AvatarLetter name={deleteTarget.ho_ten} size={28} /><span>{deleteTarget.ho_ten} — {CAP_BAC_TT_MAP[deleteTarget.cap_bac].label}</span></VCT_Stack>}
                 confirmLabel="Xóa" />
-        </div>
+        </VCT_PageContainer>
     );
 };
