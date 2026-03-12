@@ -8,6 +8,9 @@ import React, { useState } from 'react';
 import { useApiQuery } from '../hooks/useApiQuery';
 import { VCT_PageContainer, VCT_PageHero } from '../components/VCT_PageContainer';
 import { VCT_Icons } from '../components/vct-icons';
+import { VCT_Button } from '../components/vct-ui';
+import { VCT_Timeline } from '../components/VCT_Timeline';
+import { exportToExcel } from '../../utils/exportUtils';
 
 // ── Types ────────────────────────────────────────────────────
 
@@ -37,6 +40,13 @@ const SEED_ROWS: FinRow[] = [
     { label: 'Chi đối ngoại quốc tế', category: 'international', income: 0, expense: 480_000_000 },
 ];
 
+const FINANCE_AUDIT_LOGS = [
+    { time: '10:30 Hôm nay', title: 'Xuất báo cáo tài chính', description: 'Kế toán trưởng Nguyễn Văn A xuất báo cáo Quý 1/2026', color: '#3b82f6', icon: '📊' },
+    { time: '15:45 Hôm qua', title: 'Phê duyệt chi', description: 'Chủ tịch phê duyệt khoản chi 120,000,000đ cho Đào tạo', color: '#10b981', icon: '✅' },
+    { time: '09:00 Hôm qua', title: 'Nhận tài trợ', description: 'Ghi nhận khoản tài trợ 500,000,000đ từ Công ty XYZ', color: '#8b5cf6', icon: '💰' },
+    { time: '14:20 10/03/2026', title: 'Cập nhật ngân sách', description: 'Hệ thống tự động kết chuyển số dư đầu kỳ', color: '#64748b', icon: '⚙️' }
+];
+
 // ── Helpers ──────────────────────────────────────────────────
 
 const fmt = (n: number) => {
@@ -60,6 +70,26 @@ export function Page_federation_finance() {
     const totalIncome = rows.reduce((s, r) => s + r.income, 0);
     const totalExpense = rows.reduce((s, r) => s + r.expense, 0);
     const balance = totalIncome - totalExpense;
+
+    const handleExportExcel = () => {
+        const exportData = rows.map((r, idx) => ({
+            'STT': idx + 1,
+            'Khoản Mục': r.label,
+            'Phân Loại': r.category,
+            'Thu (VNĐ)': r.income,
+            'Chi (VNĐ)': r.expense,
+            'Cân Đối (VNĐ)': r.income - r.expense
+        }));
+        exportData.push({
+            'STT': '',
+            'Khoản Mục': 'TỔNG CỘNG',
+            'Phân Loại': '',
+            'Thu (VNĐ)': totalIncome,
+            'Chi (VNĐ)': totalExpense,
+            'Cân Đối (VNĐ)': balance
+        } as any);
+        exportToExcel(exportData, `bao_cao_tai_chinh_${period}`);
+    };
 
     const kpis = [
         { label: 'Tổng Thu', value: fmt(totalIncome), color: '#10b981', icon: <VCT_Icons.TrendingUp size={18} /> },
@@ -119,18 +149,24 @@ export function Page_federation_finance() {
                 </div>
             </div>
 
-            {/* Period Tabs */}
-            <div className="flex gap-1 mb-4 bg-vct-elevated p-1 rounded-2xl border border-vct-border w-fit">
-                {([
-                    { key: 'monthly' as Period, label: 'Tháng' },
-                    { key: 'quarterly' as Period, label: 'Quý' },
-                    { key: 'yearly' as Period, label: 'Năm' },
-                ]).map(p => (
-                    <button key={p.key} onClick={() => setPeriod(p.key)}
-                        className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${period === p.key ? 'bg-indigo-500/15 text-indigo-400 shadow-sm' : 'text-vct-text-muted hover:text-vct-text'}`}>
-                        {p.label}
-                    </button>
-                ))}
+            {/* Period Tabs & Export */}
+            <div className="flex justify-between items-center mb-4">
+                <div className="flex gap-1 bg-vct-elevated p-1 rounded-2xl border border-vct-border w-fit">
+                    {([
+                        { key: 'monthly' as Period, label: 'Tháng' },
+                        { key: 'quarterly' as Period, label: 'Quý' },
+                        { key: 'yearly' as Period, label: 'Năm' },
+                    ]).map(p => (
+                        <button key={p.key} onClick={() => setPeriod(p.key)}
+                            className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${period === p.key ? 'bg-indigo-500/15 text-indigo-400 shadow-sm' : 'text-vct-text-muted hover:text-vct-text'}`}>
+                            {p.label}
+                        </button>
+                    ))}
+                </div>
+                <VCT_Button variant="secondary" onClick={handleExportExcel}>
+                    <VCT_Icons.Download size={16} className="mr-2" />
+                    Xuất Excel
+                </VCT_Button>
             </div>
 
             {/* Table */}
@@ -175,6 +211,12 @@ export function Page_federation_finance() {
                         </tr>
                     </tbody>
                 </table>
+            </div>
+            
+            {/* Audit Trails */}
+            <div className="rounded-2xl border border-vct-border bg-vct-elevated p-5 mt-6">
+                <h3 className="text-sm font-bold text-vct-text mb-4">📜 Nhật ký Kế toán (Audit Trails)</h3>
+                <VCT_Timeline events={FINANCE_AUDIT_LOGS} />
             </div>
         </VCT_PageContainer>
     );

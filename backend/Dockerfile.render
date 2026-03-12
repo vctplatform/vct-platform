@@ -1,11 +1,10 @@
 # ═══════════════════════════════════════════════════
 # VCT Backend — Optimized Dockerfile for Render
-# Identical to main Dockerfile but with Render-
-# specific health check and larger memory allowance
+# Multi-stage build, distroless runtime
 # ═══════════════════════════════════════════════════
 
 # ── Stage 1: Build ──
-FROM golang:1.26 AS builder
+FROM golang:1.26-alpine AS builder
 RUN apk add --no-cache git ca-certificates
 WORKDIR /src
 COPY go.mod go.sum ./
@@ -15,11 +14,16 @@ RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 \
     go build -ldflags="-s -w" -o /out/vct-backend ./cmd/server
 
 # ── Stage 2: Runtime ──
-FROM gcr.io/distroless/base-debian12
+FROM alpine:3.21
+RUN apk add --no-cache ca-certificates tzdata curl
 WORKDIR /app
 COPY --from=builder /out/vct-backend /app/vct-backend
-EXPOSE 18080
 
-# Render expects the process to listen on $PORT
-# but we use VCT_BACKEND_ADDR=:18080 which is fine
+# Render uses PORT env var (default 10000)
+# Our app reads VCT_BACKEND_ADDR
+EXPOSE 10000
+
+HEALTHCHECK --interval=30s --timeout=5s --retries=3 \
+  CMD curl -sf http://localhost:${VCT_BACKEND_ADDR##*:}/healthz || exit 1
+
 ENTRYPOINT ["/app/vct-backend"]

@@ -13,7 +13,7 @@ BEGIN;
 -- ════════════════════════════════════════════════════════
 
 CREATE TABLE IF NOT EXISTS core.federation_merges (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v7(),
+    id UUID PRIMARY KEY DEFAULT uuidv7(),
 
     source_federation_id UUID NOT NULL,
     target_federation_id UUID NOT NULL,
@@ -46,7 +46,7 @@ COMMENT ON TABLE core.federation_merges IS
 -- ════════════════════════════════════════════════════════
 
 CREATE TABLE IF NOT EXISTS platform.sport_profiles (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v7(),
+    id UUID PRIMARY KEY DEFAULT uuidv7(),
     sport_code TEXT NOT NULL UNIQUE,       -- 'VCT', 'TKD', 'JUD', 'KAR'
     sport_name TEXT NOT NULL,
 
@@ -85,7 +85,7 @@ INSERT INTO platform.sport_profiles (
 -- ════════════════════════════════════════════════════════
 
 CREATE TABLE IF NOT EXISTS tournament.team_entries (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v7(),
+    id UUID PRIMARY KEY DEFAULT uuidv7(),
     entry_id UUID NOT NULL,              -- References tournament_entries
 
     athlete_id UUID NOT NULL,
@@ -111,7 +111,7 @@ COMMENT ON TABLE tournament.team_entries IS
     'V7.0 Stress 3: Team event athlete composition';
 
 CREATE TABLE IF NOT EXISTS tournament.match_bouts (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v7(),
+    id UUID PRIMARY KEY DEFAULT uuidv7(),
     match_id UUID NOT NULL,
     bout_number INTEGER NOT NULL,
 
@@ -142,7 +142,7 @@ COMMENT ON TABLE tournament.match_bouts IS
 -- ════════════════════════════════════════════════════════
 
 CREATE TABLE IF NOT EXISTS tournament.athlete_daily_loads (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v7(),
+    id UUID PRIMARY KEY DEFAULT uuidv7(),
     athlete_id UUID NOT NULL,
     tournament_id UUID NOT NULL,
     competition_date DATE NOT NULL,
@@ -178,7 +178,7 @@ COMMENT ON TABLE tournament.athlete_daily_loads IS
 -- ════════════════════════════════════════════════════════
 
 CREATE TABLE IF NOT EXISTS core.auth_provider_mappings (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v7(),
+    id UUID PRIMARY KEY DEFAULT uuidv7(),
     internal_user_id UUID NOT NULL,
 
     provider TEXT NOT NULL,              -- 'SUPABASE', 'AUTH0', 'FIREBASE', 'KEYCLOAK'
@@ -200,7 +200,7 @@ COMMENT ON TABLE core.auth_provider_mappings IS
     'V7.0 Stress 5: Auth vendor abstraction layer';
 
 CREATE TABLE IF NOT EXISTS system.storage_provider_mappings (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v7(),
+    id UUID PRIMARY KEY DEFAULT uuidv7(),
 
     logical_path TEXT NOT NULL UNIQUE,    -- 'athletes/photos/uuid.jpg'
 

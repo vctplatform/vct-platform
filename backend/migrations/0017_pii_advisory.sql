@@ -138,7 +138,7 @@ CREATE TRIGGER set_updated_at
 
 CREATE OR REPLACE VIEW system.v_index_usage AS
 SELECT
-  schemaname, tablename, indexname,
+  schemaname, relname AS tablename, indexrelname AS indexname,
   idx_scan AS times_used,
   idx_tup_read AS rows_read,
   idx_tup_fetch AS rows_fetched,
@@ -148,23 +148,23 @@ ORDER BY idx_scan ASC;
 
 CREATE OR REPLACE VIEW system.v_table_sizes AS
 SELECT
-  schemaname, tablename,
-  pg_size_pretty(pg_total_relation_size(schemaname || '.' || tablename)) AS total_size,
-  pg_size_pretty(pg_relation_size(schemaname || '.' || tablename)) AS table_size,
-  pg_size_pretty(pg_indexes_size(schemaname || '.' || tablename)) AS indexes_size,
-  n_live_tup AS live_rows,
-  n_dead_tup AS dead_rows,
-  CASE WHEN n_live_tup > 0
-    THEN round(n_dead_tup::NUMERIC / n_live_tup * 100, 2)
+  s.schemaname, s.relname AS tablename,
+  pg_size_pretty(pg_total_relation_size(s.relid)) AS total_size,
+  pg_size_pretty(pg_relation_size(s.relid)) AS table_size,
+  pg_size_pretty(pg_indexes_size(s.relid)) AS indexes_size,
+  s.n_live_tup AS live_rows,
+  s.n_dead_tup AS dead_rows,
+  CASE WHEN s.n_live_tup > 0
+    THEN round(s.n_dead_tup::NUMERIC / s.n_live_tup * 100, 2)
     ELSE 0
   END AS dead_row_pct,
-  last_autovacuum, last_autoanalyze
-FROM pg_stat_user_tables
-ORDER BY pg_total_relation_size(schemaname || '.' || tablename) DESC;
+  s.last_autovacuum, s.last_autoanalyze
+FROM pg_stat_user_tables s
+ORDER BY pg_total_relation_size(s.relid) DESC;
 
 CREATE OR REPLACE VIEW system.v_unused_indexes AS
 SELECT
-  schemaname, tablename, indexname,
+  schemaname, relname AS tablename, indexrelname AS indexname,
   pg_size_pretty(pg_relation_size(indexrelid)) AS index_size
 FROM pg_stat_user_indexes
 WHERE idx_scan = 0

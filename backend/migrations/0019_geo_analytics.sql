@@ -130,7 +130,7 @@ CREATE INDEX IF NOT EXISTS idx_analytics_daily_metric
 -- 2b. Reporting materialized view: Tournament summary by month
 CREATE MATERIALIZED VIEW IF NOT EXISTS api_v1.tournament_monthly_stats AS
 SELECT
-  date_trunc('month', t.ngay_bat_dau) AS month,
+  date_trunc('month', t.start_date) AS month,
   t.tenant_id,
   COUNT(t.id) AS tournament_count,
   COUNT(t.id) FILTER (WHERE t.status = 'ket_thuc') AS completed,
@@ -139,8 +139,8 @@ SELECT
   SUM(COALESCE(d.match_count, 0)) AS total_matches
 FROM tournaments t
 LEFT JOIN api_v1.tournament_dashboard d ON d.id = t.id
-WHERE t.is_deleted = false AND t.ngay_bat_dau IS NOT NULL
-GROUP BY date_trunc('month', t.ngay_bat_dau), t.tenant_id
+WHERE t.is_deleted = false AND t.start_date IS NOT NULL
+GROUP BY date_trunc('month', t.start_date), t.tenant_id
 WITH NO DATA;
 
 CREATE UNIQUE INDEX IF NOT EXISTS idx_tournament_monthly_pk

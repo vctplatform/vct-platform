@@ -10,6 +10,7 @@ import {
 import type { StatItem } from '../components/VCT_StatRow'
 import { VCT_Icons } from '../components/vct-icons'
 import { useFederationStats } from '../hooks/useFederationAPI'
+import { useRealtimeNotifications } from '../hooks/useRealtimeNotifications'
 
 // ════════════════════════════════════════
 // FEDERATION — DASHBOARD (TỔNG QUAN QUỐC GIA)
@@ -56,8 +57,11 @@ export function Page_federation_dashboard() {
         ...REGION_LABELS[key] || { name: key, color: '#666' },
     }))
 
+    const { ToastContainer } = useRealtimeNotifications()
+
     return (
         <VCT_PageContainer size="wide" animated>
+            <ToastContainer />
             <div className="mb-6">
                 <h1 className="text-2xl font-bold tracking-tight text-[var(--vct-text-primary)]">
                     Tổng quan Liên đoàn Quốc gia

@@ -16,7 +16,7 @@ BEGIN;
 -- ════════════════════════════════════════════════════════
 
 CREATE TABLE IF NOT EXISTS tournament.event_schemas (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v7(),
+    id UUID PRIMARY KEY DEFAULT uuidv7(),
     event_type TEXT NOT NULL,                -- 'MATCH_STARTED', 'SCORE_AWARDED'
     schema_version INTEGER NOT NULL,
 
@@ -58,7 +58,7 @@ COMMENT ON TABLE tournament.event_schemas IS
 -- ════════════════════════════════════════════════════════
 
 CREATE TABLE IF NOT EXISTS core.authorization_tuples (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v7(),
+    id UUID PRIMARY KEY DEFAULT uuidv7(),
 
     -- Object (resource being accessed)
     object_type TEXT NOT NULL,             -- 'tournament', 'club', 'athlete', 'match'
@@ -95,7 +95,7 @@ COMMENT ON TABLE core.authorization_tuples IS
     'V7.0 Dim 20: Zanzibar-style ReBAC relationship tuples';
 
 CREATE TABLE IF NOT EXISTS core.authorization_rules (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v7(),
+    id UUID PRIMARY KEY DEFAULT uuidv7(),
     rule_name TEXT NOT NULL UNIQUE,
     description TEXT,
 
@@ -118,7 +118,7 @@ COMMENT ON TABLE core.authorization_rules IS
 -- ════════════════════════════════════════════════════════
 
 CREATE TABLE IF NOT EXISTS core.signing_keys (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v7(),
+    id UUID PRIMARY KEY DEFAULT uuidv7(),
     key_owner_type TEXT NOT NULL,         -- 'FEDERATION', 'TOURNAMENT', 'PLATFORM'
     key_owner_id UUID,
 
@@ -144,7 +144,7 @@ COMMENT ON TABLE core.signing_keys IS
     'V7.0 Dim 21: PKI public key management for verification';
 
 CREATE TABLE IF NOT EXISTS core.digital_signatures (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v7(),
+    id UUID PRIMARY KEY DEFAULT uuidv7(),
 
     -- What was signed
     signed_table TEXT NOT NULL,
@@ -190,7 +190,7 @@ COMMENT ON TABLE core.digital_signatures IS
 -- ════════════════════════════════════════════════════════
 
 CREATE TABLE IF NOT EXISTS platform.translations (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v7(),
+    id UUID PRIMARY KEY DEFAULT uuidv7(),
 
     entity_type TEXT NOT NULL,            -- 'tournament_category', 'scoring_criteria'
     entity_id UUID NOT NULL,
@@ -217,7 +217,7 @@ COMMENT ON TABLE platform.translations IS
     'V7.0 Dim 22: Centralized i18n translation store';
 
 CREATE TABLE IF NOT EXISTS platform.federation_locales (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v7(),
+    id UUID PRIMARY KEY DEFAULT uuidv7(),
     federation_id UUID NOT NULL,
     locale TEXT NOT NULL,
     is_default BOOLEAN DEFAULT false,
@@ -235,7 +235,7 @@ COMMENT ON TABLE platform.federation_locales IS
 -- ════════════════════════════════════════════════════════
 
 CREATE TABLE IF NOT EXISTS system.data_quality_rules (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v7(),
+    id UUID PRIMARY KEY DEFAULT uuidv7(),
     rule_name TEXT NOT NULL UNIQUE,
 
     table_name TEXT NOT NULL,
@@ -262,7 +262,7 @@ COMMENT ON TABLE system.data_quality_rules IS
     'V7.0 Dim 23: Data quality monitoring rules';
 
 CREATE TABLE IF NOT EXISTS system.data_quality_results (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v7(),
+    id UUID PRIMARY KEY DEFAULT uuidv7(),
     rule_id UUID NOT NULL REFERENCES system.data_quality_rules(id),
 
     total_records BIGINT NOT NULL,
@@ -287,7 +287,7 @@ COMMENT ON TABLE system.data_quality_results IS
     'V7.0 Dim 23: Data quality check results';
 
 CREATE TABLE IF NOT EXISTS system.data_quality_scores (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v7(),
+    id UUID PRIMARY KEY DEFAULT uuidv7(),
     table_name TEXT NOT NULL,
     overall_score DECIMAL(5,2) NOT NULL,
 
@@ -307,7 +307,7 @@ COMMENT ON TABLE system.data_quality_scores IS
 -- ════════════════════════════════════════════════════════
 
 CREATE TABLE IF NOT EXISTS system.access_audit_log (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v7(),
+    id UUID PRIMARY KEY DEFAULT uuidv7(),
 
     user_id UUID NOT NULL,
     user_role TEXT,
@@ -346,7 +346,7 @@ COMMENT ON TABLE system.access_audit_log IS
 -- ════════════════════════════════════════════════════════
 
 CREATE TABLE IF NOT EXISTS system.notification_preferences (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v7(),
+    id UUID PRIMARY KEY DEFAULT uuidv7(),
     user_id UUID NOT NULL,
 
     category TEXT NOT NULL,                -- 'MATCH_CALL', 'RESULT_ANNOUNCEMENT', etc.
@@ -370,7 +370,7 @@ COMMENT ON TABLE system.notification_preferences IS
     'V7.0 Dim 25: Multi-channel notification preferences per user';
 
 CREATE TABLE IF NOT EXISTS system.notification_deliveries (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v7(),
+    id UUID PRIMARY KEY DEFAULT uuidv7(),
 
     user_id UUID NOT NULL,
 
@@ -404,8 +404,17 @@ CREATE INDEX IF NOT EXISTS idx_notification_deliveries_status
 COMMENT ON TABLE system.notification_deliveries IS
     'V7.0 Dim 25: Notification delivery tracking';
 
+-- Add columns that may be missing from earlier version of notification_templates
+ALTER TABLE system.notification_templates
+  ADD COLUMN IF NOT EXISTS category TEXT,
+  ADD COLUMN IF NOT EXISTS locale TEXT DEFAULT 'vi-VN',
+  ADD COLUMN IF NOT EXISTS title_template TEXT,
+  ADD COLUMN IF NOT EXISTS required_variables TEXT[],
+  ADD COLUMN IF NOT EXISTS version INTEGER DEFAULT 1,
+  ADD COLUMN IF NOT EXISTS metadata JSONB DEFAULT '{}';
+
 CREATE TABLE IF NOT EXISTS system.notification_templates (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v7(),
+    id UUID PRIMARY KEY DEFAULT uuidv7(),
     category TEXT NOT NULL,
     channel TEXT NOT NULL,                  -- 'push', 'sms', 'email', 'zalo'
     locale TEXT NOT NULL DEFAULT 'vi-VN',

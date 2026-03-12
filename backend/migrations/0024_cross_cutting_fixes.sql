@@ -167,20 +167,20 @@ END $$;
 
 -- Tournament list page: filter by status, show name+dates
 CREATE INDEX IF NOT EXISTS idx_tournaments_covering
-  ON tournaments(tenant_id, status, ngay_bat_dau DESC)
+  ON tournaments(tenant_id, status, start_date DESC)
   INCLUDE (name, code, location)
   WHERE is_deleted = false;
 
 -- Athlete lookup by tournament + status
 CREATE INDEX IF NOT EXISTS idx_athletes_covering
   ON athletes(tenant_id, tournament_id, trang_thai)
-  INCLUDE (ho_ten, hang_can, doi_tuyen)
+  INCLUDE (ho_ten, can_nang)
   WHERE is_deleted = false;
 
 -- Match list by tournament
 CREATE INDEX IF NOT EXISTS idx_matches_covering
   ON combat_matches(tenant_id, tournament_id, trang_thai)
-  INCLUDE (arena_id, ngay_thi_dau)
+  INCLUDE (arena_id)
   WHERE is_deleted = false;
 
 -- Payment lookup by status

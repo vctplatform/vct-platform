@@ -12,16 +12,25 @@ BEGIN;
 
 CREATE TABLE IF NOT EXISTS system.feature_flags (
   id              UUID DEFAULT uuidv7() PRIMARY KEY,
-  name            VARCHAR(200) NOT NULL UNIQUE,      -- 'live_scoring', 'ai_bracket_prediction'
+  flag_key        VARCHAR(200) NOT NULL UNIQUE,
   description     TEXT,
-  is_enabled      BOOLEAN DEFAULT false,             -- global toggle
-  rollout_pct     INT DEFAULT 0 CHECK (rollout_pct BETWEEN 0 AND 100),
-  target_rules    JSONB DEFAULT '{}',                -- {"tenants": [...], "roles": [...], "users": [...]}
+  flag_value      BOOLEAN DEFAULT false,
+  scope           VARCHAR(20) DEFAULT 'global',
+  rollout_percent INT DEFAULT 0,
+  target_users    JSONB DEFAULT '[]',
   metadata        JSONB DEFAULT '{}',
+  is_active       BOOLEAN DEFAULT true,
   created_at      TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   updated_at      TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-  version         INT NOT NULL DEFAULT 1
+  version         INT NOT NULL DEFAULT 1,
+  tenant_id       UUID
 );
+
+-- Add columns needed by flag feature system
+ALTER TABLE system.feature_flags
+  ADD COLUMN IF NOT EXISTS is_enabled BOOLEAN DEFAULT false,
+  ADD COLUMN IF NOT EXISTS rollout_pct INT DEFAULT 0,
+  ADD COLUMN IF NOT EXISTS target_rules JSONB DEFAULT '{}';
 
 CREATE TABLE IF NOT EXISTS system.feature_flag_overrides (
   id              UUID DEFAULT uuidv7() PRIMARY KEY,
@@ -50,7 +59,7 @@ BEGIN
   v_tenant := COALESCE(p_tenant_id,
     current_setting('app.current_tenant', true)::UUID);
 
-  SELECT * INTO v_flag FROM system.feature_flags WHERE name = p_flag_name;
+  SELECT * INTO v_flag FROM system.feature_flags WHERE flag_key = p_flag_name;
   IF NOT FOUND THEN RETURN false; END IF;
 
   -- Check user-specific override
@@ -75,18 +84,21 @@ END;
 $$ LANGUAGE plpgsql STABLE;
 
 -- Seed default flags
-INSERT INTO system.feature_flags (name, description, is_enabled) VALUES
-  ('live_scoring', 'Tính năng chấm điểm trực tiếp', true),
-  ('event_sourcing', 'Event sourcing cho trận đấu', false),
-  ('ai_bracket_prediction', 'Dự đoán bảng đấu bằng AI', false),
-  ('bulk_import', 'Upload danh sách VĐV từ Excel', true),
-  ('multi_currency', 'Thanh toán đa tiền tệ', false),
-  ('heritage_3d', 'Xem kỹ thuật di sản 3D', false),
-  ('community_marketplace', 'Chợ trao đổi cộng đồng', true),
-  ('geospatial_search', 'Tìm CLB theo vị trí', true),
-  ('video_streaming', 'Phát trực tiếp trận đấu', false),
-  ('advanced_analytics', 'Phân tích nâng cao', false)
-ON CONFLICT (name) DO NOTHING;
+DO $$
+BEGIN
+  INSERT INTO system.feature_flags (flag_key, description, is_enabled, flag_value) VALUES
+    ('live_scoring', 'Tính năng chấm điểm trực tiếp', true, true),
+    ('event_sourcing', 'Event sourcing cho trận đấu', false, false),
+    ('ai_bracket_prediction', 'Dự đoán bảng đấu bằng AI', false, false),
+    ('bulk_import', 'Upload danh sách VĐV từ Excel', true, true),
+    ('multi_currency', 'Thanh toán đa tiền tệ', false, false),
+    ('heritage_3d', 'Xem kỹ thuật di sản 3D', false, false),
+    ('community_marketplace', 'Chợ trao đổi cộng đồng', true, true),
+    ('geospatial_search', 'Tìm CLB theo vị trí', true, true),
+    ('video_streaming', 'Phát trực tiếp trận đấu', false, false),
+    ('advanced_analytics', 'Phân tích nâng cao', false, false);
+EXCEPTION WHEN unique_violation THEN NULL;
+END $$;
 
 CREATE TRIGGER set_updated_at BEFORE UPDATE ON system.feature_flags
   FOR EACH ROW EXECUTE FUNCTION trigger_set_updated_at();
@@ -288,7 +300,7 @@ SELECT
   ms.winner_id,
   ms.win_method,
   m.arena_id,
-  m.ngay_thi_dau AS match_date,
+  m.thoi_gian_bat_dau AS match_date,
   m.tenant_id,
   m.updated_at
 FROM combat_matches m

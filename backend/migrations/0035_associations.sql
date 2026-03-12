@@ -4,6 +4,34 @@
 -- ward-level sub-associations (Chi hội).
 -- ════════════════════════════════════════════════════════════════
 
+-- ── Prerequisite: provinces table ──
+CREATE TABLE IF NOT EXISTS provinces (
+    id              TEXT PRIMARY KEY,
+    name            TEXT NOT NULL,
+    code            TEXT NOT NULL UNIQUE,
+    region          TEXT,
+    population      INT,
+    created_at      TIMESTAMPTZ NOT NULL DEFAULT now(),
+    updated_at      TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+-- ── Prerequisite: provincial_clubs table ──
+CREATE TABLE IF NOT EXISTS provincial_clubs (
+    id              TEXT PRIMARY KEY,
+    province_id     TEXT NOT NULL REFERENCES provinces(id),
+    name            TEXT NOT NULL,
+    code            TEXT UNIQUE,
+    address         TEXT,
+    phone           TEXT,
+    email           TEXT,
+    president_name  TEXT,
+    status          TEXT NOT NULL DEFAULT 'active',
+    total_members   INT NOT NULL DEFAULT 0,
+    founded_date    DATE,
+    created_at      TIMESTAMPTZ NOT NULL DEFAULT now(),
+    updated_at      TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
 -- ── Association status type ──
 DO $$
 BEGIN

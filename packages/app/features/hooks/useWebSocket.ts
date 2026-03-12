@@ -12,7 +12,7 @@ interface EntityChangeEvent {
 }
 
 interface UseWebSocketOptions {
-    /** WebSocket server URL (defaults to ws://localhost:18080/api/v1/ws) */
+    /** WebSocket server URL (defaults to auto-detect from window.location) */
     url?: string
     /** Auto-reconnect on disconnect */
     autoReconnect?: boolean
@@ -68,7 +68,7 @@ export function useWebSocket(
     const { token } = useAuth()
     const wsRef = useRef<WebSocket | null>(null)
     const reconnectCountRef = useRef(0)
-    const reconnectTimerRef = useRef<ReturnType<typeof setTimeout>>()
+    const reconnectTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
     const onEntityChangeRef = useRef(onEntityChange)
     onEntityChangeRef.current = onEntityChange
 
@@ -77,8 +77,9 @@ export function useWebSocket(
 
     const wsUrl =
         url ??
+        process.env.NEXT_PUBLIC_WS_URL ??
         (typeof window !== 'undefined'
-            ? `${window.location.protocol === 'https:' ? 'wss:' : 'ws:'}//${window.location.hostname}:18080/api/v1/ws`
+            ? `${window.location.protocol === 'https:' ? 'wss:' : 'ws:'}//${window.location.host}/api/v1/ws`
             : 'ws://localhost:18080/api/v1/ws')
 
     const connect = useCallback(() => {
@@ -145,7 +146,7 @@ export function useWebSocket(
         return () => {
             if (reconnectTimerRef.current) {
                 clearTimeout(reconnectTimerRef.current)
-                reconnectTimerRef.current = undefined
+                reconnectTimerRef.current = null
             }
             wsRef.current?.close()
             wsRef.current = null

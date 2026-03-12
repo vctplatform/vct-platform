@@ -98,8 +98,8 @@ BEGIN
       sequence_number,
       COALESCE(recorded_at, NOW()),
       recorded_by, device_id, round_number,
-      COALESCE(is_confirmed, false),
-      COALESCE(source, 'panel'),
+      false,
+      'panel',
       COALESCE(is_deleted, false),
       COALESCE(metadata, '{}')
     FROM public.match_events
@@ -421,14 +421,14 @@ CREATE OR REPLACE FUNCTION trigger_tournaments_search_vector()
 RETURNS TRIGGER AS $$
 BEGIN
   NEW.search_vector :=
-    setweight(to_tsvector('vietnamese', COALESCE(NEW.ten, '')), 'A') ||
-    setweight(to_tsvector('vietnamese', COALESCE(NEW.dia_diem, '')), 'B');
+    setweight(to_tsvector('vietnamese', COALESCE(NEW.name, '')), 'A') ||
+    setweight(to_tsvector('vietnamese', COALESCE(NEW.location, '')), 'B');
   RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
 
 DO $$ BEGIN
-  CREATE TRIGGER set_search_vector BEFORE INSERT OR UPDATE OF ten, dia_diem
+  CREATE TRIGGER set_search_vector BEFORE INSERT OR UPDATE OF name, location
     ON tournaments FOR EACH ROW EXECUTE FUNCTION trigger_tournaments_search_vector();
 EXCEPTION WHEN duplicate_object THEN NULL;
 END $$;

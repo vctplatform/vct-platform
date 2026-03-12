@@ -259,8 +259,7 @@ SELECT
   a.ho_ten,
   a.ngay_sinh,
   a.gioi_tinh,
-  a.hang_can,
-  a.doi_tuyen,
+  a.can_nang,
   a.current_club_id,
   a.trang_thai,
   -- Mask personal details

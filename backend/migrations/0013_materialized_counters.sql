@@ -15,13 +15,11 @@ CREATE MATERIALIZED VIEW IF NOT EXISTS api_v1.tournament_dashboard AS
 SELECT
   t.id,
   t.tenant_id,
-  t.ten AS name,
+  t.name,
   t.status,
-  t.ngay_bat_dau AS start_date,
-  t.ngay_ket_thuc AS end_date,
-  t.dia_diem AS location,
-  t.federation_id,
-  f.ten AS federation_name,
+  t.start_date,
+  t.end_date,
+  t.location,
   COUNT(DISTINCT a.id)
     FILTER (WHERE a.is_deleted = false) AS athlete_count,
   COUNT(DISTINCT tm.id)
@@ -35,14 +33,13 @@ SELECT
   t.created_at,
   t.updated_at
 FROM tournaments t
-LEFT JOIN federations f ON t.federation_id = f.id
 LEFT JOIN athletes a ON a.tournament_id = t.id
 LEFT JOIN teams tm ON tm.tournament_id = t.id
 LEFT JOIN combat_matches m ON m.tournament_id = t.id
 WHERE t.is_deleted = false
-GROUP BY t.id, t.tenant_id, t.ten, t.status,
-         t.ngay_bat_dau, t.ngay_ket_thuc, t.dia_diem,
-         t.federation_id, f.ten, t.created_at, t.updated_at
+GROUP BY t.id, t.tenant_id, t.name, t.status,
+         t.start_date, t.end_date, t.location,
+         t.created_at, t.updated_at
 WITH NO DATA;
 
 -- Unique index required for REFRESH CONCURRENTLY
@@ -68,14 +65,14 @@ SELECT
   r.tenant_id,
   r.category,
   r.weight_class,
-  r.ranking_position AS rank,
-  r.total_points AS points,
+  r.national_rank AS rank,
+  r.points,
   r.athlete_id,
   a.ho_ten AS athlete_name,
   a.gioi_tinh AS gender,
   a.current_club_id,
   r.metadata,
-  r.updated_at
+  r.last_updated AS updated_at
 FROM rankings r
 JOIN athletes a ON r.athlete_id = a.id AND a.is_deleted = false
 WHERE r.is_deleted = false
@@ -96,13 +93,11 @@ REFRESH MATERIALIZED VIEW api_v1.rankings_leaderboard;
 
 CREATE OR REPLACE VIEW api_v1.tournaments AS
 SELECT
-  t.id, t.tenant_id, t.ten AS name,
-  t.ngay_bat_dau AS start_date,
-  t.ngay_ket_thuc AS end_date,
-  t.dia_diem AS location,
+  t.id, t.tenant_id, t.name,
+  t.start_date,
+  t.end_date,
+  t.location,
   t.status,
-  t.federation_id,
-  f.ten AS federation_name,
   t.is_deleted,
   t.created_at,
   t.updated_at,
@@ -113,7 +108,6 @@ SELECT
   COALESCE(d.completed_matches, 0) AS completed_matches,
   COALESCE(d.live_matches, 0) AS live_matches
 FROM tournaments t
-LEFT JOIN federations f ON t.federation_id = f.id
 LEFT JOIN api_v1.tournament_dashboard d ON d.id = t.id
 WHERE t.is_deleted = false;
 

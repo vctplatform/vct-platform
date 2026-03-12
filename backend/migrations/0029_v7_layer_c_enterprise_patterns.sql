@@ -13,7 +13,7 @@ BEGIN;
 -- ════════════════════════════════════════════════════════
 
 CREATE TABLE IF NOT EXISTS tournament.resource_availability (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v7(),
+    id UUID PRIMARY KEY DEFAULT uuidv7(),
     resource_type TEXT NOT NULL,          -- 'TATAMI', 'REFEREE', 'MEDICAL_TEAM', 'JUDGE_PANEL'
     resource_id UUID NOT NULL,
 
@@ -36,7 +36,7 @@ COMMENT ON TABLE tournament.resource_availability IS
     'V7.0 Enterprise: Resource availability windows for scheduling optimization';
 
 CREATE TABLE IF NOT EXISTS tournament.scheduling_constraints (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v7(),
+    id UUID PRIMARY KEY DEFAULT uuidv7(),
     tournament_id UUID NOT NULL,
 
     constraint_type TEXT NOT NULL
@@ -60,7 +60,7 @@ COMMENT ON TABLE tournament.scheduling_constraints IS
     'V7.0 Enterprise: Constraint-based scheduling rules';
 
 CREATE TABLE IF NOT EXISTS tournament.generated_schedules (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v7(),
+    id UUID PRIMARY KEY DEFAULT uuidv7(),
     tournament_id UUID NOT NULL,
 
     version INTEGER NOT NULL,
@@ -92,7 +92,7 @@ COMMENT ON TABLE tournament.generated_schedules IS
 -- ════════════════════════════════════════════════════════
 
 CREATE TABLE IF NOT EXISTS platform.document_templates (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v7(),
+    id UUID PRIMARY KEY DEFAULT uuidv7(),
     template_type TEXT NOT NULL
         CHECK (template_type IN (
             'MEDAL_CERTIFICATE', 'PARTICIPATION_CERT', 'BELT_PROMOTION_CERT',
@@ -117,7 +117,7 @@ COMMENT ON TABLE platform.document_templates IS
     'V7.0 Enterprise: Certificate/document HTML templates';
 
 CREATE TABLE IF NOT EXISTS platform.issued_documents (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v7(),
+    id UUID PRIMARY KEY DEFAULT uuidv7(),
     template_id UUID NOT NULL REFERENCES platform.document_templates(id),
 
     recipient_type TEXT NOT NULL,         -- 'ATHLETE', 'REFEREE', 'CLUB'
@@ -153,7 +153,7 @@ COMMENT ON TABLE platform.issued_documents IS
 -- ════════════════════════════════════════════════════════
 
 CREATE TABLE IF NOT EXISTS tournament.integrity_alerts (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v7(),
+    id UUID PRIMARY KEY DEFAULT uuidv7(),
 
     alert_type TEXT NOT NULL
         CHECK (alert_type IN (
@@ -199,7 +199,7 @@ COMMENT ON TABLE tournament.integrity_alerts IS
     'V7.0 Enterprise: Anti-match-fixing integrity alert system';
 
 CREATE TABLE IF NOT EXISTS tournament.scoring_baselines (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v7(),
+    id UUID PRIMARY KEY DEFAULT uuidv7(),
 
     category_type TEXT NOT NULL,          -- 'DOI_KHANG_NAM_60KG'
     stat_type TEXT NOT NULL,              -- 'avg_score', 'score_stddev', 'ko_rate'

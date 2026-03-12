@@ -203,10 +203,10 @@ export const Page_giai_dau = () => {
             <VCT_Card title="Thông tin cơ bản">
                 <VCT_Stack direction="row" gap={32}>
                     <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 16 }}>
-                        <VCT_Field label="Tên giải đấu *"><VCT_Input value={config.ten_giai} onChange={(e: any) => handleChange('ten_giai', e.target.value)} disabled={!isEditing} /></VCT_Field>
+                        <VCT_Field label="Tên giải đấu *"><VCT_Input value={config.ten_giai} onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleChange('ten_giai', e.target.value)} disabled={!isEditing} /></VCT_Field>
                         <VCT_Stack direction="row" gap={16}>
                             <VCT_Field label="Mã giải *" className="flex-1">
-                                <VCT_Input value={config.ma_giai} onChange={(e: any) => handleChange('ma_giai', e.target.value)} disabled={!isEditing} />
+                                <VCT_Input value={config.ma_giai} onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleChange('ma_giai', e.target.value)} disabled={!isEditing} />
                             </VCT_Field>
                             <VCT_Select
                                 label="Cấp độ"
@@ -218,31 +218,31 @@ export const Page_giai_dau = () => {
                                     { value: 'clb', label: 'Cấp CLB' }
                                 ]}
                                 value={config.cap_do}
-                                onChange={(v: any) => handleChange('cap_do', v)}
+                                onChange={(v: string) => handleChange('cap_do', v)}
                                 disabled={!isEditing}
                             />
                         </VCT_Stack>
                         <VCT_Stack direction="row" gap={16}>
-                            <VCT_Field label="Năm" className="flex-1"><VCT_Input type="number" value={config.nam} onChange={(e: any) => handleChange('nam', e.target.value)} disabled={!isEditing} /></VCT_Field>
-                            <VCT_Field label="Lần thứ" className="flex-1"><VCT_Input type="number" value={config.lan_thu} onChange={(e: any) => handleChange('lan_thu', Number(e.target.value))} disabled={!isEditing} /></VCT_Field>
+                            <VCT_Field label="Năm" className="flex-1"><VCT_Input type="number" value={config.nam} onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleChange('nam', e.target.value)} disabled={!isEditing} /></VCT_Field>
+                            <VCT_Field label="Lần thứ" className="flex-1"><VCT_Input type="number" value={config.lan_thu} onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleChange('lan_thu', Number(e.target.value))} disabled={!isEditing} /></VCT_Field>
                         </VCT_Stack>
                         <VCT_Stack direction="row" gap={16}>
-                            <VCT_Field label="ĐV Tổ chức" className="flex-1"><VCT_Input value={config.dv_to_chuc} onChange={(e: any) => handleChange('dv_to_chuc', e.target.value)} disabled={!isEditing} /></VCT_Field>
-                            <VCT_Field label="ĐV Đăng cai" className="flex-1"><VCT_Input value={config.dv_dang_cai} onChange={(e: any) => handleChange('dv_dang_cai', e.target.value)} disabled={!isEditing} /></VCT_Field>
+                            <VCT_Field label="ĐV Tổ chức" className="flex-1"><VCT_Input value={config.dv_to_chuc} onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleChange('dv_to_chuc', e.target.value)} disabled={!isEditing} /></VCT_Field>
+                            <VCT_Field label="ĐV Đăng cai" className="flex-1"><VCT_Input value={config.dv_dang_cai} onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleChange('dv_dang_cai', e.target.value)} disabled={!isEditing} /></VCT_Field>
                         </VCT_Stack>
                     </div>
                     <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 16 }}>
                         <VCT_Stack direction="row" gap={16}>
-                            <VCT_Field label="Bắt đầu" className="flex-1"><VCT_Input type="date" value={config.ngay_bat_dau} onChange={(e: any) => handleChange('ngay_bat_dau', e.target.value)} disabled={!isEditing} /></VCT_Field>
-                            <VCT_Field label="Kết thúc" className="flex-1"><VCT_Input type="date" value={config.ngay_ket_thuc} onChange={(e: any) => handleChange('ngay_ket_thuc', e.target.value)} disabled={!isEditing} /></VCT_Field>
-                            <VCT_Field label="Hạn đăng ký" className="flex-1"><VCT_Input type="date" value={config.ngay_dk_cuoi} onChange={(e: any) => handleChange('ngay_dk_cuoi', e.target.value)} disabled={!isEditing} /></VCT_Field>
+                            <VCT_Field label="Bắt đầu" className="flex-1"><VCT_Input type="date" value={config.ngay_bat_dau} onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleChange('ngay_bat_dau', e.target.value)} disabled={!isEditing} /></VCT_Field>
+                            <VCT_Field label="Kết thúc" className="flex-1"><VCT_Input type="date" value={config.ngay_ket_thuc} onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleChange('ngay_ket_thuc', e.target.value)} disabled={!isEditing} /></VCT_Field>
+                            <VCT_Field label="Hạn đăng ký" className="flex-1"><VCT_Input type="date" value={config.ngay_dk_cuoi} onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleChange('ngay_dk_cuoi', e.target.value)} disabled={!isEditing} /></VCT_Field>
                         </VCT_Stack>
                         <VCT_Stack direction="row" gap={16}>
-                            <VCT_Field label="Địa điểm" style={{ flex: 2 }}><VCT_Input value={config.dia_diem} onChange={(e: any) => handleChange('dia_diem', e.target.value)} disabled={!isEditing} /></VCT_Field>
-                            <VCT_Field label="Tỉnh/TP" className="flex-1"><VCT_Input value={config.tinh} onChange={(e: any) => handleChange('tinh', e.target.value)} disabled={!isEditing} /></VCT_Field>
+                            <VCT_Field label="Địa điểm" style={{ flex: 2 }}><VCT_Input value={config.dia_diem} onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleChange('dia_diem', e.target.value)} disabled={!isEditing} /></VCT_Field>
+                            <VCT_Field label="Tỉnh/TP" className="flex-1"><VCT_Input value={config.tinh} onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleChange('tinh', e.target.value)} disabled={!isEditing} /></VCT_Field>
                         </VCT_Stack>
-                        <VCT_Field label="Địa chỉ cụ thể"><VCT_Input value={config.dia_chi} onChange={(e: any) => handleChange('dia_chi', e.target.value)} disabled={!isEditing} placeholder="Số nhà, đường, phường/xã..." /></VCT_Field>
-                        <VCT_Field label="Link Điều lệ mẫu (PDF/Docx)"><VCT_Input value={config.link_dieu_le} onChange={(e: any) => handleChange('link_dieu_le', e.target.value)} disabled={!isEditing} placeholder="https://..." /></VCT_Field>
+                        <VCT_Field label="Địa chỉ cụ thể"><VCT_Input value={config.dia_chi} onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleChange('dia_chi', e.target.value)} disabled={!isEditing} placeholder="Số nhà, đường, phường/xã..." /></VCT_Field>
+                        <VCT_Field label="Link Điều lệ mẫu (PDF/Docx)"><VCT_Input value={config.link_dieu_le} onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleChange('link_dieu_le', e.target.value)} disabled={!isEditing} placeholder="https://..." /></VCT_Field>
                     </div>
                 </VCT_Stack>
             </VCT_Card>
@@ -254,10 +254,10 @@ export const Page_giai_dau = () => {
                 {/* CỘT 1: QUOTA */}
                 < VCT_Card title="Quy định số lượng (Quota)" className="flex-1">
                     <VCT_Stack gap={16}>
-                        <VCT_Field label="Tối đa Đoàn tham dự"><VCT_Input type="number" value={config.quota.max_doan} onChange={(e: any) => handleNestedChange('quota', 'max_doan', Number(e.target.value))} disabled={!isEditing} /></VCT_Field>
-                        <VCT_Field label="Số VĐV tối đa/Đoàn"><VCT_Input type="number" value={config.quota.max_vdv_per_doan} onChange={(e: any) => handleNestedChange('quota', 'max_vdv_per_doan', Number(e.target.value))} disabled={!isEditing} /></VCT_Field>
-                        <VCT_Field label="Nội dung/VĐV (thường 2/3/5)"><VCT_Input type="number" value={config.quota.max_nd_per_vdv} onChange={(e: any) => handleNestedChange('quota', 'max_nd_per_vdv', Number(e.target.value))} disabled={!isEditing} /></VCT_Field>
-                        <VCT_Field label="Số HLV tối đa/Đoàn"><VCT_Input type="number" value={config.quota.max_hlv_per_doan} onChange={(e: any) => handleNestedChange('quota', 'max_hlv_per_doan', Number(e.target.value))} disabled={!isEditing} /></VCT_Field>
+                        <VCT_Field label="Tối đa Đoàn tham dự"><VCT_Input type="number" value={config.quota.max_doan} onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleNestedChange('quota', 'max_doan', Number(e.target.value))} disabled={!isEditing} /></VCT_Field>
+                        <VCT_Field label="Số VĐV tối đa/Đoàn"><VCT_Input type="number" value={config.quota.max_vdv_per_doan} onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleNestedChange('quota', 'max_vdv_per_doan', Number(e.target.value))} disabled={!isEditing} /></VCT_Field>
+                        <VCT_Field label="Nội dung/VĐV (thường 2/3/5)"><VCT_Input type="number" value={config.quota.max_nd_per_vdv} onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleNestedChange('quota', 'max_nd_per_vdv', Number(e.target.value))} disabled={!isEditing} /></VCT_Field>
+                        <VCT_Field label="Số HLV tối đa/Đoàn"><VCT_Input type="number" value={config.quota.max_hlv_per_doan} onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleNestedChange('quota', 'max_hlv_per_doan', Number(e.target.value))} disabled={!isEditing} /></VCT_Field>
                     </VCT_Stack>
                 </VCT_Card >
 
@@ -271,7 +271,7 @@ export const Page_giai_dau = () => {
                                     { value: 'dau_loai_ban_ket', label: 'Top 4 đấu loại trực tiếp' }
                                 ]}
                                 value={config.cau_hinh_quyen.hinh_thuc}
-                                onChange={(v: any) => handleNestedChange('cau_hinh_quyen', 'hinh_thuc', v)}
+                                onChange={(v: string) => handleNestedChange('cau_hinh_quyen', 'hinh_thuc', v)}
                                 disabled={!isEditing}
                             />
                         </VCT_Field>
@@ -282,7 +282,7 @@ export const Page_giai_dau = () => {
                                     { value: 7, label: '7 Giám định (Bỏ cao/thấp lấy TB 5)' }
                                 ]}
                                 value={String(config.cau_hinh_quyen.so_giam_dinh)}
-                                onChange={(v: any) => handleNestedChange('cau_hinh_quyen', 'so_giam_dinh', Number(v))}
+                                onChange={(v: string) => handleNestedChange('cau_hinh_quyen', 'so_giam_dinh', Number(v))}
                                 disabled={!isEditing}
                             />
                         </VCT_Field>
@@ -299,7 +299,7 @@ export const Page_giai_dau = () => {
                                     { value: 'false', label: 'Tranh hạng 3 (Trao 1 HCĐ)' }
                                 ]}
                                 value={String(config.cau_hinh_doi_khang.dong_huy_chuong_dong)}
-                                onChange={(v: any) => handleNestedChange('cau_hinh_doi_khang', 'dong_huy_chuong_dong', v === 'true')}
+                                onChange={(v: string) => handleNestedChange('cau_hinh_doi_khang', 'dong_huy_chuong_dong', v === 'true')}
                                 disabled={!isEditing}
                             />
                         </VCT_Field>
@@ -307,16 +307,16 @@ export const Page_giai_dau = () => {
                             <VCT_Select
                                 options={[{ value: 3, label: '3 Giám định' }, { value: 5, label: '5 Giám định' }]}
                                 value={String(config.cau_hinh_doi_khang.so_giam_dinh)}
-                                onChange={(v: any) => handleNestedChange('cau_hinh_doi_khang', 'so_giam_dinh', Number(v))}
+                                onChange={(v: string) => handleNestedChange('cau_hinh_doi_khang', 'so_giam_dinh', Number(v))}
                                 disabled={!isEditing}
                             />
                         </VCT_Field>
                         <VCT_Stack direction="row" gap={16}>
                             <VCT_Field label="Hiệp đấu (giây)" className="flex-1">
-                                <VCT_Input type="number" value={config.cau_hinh_doi_khang.thoi_gian_hiep} onChange={(e: any) => handleNestedChange('cau_hinh_doi_khang', 'thoi_gian_hiep', Number(e.target.value))} disabled={!isEditing} />
+                                <VCT_Input type="number" value={config.cau_hinh_doi_khang.thoi_gian_hiep} onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleNestedChange('cau_hinh_doi_khang', 'thoi_gian_hiep', Number(e.target.value))} disabled={!isEditing} />
                             </VCT_Field>
                             <VCT_Field label="Nghỉ (giây)" className="flex-1">
-                                <VCT_Input type="number" value={config.cau_hinh_doi_khang.thoi_gian_nghi} onChange={(e: any) => handleNestedChange('cau_hinh_doi_khang', 'thoi_gian_nghi', Number(e.target.value))} disabled={!isEditing} />
+                                <VCT_Input type="number" value={config.cau_hinh_doi_khang.thoi_gian_nghi} onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleNestedChange('cau_hinh_doi_khang', 'thoi_gian_nghi', Number(e.target.value))} disabled={!isEditing} />
                             </VCT_Field>
                         </VCT_Stack>
                     </VCT_Stack>
@@ -328,9 +328,9 @@ export const Page_giai_dau = () => {
                 {/* CỘT 1: LỆ PHÍ */}
                 < VCT_Card title="Lệ phí Tổ chức" className="flex-1">
                     <VCT_Stack gap={16}>
-                        <VCT_Field label="Lệ phí Đoàn"><CurrencyInput value={config.le_phi.doan} onChange={(v: any) => handleNestedChange('le_phi', 'doan', v)} disabled={!isEditing} /></VCT_Field>
-                        <VCT_Field label="Lệ phí / Nội dung"><CurrencyInput value={config.le_phi.noi_dung} onChange={(v: any) => handleNestedChange('le_phi', 'noi_dung', v)} disabled={!isEditing} /></VCT_Field>
-                        <VCT_Field label="Lệ phí Thẻ VĐV / thẻ"><CurrencyInput value={config.le_phi.vdv} onChange={(v: any) => handleNestedChange('le_phi', 'vdv', v)} disabled={!isEditing} /></VCT_Field>
+                        <VCT_Field label="Lệ phí Đoàn"><CurrencyInput value={config.le_phi.doan} onChange={(v: number) => handleNestedChange('le_phi', 'doan', v)} disabled={!isEditing} /></VCT_Field>
+                        <VCT_Field label="Lệ phí / Nội dung"><CurrencyInput value={config.le_phi.noi_dung} onChange={(v: number) => handleNestedChange('le_phi', 'noi_dung', v)} disabled={!isEditing} /></VCT_Field>
+                        <VCT_Field label="Lệ phí Thẻ VĐV / thẻ"><CurrencyInput value={config.le_phi.vdv} onChange={(v: number) => handleNestedChange('le_phi', 'vdv', v)} disabled={!isEditing} /></VCT_Field>
                     </VCT_Stack>
                 </VCT_Card >
 
@@ -339,15 +339,15 @@ export const Page_giai_dau = () => {
                     <VCT_Stack gap={16}>
                         <div style={{ fontSize: 13, fontWeight: 700, color: '#f59e0b', textTransform: 'uppercase' }}>Thưởng Cá nhân</div>
                         <VCT_Stack direction="row" gap={12}>
-                            <VCT_Field label="🥇 Vàng"><CurrencyInput value={config.giai_thuong.hcv} onChange={(v: any) => handleNestedChange('giai_thuong', 'hcv', v)} disabled={!isEditing} /></VCT_Field>
-                            <VCT_Field label="🥈 Bạc"><CurrencyInput value={config.giai_thuong.hcb} onChange={(v: any) => handleNestedChange('giai_thuong', 'hcb', v)} disabled={!isEditing} /></VCT_Field>
-                            <VCT_Field label="🥉 Đồng"><CurrencyInput value={config.giai_thuong.hcd} onChange={(v: any) => handleNestedChange('giai_thuong', 'hcd', v)} disabled={!isEditing} /></VCT_Field>
+                            <VCT_Field label="🥇 Vàng"><CurrencyInput value={config.giai_thuong.hcv} onChange={(v: number) => handleNestedChange('giai_thuong', 'hcv', v)} disabled={!isEditing} /></VCT_Field>
+                            <VCT_Field label="🥈 Bạc"><CurrencyInput value={config.giai_thuong.hcb} onChange={(v: number) => handleNestedChange('giai_thuong', 'hcb', v)} disabled={!isEditing} /></VCT_Field>
+                            <VCT_Field label="🥉 Đồng"><CurrencyInput value={config.giai_thuong.hcd} onChange={(v: number) => handleNestedChange('giai_thuong', 'hcd', v)} disabled={!isEditing} /></VCT_Field>
                         </VCT_Stack>
                         <div style={{ marginTop: 8, fontSize: 13, fontWeight: 700, color: '#10b981', textTransform: 'uppercase' }}>Thưởng Toàn đoàn</div>
                         <VCT_Stack direction="row" gap={12}>
-                            <VCT_Field label="🏆 Nhất"><CurrencyInput value={config.giai_thuong_toan_doan.nhat} onChange={(v: any) => handleNestedChange('giai_thuong_toan_doan', 'nhat', v)} disabled={!isEditing} /></VCT_Field>
-                            <VCT_Field label="🏆 Nhì"><CurrencyInput value={config.giai_thuong_toan_doan.nhi} onChange={(v: any) => handleNestedChange('giai_thuong_toan_doan', 'nhi', v)} disabled={!isEditing} /></VCT_Field>
-                            <VCT_Field label="🏆 Ba"><CurrencyInput value={config.giai_thuong_toan_doan.ba} onChange={(v: any) => handleNestedChange('giai_thuong_toan_doan', 'ba', v)} disabled={!isEditing} /></VCT_Field>
+                            <VCT_Field label="🏆 Nhất"><CurrencyInput value={config.giai_thuong_toan_doan.nhat} onChange={(v: number) => handleNestedChange('giai_thuong_toan_doan', 'nhat', v)} disabled={!isEditing} /></VCT_Field>
+                            <VCT_Field label="🏆 Nhì"><CurrencyInput value={config.giai_thuong_toan_doan.nhi} onChange={(v: number) => handleNestedChange('giai_thuong_toan_doan', 'nhi', v)} disabled={!isEditing} /></VCT_Field>
+                            <VCT_Field label="🏆 Ba"><CurrencyInput value={config.giai_thuong_toan_doan.ba} onChange={(v: number) => handleNestedChange('giai_thuong_toan_doan', 'ba', v)} disabled={!isEditing} /></VCT_Field>
                         </VCT_Stack>
                     </VCT_Stack>
                 </VCT_Card >
@@ -358,18 +358,18 @@ export const Page_giai_dau = () => {
                         <div style={{ fontSize: 13, fontWeight: 700, color: '#ef4444', textTransform: 'uppercase' }}>Hỗ trợ Y tế</div>
                         <VCT_Field label="Bệnh viện trực tuyến & Khoảng cách">
                             <div style={{ display: 'flex', gap: 8 }}>
-                                <div style={{ flex: 2 }}><VCT_Input value={config.y_te.benh_vien} onChange={(e: any) => handleNestedChange('y_te', 'benh_vien', e.target.value)} disabled={!isEditing} placeholder="Tên BV..." /></div>
-                                <div className="flex-1"><VCT_Input value={config.y_te.bv_kc} onChange={(e: any) => handleNestedChange('y_te', 'bv_kc', e.target.value)} disabled={!isEditing} placeholder="Khoảng cách..." /></div>
+                                <div style={{ flex: 2 }}><VCT_Input value={config.y_te.benh_vien} onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleNestedChange('y_te', 'benh_vien', e.target.value)} disabled={!isEditing} placeholder="Tên BV..." /></div>
+                                <div className="flex-1"><VCT_Input value={config.y_te.bv_kc} onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleNestedChange('y_te', 'bv_kc', e.target.value)} disabled={!isEditing} placeholder="Khoảng cách..." /></div>
                             </div>
                         </VCT_Field>
                         <VCT_Stack direction="row" gap={16}>
-                            <VCT_Field label="Hotline cấp cứu"><VCT_Input value={config.y_te.bv_sdt} onChange={(e: any) => handleNestedChange('y_te', 'bv_sdt', e.target.value)} disabled={!isEditing} /></VCT_Field>
-                            <VCT_Field label="Đội ngũ sơ cứu"><VCT_Input value={config.y_te.doi_y_te} onChange={(e: any) => handleNestedChange('y_te', 'doi_y_te', e.target.value)} disabled={!isEditing} /></VCT_Field>
+                            <VCT_Field label="Hotline cấp cứu"><VCT_Input value={config.y_te.bv_sdt} onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleNestedChange('y_te', 'bv_sdt', e.target.value)} disabled={!isEditing} /></VCT_Field>
+                            <VCT_Field label="Đội ngũ sơ cứu"><VCT_Input value={config.y_te.doi_y_te} onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleNestedChange('y_te', 'doi_y_te', e.target.value)} disabled={!isEditing} /></VCT_Field>
                         </VCT_Stack>
                         <div style={{ marginTop: 8, fontSize: 13, fontWeight: 700, color: '#3b82f6', textTransform: 'uppercase' }}>Pháp lý</div>
                         <VCT_Stack direction="row" gap={16}>
-                            <VCT_Field label="Quyết định tổ chức"><VCT_Input value={config.phap_ly.qd_to_chuc} onChange={(e: any) => handleNestedChange('phap_ly', 'qd_to_chuc', e.target.value)} disabled={!isEditing} /></VCT_Field>
-                            <VCT_Field label="Bảo hiểm VĐV"><VCT_Input value={config.phap_ly.bao_hiem} onChange={(e: any) => handleNestedChange('phap_ly', 'bao_hiem', e.target.value)} disabled={!isEditing} /></VCT_Field>
+                            <VCT_Field label="Quyết định tổ chức"><VCT_Input value={config.phap_ly.qd_to_chuc} onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleNestedChange('phap_ly', 'qd_to_chuc', e.target.value)} disabled={!isEditing} /></VCT_Field>
+                            <VCT_Field label="Bảo hiểm VĐV"><VCT_Input value={config.phap_ly.bao_hiem} onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleNestedChange('phap_ly', 'bao_hiem', e.target.value)} disabled={!isEditing} /></VCT_Field>
                         </VCT_Stack>
                     </VCT_Stack>
                 </VCT_Card >
@@ -754,24 +754,24 @@ export const Page_giai_dau = () => {
                 <VCT_Stack gap={16}>
                     <VCT_Stack direction="row" gap={16}>
                         <div className="flex-1">
-                            <VCT_Field label="Họ và tên *"><VCT_Input value={btcModal.data.ten} onChange={(e: any) => setBtcModal(p => ({ ...p, data: { ...p.data, ten: e.target.value } }))} placeholder="Nhập họ và tên..." /></VCT_Field>
+                            <VCT_Field label="Họ và tên *"><VCT_Input value={btcModal.data.ten} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setBtcModal(p => ({ ...p, data: { ...p.data, ten: e.target.value } }))} placeholder="Nhập họ và tên..." /></VCT_Field>
                         </div>
                         <div className="flex-1">
-                            <VCT_Field label="Chức vụ *"><VCT_Input value={btcModal.data.chuc_vu} onChange={(e: any) => setBtcModal(p => ({ ...p, data: { ...p.data, chuc_vu: e.target.value } }))} placeholder="Trưởng ban, Phó ban..." /></VCT_Field>
+                            <VCT_Field label="Chức vụ *"><VCT_Input value={btcModal.data.chuc_vu} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setBtcModal(p => ({ ...p, data: { ...p.data, chuc_vu: e.target.value } }))} placeholder="Trưởng ban, Phó ban..." /></VCT_Field>
                         </div>
                     </VCT_Stack>
-                    <VCT_Field label="Đơn vị / Chuyên môn"><VCT_Input value={btcModal.data.dv} onChange={(e: any) => setBtcModal(p => ({ ...p, data: { ...p.data, dv: e.target.value } }))} placeholder="Cơ quan công tác..." /></VCT_Field>
+                    <VCT_Field label="Đơn vị / Chuyên môn"><VCT_Input value={btcModal.data.dv} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setBtcModal(p => ({ ...p, data: { ...p.data, dv: e.target.value } }))} placeholder="Cơ quan công tác..." /></VCT_Field>
                     <VCT_Stack direction="row" gap={16}>
                         <div className="flex-1">
-                            <VCT_Field label="Số điện thoại"><VCT_Input value={btcModal.data.sdt} onChange={(e: any) => setBtcModal(p => ({ ...p, data: { ...p.data, sdt: e.target.value } }))} placeholder="090..." /></VCT_Field>
+                            <VCT_Field label="Số điện thoại"><VCT_Input value={btcModal.data.sdt} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setBtcModal(p => ({ ...p, data: { ...p.data, sdt: e.target.value } }))} placeholder="090..." /></VCT_Field>
                         </div>
                         <div className="flex-1">
-                            <VCT_Field label="Email"><VCT_Input value={btcModal.data.email} onChange={(e: any) => setBtcModal(p => ({ ...p, data: { ...p.data, email: e.target.value } }))} placeholder="abc@email.com" /></VCT_Field>
+                            <VCT_Field label="Email"><VCT_Input value={btcModal.data.email} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setBtcModal(p => ({ ...p, data: { ...p.data, email: e.target.value } }))} placeholder="abc@email.com" /></VCT_Field>
                         </div>
                     </VCT_Stack>
                     <div style={{ width: '50%' }}>
                         <VCT_Field label="Cấp bậc">
-                            <VCT_Select options={[{ value: 1, label: 'Thành viên cốt cán (Cấp 1)' }, { value: 2, label: 'Thành viên thường (Cấp 2)' }]} value={btcModal.data.cap} onChange={(v: any) => setBtcModal(p => ({ ...p, data: { ...p.data, cap: Number(v) } }))} />
+                            <VCT_Select options={[{ value: 1, label: 'Thành viên cốt cán (Cấp 1)' }, { value: 2, label: 'Thành viên thường (Cấp 2)' }]} value={btcModal.data.cap} onChange={(v: string) => setBtcModal(p => ({ ...p, data: { ...p.data, cap: Number(v) } }))} />
                         </VCT_Field>
                     </div>
                 </VCT_Stack>
@@ -805,10 +805,10 @@ export const Page_giai_dau = () => {
             }>
                 <VCT_Stack gap={16}>
                     <VCT_Field label="Thứ hạng đạt được (Ví dụ: 1, 2, 3...) *">
-                        <VCT_Input type="number" value={pointModal.data.thu_hang} onChange={(e: any) => setPointModal(p => ({ ...p, data: { ...p.data, thu_hang: Number(e.target.value) } }))} placeholder="Nhập thứ hạng..." />
+                        <VCT_Input type="number" value={pointModal.data.thu_hang} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPointModal(p => ({ ...p, data: { ...p.data, thu_hang: Number(e.target.value) } }))} placeholder="Nhập thứ hạng..." />
                     </VCT_Field>
                     <VCT_Field label="Hệ số xếp hạng (Điểm số) *">
-                        <VCT_Input type="number" value={pointModal.data.diem} onChange={(e: any) => setPointModal(p => ({ ...p, data: { ...p.data, diem: Number(e.target.value) } }))} placeholder="Nhập điểm số..." />
+                        <VCT_Input type="number" value={pointModal.data.diem} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPointModal(p => ({ ...p, data: { ...p.data, diem: Number(e.target.value) } }))} placeholder="Nhập điểm số..." />
                     </VCT_Field>
                 </VCT_Stack>
             </VCT_Modal>

@@ -16,6 +16,7 @@ primary_region = 'sin'
   VCT_PG_POOL_MAX_IDLE_TIME = '15m'
   VCT_PG_POOL_MIN_CONNS = '2'
   VCT_POSTGRES_PROVIDER = 'neon'
+  VCT_CORS_ORIGINS = 'https://vct-platform.vercel.app,https://vct-platform-next.vercel.app'
   VCT_STORAGE_DRIVER = 'postgres'
 
 [http_service]

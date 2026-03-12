@@ -167,7 +167,7 @@ CREATE INDEX IF NOT EXISTS idx_event_schemas_active ON tournament.event_schemas(
 CREATE INDEX IF NOT EXISTS idx_authz_object ON core.authorization_tuples(object_type, object_id, relation);
 CREATE INDEX IF NOT EXISTS idx_authz_subject ON core.authorization_tuples(subject_type, subject_id);
 CREATE INDEX IF NOT EXISTS idx_authz_active ON core.authorization_tuples(object_type, object_id, relation, subject_type, subject_id)
-    WHERE revoked_at IS NULL AND (expires_at IS NULL OR expires_at > now());
+    WHERE revoked_at IS NULL;
 
 -- digital_signatures
 CREATE INDEX IF NOT EXISTS idx_signatures_record ON core.digital_signatures(signed_table, signed_record_id);

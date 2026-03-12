@@ -7,6 +7,9 @@ import { VCT_Badge, VCT_Button, VCT_Stack, VCT_SearchInput, VCT_EmptyState } fro
 import { VCT_PageContainer, VCT_StatRow } from '../components/vct-ui'
 import type { StatItem } from '../components/VCT_StatRow'
 import { VCT_Icons } from '../components/vct-icons'
+import { exportToExcel } from '../../utils/exportUtils'
+import { useRealtimeNotifications } from '../hooks/useRealtimeNotifications'
+import { VCT_DigitalSignature } from '../components/VCT_DigitalSignature'
 
 // ════════════════════════════════════════
 // FEDERATION — APPROVAL CENTER
@@ -47,6 +50,7 @@ const FALLBACK_APPROVALS: ApprovalRequest[] = [
 export const Page_federation_approvals = () => {
     const [tab, setTab] = useState<'pending' | 'all'>('pending')
     const [search, setSearch] = useState('')
+    const [signatureModal, setSignatureModal] = useState<{ open: boolean, approvalId: string | null, title: string }>({ open: false, approvalId: null, title: '' })
 
     // ── API Fetch ────────────────────────────────────────
     const approvalsApi = useApiFetch<{ requests: ApprovalRequest[] }>()
@@ -67,8 +71,58 @@ export const Page_federation_approvals = () => {
         return list
     }, [tab, search, approvals])
 
+    const handleExportExcel = () => {
+        const exportData = data.map((a, idx) => ({
+            'STT': idx + 1,
+            'Mã Yêu Cầu': a.id,
+            'Loại Yêu Cầu': TYPE_MAP[a.type]?.label || a.type,
+            'Tiêu Đề': a.title,
+            'Người Gửi': a.requester,
+            'Ngày Gửi': a.submitted_at,
+            'Trạng Thái': STATUS_MAP[a.status]?.label || a.status,
+            'Độ Ưu Tiên': a.priority === 'urgent' ? 'Khẩn cấp' : 'Bình thường',
+            'Bước Hiện Tại': `${a.current_step} (${a.current_step_num}/${a.total_steps})`
+        }));
+        exportToExcel(exportData, 'danh_sach_phe_duyet');
+    };
+
+    const handleSignComplete = (signatureUrl: string) => {
+        try {
+            const { jsPDF } = require('jspdf');
+            const doc = new jsPDF() as import('jspdf').jsPDF;
+            
+            // Add header
+            doc.setFontSize(16);
+            doc.text('THÔNG BÁO PHÊ DUYỆT', 105, 20, { align: 'center' });
+            
+            // Add content
+            doc.setFontSize(12);
+            doc.text(`Kính gửi các đơn vị/cá nhân liên quan,`, 20, 40);
+            doc.text(`Chúng tôi xác nhận đã duyệt nội dung:`, 20, 50);
+            doc.text(`=> ${signatureModal.title}`, 20, 60);
+            
+            doc.text(`Yêu cầu này đã được phê duyệt bằng chữ ký số.`, 20, 80);
+            
+            // Add signature
+            doc.text('Người phê duyệt', 150, 100);
+            doc.addImage(signatureUrl, 'PNG', 130, 110, 50, 25);
+            
+            // Save PDF
+            doc.save(`BienBan_PheDuyet_${signatureModal.approvalId || 'Doc'}.pdf`);
+            
+            alert('Đã ký và xuất biên bản PDF thành công!');
+        } catch (e) {
+            console.error('Lỗi khi tải PDF:', e);
+            alert('Có lỗi xảy ra khi tạo PDF. Hãy đảm bảo thư viện jspdf đã được cài đặt.');
+        }
+        setSignatureModal({ open: false, approvalId: null, title: '' });
+    };
+
+    const { ToastContainer } = useRealtimeNotifications()
+
     return (
         <VCT_PageContainer size="wide" animated>
+            <ToastContainer />
             <div className="mb-6">
                 <h1 className="text-2xl font-bold tracking-tight text-[var(--vct-text-primary)]">Trung tâm Phê duyệt</h1>
                 <p className="text-sm text-[var(--vct-text-secondary)] mt-1">Xử lý yêu cầu đăng ký, phê duyệt văn bản, nhân sự và ngân sách.</p>
@@ -91,6 +145,9 @@ export const Page_federation_approvals = () => {
                 <div className="w-[280px]">
                     <VCT_SearchInput value={search} onChange={setSearch} onClear={() => setSearch('')} placeholder="Tìm yêu cầu..." />
                 </div>
+                <VCT_Button variant="secondary" onClick={handleExportExcel}>
+                    <VCT_Icons.Download size={16} />
+                </VCT_Button>
             </VCT_Stack>
 
             {data.length === 0 ? (
@@ -129,7 +186,7 @@ export const Page_federation_approvals = () => {
                                         {a.status === 'pending' && (
                                             <VCT_Stack direction="row" gap={4}>
                                                 <VCT_Button variant="secondary" onClick={() => { }} style={{ fontSize: 11, padding: '4px 10px' }}>Từ chối</VCT_Button>
-                                                <VCT_Button onClick={() => { }} style={{ fontSize: 11, padding: '4px 10px' }}>Duyệt</VCT_Button>
+                                                <VCT_Button onClick={() => setSignatureModal({ open: true, approvalId: a.id, title: a.title })} style={{ fontSize: 11, padding: '4px 10px' }}>Ký & Phê duyệt</VCT_Button>
                                             </VCT_Stack>
                                         )}
                                     </VCT_Stack>
@@ -139,6 +196,13 @@ export const Page_federation_approvals = () => {
                     })}
                 </div>
             )}
+
+            <VCT_DigitalSignature
+                isOpen={signatureModal.open}
+                onClose={() => setSignatureModal({ open: false, approvalId: null, title: '' })}
+                onSignComplete={handleSignComplete}
+                documentTitle={signatureModal.title}
+            />
         </VCT_PageContainer>
     )
 }

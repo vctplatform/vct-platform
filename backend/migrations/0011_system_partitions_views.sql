@@ -61,9 +61,11 @@ CREATE TABLE IF NOT EXISTS system.feature_flags (
   created_at        TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   updated_at        TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   version           INT NOT NULL DEFAULT 1,
-  PRIMARY KEY (id),
-  UNIQUE (COALESCE(tenant_id, '00000000-0000-0000-0000-000000000000'), flag_key)
+  PRIMARY KEY (id)
 );
+
+CREATE UNIQUE INDEX IF NOT EXISTS uq_feature_flags_tenant_key
+  ON system.feature_flags (COALESCE(tenant_id, '00000000-0000-0000-0000-000000000000'::UUID), flag_key);
 
 CREATE TABLE IF NOT EXISTS system.device_registry (
   id                UUID DEFAULT uuidv7() NOT NULL,
@@ -190,7 +192,7 @@ SELECT
   a.belt_rank_id,
   r.name_vi AS belt_rank_name,
   a.tournament_id,
-  t.ten AS tournament_name,
+  t.name AS tournament_name,
   a.team_id,
   tm.ten AS team_name,
   a.current_club_id AS club_id,
@@ -210,13 +212,11 @@ WHERE a.is_deleted = false;
 -- Tournaments View
 CREATE OR REPLACE VIEW api_v1.tournaments AS
 SELECT
-  t.id, t.tenant_id, t.ten AS name,
-  t.ngay_bat_dau AS start_date,
-  t.ngay_ket_thuc AS end_date,
-  t.dia_diem AS location,
+  t.id, t.tenant_id, t.name,
+  t.start_date,
+  t.end_date,
+  t.location,
   t.status,
-  t.federation_id,
-  f.ten AS federation_name,
   t.is_deleted,
   t.created_at,
   t.updated_at,
@@ -225,7 +225,6 @@ SELECT
   (SELECT COUNT(*) FROM teams tm WHERE tm.tournament_id = t.id AND tm.is_deleted = false) AS team_count,
   (SELECT COUNT(*) FROM combat_matches m WHERE m.tournament_id = t.id AND m.is_deleted = false) AS match_count
 FROM tournaments t
-LEFT JOIN federations f ON t.federation_id = f.id
 WHERE t.is_deleted = false;
 
 -- Coaches View
@@ -256,14 +255,13 @@ WHERE ms.is_deleted = false;
 CREATE OR REPLACE VIEW api_v1.matches AS
 SELECT
   m.id, m.tenant_id, m.tournament_id,
-  m.noi_dung AS content_category,
+  m.content_category_id,
   m.vong AS round,
-  m.tran_so AS match_number,
+  m.bracket_position AS match_number,
   m.trang_thai AS status,
   m.arena_id,
   ar.ten AS arena_name,
-  m.ngay_thi_dau AS match_date,
-  m.gio_bat_dau AS start_time,
+  m.thoi_gian_bat_dau AS match_date,
   m.is_deleted,
   m.created_at,
   m.updated_at
@@ -276,12 +274,12 @@ CREATE OR REPLACE VIEW api_v1.rankings AS
 SELECT
   r.id, r.tenant_id,
   r.category, r.weight_class,
-  r.ranking_position AS rank,
-  r.total_points AS points,
+  r.national_rank AS rank,
+  r.points,
   r.athlete_id,
   a.ho_ten AS athlete_name,
   r.metadata,
-  r.updated_at
+  r.last_updated AS updated_at
 FROM rankings r
 LEFT JOIN athletes a ON r.athlete_id = a.id
 WHERE r.is_deleted = false;

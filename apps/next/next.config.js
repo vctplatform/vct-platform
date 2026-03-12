@@ -67,6 +67,8 @@ const withTurpopack = {
 /**
  * @type {import('next').NextConfig}
  */
+const BACKEND_URL = process.env.BACKEND_URL || 'http://localhost:18080'
+
 module.exports = {
   transpilePackages: [
     'react-native',
@@ -76,6 +78,19 @@ module.exports = {
     'moti',
     'react-native-gesture-handler',
   ],
+
+  env: {
+    NEXT_PUBLIC_API_BASE_URL: process.env.NEXT_PUBLIC_API_BASE_URL || '',
+  },
+
+  async rewrites() {
+    return [
+      {
+        source: '/api/:path*',
+        destination: `${BACKEND_URL}/api/:path*`,
+      },
+    ]
+  },
 
   compiler: {
     define: {

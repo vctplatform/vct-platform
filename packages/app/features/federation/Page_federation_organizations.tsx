@@ -8,7 +8,8 @@ import React, { useState, useMemo } from 'react';
 import { useApiQuery } from '../hooks/useApiQuery';
 import { VCT_PageContainer, VCT_PageHero } from '../components/VCT_PageContainer';
 import { VCT_Icons } from '../components/vct-icons';
-import { VCT_EmptyState } from '../components/vct-ui';
+import { VCT_EmptyState, VCT_Button } from '../components/vct-ui';
+import { exportToExcel } from '../../utils/exportUtils';
 
 // ── Types ────────────────────────────────────────────────────
 
@@ -73,6 +74,20 @@ export function Page_federation_organizations() {
     const totalClubs = orgs.reduce((s, o) => s + o.club_count, 0);
     const totalMembers = orgs.reduce((s, o) => s + o.member_count, 0);
 
+    const handleExportExcel = () => {
+        const exportData = filtered.map((o, idx) => ({
+            'STT': idx + 1,
+            'Tên Đơn Vị': o.name,
+            'Viết Tắt': o.abbreviation,
+            'Vùng Miền': o.region,
+            'Số CLB': o.club_count,
+            'Số Thành Viên': o.member_count,
+            'Trạng Thái': o.status === 'active' ? 'Hoạt động' : o.status === 'suspended' ? 'Tạm dừng' : 'Ngưng',
+            'Người Đại Diện': o.leader_name
+        }));
+        exportToExcel(exportData, 'danh_sach_to_chuc_hiep_hoi');
+    };
+
     const kpis = [
         { label: 'Tổng đơn vị', value: orgs.length, icon: <VCT_Icons.Building size={16} />, color: '#3b82f6' },
         { label: 'Hoạt động', value: orgs.filter(o => o.status === 'active').length, icon: <VCT_Icons.CheckCircle size={16} />, color: '#10b981' },
@@ -124,6 +139,13 @@ export function Page_federation_organizations() {
                         placeholder="Tìm đơn vị..."
                         className="w-full pl-9 pr-4 py-2.5 rounded-xl bg-vct-elevated border border-vct-border text-vct-text text-sm focus:outline-none focus:border-vct-accent/50"
                     />
+                </div>
+                
+                <div className="ml-auto flex gap-2">
+                    <VCT_Button variant="secondary" onClick={handleExportExcel}>
+                        <VCT_Icons.Download size={16} className="mr-2" />
+                        Xuất Excel
+                    </VCT_Button>
                 </div>
             </div>
 

@@ -15,7 +15,7 @@ BEGIN;
 -- ════════════════════════════════════════════════════════
 
 CREATE TABLE IF NOT EXISTS core.athlete_data_keys (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v7(),
+    id UUID PRIMARY KEY DEFAULT uuidv7(),
     athlete_id UUID NOT NULL,
     key_purpose TEXT NOT NULL DEFAULT 'PII_ENCRYPTION',
 
@@ -53,7 +53,7 @@ COMMENT ON TABLE core.athlete_data_keys IS
 -- ════════════════════════════════════════════════════════
 
 CREATE TABLE IF NOT EXISTS core.erasure_tombstones (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v7(),
+    id UUID PRIMARY KEY DEFAULT uuidv7(),
     original_athlete_id UUID NOT NULL,
     erasure_type TEXT NOT NULL
         CHECK (erasure_type IN ('FULL', 'PARTIAL', 'PSEUDONYMIZED')),
@@ -87,7 +87,7 @@ COMMENT ON TABLE core.erasure_tombstones IS
 -- ════════════════════════════════════════════════════════
 
 CREATE TABLE IF NOT EXISTS system.conflict_resolution_rules (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v7(),
+    id UUID PRIMARY KEY DEFAULT uuidv7(),
     table_name TEXT NOT NULL,
     field_name TEXT,                      -- NULL = whole record
 
@@ -110,8 +110,36 @@ CREATE TABLE IF NOT EXISTS system.conflict_resolution_rules (
 COMMENT ON TABLE system.conflict_resolution_rules IS
     'V7.0 Layer A: Configurable merge strategy rules for offline sync conflicts';
 
+-- Add columns that may be missing from earlier version of this table
+ALTER TABLE system.conflict_resolution_rules
+  ADD COLUMN IF NOT EXISTS strategy TEXT,
+  ADD COLUMN IF NOT EXISTS priority_field TEXT,
+  ADD COLUMN IF NOT EXISTS merge_logic JSONB,
+  ADD COLUMN IF NOT EXISTS domain_logic TEXT,
+  ADD COLUMN IF NOT EXISTS applies_when JSONB,
+  ADD COLUMN IF NOT EXISTS is_active BOOLEAN DEFAULT true,
+  ADD COLUMN IF NOT EXISTS metadata JSONB DEFAULT '{}';
+
+-- Add columns that may be missing from earlier version of sync_conflicts
+ALTER TABLE system.sync_conflicts
+  ADD COLUMN IF NOT EXISTS status TEXT DEFAULT 'DETECTED',
+  ADD COLUMN IF NOT EXISTS version_a JSONB,
+  ADD COLUMN IF NOT EXISTS version_a_device_id UUID,
+  ADD COLUMN IF NOT EXISTS version_a_timestamp TIMESTAMPTZ,
+  ADD COLUMN IF NOT EXISTS version_a_user_id UUID,
+  ADD COLUMN IF NOT EXISTS version_b JSONB,
+  ADD COLUMN IF NOT EXISTS version_b_device_id UUID,
+  ADD COLUMN IF NOT EXISTS version_b_timestamp TIMESTAMPTZ,
+  ADD COLUMN IF NOT EXISTS version_b_user_id UUID,
+  ADD COLUMN IF NOT EXISTS resolution_strategy TEXT DEFAULT 'MANUAL',
+  ADD COLUMN IF NOT EXISTS domain_rule_id UUID,
+  ADD COLUMN IF NOT EXISTS resolved_version JSONB,
+  ADD COLUMN IF NOT EXISTS resolution_notes TEXT,
+  ADD COLUMN IF NOT EXISTS detected_at TIMESTAMPTZ DEFAULT now(),
+  ADD COLUMN IF NOT EXISTS metadata JSONB DEFAULT '{}';
+
 CREATE TABLE IF NOT EXISTS system.sync_conflicts (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v7(),
+    id UUID PRIMARY KEY DEFAULT uuidv7(),
 
     -- Conflicting records
     table_name TEXT NOT NULL,
@@ -154,7 +182,6 @@ CREATE INDEX IF NOT EXISTS idx_sync_conflicts_table_record
 
 COMMENT ON TABLE system.sync_conflicts IS
     'V7.0 Layer A: Offline merge conflict detection and resolution';
-
 -- Seed default resolution rules
 INSERT INTO system.conflict_resolution_rules (table_name, field_name, strategy, domain_logic)
 VALUES
@@ -169,7 +196,7 @@ ON CONFLICT DO NOTHING;
 -- ════════════════════════════════════════════════════════
 
 CREATE TABLE IF NOT EXISTS system.view_contracts (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v7(),
+    id UUID PRIMARY KEY DEFAULT uuidv7(),
     view_name TEXT NOT NULL,               -- 'api_v1.athletes'
     version INTEGER NOT NULL,
 
@@ -209,7 +236,7 @@ COMMENT ON TABLE system.view_contracts IS
 -- ════════════════════════════════════════════════════════
 
 CREATE TABLE IF NOT EXISTS system.config_changelog (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v7(),
+    id UUID PRIMARY KEY DEFAULT uuidv7(),
     config_table TEXT NOT NULL,
     config_id UUID NOT NULL,
 
@@ -251,7 +278,7 @@ COMMENT ON TABLE system.config_changelog IS
 -- ════════════════════════════════════════════════════════
 
 CREATE TABLE IF NOT EXISTS system.cross_aggregate_references (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v7(),
+    id UUID PRIMARY KEY DEFAULT uuidv7(),
     source_schema TEXT NOT NULL,
     source_table TEXT NOT NULL,
     source_column TEXT NOT NULL,

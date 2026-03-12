@@ -282,11 +282,14 @@ END;
 $$ LANGUAGE plpgsql;
 
 -- Add to scheduled tasks
-INSERT INTO system.scheduled_tasks (task_name, description, cron_expression, function_name, is_active)
-VALUES
-  ('maintain_partitions', 'Auto-create future partitions', '0 0 * * 0', 'system.maintain_partitions', true),
-  ('execute_retention', 'Execute data retention policies', '0 3 * * *', 'system.execute_retention_policies', true),
-  ('cleanup_sessions', 'Remove expired sessions', '0 4 * * *', 'core.cleanup_expired_sessions', true)
-ON CONFLICT (task_name) DO NOTHING;
+DO $$
+BEGIN
+  INSERT INTO system.scheduled_tasks (name, description, cron_expression, job_type, is_active)
+  VALUES
+    ('maintain_partitions', 'Auto-create future partitions', '0 0 * * 0', 'system.maintain_partitions', true),
+    ('execute_retention', 'Execute data retention policies', '0 3 * * *', 'system.execute_retention_policies', true),
+    ('cleanup_sessions', 'Remove expired sessions', '0 4 * * *', 'core.cleanup_expired_sessions', true);
+EXCEPTION WHEN unique_violation THEN NULL;
+END $$;
 
 COMMIT;

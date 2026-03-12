@@ -4,10 +4,12 @@ import * as React from 'react'
 import { useState, useMemo } from 'react'
 import {
     VCT_Badge, VCT_Stack, VCT_SearchInput,
-    VCT_EmptyState, VCT_PageContainer, VCT_StatRow
+    VCT_EmptyState, VCT_PageContainer, VCT_StatRow, VCT_Button
 } from '../components/vct-ui'
 import type { StatItem } from '../components/VCT_StatRow'
 import { VCT_Icons } from '../components/vct-icons'
+import { exportToExcel } from '../../utils/exportUtils'
+import { VCT_Timeline } from '../components/VCT_Timeline'
 import { useFederationPersonnel, type PersonnelAssignment } from '../hooks/useFederationAPI'
 
 // ════════════════════════════════════════
@@ -24,6 +26,12 @@ const FALLBACK_PERSONNEL: PersonnelAssignment[] = [
     { id: '7', user_id: 'u7', user_name: '', name: 'Hoàng Đức Anh', position: 'Ủy viên', unit_id: 'bch', unit_name: 'BCH Liên đoàn', role_code: 'federation_secretary', start_date: '2022-01-15', is_active: true },
     { id: '8', user_id: 'u8', user_name: '', name: 'Bùi Văn Thắng', position: 'Ủy viên', unit_id: 'bch', unit_name: 'BCH Liên đoàn', role_code: 'federation_secretary', start_date: '2020-01-01', is_active: false },
 ] as any[]
+
+const PERSONNEL_AUDIT_LOGS = [
+    { time: '08:15 Hôm nay', title: 'Bổ nhiệm mới', description: 'Thêm ông Trần Văn C vào Ban Kỹ thuật', color: '#10b981', icon: '👤' },
+    { time: '16:30 Hôm qua', title: 'Cập nhật hồ sơ', description: 'Trần Thị Hạnh cập nhật thông tin liên lạc', color: '#3b82f6', icon: '📝' },
+    { time: '10:00 10/03/2026', title: 'Miễn nhiệm', description: 'Ông Bùi Văn Thắng thôi giữ chức vụ Ủy viên BCH do hết nhiệm kỳ', color: '#ef4444', icon: '⚠️' }
+];
 
 const ROLE_LABELS: Record<string, { label: string; type: any }> = {
     federation_president: { label: 'Chủ tịch', type: 'highlight' },
@@ -61,6 +69,19 @@ export function Page_federation_personnel() {
 
     const activeCount = (personnel as any[]).filter(p => p.is_active).length
 
+    const handleExportExcel = () => {
+        const exportData = filtered.map((p: any, idx) => ({
+            'STT': idx + 1,
+            'Họ Tên': p.user_name || p.name || 'N/A',
+            'Chức Vụ': p.position,
+            'Đơn Vị': p.unit_name,
+            'Vai Trò Hệ Thống': p.role_code,
+            'Ngày Bắt Đầu': p.start_date,
+            'Trạng Thái': p.is_active ? 'Đang hoạt động' : 'Hết nhiệm kỳ'
+        }));
+        exportToExcel(exportData, 'danh_sach_nhan_su_lien_doan');
+    };
+
     return (
         <VCT_PageContainer size="wide" animated>
             <div className="mb-6">
@@ -89,6 +110,11 @@ export function Page_federation_personnel() {
                     <option value="">Tất cả đơn vị</option>
                     {units.map(u => <option key={u as string} value={u as string}>{u as string}</option>)}
                 </select>
+                <div className="flex-1" />
+                <VCT_Button variant="secondary" onClick={handleExportExcel}>
+                    <VCT_Icons.Download size={16} className="mr-2" />
+                    Xuất Excel
+                </VCT_Button>
             </VCT_Stack>
 
             {filtered.length === 0 ? (
@@ -114,6 +140,12 @@ export function Page_federation_personnel() {
                     })}
                 </div>
             )}
+            
+            {/* Audit Trails */}
+            <div className="rounded-2xl border border-[var(--vct-border-subtle)] bg-[var(--vct-bg-glass)] p-5 mt-6">
+                <h3 className="text-sm font-bold text-[var(--vct-text-primary)] mb-4">📜 Lịch sử thay đổi nhân sự (Audit Trails)</h3>
+                <VCT_Timeline events={PERSONNEL_AUDIT_LOGS} />
+            </div>
         </VCT_PageContainer>
     )
 }

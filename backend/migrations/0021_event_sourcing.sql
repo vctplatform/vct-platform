@@ -46,7 +46,7 @@ CREATE TABLE IF NOT EXISTS tournament.event_store_default
 
 -- Optimistic concurrency: UNIQUE on stream ensures no duplicate versions
 CREATE UNIQUE INDEX IF NOT EXISTS idx_event_store_stream_version
-  ON tournament.event_store(tenant_id, stream_id, event_version);
+  ON tournament.event_store(tenant_id, stream_id, event_version, recorded_at);
 
 CREATE INDEX IF NOT EXISTS idx_event_store_type
   ON tournament.event_store(tenant_id, stream_type, event_type);
@@ -190,13 +190,11 @@ BEGIN
   BEGIN
     -- Get seeded athletes
     IF p_seeding_method = 'ranking' THEN
-      SELECT ARRAY_AGG(a.id ORDER BY COALESCE(r.total_points, 0) DESC, a.created_at)
+      SELECT ARRAY_AGG(a.id ORDER BY COALESCE(r.points, 0) DESC, a.created_at)
       INTO v_athletes
       FROM athletes a
       LEFT JOIN rankings r ON r.athlete_id = a.id AND r.category = p_category
       WHERE a.tournament_id = p_tournament_id
-        AND a.category = p_category
-        AND a.hang_can = p_weight_class
         AND a.trang_thai = 'da_duyet'
         AND a.is_deleted = false;
     ELSE
@@ -204,8 +202,6 @@ BEGIN
       INTO v_athletes
       FROM athletes a
       WHERE a.tournament_id = p_tournament_id
-        AND a.category = p_category
-        AND a.hang_can = p_weight_class
         AND a.trang_thai = 'da_duyet'
         AND a.is_deleted = false;
     END IF;

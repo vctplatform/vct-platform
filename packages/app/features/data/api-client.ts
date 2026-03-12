@@ -1,8 +1,7 @@
 'use client'
 
 const API_BASE_URL =
-    process.env.NEXT_PUBLIC_API_BASE_URL?.replace(/\/$/, '') ??
-    'http://localhost:18080'
+    process.env.NEXT_PUBLIC_API_BASE_URL?.replace(/\/$/, '') ?? ''
 
 /**
  * Typed API client with auth token injection, retry logic, and error handling.

@@ -10,11 +10,17 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/joho/godotenv"
 	"vct-platform/backend/internal/config"
 	"vct-platform/backend/internal/httpapi"
 )
 
 func main() {
+	// Load .env file (ignore error if file does not exist)
+	if err := godotenv.Load(); err != nil {
+		log.Printf("No .env file found, using environment variables")
+	}
+
 	cfg := config.Load()
 	if err := cfg.Validate(); err != nil {
 		log.Fatalf("invalid config: %v", err)
