@@ -1,0 +1,44 @@
+# Build artifacts
+bin/
+*.exe
+.next/
+
+# Development files
+.env
+.env.*
+!.env.example
+!.env.providers.example
+
+# Test & debug outputs
+*_output.txt
+*_errors.txt
+*_err*.txt
+build_*.txt
+test_*.txt
+tsc_*.txt
+tsc-errors.txt
+
+# VCS
+.git
+.gitignore
+
+# IDE
+.vscode
+.idea
+
+# OS
+*.swp
+*.swo
+*~
+Thumbs.db
+.DS_Store
+
+# Docs (not needed in Docker)
+docs/
+README.md
+*.md
+!go.mod
+!go.sum
+
+# Migrations (copy selectively if needed)
+# migrations/

@@ -1,0 +1,74 @@
+# ═══════════════════════════════════════════════════════
+# VCT Platform — Render Blueprint
+# Staging API + Cron Workers
+# Free tier: 750 hours/month
+# ═══════════════════════════════════════════════════════
+
+services:
+  # ── Staging API (auto preview per Pull Request) ──
+  - type: web
+    name: vct-api-staging
+    runtime: docker
+    dockerfilePath: ./backend/Dockerfile.render
+    region: singapore
+    plan: free
+    branch: main
+    envVars:
+      - key: VCT_ENV
+        value: staging
+      - key: VCT_BACKEND_ADDR
+        value: ":18080"
+      - key: VCT_STORAGE_DRIVER
+        value: postgres
+      - key: VCT_POSTGRES_PROVIDER
+        value: neon
+      - key: VCT_POSTGRES_URL
+        sync: false   # Set manually in Render dashboard
+      - key: VCT_JWT_SECRET
+        sync: false
+      - key: VCT_CORS_ORIGINS
+        value: "https://vct-platform.vercel.app,https://*.onrender.com"
+      - key: VCT_ALLOW_DEMO_USERS
+        value: "true"
+      - key: VCT_DB_AUTO_MIGRATE
+        value: "false"
+      - key: VCT_CACHE_TTL
+        value: "30s"
+      - key: VCT_CACHE_MAX_ENTRIES
+        value: "500"
+      - key: VCT_PG_POOL_MAX_CONNS
+        value: "5"
+      - key: VCT_PG_POOL_MIN_CONNS
+        value: "1"
+      - key: GOGC
+        value: "50"
+      - key: GOMEMLIMIT
+        value: "400MiB"
+    # ⭐ Auto-create preview environment for each PR
+    previews:
+      generation: automatic
+
+  # ── Anti-Cold-Start Ping (keep staging alive) ──
+  - type: cron
+    name: vct-keep-alive
+    runtime: image
+    image:
+      url: docker.io/curlimages/curl:latest
+    schedule: "*/14 * * * *"
+    envVars:
+      - key: PING_URL
+        value: "https://vct-api-staging.onrender.com/healthz"
+    dockerCommand: "curl -sf $PING_URL || true"
+
+  # ── Database Maintenance Cron (weekly) ──
+  - type: cron
+    name: vct-db-maintenance
+    runtime: docker
+    dockerfilePath: ./backend/Dockerfile.render
+    schedule: "0 2 * * 0"   # Every Sunday 2:00 AM UTC
+    envVars:
+      - key: VCT_POSTGRES_URL
+        sync: false
+      - key: RUN_MODE
+        value: maintenance
+    dockerCommand: "/app/vct-backend maintenance"

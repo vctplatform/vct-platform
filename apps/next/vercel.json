@@ -1,0 +1,13 @@
+{
+  "framework": "nextjs",
+  "buildCommand": "cd ../.. && npm run build",
+  "outputDirectory": ".next",
+  "installCommand": "cd ../.. && npm install",
+  "devCommand": "next dev",
+  "env": {
+    "NEXT_PUBLIC_API_URL": {
+      "description": "Backend API URL (Fly.io production)",
+      "value": ""
+    }
+  }
+}

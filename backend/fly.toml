@@ -1,0 +1,44 @@
+app = 'vct-platform-api'
+primary_region = 'sin'
+
+[build]
+  dockerfile = 'Dockerfile'
+
+[env]
+  GOGC = '50'
+  GOMEMLIMIT = '200MiB'
+  VCT_BACKEND_ADDR = ':8080'
+  VCT_CACHE_MAX_ENTRIES = '500'
+  VCT_CACHE_TTL = '60s'
+  VCT_DB_AUTO_MIGRATE = 'false'
+  VCT_ENV = 'production'
+  VCT_PG_POOL_MAX_CONNS = '10'
+  VCT_PG_POOL_MAX_IDLE_TIME = '15m'
+  VCT_PG_POOL_MIN_CONNS = '2'
+  VCT_POSTGRES_PROVIDER = 'neon'
+  VCT_STORAGE_DRIVER = 'postgres'
+
+[http_service]
+  internal_port = 8080
+  force_https = true
+  auto_stop_machines = 'stop'
+  auto_start_machines = true
+  min_machines_running = 1
+  processes = ['app']
+
+  [http_service.concurrency]
+    type = 'requests'
+    hard_limit = 100
+    soft_limit = 80
+
+  [[http_service.checks]]
+    interval = '30s'
+    timeout = '10s'
+    grace_period = '60s'
+    method = 'GET'
+    path = '/healthz'
+
+[[vm]]
+  memory = '256mb'
+  cpu_kind = 'shared'
+  cpus = 1

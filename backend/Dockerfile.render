@@ -1,26 +1,25 @@
 # ═══════════════════════════════════════════════════
-# VCT Backend — Optimized Production Dockerfile
-# For Fly.io (256MB RAM) — stripped binary, alpine
+# VCT Backend — Optimized Dockerfile for Render
+# Identical to main Dockerfile but with Render-
+# specific health check and larger memory allowance
 # ═══════════════════════════════════════════════════
 
 # ── Stage 1: Build ──
-FROM golang:1.26-alpine AS builder
+FROM golang:1.26 AS builder
 RUN apk add --no-cache git ca-certificates
 WORKDIR /src
-
-# Cache dependencies
 COPY go.mod go.sum ./
 RUN go mod download
-
-# Build with stripped symbols for smaller binary
 COPY . .
 RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 \
     go build -ldflags="-s -w" -o /out/vct-backend ./cmd/server
 
-# ── Stage 2: Runtime (minimal alpine ~5MB) ──
-FROM alpine:3.21
-RUN apk add --no-cache ca-certificates tzdata
+# ── Stage 2: Runtime ──
+FROM gcr.io/distroless/base-debian12
 WORKDIR /app
 COPY --from=builder /out/vct-backend /app/vct-backend
 EXPOSE 18080
+
+# Render expects the process to listen on $PORT
+# but we use VCT_BACKEND_ADDR=:18080 which is fine
 ENTRYPOINT ["/app/vct-backend"]

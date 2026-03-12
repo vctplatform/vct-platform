@@ -1,0 +1,96 @@
+# ═══════════════════════════════════════════════════════
+# VCT Platform — CI/CD Pipeline
+# Test → Deploy Frontend (Vercel) → Deploy Backend (Fly.io)
+# Render auto-deploys via render.yaml (no action needed)
+# ═══════════════════════════════════════════════════════
+
+name: CI/CD
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+env:
+  GO_VERSION: '1.24'
+  NODE_VERSION: '22'
+
+jobs:
+  # ═══════════════ TEST ═══════════════
+  test-backend:
+    name: Test Backend (Go)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: ${{ env.GO_VERSION }}
+      - name: Run tests
+        working-directory: backend
+        run: go test ./... -race -count=1
+
+  test-frontend:
+    name: Test Frontend (Next.js)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+      - run: npm ci
+      - run: npm run authz:check
+      - run: npm run typecheck
+      - run: npm run lint
+
+  # ═══════════════ DEPLOY ═══════════════
+
+  # Vercel auto-deploys via GitHub integration
+  # This job only runs build check on PRs
+  build-frontend:
+    name: Build Frontend
+    needs: test-frontend
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+      - run: npm ci
+      - run: npm run build
+
+  # Deploy Go API to Fly.io (production, main branch only)
+  deploy-backend:
+    name: Deploy Backend → Fly.io
+    needs: test-backend
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - uses: actions/checkout@v4
+      - uses: superfly/flyctl-actions/setup-flyctl@master
+      - name: Deploy to Fly.io
+        working-directory: backend
+        run: flyctl deploy --remote-only
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+
+  # Run database migrations after backend deploy
+  migrate-database:
+    name: Run Migrations
+    needs: deploy-backend
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: ${{ env.GO_VERSION }}
+      - name: Run migrations
+        working-directory: backend
+        run: go run ./cmd/migrate up
+        env:
+          VCT_POSTGRES_URL: ${{ secrets.NEON_DATABASE_URL }}
