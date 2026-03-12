@@ -160,6 +160,39 @@ type PersonnelRepository interface {
 	GetByUserAndUnit(ctx context.Context, userID, unitID string) (*PersonnelAssignment, error)
 }
 
+// ── Provincial Repository Interfaces ──────────────────────────
+
+type ProvincialClubRepository interface {
+	List(ctx context.Context, provinceID string) ([]ProvincialClub, error)
+	GetByID(ctx context.Context, id string) (*ProvincialClub, error)
+	Create(ctx context.Context, c ProvincialClub) (*ProvincialClub, error)
+	Update(ctx context.Context, id string, patch map[string]interface{}) error
+	Delete(ctx context.Context, id string) error
+}
+
+type ProvincialAthleteRepository interface {
+	List(ctx context.Context, provinceID string) ([]ProvincialAthlete, error)
+	GetByID(ctx context.Context, id string) (*ProvincialAthlete, error)
+	Create(ctx context.Context, a ProvincialAthlete) (*ProvincialAthlete, error)
+	Update(ctx context.Context, id string, patch map[string]interface{}) error
+	Delete(ctx context.Context, id string) error
+	ListByClub(ctx context.Context, clubID string) ([]ProvincialAthlete, error)
+}
+
+type ProvincialCoachRepository interface {
+	List(ctx context.Context, provinceID string) ([]ProvincialCoach, error)
+	GetByID(ctx context.Context, id string) (*ProvincialCoach, error)
+	Create(ctx context.Context, c ProvincialCoach) (*ProvincialCoach, error)
+	Update(ctx context.Context, id string, patch map[string]interface{}) error
+	Delete(ctx context.Context, id string) error
+}
+
+type ProvincialReportRepository interface {
+	List(ctx context.Context, provinceID string) ([]ProvincialReport, error)
+	GetByID(ctx context.Context, id string) (*ProvincialReport, error)
+	Create(ctx context.Context, r ProvincialReport) (*ProvincialReport, error)
+}
+
 // ── Service ──────────────────────────────────────────────────
 
 type Service struct {
@@ -167,6 +200,10 @@ type Service struct {
 	units     FederationUnitRepository
 	personnel PersonnelRepository
 	master    MasterDataStore
+	clubs     ProvincialClubRepository
+	athletes  ProvincialAthleteRepository
+	coaches   ProvincialCoachRepository
+	reports   ProvincialReportRepository
 	idGen     func() string
 }
 
@@ -186,6 +223,20 @@ func NewService(
 	}
 }
 
+// SetProvincialRepos injects provincial repositories after construction.
+// This allows backward-compatible construction while adding new capabilities.
+func (s *Service) SetProvincialRepos(
+	clubs ProvincialClubRepository,
+	athletes ProvincialAthleteRepository,
+	coaches ProvincialCoachRepository,
+	reports ProvincialReportRepository,
+) {
+	s.clubs = clubs
+	s.athletes = athletes
+	s.coaches = coaches
+	s.reports = reports
+}
+
 // ── Province Operations ──────────────────────────────────────
 
 func (s *Service) ListProvinces(ctx context.Context) ([]Province, error) {
@@ -197,8 +248,13 @@ func (s *Service) GetProvince(ctx context.Context, id string) (*Province, error)
 }
 
 func (s *Service) CreateProvince(ctx context.Context, p Province) (*Province, error) {
-	if p.Code == "" || p.Name == "" {
-		return nil, fmt.Errorf("code và name là bắt buộc")
+	if err := ValidateProvince(p); err != nil {
+		return nil, err
+	}
+	// Duplicate code check
+	existing, _ := s.provinces.GetByCode(ctx, p.Code)
+	if existing != nil {
+		return nil, fmt.Errorf("mã tỉnh '%s' đã tồn tại", p.Code)
 	}
 	p.ID = s.idGen()
 	now := time.Now().UTC()
@@ -222,8 +278,8 @@ func (s *Service) GetUnit(ctx context.Context, id string) (*FederationUnit, erro
 }
 
 func (s *Service) CreateUnit(ctx context.Context, u FederationUnit) (*FederationUnit, error) {
-	if u.Name == "" || u.Type == "" {
-		return nil, fmt.Errorf("name và type là bắt buộc")
+	if err := ValidateUnit(u); err != nil {
+		return nil, err
 	}
 	u.ID = s.idGen()
 	u.Status = UnitStatusActive
@@ -290,8 +346,13 @@ func (s *Service) BuildOrgChart(ctx context.Context) ([]OrgChartNode, error) {
 // ── Personnel ────────────────────────────────────────────────
 
 func (s *Service) AssignPersonnel(ctx context.Context, a PersonnelAssignment) error {
-	if a.UserID == "" || a.UnitID == "" || a.Position == "" {
-		return fmt.Errorf("user_id, unit_id và position là bắt buộc")
+	if err := ValidatePersonnel(a); err != nil {
+		return err
+	}
+	// Duplicate assignment check
+	existing, _ := s.personnel.GetByUserAndUnit(ctx, a.UserID, a.UnitID)
+	if existing != nil && existing.IsActive {
+		return fmt.Errorf("nhân sự '%s' đã được phân công tại đơn vị '%s'", a.UserID, a.UnitID)
 	}
 	a.ID = s.idGen()
 	a.IsActive = true
@@ -391,6 +452,28 @@ func (s *Service) DeleteMasterAge(ctx context.Context, id string) error {
 	return s.master.DeleteMasterAge(ctx, id)
 }
 
+// ── Master Competition Contents ──────────────────────────────
+
+func (s *Service) ListMasterContents(ctx context.Context) ([]MasterCompetitionContent, error) {
+	return s.master.ListMasterContents(ctx)
+}
+
+func (s *Service) GetMasterContent(ctx context.Context, id string) (*MasterCompetitionContent, error) {
+	return s.master.GetMasterContent(ctx, id)
+}
+
+func (s *Service) CreateMasterContent(ctx context.Context, req MasterCompetitionContent) error {
+	return s.master.CreateMasterContent(ctx, req)
+}
+
+func (s *Service) UpdateMasterContent(ctx context.Context, req MasterCompetitionContent) error {
+	return s.master.UpdateMasterContent(ctx, req)
+}
+
+func (s *Service) DeleteMasterContent(ctx context.Context, id string) error {
+	return s.master.DeleteMasterContent(ctx, id)
+}
+
 // ── Approval Workflow Engine ─────────────────────────────────
 
 func (s *Service) ListPendingApprovals(ctx context.Context) ([]ApprovalRequest, error) {
@@ -417,3 +500,187 @@ func (s *Service) ProcessApproval(ctx context.Context, reqID string, action stri
 
 	return s.master.UpdateApproval(ctx, req)
 }
+
+// ═══════════════════════════════════════════════════════════════
+// PROVINCIAL CLUB OPERATIONS
+// ═══════════════════════════════════════════════════════════════
+
+func (s *Service) ListProvincialClubs(ctx context.Context, provinceID string) ([]ProvincialClub, error) {
+	if s.clubs == nil {
+		return nil, fmt.Errorf("provincial club repository not configured")
+	}
+	return s.clubs.List(ctx, provinceID)
+}
+
+func (s *Service) GetProvincialClub(ctx context.Context, id string) (*ProvincialClub, error) {
+	if s.clubs == nil {
+		return nil, fmt.Errorf("provincial club repository not configured")
+	}
+	return s.clubs.GetByID(ctx, id)
+}
+
+func (s *Service) CreateProvincialClub(ctx context.Context, c ProvincialClub) (*ProvincialClub, error) {
+	if s.clubs == nil {
+		return nil, fmt.Errorf("provincial club repository not configured")
+	}
+	if c.Name == "" || c.ProvinceID == "" {
+		return nil, fmt.Errorf("name và province_id là bắt buộc")
+	}
+	c.ID = s.idGen()
+	c.Status = ClubStatusPending
+	now := time.Now().UTC()
+	c.CreatedAt = now
+	c.UpdatedAt = now
+	return s.clubs.Create(ctx, c)
+}
+
+func (s *Service) DeleteProvincialClub(ctx context.Context, id string) error {
+	if s.clubs == nil {
+		return fmt.Errorf("provincial club repository not configured")
+	}
+	return s.clubs.Delete(ctx, id)
+}
+
+// ═══════════════════════════════════════════════════════════════
+// PROVINCIAL ATHLETE OPERATIONS
+// ═══════════════════════════════════════════════════════════════
+
+func (s *Service) ListProvincialAthletes(ctx context.Context, provinceID string) ([]ProvincialAthlete, error) {
+	if s.athletes == nil {
+		return nil, fmt.Errorf("provincial athlete repository not configured")
+	}
+	return s.athletes.List(ctx, provinceID)
+}
+
+func (s *Service) GetProvincialAthlete(ctx context.Context, id string) (*ProvincialAthlete, error) {
+	if s.athletes == nil {
+		return nil, fmt.Errorf("provincial athlete repository not configured")
+	}
+	return s.athletes.GetByID(ctx, id)
+}
+
+func (s *Service) CreateProvincialAthlete(ctx context.Context, a ProvincialAthlete) (*ProvincialAthlete, error) {
+	if s.athletes == nil {
+		return nil, fmt.Errorf("provincial athlete repository not configured")
+	}
+	if a.FullName == "" || a.ProvinceID == "" || a.ClubID == "" {
+		return nil, fmt.Errorf("full_name, province_id và club_id là bắt buộc")
+	}
+	a.ID = s.idGen()
+	a.Status = AthleteActive
+	now := time.Now().UTC()
+	a.CreatedAt = now
+	a.UpdatedAt = now
+	return s.athletes.Create(ctx, a)
+}
+
+func (s *Service) ListAthletesByClub(ctx context.Context, clubID string) ([]ProvincialAthlete, error) {
+	if s.athletes == nil {
+		return nil, fmt.Errorf("provincial athlete repository not configured")
+	}
+	return s.athletes.ListByClub(ctx, clubID)
+}
+
+// ═══════════════════════════════════════════════════════════════
+// PROVINCIAL COACH OPERATIONS
+// ═══════════════════════════════════════════════════════════════
+
+func (s *Service) ListProvincialCoaches(ctx context.Context, provinceID string) ([]ProvincialCoach, error) {
+	if s.coaches == nil {
+		return nil, fmt.Errorf("provincial coach repository not configured")
+	}
+	return s.coaches.List(ctx, provinceID)
+}
+
+func (s *Service) GetProvincialCoach(ctx context.Context, id string) (*ProvincialCoach, error) {
+	if s.coaches == nil {
+		return nil, fmt.Errorf("provincial coach repository not configured")
+	}
+	return s.coaches.GetByID(ctx, id)
+}
+
+func (s *Service) CreateProvincialCoach(ctx context.Context, c ProvincialCoach) (*ProvincialCoach, error) {
+	if s.coaches == nil {
+		return nil, fmt.Errorf("provincial coach repository not configured")
+	}
+	if c.FullName == "" || c.ProvinceID == "" {
+		return nil, fmt.Errorf("full_name và province_id là bắt buộc")
+	}
+	c.ID = s.idGen()
+	if c.Status == "" {
+		c.Status = "ACTIVE"
+	}
+	now := time.Now().UTC()
+	c.CreatedAt = now
+	c.UpdatedAt = now
+	return s.coaches.Create(ctx, c)
+}
+
+// ═══════════════════════════════════════════════════════════════
+// PROVINCIAL REPORT OPERATIONS
+// ═══════════════════════════════════════════════════════════════
+
+func (s *Service) ListProvincialReports(ctx context.Context, provinceID string) ([]ProvincialReport, error) {
+	if s.reports == nil {
+		return nil, fmt.Errorf("provincial report repository not configured")
+	}
+	return s.reports.List(ctx, provinceID)
+}
+
+func (s *Service) CreateProvincialReport(ctx context.Context, r ProvincialReport) (*ProvincialReport, error) {
+	if s.reports == nil {
+		return nil, fmt.Errorf("provincial report repository not configured")
+	}
+	if r.Title == "" || r.ProvinceID == "" {
+		return nil, fmt.Errorf("title và province_id là bắt buộc")
+	}
+	r.ID = s.idGen()
+	r.Status = ReportDraft
+	now := time.Now().UTC()
+	r.CreatedAt = now
+	r.UpdatedAt = now
+	return s.reports.Create(ctx, r)
+}
+
+// ═══════════════════════════════════════════════════════════════
+// PROVINCIAL STATISTICS
+// ═══════════════════════════════════════════════════════════════
+
+func (s *Service) GetProvincialStatistics(ctx context.Context, provinceID string) (*ProvincialStatistics, error) {
+	prov, err := s.provinces.GetByID(ctx, provinceID)
+	if err != nil {
+		return nil, err
+	}
+
+	stats := &ProvincialStatistics{
+		ProvinceID:   prov.ID,
+		ProvinceName: prov.Name,
+		TotalClubs:   prov.ClubCount,
+		TotalCoaches: prov.CoachCount,
+		TotalAthletes: prov.VDVCount,
+	}
+
+	// Enrich with live counts if repos available
+	if s.clubs != nil {
+		clubs, _ := s.clubs.List(ctx, provinceID)
+		stats.TotalClubs = len(clubs)
+		activeCount := 0
+		for _, c := range clubs {
+			if c.Status == ClubStatusActive {
+				activeCount++
+			}
+		}
+		stats.ActiveClubs = activeCount
+	}
+	if s.athletes != nil {
+		athletes, _ := s.athletes.List(ctx, provinceID)
+		stats.TotalAthletes = len(athletes)
+	}
+	if s.coaches != nil {
+		coaches, _ := s.coaches.List(ctx, provinceID)
+		stats.TotalCoaches = len(coaches)
+	}
+
+	return stats, nil
+}
+

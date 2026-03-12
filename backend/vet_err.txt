@@ -1,0 +1,15 @@
+﻿go : # vct-platform/backend/internal/adapter
+At line:1 char:1
++ go vet ./internal/adapter/... 2>&1 | 
+Out-File -FilePath "D:\VCT PLATF ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: 
+    (# vct-platform/backend/internal/adapt  
+  er:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommand 
+   Error
+ 
+# [vct-platform/backend/internal/adapter]
+vet.exe: internal\adapter\athlete_profile_pg
+_test.go:40:12: assignment mismatch: 1 
+variable but repo.Create returns 2 values

@@ -92,7 +92,14 @@ const ROUTE_PERMISSION_MAP: Record<string, string[]> = {
 
     // Athlete portal
     '/athlete-portal': [],
+
+    // Tournament management
     '/giai-dau/thong-ke': ['tournament.read'],
+    '/giai-dau/quan-ly': ['tournament.read'],
+    '/giai-dau/noi-dung': ['tournament.read'],
+    '/giai-dau/dang-ky': ['tournament.read'],
+    '/giai-dau/lich-thi': ['tournament.read'],
+    '/giai-dau/ket-qua': ['tournament.read'],
     '/tournament-media/gallery': ['tournament.read'],
 }
 

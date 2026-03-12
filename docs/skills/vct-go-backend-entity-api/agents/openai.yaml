@@ -1,4 +1,0 @@
-interface:
-  display_name: "VCT Go Backend Entity API"
-  short_description: "Build VCT entity CRUD and import/export APIs"
-  default_prompt: "Use $vct-go-backend-entity-api to add or improve entity API endpoints in the VCT Go backend."

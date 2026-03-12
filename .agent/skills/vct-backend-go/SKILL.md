@@ -418,3 +418,56 @@ s.eventBus.Publish(events.DomainEvent{
 6. [ ] Wire service in `server.go` → `New()`
 7. [ ] Create migration: `migrations/{NNNN}_{desc}.sql` + `_down.sql`
 8. [ ] Add tests: `internal/httpapi/{module}_handler_test.go`
+
+---
+
+## 14. Structured Logging
+
+```go
+// Use structured JSON logging — never fmt.Println in production
+log.Printf(`{"level":"info","module":"%s","action":"%s","entity_id":"%s","duration_ms":%d}`,
+    module, action, entityID, duration.Milliseconds())
+```
+
+### Rules
+- Always include `request_id` from `X-Request-ID` header
+- Use `log.Printf` with JSON format, not `fmt.Println`
+- Levels: `debug` (dev), `info` (staging), `warn`+`error` (production)
+- Include `module`, `action`, `entity_id`, `duration_ms` in every log
+
+---
+
+## 15. Graceful Shutdown
+
+```go
+// In cmd/server/main.go
+ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
+defer stop()
+
+srv := &http.Server{Addr: ":18080", Handler: handler}
+go func() { srv.ListenAndServe() }()
+
+<-ctx.Done()
+shutdownCtx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
+defer cancel()
+srv.Shutdown(shutdownCtx)  // Graceful: finish in-flight requests
+store.Close()              // Close DB connections
+```
+
+---
+
+## 16. Context Propagation
+
+```go
+// Pass context through the entire chain
+func (s *Service) Create(ctx context.Context, input CreateInput) (Entity, error) {
+    // Use ctx for cancellation, deadlines, and tracing
+    return s.repo.Create(ctx, entity)
+}
+
+// In PostgreSQL adapter
+func (r *PgRepo) Create(ctx context.Context, e Entity) error {
+    _, err := r.pool.Exec(ctx, `INSERT INTO ...`, e.ID, e.Name)
+    return err
+}
+```

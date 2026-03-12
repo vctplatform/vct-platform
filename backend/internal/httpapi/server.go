@@ -1,12 +1,17 @@
 package httpapi
 
 import (
+	"context"
 	"crypto/rand"
+	"database/sql"
 	"fmt"
 	"log"
 	"net/http"
+	"runtime"
 	"strings"
 	"time"
+
+	_ "github.com/jackc/pgx/v5/stdlib" // registers "pgx" driver for database/sql
 
 	"vct-platform/backend/internal/adapter"
 	"vct-platform/backend/internal/auth"
@@ -15,6 +20,7 @@ import (
 	"vct-platform/backend/internal/domain/athlete"
 	"vct-platform/backend/internal/domain/btc"
 	"vct-platform/backend/internal/domain/certification"
+	clubdomain "vct-platform/backend/internal/domain/club"
 	"vct-platform/backend/internal/domain/community"
 	"vct-platform/backend/internal/domain/discipline"
 	"vct-platform/backend/internal/domain/document"
@@ -27,6 +33,7 @@ import (
 	"vct-platform/backend/internal/domain/provincial"
 	"vct-platform/backend/internal/domain/ranking"
 	"vct-platform/backend/internal/domain/scoring"
+	"vct-platform/backend/internal/domain/tournament"
 	"vct-platform/backend/internal/events"
 	"vct-platform/backend/internal/realtime"
 	"vct-platform/backend/internal/store"
@@ -71,7 +78,8 @@ type Server struct {
 	internationalSvc *international.Service
 
 	// ── Athlete Profile Service ─────────────────────────
-	athleteProfileSvc *athlete.ProfileService
+	athleteProfileSvc    *athlete.ProfileService
+	trainingSessionSvc   *athlete.TrainingService
 
 	// ── Provincial Federation Services ──────────────────
 	provincialSvc *provincial.Service
@@ -91,6 +99,15 @@ type Server struct {
 
 	// ── Parent / Guardian Service ──────────────────────────────
 	parentSvc *parent.Service
+
+	// ── Club Module (Attendance, Equipment, Facilities) ─────
+	clubSvc *clubdomain.Service
+
+	// ── Tournament Management Service ─────────────────────────
+	tournamentMgmtSvc *tournament.MgmtService
+
+	// ── SQL DB (for PG adapters when storage driver is postgres) ──
+	sqlDB *sql.DB
 }
 
 func New(cfg config.Config) *Server {
@@ -132,7 +149,7 @@ func New(cfg config.Config) *Server {
 			adapter.NewRefereeRepository(cachedStore),
 			adapter.NewArenaRepository(cachedStore),
 		),
-		scoringService:      scoring.NewService(adapter.NewScoringRepository(), scoring.DefaultScoringConfig()),
+		scoringService: scoring.NewService(adapter.NewScoringRepository(), scoring.DefaultScoringConfig()),
 		registrationService: scoring.NewRegistrationService(adapter.NewRegistrationRepository(cachedStore)),
 		tournamentCRUD:      adapter.NewTournamentRepository(cachedStore),
 		rankingService:      ranking.NewService(adapter.NewAthleteRankingRepository(cachedStore), adapter.NewTeamRankingRepository(cachedStore)),
@@ -170,6 +187,10 @@ func New(cfg config.Config) *Server {
 			athlete.NewInMemProfileStore(),
 			athlete.NewInMemMembershipStore(),
 			athlete.NewInMemEntryStore(),
+			newUUID,
+		), // overridden below when PG is available
+		trainingSessionSvc: athlete.NewTrainingService(
+			athlete.NewInMemTrainingStore(),
 			newUUID,
 		),
 
@@ -212,6 +233,20 @@ func New(cfg config.Config) *Server {
 			parent.NewInMemResultStore(),
 			newUUID,
 		),
+
+		// ── Wire Club Module (Attendance, Equipment, Facilities) ──
+		clubSvc: clubdomain.NewService(
+			clubdomain.NewInMemAttendanceStore(),
+			clubdomain.NewInMemEquipmentStore(),
+			clubdomain.NewInMemFacilityStore(),
+			newUUID,
+		), // overridden below when PG is available
+
+		// ── Wire Tournament Management Service ──────────
+		tournamentMgmtSvc: tournament.NewMgmtService(
+			adapter.NewInMemTournamentMgmtStore(),
+			newUUID,
+		), // overridden below when PG is available
 	}
 
 	// Wire JWT validation into WebSocket hub for first-message auth
@@ -236,6 +271,56 @@ func New(cfg config.Config) *Server {
 	// Seed default approval workflow definitions into the repository
 	s.seedDefaultWorkflows()
 
+	// ── Upgrade to PG adapters when storage driver is postgres ──
+	if storageDriver == "postgres" && cfg.PostgresURL != "" {
+		db, err := sql.Open("pgx", cfg.PostgresURL)
+		if err != nil {
+			log.Printf("PG adapters: sql.Open failed (%v), keeping in-memory stores", err)
+		} else if err := db.Ping(); err != nil {
+			log.Printf("PG adapters: db.Ping failed (%v), keeping in-memory stores", err)
+			_ = db.Close()
+		} else {
+			s.sqlDB = db
+			log.Println("PG adapters: connected — wiring PostgreSQL stores")
+
+			// Club module
+			s.clubSvc = clubdomain.NewService(
+				adapter.NewPgAttendanceStore(db),
+				adapter.NewPgEquipmentStore(db),
+				adapter.NewPgFacilityStore(db),
+				newUUID,
+			)
+
+			// Athlete profile module
+			s.athleteProfileSvc = athlete.NewProfileService(
+				adapter.NewPgAthleteProfileRepo(db),
+				adapter.NewPgClubMembershipRepo(db),
+				adapter.NewPgTournamentEntryRepo(db),
+				newUUID,
+			)
+
+			// Scoring module
+			s.scoringService = scoring.NewService(
+				adapter.NewPgScoringRepository(db),
+				scoring.DefaultScoringConfig(),
+			)
+
+			// Tournament management
+			s.tournamentMgmtSvc = tournament.NewMgmtService(
+				adapter.NewPgTournamentMgmtStore(db),
+				newUUID,
+			)
+		}
+	}
+
+	// Wire provincial in-memory repos into federation service
+	s.federationSvc.SetProvincialRepos(
+		adapter.NewMemProvincialClubRepo(),
+		adapter.NewMemProvincialAthleteRepo(),
+		adapter.NewMemProvincialCoachRepo(),
+		adapter.NewMemProvincialReportRepo(),
+	)
+
 	return s
 }
 
@@ -243,6 +328,7 @@ func New(cfg config.Config) *Server {
 func (s *Server) Handler() http.Handler {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/healthz", s.handleHealth)
+	mux.HandleFunc("/readyz", s.handleReadiness)
 	mux.HandleFunc("/api/v1/ws", s.handleWebSocket)
 	// Auth routes — stricter rate limiting + smaller body limit for login/register
 	loginRL := withRateLimit(s.loginRateLimiter)
@@ -323,10 +409,16 @@ func (s *Server) Handler() http.Handler {
 	s.handleProvincialPhase2Routes(mux)
 	// ── Club Internal Management ────────────────────────
 	s.handleClubInternalRoutes(mux)
+	// ── Club V2 (Attendance, Equipment, Facilities) ────
+	s.handleClubV2Routes(mux)
 	// ── BTC (Ban Tổ Chức giải) ─────────────────────────
 	s.handleBTCRoutes(mux)
 	// ── Parent / Guardian ──────────────────────────────────
 	s.handleParentRoutes(mux)
+	// ── Tournament Management ─────────────────────────────
+	s.handleTournamentMgmtRoutes(mux)
+	// ── Provincial Federation (CLB, VĐV, HLV cấp tỉnh) ──
+	s.handleProvincialFederationRoutes(mux)
 	// ── Domain Events ────────────────────────────────────────
 	mux.HandleFunc("/api/v1/events/recent", s.withAuth(s.handleRecentEvents))
 	// Generic entity CRUD (catch-all for unmigrated entities)
@@ -341,9 +433,10 @@ func (s *Server) handleHealth(w http.ResponseWriter, _ *http.Request) {
 	}
 
 	success(w, http.StatusOK, map[string]any{
-		"status":  "ok",
-		"service": "vct-backend",
-		"time":    time.Now().UTC(),
+		"status":     "ok",
+		"service":    "vct-backend",
+		"time":       time.Now().UTC(),
+		"go_version": goVersion(),
 		"storage": map[string]any{
 			"driver":   s.storageDriver,
 			"provider": s.storageProvider,
@@ -353,6 +446,62 @@ func (s *Server) handleHealth(w http.ResponseWriter, _ *http.Request) {
 			"clients": s.realtimeHub.CountClients(),
 		},
 	})
+}
+
+// handleReadiness is a deeper health check that verifies all dependencies.
+// Kubernetes/load balancers should use /readyz; /healthz is the liveness probe.
+func (s *Server) handleReadiness(w http.ResponseWriter, r *http.Request) {
+	checks := map[string]any{}
+	overallOK := true
+
+	// 1. Database connectivity
+	if s.sqlDB != nil {
+		ctx, cancel := context.WithTimeout(r.Context(), 2*time.Second)
+		defer cancel()
+		if err := s.sqlDB.PingContext(ctx); err != nil {
+			checks["database"] = map[string]any{"status": "unhealthy", "error": err.Error()}
+			overallOK = false
+		} else {
+			dbStats := s.sqlDB.Stats()
+			checks["database"] = map[string]any{
+				"status":      "healthy",
+				"open_conns":  dbStats.OpenConnections,
+				"in_use":      dbStats.InUse,
+				"idle":        dbStats.Idle,
+			}
+		}
+	} else {
+		checks["database"] = map[string]any{"status": "not_configured", "driver": s.storageDriver}
+	}
+
+	// 2. Cache
+	if s.cachedStore != nil {
+		checks["cache"] = s.cachedStore.CacheStats()
+	} else {
+		checks["cache"] = map[string]any{"status": "disabled"}
+	}
+
+	// 3. Realtime hub
+	checks["realtime"] = map[string]any{"clients": s.realtimeHub.CountClients()}
+
+	status := http.StatusOK
+	statusStr := "ready"
+	if !overallOK {
+		status = http.StatusServiceUnavailable
+		statusStr = "not_ready"
+	}
+
+	success(w, status, map[string]any{
+		"status":     statusStr,
+		"service":    "vct-backend",
+		"time":       time.Now().UTC(),
+		"go_version": goVersion(),
+		"checks":     checks,
+	})
+}
+
+func goVersion() string {
+	return runtime.Version()
 }
 
 func (s *Server) handleWebSocket(w http.ResponseWriter, r *http.Request) {
@@ -436,7 +585,11 @@ func (s *Server) Close() error {
 	if s.authService != nil {
 		s.authService.Stop()
 	}
-	// 3. Close data store
+	// 3. Close SQL DB (PG adapters)
+	if s.sqlDB != nil {
+		_ = s.sqlDB.Close()
+	}
+	// 4. Close data store
 	if s.store != nil {
 		return s.store.Close()
 	}

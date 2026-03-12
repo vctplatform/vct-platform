@@ -306,3 +306,68 @@ Every QA output must include:
 | Performance test baseline | → **CTO** for SLO targets |
 | Bug priority dispute | → **PM** for sprint impact |
 | Security test findings | → **Security Engineer** for assessment |
+
+---
+
+## 11. Visual Regression Testing
+
+```bash
+# Capture baseline screenshots
+npx playwright test --update-snapshots
+
+# Compare against baseline
+npx playwright test --reporter=html
+```
+
+### Playwright Visual Comparison
+```typescript
+test('dashboard matches snapshot', async ({ page }) => {
+  await page.goto('/dashboard')
+  await expect(page).toHaveScreenshot('dashboard.png', {
+    maxDiffPixelRatio: 0.01,  // 1% tolerance
+    animations: 'disabled',
+  })
+})
+```
+
+---
+
+## 12. Accessibility Testing
+
+```typescript
+// Install: npm install @axe-core/playwright
+import AxeBuilder from '@axe-core/playwright'
+
+test('page passes accessibility audit', async ({ page }) => {
+  await page.goto('/athlete-portal/profile')
+  const results = await new AxeBuilder({ page })
+    .withTags(['wcag2a', 'wcag2aa'])
+    .analyze()
+  expect(results.violations).toEqual([])
+})
+```
+
+---
+
+## 13. API Contract Testing
+
+```go
+// Verify API response shape matches contract
+func TestAPI_AthleteList_Contract(t *testing.T) {
+    rec := httptest.NewRecorder()
+    req := httptest.NewRequest("GET", "/api/v1/athletes/", nil)
+    srv.Handler().ServeHTTP(rec, req)
+
+    var resp struct {
+        Success bool          `json:"success"`
+        Data    []interface{} `json:"data"`
+        Meta    *struct {
+            Page      int `json:"page"`
+            PageSize  int `json:"page_size"`
+        } `json:"meta"`
+    }
+    json.Unmarshal(rec.Body.Bytes(), &resp)
+    assert(t, resp.Success == true, "success must be true")
+    assert(t, resp.Data != nil, "data must not be nil")
+}
+```

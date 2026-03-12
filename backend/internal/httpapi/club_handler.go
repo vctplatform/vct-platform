@@ -11,7 +11,7 @@ import (
 
 // handleClubInternalRoutes registers all /api/v1/club/… endpoints.
 func (s *Server) handleClubInternalRoutes(mux *http.ServeMux) {
-	mux.HandleFunc("/api/v1/club/dashboard", s.withAuth(s.handleClubDashboard))
+	// NOTE: /api/v1/club/dashboard is registered in club_v2_handler.go (handleClubV2Routes)
 	mux.HandleFunc("/api/v1/club/members/", s.withAuth(s.handleClubMemberAction))
 	mux.HandleFunc("/api/v1/club/members", s.withAuth(s.handleClubMembers))
 	mux.HandleFunc("/api/v1/club/classes/", s.withAuth(s.handleClubClassAction))

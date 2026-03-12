@@ -282,3 +282,35 @@ Every Domain Expert output must include:
 | Scoring algorithms | → **Data Analyst** |
 | Terminology translation | → **i18n Manager** |
 | Regulation amendments | → **BA** for change tracking |
+
+---
+
+## 11. 2024 Regulation Amendment (Luật 128/2024/LĐVTCTVN)
+
+> **Reference**: Luật số 128/2024/LĐVTCTVN — Quyết định sửa đổi, bổ sung luật thi đấu võ cổ truyền Việt Nam (Amendment to Luật 2021).
+
+### Key Changes from 2021
+| Area | 2021 Rules | 2024 Amendment |
+|---|---|---|
+| Age groups (Đối kháng) | 4 categories | **6 categories** (added Thiếu niên A/B/C, Trung niên) |
+| Age groups (Quyền) | Same as đối kháng | **Separate** categories (includes Thiếu nhi A/B for 7-10) |
+| Scoring | 1-2 pts | **3-tier**: 1 (hand), 2 (kick body), 3 (kick head/quật ngã) |
+| Penalty | 4-step | **6-step** escalation system |
+| Foul types | 2 types | **3 types**: lỗi nhẹ, lỗi nặng, cấm |
+| Weight tolerance | Not specified | **±500g** during weigh-in |
+| Mat size | Standard | **Updated** specifications in `amendment_2024.go` |
+
+### Implementation
+- Backend: `internal/domain/competition/amendment_2024.go`
+- Types: `packages/types/src/common.ts` (ScoringAction, FoulCategory, PenaltyStep)
+- Merger functions: `EffectiveAgeGroups()`, `EffectiveWeightClasses()`, `EffectiveScoringRules()`
+
+---
+
+## 12. Mat Specifications (2024)
+
+| Category | Mat Size | Safety Zone |
+|---|---|---|
+| Đối kháng (Adult) | 8m × 8m | 2m border |
+| Đối kháng (Junior) | 7m × 7m | 2m border |
+| Quyền thuật | 12m × 12m | 1m border |

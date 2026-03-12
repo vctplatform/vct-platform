@@ -229,3 +229,128 @@ export interface NationalStatistics {
     by_region: Record<string, number>;
     top_provinces_by_clubs: Province[];
 }
+
+// ═══════════════════════════════════════════════════════════════
+// PROVINCIAL-LEVEL TYPES (Cấp tỉnh / thành phố)
+// ═══════════════════════════════════════════════════════════════
+
+export enum ClubStatus {
+    ACTIVE = 'ACTIVE',
+    PENDING = 'PENDING',
+    INACTIVE = 'INACTIVE',
+}
+
+export enum AthleteStatus {
+    ACTIVE = 'ACTIVE',
+    SUSPENDED = 'SUSPENDED',
+    RETIRED = 'RETIRED',
+}
+
+export enum CoachLevel {
+    PROVINCIAL = 'PROVINCIAL',
+    NATIONAL = 'NATIONAL',
+    MASTER = 'MASTER',
+}
+
+export enum ReportType {
+    MONTHLY = 'MONTHLY',
+    QUARTERLY = 'QUARTERLY',
+    ANNUAL = 'ANNUAL',
+    EVENT = 'EVENT',
+}
+
+export enum ReportStatus {
+    DRAFT = 'DRAFT',
+    SUBMITTED = 'SUBMITTED',
+    APPROVED = 'APPROVED',
+}
+
+export interface ProvincialClub {
+    id: string;
+    province_id: string;
+    name: string;
+    code: string;
+    address: string;
+    district: string;
+    leader_name: string;
+    leader_phone: string;
+    member_count: number;
+    athlete_count: number;
+    coach_count: number;
+    status: ClubStatus;
+    founded_date: string;
+    created_at: string;
+    updated_at: string;
+}
+
+export interface ProvincialAthlete {
+    id: string;
+    province_id: string;
+    club_id: string;
+    club_name: string;
+    full_name: string;
+    gender: string;
+    date_of_birth: string;
+    belt_level: number;
+    belt_name: string;
+    weight_kg: number;
+    height_cm: number;
+    id_number: string;
+    phone: string;
+    status: AthleteStatus;
+    join_date: string;
+    achievements?: string;
+    created_at: string;
+    updated_at: string;
+}
+
+export interface ProvincialCoach {
+    id: string;
+    province_id: string;
+    club_id: string;
+    club_name: string;
+    full_name: string;
+    gender: string;
+    date_of_birth: string;
+    phone: string;
+    email: string;
+    level: CoachLevel;
+    cert_number: string;
+    cert_expiry: string;
+    belt_level: number;
+    belt_name: string;
+    years_experience: number;
+    specialization: string;
+    status: string;
+    created_at: string;
+    updated_at: string;
+}
+
+export interface ProvincialReport {
+    id: string;
+    province_id: string;
+    title: string;
+    type: ReportType;
+    period: string;
+    total_clubs: number;
+    total_vdv: number;
+    total_coaches: number;
+    total_events: number;
+    highlights: string;
+    issues: string;
+    status: ReportStatus;
+    submitted_by: string;
+    created_at: string;
+    updated_at: string;
+}
+
+export interface ProvincialStatistics {
+    province_id: string;
+    province_name: string;
+    total_clubs: number;
+    active_clubs: number;
+    total_athletes: number;
+    total_coaches: number;
+    total_events: number;
+    pending_approvals: number;
+}

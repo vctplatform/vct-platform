@@ -230,6 +230,76 @@ func (s *Server) handleMasterAgeByID(w http.ResponseWriter, r *http.Request, _ a
 	}
 }
 
+// ── Master Competition Contents ──────────────────────────────
+
+func (s *Server) handleMasterContents(w http.ResponseWriter, r *http.Request, _ auth.Principal) {
+	switch r.Method {
+	case "GET":
+		contents, err := s.federationSvc.ListMasterContents(r.Context())
+		if err != nil {
+			internalError(w, err)
+			return
+		}
+		success(w, http.StatusOK, map[string]any{"contents": contents, "total": len(contents)})
+
+	case "POST":
+		var c federation.MasterCompetitionContent
+		if err := json.NewDecoder(r.Body).Decode(&c); err != nil {
+			badRequest(w, "invalid JSON: "+err.Error())
+			return
+		}
+		if err := s.federationSvc.CreateMasterContent(r.Context(), c); err != nil {
+			badRequest(w, err.Error())
+			return
+		}
+		success(w, http.StatusCreated, map[string]string{"status": "content_created"})
+
+	default:
+		methodNotAllowed(w)
+	}
+}
+
+func (s *Server) handleMasterContentByID(w http.ResponseWriter, r *http.Request, _ auth.Principal) {
+	id := strings.TrimPrefix(r.URL.Path, "/api/v1/federation/master/contents/")
+	if id == "" {
+		badRequest(w, "content id required")
+		return
+	}
+
+	switch r.Method {
+	case "GET":
+		c, err := s.federationSvc.GetMasterContent(r.Context(), id)
+		if err != nil {
+			notFoundError(w, "content not found")
+			return
+		}
+		success(w, http.StatusOK, c)
+
+	case "PUT":
+		var c federation.MasterCompetitionContent
+		if err := json.NewDecoder(r.Body).Decode(&c); err != nil {
+			badRequest(w, "invalid JSON: "+err.Error())
+			return
+		}
+		c.ID = id
+		if err := s.federationSvc.UpdateMasterContent(r.Context(), c); err != nil {
+			badRequest(w, err.Error())
+			return
+		}
+		success(w, http.StatusOK, map[string]string{"status": "content_updated"})
+
+	case "DELETE":
+		if err := s.federationSvc.DeleteMasterContent(r.Context(), id); err != nil {
+			badRequest(w, err.Error())
+			return
+		}
+		success(w, http.StatusOK, map[string]string{"status": "content_deleted"})
+
+	default:
+		methodNotAllowed(w)
+	}
+}
+
 // ── Approval Workflow Center ─────────────────────────────────
 
 func (s *Server) handleFederationApprovals(w http.ResponseWriter, r *http.Request, p auth.Principal) {

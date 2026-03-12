@@ -27,6 +27,11 @@ const FEDERATION_SIDEBAR: WorkspaceSidebarConfig = {
         {
             id: 'tournaments', label: 'ws.fed.tournaments', items: [
                 { id: 'fed-tournaments', path: '/giai-dau', label: 'ws.fed.tournamentList', icon: 'Trophy' },
+                { id: 'fed-tourn-mgmt', path: '/giai-dau/quan-ly', label: 'ws.fed.tournMgmt', icon: 'Settings' },
+                { id: 'fed-tourn-cats', path: '/giai-dau/noi-dung', label: 'ws.fed.tournCategories', icon: 'List' },
+                { id: 'fed-tourn-reg', path: '/giai-dau/dang-ky', label: 'ws.fed.tournRegistration', icon: 'ClipboardCheck' },
+                { id: 'fed-tourn-schedule', path: '/giai-dau/lich-thi', label: 'ws.fed.tournSchedule', icon: 'Calendar' },
+                { id: 'fed-tourn-results', path: '/giai-dau/ket-qua', label: 'ws.fed.tournResults', icon: 'Award' },
                 { id: 'fed-reports', path: '/reports', label: 'ws.fed.reports', icon: 'Printer' },
             ],
         },
@@ -82,7 +87,7 @@ const PROVINCIAL_SIDEBAR: WorkspaceSidebarConfig = {
             id: 'management', label: 'ws.prov.management', items: [
                 { id: 'prov-clubs', path: '/province/clubs', label: 'ws.prov.clubs', icon: 'Home' },
                 { id: 'prov-athletes', path: '/province/athletes', label: 'ws.prov.athletes', icon: 'Users' },
-                { id: 'prov-coaches', path: '/coaches', label: 'ws.prov.coaches', icon: 'UserCheck' },
+                { id: 'prov-coaches', path: '/province/coaches', label: 'ws.prov.coaches', icon: 'UserCheck' },
             ],
         },
         {
@@ -130,12 +135,14 @@ const TOURNAMENT_SIDEBAR: WorkspaceSidebarConfig = {
         {
             id: 'overview', label: 'ws.tourn.overview', items: [
                 { id: 'tourn-dashboard', path: '/', label: 'ws.tourn.dashboard', icon: 'Dashboard' },
+                { id: 'tourn-mgmt', path: '/giai-dau/quan-ly', label: 'ws.tourn.mgmtDashboard', icon: 'LayoutDashboard' },
                 { id: 'tourn-statistics', path: '/giai-dau/thong-ke', label: 'ws.tourn.statistics', icon: 'BarChart2' },
             ],
         },
         {
             id: 'setup', label: 'ws.tourn.setup', items: [
                 { id: 'tourn-config', path: '/giai-dau', label: 'ws.tourn.config', icon: 'Trophy' },
+                { id: 'tourn-categories-mgmt', path: '/giai-dau/noi-dung', label: 'ws.tourn.categoriesMgmt', icon: 'LayoutList' },
                 { id: 'tourn-categories', path: '/noi-dung', label: 'ws.tourn.categories', icon: 'List' },
                 { id: 'tourn-arenas', path: '/san-dau', label: 'ws.tourn.arenas', icon: 'LayoutGrid' },
                 { id: 'tourn-refs', path: '/referees', label: 'ws.tourn.refs', icon: 'UserCheck' },
@@ -143,6 +150,7 @@ const TOURNAMENT_SIDEBAR: WorkspaceSidebarConfig = {
         },
         {
             id: 'registration', label: 'ws.tourn.registration', items: [
+                { id: 'tourn-reg-mgmt', path: '/giai-dau/dang-ky', label: 'ws.tourn.regMgmt', icon: 'FileCheck' },
                 { id: 'tourn-teams', path: '/teams', label: 'ws.tourn.teams', icon: 'Building2' },
                 { id: 'tourn-athletes', path: '/athletes', label: 'ws.tourn.athletes', icon: 'Users' },
                 { id: 'tourn-reg', path: '/registration', label: 'ws.tourn.reg', icon: 'ClipboardCheck' },
@@ -151,6 +159,7 @@ const TOURNAMENT_SIDEBAR: WorkspaceSidebarConfig = {
         },
         {
             id: 'operations', label: 'ws.tourn.operations', items: [
+                { id: 'tourn-schedule-mgmt', path: '/giai-dau/lich-thi', label: 'ws.tourn.scheduleMgmt', icon: 'CalendarClock' },
                 { id: 'tourn-meeting', path: '/hop-chuyen-mon', label: 'ws.tourn.meeting', icon: 'ClipboardList' },
                 { id: 'tourn-draw', path: '/boc-tham', label: 'ws.tourn.draw', icon: 'Shuffle' },
                 { id: 'tourn-schedule', path: '/schedule', label: 'ws.tourn.schedule', icon: 'Calendar' },
@@ -162,6 +171,7 @@ const TOURNAMENT_SIDEBAR: WorkspaceSidebarConfig = {
         },
         {
             id: 'results', label: 'ws.tourn.results', items: [
+                { id: 'tourn-results-mgmt', path: '/giai-dau/ket-qua', label: 'ws.tourn.resultsMgmt', icon: 'Medal' },
                 { id: 'tourn-results', path: '/results', label: 'ws.tourn.resultList', icon: 'Award' },
                 { id: 'tourn-medals', path: '/medals', label: 'ws.tourn.medals', icon: 'Medal' },
                 { id: 'tourn-appeals', path: '/appeals', label: 'ws.tourn.appeals', icon: 'AlertCircle' },

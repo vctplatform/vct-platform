@@ -76,6 +76,56 @@ export function Page_athlete_rankings() {
                 </div>
             </div>
 
+            {/* ══ GOALS PROGRESS ══ */}
+            {profile.goals && profile.goals.length > 0 && (
+                <VCT_SectionCard
+                    title="Mục tiêu cá nhân"
+                    icon={<VCT_Icons.Target size={20} />}
+                    accentColor="#8b5cf6"
+                    className="border border-vct-border mb-8"
+                >
+                    <div className="space-y-4">
+                        {profile.goals.map((g, idx) => (
+                            <div key={idx} className="p-4 rounded-xl bg-vct-bg border border-vct-border group hover:border-vct-border-strong transition-colors">
+                                <div className="flex items-center justify-between mb-2">
+                                    <span className="text-sm font-bold text-vct-text group-hover:text-[#8b5cf6] transition-colors">{g.title}</span>
+                                    <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${g.progress >= 100 ? 'bg-emerald-500/10 text-emerald-500' : g.progress >= 50 ? 'bg-blue-500/10 text-blue-500' : 'bg-amber-500/10 text-amber-500'}`}>
+                                        {g.progress}%
+                                    </span>
+                                </div>
+                                <div className="h-2 bg-vct-border rounded-full overflow-hidden">
+                                    <div className="h-full rounded-full transition-all duration-1000"
+                                        style={{ width: `${Math.min(g.progress, 100)}%`, background: g.progress >= 100 ? '#22c55e' : g.progress >= 50 ? '#3b82f6' : '#f59e0b' }} />
+                                </div>
+                                {g.type && <div className="text-[10px] text-vct-text-muted mt-1.5 uppercase tracking-wider">{g.type}</div>}
+                            </div>
+                        ))}
+                    </div>
+                </VCT_SectionCard>
+            )}
+
+            {/* ══ SKILL STATS ══ */}
+            {profile.skill_stats && profile.skill_stats.length > 0 && (
+                <VCT_SectionCard
+                    title="Chỉ số kỹ năng"
+                    icon={<VCT_Icons.Activity size={20} />}
+                    accentColor="#3b82f6"
+                    className="border border-vct-border mb-8"
+                >
+                    <div className="space-y-3">
+                        {profile.skill_stats.map(s => (
+                            <div key={s.label} className="flex items-center gap-3">
+                                <span className="text-xs font-semibold text-vct-text-muted w-24 text-right">{s.label}</span>
+                                <div className="flex-1 h-3 bg-vct-bg rounded-full border border-vct-border overflow-hidden">
+                                    <div className="h-full rounded-full transition-all duration-1000" style={{ width: `${s.value}%`, background: s.color }}></div>
+                                </div>
+                                <span className="text-sm font-black w-10 text-right" style={{ color: s.color }}>{s.value}</span>
+                            </div>
+                        ))}
+                    </div>
+                </VCT_SectionCard>
+            )}
+
             {/* ══ RANKINGS TABLE (Placeholder) ══ */}
             <VCT_SectionCard
                 title="Lịch sử xếp hạng"
@@ -87,7 +137,7 @@ export function Page_athlete_rankings() {
                     <VCT_EmptyState
                         icon={<VCT_Icons.BarChart2 size={48} />}
                         title="Biểu đồ xếp hạng"
-                        description="Biểu đồ lịch sử xếp hạng ELO và thành tích qua các mùa giải sẽ được hiển thị tại đây. Tính năng đang được phát triển."
+                        description="Biểu đồ lịch sử xếp hạng ELO qua các mùa giải sẽ được hiển thị tại đây. Tính năng đang được phát triển."
                     />
                 </div>
             </VCT_SectionCard>

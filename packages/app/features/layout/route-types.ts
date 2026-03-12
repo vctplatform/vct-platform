@@ -80,6 +80,9 @@ export type RouteId =
     | 'club-training'
     | 'club-tournaments'
     | 'club-finance'
+    | 'club-attendance'
+    | 'club-equipment'
+    | 'club-facilities'
     | 'club-certifications'
     | 'club-settings'
     | 'federation-dashboard'
@@ -99,6 +102,7 @@ export type RouteId =
     | 'federation-workflow-config'
     | 'parent-dashboard'
     | 'athlete-portal'
+    | 'athlete-management'
     | 'athlete-tournaments'
 
 export type RouteAction =

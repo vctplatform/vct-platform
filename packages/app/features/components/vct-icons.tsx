@@ -90,7 +90,8 @@ import {
     Info,
     Image as ImageIcon,
     MinusCircle,
-    Target
+    Target,
+    Globe
 } from 'lucide-react';
 
 /**
@@ -239,4 +240,5 @@ export const VCT_Icons = {
     Info: (p: IconProps) => <Info {...defaultProps} {...p} />,
     Image: (p: IconProps) => <ImageIcon {...defaultProps} {...p} />,
     Target: (p: IconProps) => <Target {...defaultProps} {...p} />,
+    Globe: (p: IconProps) => <Globe {...defaultProps} {...p} />,
 };

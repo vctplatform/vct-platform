@@ -17,12 +17,17 @@ import (
 
 func (s *Server) handleAthleteProfileRoutes(mux *http.ServeMux) {
 	mux.HandleFunc("/api/v1/athlete-profiles/me", s.withAuth(s.handleAthleteProfileMe))
+	mux.HandleFunc("/api/v1/athlete-profiles/stats", s.withAuth(s.handleAthleteProfileStats))
+	mux.HandleFunc("/api/v1/athlete-profiles/search", s.withAuth(s.handleAthleteProfileSearch))
 	mux.HandleFunc("/api/v1/athlete-profiles/", s.withAuth(s.handleAthleteProfileByID))
 	mux.HandleFunc("/api/v1/athlete-profiles", s.withAuth(s.handleAthleteProfileList))
 	mux.HandleFunc("/api/v1/club-memberships/", s.withAuth(s.handleClubMembershipByID))
 	mux.HandleFunc("/api/v1/club-memberships", s.withAuth(s.handleClubMembershipList))
 	mux.HandleFunc("/api/v1/tournament-entries/", s.withAuth(s.handleTournamentEntryByID))
 	mux.HandleFunc("/api/v1/tournament-entries", s.withAuth(s.handleTournamentEntryList))
+	mux.HandleFunc("/api/v1/training-sessions/stats", s.withAuth(s.handleTrainingSessionStats))
+	mux.HandleFunc("/api/v1/training-sessions/", s.withAuth(s.handleTrainingSessionByID))
+	mux.HandleFunc("/api/v1/training-sessions", s.withAuth(s.handleTrainingSessionList))
 }
 
 // ── Profile List/Create ──────────────────────────────────────
@@ -362,4 +367,137 @@ func (s *Server) handleTournamentEntryByID(w http.ResponseWriter, r *http.Reques
 	default:
 		w.WriteHeader(http.StatusMethodNotAllowed)
 	}
+}
+
+// ── Stats Endpoint ───────────────────────────────────────────
+
+func (s *Server) handleAthleteProfileStats(w http.ResponseWriter, r *http.Request, _ auth.Principal) {
+	if r.Method != http.MethodGet {
+		w.WriteHeader(http.StatusMethodNotAllowed)
+		return
+	}
+	stats, err := s.athleteProfileSvc.GetStats(r.Context())
+	if err != nil {
+		internalError(w, err)
+		return
+	}
+	success(w, http.StatusOK, stats)
+}
+
+// ── Search Endpoint ──────────────────────────────────────────
+
+func (s *Server) handleAthleteProfileSearch(w http.ResponseWriter, r *http.Request, _ auth.Principal) {
+	if r.Method != http.MethodGet {
+		w.WriteHeader(http.StatusMethodNotAllowed)
+		return
+	}
+	query := r.URL.Query().Get("q")
+	list, err := s.athleteProfileSvc.SearchProfiles(r.Context(), query)
+	if err != nil {
+		internalError(w, err)
+		return
+	}
+	if list == nil {
+		list = []athlete.AthleteProfile{}
+	}
+	success(w, http.StatusOK, list)
+}
+
+// ── Training Session Handlers ───────────────────────────────────
+
+func (s *Server) handleTrainingSessionList(w http.ResponseWriter, r *http.Request, _ auth.Principal) {
+	switch r.Method {
+	case http.MethodGet:
+		athleteID := r.URL.Query().Get("athleteId")
+		var list []athlete.TrainingSession
+		var err error
+		if athleteID != "" {
+			list, err = s.trainingSessionSvc.ListByAthlete(r.Context(), athleteID)
+		} else {
+			list = []athlete.TrainingSession{}
+		}
+		if err != nil {
+			internalError(w, err)
+			return
+		}
+		if list == nil {
+			list = []athlete.TrainingSession{}
+		}
+		success(w, http.StatusOK, list)
+
+	case http.MethodPost:
+		var payload athlete.TrainingSession
+		if err := json.NewDecoder(r.Body).Decode(&payload); err != nil {
+			badRequest(w, "invalid JSON: "+err.Error())
+			return
+		}
+		created, err := s.trainingSessionSvc.CreateSession(r.Context(), payload)
+		if err != nil {
+			badRequest(w, err.Error())
+			return
+		}
+		success(w, http.StatusCreated, created)
+
+	default:
+		w.WriteHeader(http.StatusMethodNotAllowed)
+	}
+}
+
+func (s *Server) handleTrainingSessionByID(w http.ResponseWriter, r *http.Request, _ auth.Principal) {
+	id := strings.TrimPrefix(r.URL.Path, "/api/v1/training-sessions/")
+	if id == "" {
+		badRequest(w, "missing session id")
+		return
+	}
+
+	switch r.Method {
+	case http.MethodGet:
+		sess, err := s.trainingSessionSvc.GetSession(r.Context(), id)
+		if err != nil {
+			notFoundError(w, err.Error())
+			return
+		}
+		success(w, http.StatusOK, sess)
+
+	case http.MethodPatch:
+		var patch map[string]interface{}
+		if err := json.NewDecoder(r.Body).Decode(&patch); err != nil {
+			badRequest(w, "invalid JSON: "+err.Error())
+			return
+		}
+		if err := s.trainingSessionSvc.UpdateSession(r.Context(), id, patch); err != nil {
+			internalError(w, err)
+			return
+		}
+		sess, _ := s.trainingSessionSvc.GetSession(r.Context(), id)
+		success(w, http.StatusOK, sess)
+
+	case http.MethodDelete:
+		if err := s.trainingSessionSvc.DeleteSession(r.Context(), id); err != nil {
+			internalError(w, err)
+			return
+		}
+		success(w, http.StatusNoContent, nil)
+
+	default:
+		w.WriteHeader(http.StatusMethodNotAllowed)
+	}
+}
+
+func (s *Server) handleTrainingSessionStats(w http.ResponseWriter, r *http.Request, _ auth.Principal) {
+	if r.Method != http.MethodGet {
+		w.WriteHeader(http.StatusMethodNotAllowed)
+		return
+	}
+	athleteID := r.URL.Query().Get("athleteId")
+	if athleteID == "" {
+		badRequest(w, "athleteId query parameter is required")
+		return
+	}
+	stats, err := s.trainingSessionSvc.GetAttendanceStats(r.Context(), athleteID)
+	if err != nil {
+		internalError(w, err)
+		return
+	}
+	success(w, http.StatusOK, stats)
 }

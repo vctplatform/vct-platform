@@ -5,6 +5,7 @@ import Image from 'next/image'
 import { motion, AnimatePresence } from 'framer-motion'
 import { VCT_Text, VCT_Badge } from 'app/features/components/vct-ui'
 import { useChannelEvents, useRealtimeStatus } from 'app/features/data/repository/realtime-client'
+import { UI_Logo } from 'app/features/components/ui-logo'
 
 /* ── Demo Data ──────────────────────────────────────────────── */
 
@@ -63,7 +64,7 @@ export function Page_Scoreboard() {
             {/* Header */}
             <header className="flex items-center justify-between px-8 py-4 border-b border-gray-800 bg-gray-900/50">
                 <div className="flex items-center gap-4">
-                    <Image src="/logo-vct.png" alt="VCT Logo" width={112} height={48} className="h-12 w-auto opacity-80" priority />
+                    <UI_Logo size={48} />
                     <div>
                         <VCT_Text variant="h2" style={{ margin: 0, color: '#fff', letterSpacing: '0.05em' }}>GIẢI VOVINAM TOÀN QUỐC 2026</VCT_Text>
                         <VCT_Text variant="body" style={{ color: 'var(--vct-accent-cyan)' }}>{activeMatch.category} - {activeMatch.arena}</VCT_Text>

@@ -36,8 +36,31 @@ func (s *InMemProfileStore) seed() {
 			FullName: "Nguyễn Hoàng Nam", Gender: "nam", DateOfBirth: "2003-05-12",
 			Weight: 60, Height: 170, BeltRank: BeltBlack2, BeltLabel: "Nhị đẳng",
 			CoachName: "Võ Minh Đức", Phone: "0901234001", Email: "nam.nguyen@email.com",
+			Address: "123 Nguyễn Trãi, Q1", IDNumber: "079203001234", Province: "TP.HCM", Nationality: "Việt Nam",
 			HoSo:   HoSoChecklist{KhamSK: true, BaoHiem: true, Anh: true, CMND: true},
 			Status: ProfileStatusActive, TotalClubs: 1, TotalTournaments: 5, TotalMedals: 3, EloRating: 1520,
+			BeltHistory: []BeltHistoryEntry{
+				{Belt: "Đai vàng", Date: "2015-06-01"},
+				{Belt: "Đai xanh", Date: "2017-03-15"},
+				{Belt: "Đai lam", Date: "2019-01-20"},
+				{Belt: "Đai đỏ", Date: "2020-08-10"},
+				{Belt: "Sơ đẳng", Date: "2022-04-05"},
+				{Belt: "Nhất đẳng", Date: "2023-11-12"},
+				{Belt: "Nhị đẳng", Date: "2025-06-20"},
+			},
+			Goals: []AthleteGoal{
+				{ID: 1, Title: "Đạt Tam đẳng", Progress: 60, Type: "belt"},
+				{ID: 2, Title: "VĐQG 2026 - HCV", Progress: 40, Type: "tournament"},
+				{ID: 3, Title: "Tập luyện 5 buổi/tuần", Progress: 85, Type: "training"},
+			},
+			SkillStats: []SkillStat{
+				{Label: "Kỹ thuật", Value: 78, Color: "#3b82f6"},
+				{Label: "Thể lực", Value: 70, Color: "#22c55e"},
+				{Label: "Tốc độ", Value: 74, Color: "#f59e0b"},
+				{Label: "Sức mạnh", Value: 65, Color: "#ef4444"},
+				{Label: "Phản xạ", Value: 82, Color: "#8b5cf6"},
+				{Label: "Tinh thần", Value: 80, Color: "#06b6d4"},
+			},
 			CreatedAt: now, UpdatedAt: now,
 		},
 		{
@@ -45,8 +68,16 @@ func (s *InMemProfileStore) seed() {
 			FullName: "Trần Minh Tú", Gender: "nu", DateOfBirth: "2005-07-22",
 			Weight: 52, Height: 162, BeltRank: BeltBlack1, BeltLabel: "Nhất đẳng",
 			CoachName: "Võ Minh Đức", Phone: "0901234002", Email: "tu.tran@email.com",
+			Address: "45 Lê Lợi, Q3", IDNumber: "079205007890", Province: "TP.HCM", Nationality: "Việt Nam",
 			HoSo:   HoSoChecklist{KhamSK: true, BaoHiem: true, Anh: true, CMND: true},
 			Status: ProfileStatusActive, TotalClubs: 1, TotalTournaments: 3, TotalMedals: 2, EloRating: 1450,
+			BeltHistory: []BeltHistoryEntry{
+				{Belt: "Đai vàng", Date: "2017-09-01"},
+				{Belt: "Đai xanh", Date: "2019-06-10"},
+				{Belt: "Đai đỏ", Date: "2021-03-20"},
+				{Belt: "Sơ đẳng", Date: "2023-01-15"},
+				{Belt: "Nhất đẳng", Date: "2025-02-28"},
+			},
 			CreatedAt: now, UpdatedAt: now,
 		},
 		{
@@ -54,15 +85,26 @@ func (s *InMemProfileStore) seed() {
 			FullName: "Lê Văn Hùng", Gender: "nam", DateOfBirth: "2004-11-08",
 			Weight: 68, Height: 175, BeltRank: BeltBlack3, BeltLabel: "Tam đẳng",
 			CoachName: "Bùi Thị Hoa", Phone: "0901234003",
+			Address: "78 Trần Hưng Đạo, Thủ Đức", Province: "TP.HCM", Nationality: "Việt Nam",
 			HoSo:   HoSoChecklist{KhamSK: true, BaoHiem: true, Anh: true, CMND: true},
 			Status: ProfileStatusActive, TotalClubs: 1, TotalTournaments: 8, TotalMedals: 5, EloRating: 1680,
+			BeltHistory: []BeltHistoryEntry{
+				{Belt: "Đai vàng", Date: "2014-04-01"},
+				{Belt: "Đai xanh", Date: "2016-02-20"},
+				{Belt: "Đai lam", Date: "2017-10-15"},
+				{Belt: "Đai đỏ", Date: "2019-06-10"},
+				{Belt: "Sơ đẳng", Date: "2021-01-05"},
+				{Belt: "Nhất đẳng", Date: "2022-08-20"},
+				{Belt: "Nhị đẳng", Date: "2024-03-10"},
+				{Belt: "Tam đẳng", Date: "2025-12-01"},
+			},
 			CreatedAt: now, UpdatedAt: now,
 		},
 		{
 			ID: "AP-004", UserID: "user-athlete-004",
 			FullName: "Phạm Thị Lan", Gender: "nu", DateOfBirth: "2007-01-30",
 			Weight: 48, Height: 158, BeltRank: BeltBlack0, BeltLabel: "Sơ đẳng",
-			Phone:  "0901234004",
+			Phone:  "0901234004", Province: "TP.HCM", Nationality: "Việt Nam",
 			HoSo:   HoSoChecklist{KhamSK: true, BaoHiem: false, Anh: true, CMND: false},
 			Status: ProfileStatusDraft, TotalClubs: 1, TotalTournaments: 0, TotalMedals: 0, EloRating: 1200,
 			CreatedAt: now, UpdatedAt: now,
@@ -72,8 +114,27 @@ func (s *InMemProfileStore) seed() {
 			FullName: "Đặng Quốc Việt", Gender: "nam", DateOfBirth: "2003-05-12",
 			Weight: 72, Height: 178, BeltRank: BeltBlack3, BeltLabel: "Tam đẳng",
 			CoachName: "Ngô Thanh Tùng", Phone: "0901234005", Email: "viet.dang@email.com",
+			Address: "100 Hoàn Kiếm, HN", IDNumber: "001203005678", Province: "Hà Nội", Nationality: "Việt Nam",
 			HoSo:   HoSoChecklist{KhamSK: true, BaoHiem: true, Anh: true, CMND: true},
 			Status: ProfileStatusActive, TotalClubs: 2, TotalTournaments: 12, TotalMedals: 7, EloRating: 1750,
+			BeltHistory: []BeltHistoryEntry{
+				{Belt: "Đai vàng", Date: "2013-03-01"},
+				{Belt: "Đai xanh", Date: "2015-01-10"},
+				{Belt: "Đai lam", Date: "2016-09-20"},
+				{Belt: "Đai đỏ", Date: "2018-05-15"},
+				{Belt: "Sơ đẳng", Date: "2020-02-01"},
+				{Belt: "Nhất đẳng", Date: "2021-10-10"},
+				{Belt: "Nhị đẳng", Date: "2023-04-20"},
+				{Belt: "Tam đẳng", Date: "2025-01-15"},
+			},
+			SkillStats: []SkillStat{
+				{Label: "Kỹ thuật", Value: 88, Color: "#3b82f6"},
+				{Label: "Thể lực", Value: 82, Color: "#22c55e"},
+				{Label: "Tốc độ", Value: 78, Color: "#f59e0b"},
+				{Label: "Sức mạnh", Value: 85, Color: "#ef4444"},
+				{Label: "Phản xạ", Value: 90, Color: "#8b5cf6"},
+				{Label: "Tinh thần", Value: 88, Color: "#06b6d4"},
+			},
 			CreatedAt: now, UpdatedAt: now,
 		},
 		{
@@ -81,6 +142,7 @@ func (s *InMemProfileStore) seed() {
 			FullName: "Hoàng Thị Mai", Gender: "nu", DateOfBirth: "2005-09-18",
 			Weight: 55, Height: 165, BeltRank: BeltBlack2, BeltLabel: "Nhị đẳng",
 			CoachName: "Đinh Thị Ngọc", Phone: "0901234006",
+			Province: "Hà Nội", Nationality: "Việt Nam",
 			HoSo:   HoSoChecklist{KhamSK: true, BaoHiem: true, Anh: true, CMND: true},
 			Status: ProfileStatusActive, TotalClubs: 1, TotalTournaments: 6, TotalMedals: 4, EloRating: 1580,
 			CreatedAt: now, UpdatedAt: now,
@@ -89,7 +151,7 @@ func (s *InMemProfileStore) seed() {
 			ID: "AP-007", UserID: "user-athlete-007",
 			FullName: "Bùi Thanh Phong", Gender: "nam", DateOfBirth: "2006-02-14",
 			Weight: 56, Height: 168, BeltRank: BeltRed, BeltLabel: "Đai đỏ",
-			Phone:  "0901234007",
+			Phone:  "0901234007", Province: "TP.HCM", Nationality: "Việt Nam",
 			HoSo:   HoSoChecklist{KhamSK: true, BaoHiem: true, Anh: false, CMND: true},
 			Status: ProfileStatusActive, TotalClubs: 1, TotalTournaments: 2, TotalMedals: 1, EloRating: 1350,
 			CreatedAt: now, UpdatedAt: now,
@@ -99,6 +161,7 @@ func (s *InMemProfileStore) seed() {
 			FullName: "Vũ Ngọc Hà", Gender: "nu", DateOfBirth: "2008-12-05",
 			Weight: 45, Height: 155, BeltRank: BeltGreen, BeltLabel: "Đai xanh",
 			CoachName: "Ngô Thanh Tùng", Phone: "0901234008",
+			Province: "Hà Nội", Nationality: "Việt Nam",
 			HoSo:   HoSoChecklist{KhamSK: false, BaoHiem: false, Anh: false, CMND: false},
 			Status: ProfileStatusDraft, TotalClubs: 1, TotalTournaments: 0, TotalMedals: 0, EloRating: 1100,
 			CreatedAt: now, UpdatedAt: now,
@@ -189,6 +252,18 @@ func (s *InMemProfileStore) Update(_ context.Context, id string, patch map[strin
 	}
 	if v, ok := patch["status"].(string); ok {
 		p.Status = ProfileStatus(v)
+	}
+	if v, ok := patch["address"].(string); ok {
+		p.Address = v
+	}
+	if v, ok := patch["id_number"].(string); ok {
+		p.IDNumber = v
+	}
+	if v, ok := patch["province"].(string); ok {
+		p.Province = v
+	}
+	if v, ok := patch["nationality"].(string); ok {
+		p.Nationality = v
 	}
 	if v, ok := patch["updated_at"].(time.Time); ok {
 		p.UpdatedAt = v
@@ -471,6 +546,139 @@ func (s *InMemEntryStore) Update(_ context.Context, id string, patch map[string]
 }
 
 func (s *InMemEntryStore) Delete(_ context.Context, id string) error {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	delete(s.items, id)
+	return nil
+}
+
+// ── TrainingSession Store ────────────────────────────────────
+
+type InMemTrainingStore struct {
+	mu    sync.RWMutex
+	items map[string]TrainingSession
+}
+
+func NewInMemTrainingStore() *InMemTrainingStore {
+	s := &InMemTrainingStore{items: make(map[string]TrainingSession)}
+	s.seed()
+	return s
+}
+
+func (s *InMemTrainingStore) seed() {
+	now := time.Now().UTC()
+	today := now.Format("2006-01-02")
+	// Generate a week of training sessions for demo athlete
+	days := []struct {
+		offset int
+		start  string
+		end    string
+		typ    SessionType
+		loc    string
+		coach  string
+		status SessionStatus
+	}{
+		{-6, "17:30", "19:00", SessionTypeRegular, "CLB Lam Sơn - Phòng 1", "Võ Minh Đức", SessionStatusCompleted},
+		{-5, "06:00", "07:30", SessionTypeSparring, "CLB Lam Sơn - Sân ngoài", "Võ Minh Đức", SessionStatusCompleted},
+		{-4, "17:30", "19:00", SessionTypeRegular, "CLB Lam Sơn - Phòng 1", "Trần Văn Hải", SessionStatusCompleted},
+		{-3, "17:30", "19:00", SessionTypeRegular, "CLB Lam Sơn - Phòng 1", "Võ Minh Đức", SessionStatusAbsent},
+		{-2, "06:00", "07:30", SessionTypeRegular, "CLB Lam Sơn - Phòng 2", "Trần Văn Hải", SessionStatusCompleted},
+		{-1, "17:30", "19:00", SessionTypeSparring, "CLB Lam Sơn - Sân ngoài", "Võ Minh Đức", SessionStatusCompleted},
+		{0, "17:30", "19:00", SessionTypeRegular, "CLB Lam Sơn - Phòng 1", "Võ Minh Đức", SessionStatusScheduled},
+		{1, "06:00", "07:30", SessionTypeRegular, "CLB Lam Sơn - Phòng 2", "Trần Văn Hải", SessionStatusScheduled},
+		{2, "17:30", "19:00", SessionTypeSparring, "CLB Lam Sơn - Sân ngoài", "Võ Minh Đức", SessionStatusScheduled},
+	}
+	_ = today
+	for i, d := range days {
+		date := now.AddDate(0, 0, d.offset).Format("2006-01-02")
+		id := fmt.Sprintf("TS-%03d", i+1)
+		s.items[id] = TrainingSession{
+			ID: id, AthleteID: "AP-001", Date: date,
+			StartTime: d.start, EndTime: d.end, Type: d.typ,
+			Location: d.loc, Coach: d.coach, ClubName: "CLB Lam Sơn",
+			Status: d.status, CreatedAt: now, UpdatedAt: now,
+		}
+	}
+}
+
+func (s *InMemTrainingStore) List(_ context.Context) ([]TrainingSession, error) {
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+	result := make([]TrainingSession, 0, len(s.items))
+	for _, v := range s.items {
+		result = append(result, v)
+	}
+	return result, nil
+}
+
+func (s *InMemTrainingStore) ListByAthlete(_ context.Context, athleteID string) ([]TrainingSession, error) {
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+	var result []TrainingSession
+	for _, v := range s.items {
+		if v.AthleteID == athleteID {
+			result = append(result, v)
+		}
+	}
+	return result, nil
+}
+
+func (s *InMemTrainingStore) GetByID(_ context.Context, id string) (*TrainingSession, error) {
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+	v, ok := s.items[id]
+	if !ok {
+		return nil, fmt.Errorf("training session not found: %s", id)
+	}
+	return &v, nil
+}
+
+func (s *InMemTrainingStore) Create(_ context.Context, sess TrainingSession) (*TrainingSession, error) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	s.items[sess.ID] = sess
+	return &sess, nil
+}
+
+func (s *InMemTrainingStore) Update(_ context.Context, id string, patch map[string]interface{}) error {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	sess, ok := s.items[id]
+	if !ok {
+		return fmt.Errorf("training session not found: %s", id)
+	}
+	if v, ok := patch["date"].(string); ok {
+		sess.Date = v
+	}
+	if v, ok := patch["start_time"].(string); ok {
+		sess.StartTime = v
+	}
+	if v, ok := patch["end_time"].(string); ok {
+		sess.EndTime = v
+	}
+	if v, ok := patch["type"].(string); ok {
+		sess.Type = SessionType(v)
+	}
+	if v, ok := patch["location"].(string); ok {
+		sess.Location = v
+	}
+	if v, ok := patch["coach"].(string); ok {
+		sess.Coach = v
+	}
+	if v, ok := patch["status"].(string); ok {
+		sess.Status = SessionStatus(v)
+	}
+	if v, ok := patch["notes"].(string); ok {
+		sess.Notes = v
+	}
+	if v, ok := patch["updated_at"].(time.Time); ok {
+		sess.UpdatedAt = v
+	}
+	s.items[id] = sess
+	return nil
+}
+
+func (s *InMemTrainingStore) Delete(_ context.Context, id string) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	delete(s.items, id)

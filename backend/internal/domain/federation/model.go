@@ -174,3 +174,144 @@ type ApprovalRequest struct {
 	SubmittedAt   time.Time             `json:"submitted_at"`
 	UpdatedAt     time.Time             `json:"updated_at"`
 }
+
+// -------------------------------------------------------------
+// PROVINCIAL-LEVEL MODELS (Cấp tỉnh / thành phố)
+// Quản lý CLB, VĐV, HLV trực thuộc Hội Võ thuật tỉnh
+// -------------------------------------------------------------
+
+type ClubStatus string
+
+const (
+	ClubStatusActive   ClubStatus = "ACTIVE"
+	ClubStatusPending  ClubStatus = "PENDING"
+	ClubStatusInactive ClubStatus = "INACTIVE"
+)
+
+type AthleteStatus string
+
+const (
+	AthleteActive   AthleteStatus = "ACTIVE"
+	AthleteSuspended AthleteStatus = "SUSPENDED"
+	AthleteRetired  AthleteStatus = "RETIRED"
+)
+
+type CoachLevel string
+
+const (
+	CoachLevelProvincial CoachLevel = "PROVINCIAL" // HLV cấp tỉnh
+	CoachLevelNational   CoachLevel = "NATIONAL"   // HLV cấp quốc gia
+	CoachLevelMaster     CoachLevel = "MASTER"     // HLV bậc cao
+)
+
+type ReportType string
+
+const (
+	ReportTypeMonthly  ReportType = "MONTHLY"
+	ReportTypeQuarterly ReportType = "QUARTERLY"
+	ReportTypeAnnual   ReportType = "ANNUAL"
+	ReportTypeEvent    ReportType = "EVENT"
+)
+
+type ReportStatus string
+
+const (
+	ReportDraft     ReportStatus = "DRAFT"
+	ReportSubmitted ReportStatus = "SUBMITTED"
+	ReportApproved  ReportStatus = "APPROVED"
+)
+
+// ProvincialClub represents a martial arts club under a provincial federation.
+type ProvincialClub struct {
+	ID           string     `json:"id"`
+	ProvinceID   string     `json:"province_id"`   // FK to Province
+	Name         string     `json:"name"`           // Tên CLB
+	Code         string     `json:"code"`           // Mã CLB (e.g. "BD-001")
+	Address      string     `json:"address"`
+	District     string     `json:"district"`       // Quận/Huyện
+	LeaderName   string     `json:"leader_name"`    // Chủ nhiệm CLB
+	LeaderPhone  string     `json:"leader_phone"`
+	MemberCount  int        `json:"member_count"`   // Tổng số thành viên
+	AthleteCount int        `json:"athlete_count"`  // Số VĐV
+	CoachCount   int        `json:"coach_count"`    // Số HLV
+	Status       ClubStatus `json:"status"`
+	FoundedDate  string     `json:"founded_date"`   // YYYY-MM-DD
+	CreatedAt    time.Time  `json:"created_at"`
+	UpdatedAt    time.Time  `json:"updated_at"`
+}
+
+// ProvincialAthlete represents an athlete registered under a provincial club.
+type ProvincialAthlete struct {
+	ID            string        `json:"id"`
+	ProvinceID    string        `json:"province_id"`
+	ClubID        string        `json:"club_id"`
+	ClubName      string        `json:"club_name"`
+	FullName      string        `json:"full_name"`       // Họ và tên
+	Gender        string        `json:"gender"`          // MALE / FEMALE
+	DateOfBirth   string        `json:"date_of_birth"`   // YYYY-MM-DD
+	BeltLevel     int           `json:"belt_level"`      // Cấp đai hiện tại
+	BeltName      string        `json:"belt_name"`       // Tên đai
+	WeightKg      float64       `json:"weight_kg"`
+	HeightCm      float64       `json:"height_cm"`
+	IDNumber      string        `json:"id_number"`       // CMND/CCCD
+	Phone         string        `json:"phone"`
+	Status        AthleteStatus `json:"status"`
+	JoinDate      string        `json:"join_date"`
+	Achievements  string        `json:"achievements,omitempty"` // Thành tích nổi bật
+	CreatedAt     time.Time     `json:"created_at"`
+	UpdatedAt     time.Time     `json:"updated_at"`
+}
+
+// ProvincialCoach represents a coach registered under a provincial federation.
+type ProvincialCoach struct {
+	ID              string     `json:"id"`
+	ProvinceID      string     `json:"province_id"`
+	ClubID          string     `json:"club_id"`
+	ClubName        string     `json:"club_name"`
+	FullName        string     `json:"full_name"`
+	Gender          string     `json:"gender"`
+	DateOfBirth     string     `json:"date_of_birth"`
+	Phone           string     `json:"phone"`
+	Email           string     `json:"email"`
+	Level           CoachLevel `json:"level"`              // PROVINCIAL / NATIONAL / MASTER
+	CertNumber      string     `json:"cert_number"`        // Số chứng chỉ HLV
+	CertExpiry      string     `json:"cert_expiry"`        // Ngày hết hạn
+	BeltLevel       int        `json:"belt_level"`
+	BeltName        string     `json:"belt_name"`
+	YearsExperience int        `json:"years_experience"`
+	Specialization  string     `json:"specialization"`     // Chuyên ngành (đối kháng, quyền, etc.)
+	Status          string     `json:"status"`             // ACTIVE / INACTIVE
+	CreatedAt       time.Time  `json:"created_at"`
+	UpdatedAt       time.Time  `json:"updated_at"`
+}
+
+// ProvincialReport represents a periodic report from the provincial federation.
+type ProvincialReport struct {
+	ID           string       `json:"id"`
+	ProvinceID   string       `json:"province_id"`
+	Title        string       `json:"title"`
+	Type         ReportType   `json:"type"`           // MONTHLY, QUARTERLY, ANNUAL, EVENT
+	Period       string       `json:"period"`          // e.g. "2026-Q1", "2026-03"
+	TotalClubs   int          `json:"total_clubs"`
+	TotalVDV     int          `json:"total_vdv"`
+	TotalCoaches int          `json:"total_coaches"`
+	TotalEvents  int          `json:"total_events"`
+	Highlights   string       `json:"highlights"`      // Điểm nổi bật
+	Issues       string       `json:"issues"`          // Khó khăn, vướng mắc
+	Status       ReportStatus `json:"status"`
+	SubmittedBy  string       `json:"submitted_by"`
+	CreatedAt    time.Time    `json:"created_at"`
+	UpdatedAt    time.Time    `json:"updated_at"`
+}
+
+// ProvincialStatistics provides aggregated stats for a single province.
+type ProvincialStatistics struct {
+	ProvinceID       string `json:"province_id"`
+	ProvinceName     string `json:"province_name"`
+	TotalClubs       int    `json:"total_clubs"`
+	ActiveClubs      int    `json:"active_clubs"`
+	TotalAthletes    int    `json:"total_athletes"`
+	TotalCoaches     int    `json:"total_coaches"`
+	TotalEvents      int    `json:"total_events"`
+	PendingApprovals int    `json:"pending_approvals"`
+}

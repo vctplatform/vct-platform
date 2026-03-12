@@ -309,3 +309,56 @@ Every DevOps output must include:
 | Performance targets | → **CTO** for SLO definitions |
 | Deploy scheduling | → **PM** / **Release Manager** for timing |
 | Test pipeline setup | → **QA** for test requirements |
+
+---
+
+## 11. GitHub Actions Matrix Strategy
+
+```yaml
+jobs:
+  test:
+    strategy:
+      matrix:
+        go-version: ['1.26']
+        node-version: ['20', '22']
+        os: [ubuntu-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/setup-go@v5
+        with: { go-version: ${{ matrix.go-version }} }
+      - uses: actions/setup-node@v4
+        with: { node-version: ${{ matrix.node-version }} }
+      - run: go test ./...
+      - run: npm run typecheck
+```
+
+---
+
+## 12. Canary Deployments
+
+```
+1. Deploy new version to 10% of traffic (canary)
+2. Monitor error rate, latency, and CPU for 15 minutes
+3. If metrics OK → increase to 50% → 100%
+4. If metrics bad → rollback canary immediately
+
+K8s: Use Argo Rollouts with canary strategy
+Docker: Use nginx upstream weights or Traefik weighted round-robin
+```
+
+---
+
+## 13. Feature Flags
+
+```env
+VCT_FEATURE_REALTIME_SCORING=true
+VCT_FEATURE_EXPORT_PDF=false
+VCT_FEATURE_NEW_DASHBOARD=true
+```
+
+```go
+// Check in handler
+if s.cfg.FeatureEnabled("REALTIME_SCORING") {
+    mux.HandleFunc("/api/v1/scoring/", s.handleScoringRoutes)
+}
+```

@@ -689,3 +689,163 @@ export const useMonthlyNetByMonth = (entries: ClubFinanceEntry[]) =>
       .map(([month, value]) => ({ month, value }))
   }, [entries])
 
+// ═══════════════════════════════════════════════════════════════
+// ATTENDANCE (Điểm danh)
+// ═══════════════════════════════════════════════════════════════
+
+export type AttendanceStatus = 'present' | 'absent' | 'late' | 'excused'
+
+export const ATTENDANCE_STATUS_LABEL: Record<AttendanceStatus, string> = {
+  present: 'Co mat',
+  absent: 'Vang',
+  late: 'Tre',
+  excused: 'Co phep',
+}
+
+export const ATTENDANCE_STATUS_COLOR: Record<AttendanceStatus, string> = {
+  present: '#10b981',
+  absent: '#ef4444',
+  late: '#f59e0b',
+  excused: '#6366f1',
+}
+
+export type ClubAttendance = {
+  id: string
+  clubId: string
+  classId: string
+  className: string
+  memberId: string
+  memberName: string
+  date: string
+  status: AttendanceStatus
+  notes?: string
+  recordedBy: string
+}
+
+export const ATTENDANCE_SEED: ClubAttendance[] = [
+  { id: 'ATT-001', clubId: CLUB_ID, classId: 'CLS-001', className: 'Co ban thieu nhi', memberId: 'MBR-001', memberName: 'Nguyen Van Minh', date: '2026-03-10', status: 'present', recordedBy: 'Le Quang Huy' },
+  { id: 'ATT-002', clubId: CLUB_ID, classId: 'CLS-001', className: 'Co ban thieu nhi', memberId: 'MBR-002', memberName: 'Tran Thi Ha', date: '2026-03-10', status: 'absent', recordedBy: 'Le Quang Huy' },
+  { id: 'ATT-003', clubId: CLUB_ID, classId: 'CLS-002', className: 'Nang cao doi khang', memberId: 'MBR-004', memberName: 'Pham Nhat Linh', date: '2026-03-10', status: 'present', recordedBy: 'Le Quang Huy' },
+  { id: 'ATT-004', clubId: CLUB_ID, classId: 'CLS-001', className: 'Co ban thieu nhi', memberId: 'MBR-005', memberName: 'Bui Thanh Nam', date: '2026-03-10', status: 'late', notes: 'Tre 10 phut', recordedBy: 'Le Quang Huy' },
+  { id: 'ATT-005', clubId: CLUB_ID, classId: 'CLS-003', className: 'Boi duong quyen', memberId: 'MBR-006', memberName: 'Do Thi Thao', date: '2026-03-10', status: 'present', recordedBy: 'Do Thi Thao' },
+  { id: 'ATT-006', clubId: CLUB_ID, classId: 'CLS-001', className: 'Co ban thieu nhi', memberId: 'MBR-001', memberName: 'Nguyen Van Minh', date: '2026-03-08', status: 'present', recordedBy: 'Le Quang Huy' },
+  { id: 'ATT-007', clubId: CLUB_ID, classId: 'CLS-001', className: 'Co ban thieu nhi', memberId: 'MBR-002', memberName: 'Tran Thi Ha', date: '2026-03-08', status: 'excused', notes: 'Xin phep nghi benh', recordedBy: 'Le Quang Huy' },
+  { id: 'ATT-008', clubId: CLUB_ID, classId: 'CLS-002', className: 'Nang cao doi khang', memberId: 'MBR-003', memberName: 'Le Quang Huy', date: '2026-03-08', status: 'present', recordedBy: 'Do Thi Thao' },
+  { id: 'ATT-009', clubId: CLUB_ID, classId: 'CLS-001', className: 'Co ban thieu nhi', memberId: 'MBR-001', memberName: 'Nguyen Van Minh', date: '2026-03-06', status: 'present', recordedBy: 'Le Quang Huy' },
+  { id: 'ATT-010', clubId: CLUB_ID, classId: 'CLS-001', className: 'Co ban thieu nhi', memberId: 'MBR-005', memberName: 'Bui Thanh Nam', date: '2026-03-06', status: 'absent', recordedBy: 'Le Quang Huy' },
+]
+
+// ═══════════════════════════════════════════════════════════════
+// EQUIPMENT (Trang thiết bị)
+// ═══════════════════════════════════════════════════════════════
+
+export type EquipmentCategory = 'protective' | 'training' | 'weapon' | 'uniform' | 'medical' | 'other'
+export type EquipmentCondition = 'new' | 'good' | 'worn' | 'damaged' | 'retired'
+
+export const EQUIPMENT_CATEGORY_LABEL: Record<EquipmentCategory, string> = {
+  protective: 'Bao ho',
+  training: 'Tap luyen',
+  weapon: 'Binh khi',
+  uniform: 'Vo phuc',
+  medical: 'Y te',
+  other: 'Khac',
+}
+
+export const EQUIPMENT_CONDITION_LABEL: Record<EquipmentCondition, string> = {
+  new: 'Moi',
+  good: 'Tot',
+  worn: 'Cu',
+  damaged: 'Hu hong',
+  retired: 'Thanh ly',
+}
+
+export const EQUIPMENT_CONDITION_COLOR: Record<EquipmentCondition, string> = {
+  new: '#10b981',
+  good: '#0ea5e9',
+  worn: '#f59e0b',
+  damaged: '#ef4444',
+  retired: '#94a3b8',
+}
+
+export type ClubEquipment = {
+  id: string
+  clubId: string
+  name: string
+  category: EquipmentCategory
+  quantity: number
+  condition: EquipmentCondition
+  purchaseDate: string
+  unitValue: number
+  totalValue: number
+  supplier: string
+  notes?: string
+}
+
+export const EQUIPMENT_SEED: ClubEquipment[] = [
+  { id: 'EQP-001', clubId: CLUB_ID, name: 'Giap than', category: 'protective', quantity: 15, condition: 'good', purchaseDate: '2024-06-15', unitValue: 350000, totalValue: 5250000, supplier: 'VN Sport' },
+  { id: 'EQP-002', clubId: CLUB_ID, name: 'Giap dau', category: 'protective', quantity: 15, condition: 'good', purchaseDate: '2024-06-15', unitValue: 280000, totalValue: 4200000, supplier: 'VN Sport' },
+  { id: 'EQP-003', clubId: CLUB_ID, name: 'Gang tay', category: 'protective', quantity: 20, condition: 'worn', purchaseDate: '2023-09-01', unitValue: 180000, totalValue: 3600000, supplier: 'Thai Boxing' },
+  { id: 'EQP-004', clubId: CLUB_ID, name: 'Xa (Phu goi)', category: 'protective', quantity: 15, condition: 'good', purchaseDate: '2024-06-15', unitValue: 120000, totalValue: 1800000, supplier: 'VN Sport' },
+  { id: 'EQP-005', clubId: CLUB_ID, name: 'Bia do vuong', category: 'training', quantity: 8, condition: 'good', purchaseDate: '2025-01-10', unitValue: 250000, totalValue: 2000000, supplier: 'Saigon Martial' },
+  { id: 'EQP-006', clubId: CLUB_ID, name: 'Bao cat treo', category: 'training', quantity: 4, condition: 'worn', purchaseDate: '2022-03-20', unitValue: 1200000, totalValue: 4800000, supplier: 'Thai Boxing' },
+  { id: 'EQP-007', clubId: CLUB_ID, name: 'Kiem go tap luyen', category: 'weapon', quantity: 12, condition: 'good', purchaseDate: '2025-02-01', unitValue: 150000, totalValue: 1800000, supplier: 'Binh Dinh Craft' },
+  { id: 'EQP-008', clubId: CLUB_ID, name: 'Dao tam tap luyen', category: 'weapon', quantity: 8, condition: 'new', purchaseDate: '2026-01-15', unitValue: 200000, totalValue: 1600000, supplier: 'Binh Dinh Craft' },
+  { id: 'EQP-009', clubId: CLUB_ID, name: 'Vo phuc trang', category: 'uniform', quantity: 30, condition: 'good', purchaseDate: '2025-08-01', unitValue: 320000, totalValue: 9600000, supplier: 'May Thanh Cong' },
+  { id: 'EQP-010', clubId: CLUB_ID, name: 'Hop cuu thuong', category: 'medical', quantity: 3, condition: 'good', purchaseDate: '2025-06-01', unitValue: 500000, totalValue: 1500000, supplier: 'Y te VN' },
+  { id: 'EQP-011', clubId: CLUB_ID, name: 'Bia da da cu', category: 'training', quantity: 2, condition: 'damaged', purchaseDate: '2021-01-01', unitValue: 800000, totalValue: 1600000, supplier: 'Thai Boxing', notes: 'Can thay the' },
+]
+
+// ═══════════════════════════════════════════════════════════════
+// FACILITY (Cơ sở vật chất)
+// ═══════════════════════════════════════════════════════════════
+
+export type FacilityType = 'training_hall' | 'arena' | 'gym' | 'storage' | 'office' | 'changing_room' | 'other'
+export type FacilityStatus = 'active' | 'maintenance' | 'closed'
+
+export const FACILITY_TYPE_LABEL: Record<FacilityType, string> = {
+  training_hall: 'Phong tap',
+  arena: 'San doi khang',
+  gym: 'Phong gym',
+  storage: 'Kho thiet bi',
+  office: 'Van phong',
+  changing_room: 'Phong thay do',
+  other: 'Khac',
+}
+
+export const FACILITY_STATUS_LABEL: Record<FacilityStatus, string> = {
+  active: 'Hoat dong',
+  maintenance: 'Bao tri',
+  closed: 'Dong cua',
+}
+
+export const FACILITY_STATUS_COLOR: Record<FacilityStatus, string> = {
+  active: '#10b981',
+  maintenance: '#f59e0b',
+  closed: '#ef4444',
+}
+
+export type ClubFacility = {
+  id: string
+  clubId: string
+  name: string
+  type: FacilityType
+  areaSqm: number
+  capacity: number
+  status: FacilityStatus
+  address?: string
+  lastMaintenanceDate?: string
+  nextMaintenanceDate?: string
+  monthlyRent: number
+  notes?: string
+}
+
+export const FACILITY_SEED: ClubFacility[] = [
+  { id: 'FAC-001', clubId: CLUB_ID, name: 'Phong tap A', type: 'training_hall', areaSqm: 180, capacity: 40, status: 'active', monthlyRent: 5000000, lastMaintenanceDate: '2026-01-15', nextMaintenanceDate: '2026-07-15' },
+  { id: 'FAC-002', clubId: CLUB_ID, name: 'Phong tap B', type: 'training_hall', areaSqm: 120, capacity: 25, status: 'active', monthlyRent: 3500000, lastMaintenanceDate: '2025-12-01', nextMaintenanceDate: '2026-06-01' },
+  { id: 'FAC-003', clubId: CLUB_ID, name: 'San doi khang', type: 'arena', areaSqm: 200, capacity: 50, status: 'active', monthlyRent: 7000000, lastMaintenanceDate: '2026-02-20', nextMaintenanceDate: '2026-08-20' },
+  { id: 'FAC-004', clubId: CLUB_ID, name: 'Phong tap gym', type: 'gym', areaSqm: 60, capacity: 15, status: 'maintenance', monthlyRent: 2000000, notes: 'Dang nang cap thiet bi', lastMaintenanceDate: '2026-03-01', nextMaintenanceDate: '2026-04-01' },
+  { id: 'FAC-005', clubId: CLUB_ID, name: 'Kho thiet bi', type: 'storage', areaSqm: 30, capacity: 0, status: 'active', monthlyRent: 0 },
+  { id: 'FAC-006', clubId: CLUB_ID, name: 'Van phong CLB', type: 'office', areaSqm: 25, capacity: 6, status: 'active', monthlyRent: 0 },
+  { id: 'FAC-007', clubId: CLUB_ID, name: 'Phong thay do', type: 'changing_room', areaSqm: 20, capacity: 10, status: 'active', monthlyRent: 0 },
+]
+

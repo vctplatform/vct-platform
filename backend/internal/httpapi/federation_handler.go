@@ -37,6 +37,8 @@ func (s *Server) handleFederationRoutes(mux *http.ServeMux) {
 	mux.HandleFunc("/api/v1/federation/master/weights", s.withAuth(s.handleMasterWeights))
 	mux.HandleFunc("/api/v1/federation/master/ages/", s.withAuth(s.handleMasterAgeByID))
 	mux.HandleFunc("/api/v1/federation/master/ages", s.withAuth(s.handleMasterAges))
+	mux.HandleFunc("/api/v1/federation/master/contents/", s.withAuth(s.handleMasterContentByID))
+	mux.HandleFunc("/api/v1/federation/master/contents", s.withAuth(s.handleMasterContents))
 	// ── Approval Center ──
 	mux.HandleFunc("/api/v1/federation/approvals/", s.withAuth(s.handleFederationApprovals))
 	mux.HandleFunc("/api/v1/federation/approvals", s.withAuth(s.handleFederationApprovals))
@@ -51,12 +53,33 @@ func (s *Server) handleFederationProvinceRoutes(w http.ResponseWriter, r *http.R
 		if !requireRole(w, p, federationReadRoles...) {
 			return
 		}
-		provinces, err := s.federationSvc.ListProvinces(r.Context())
+		params := parsePagination(r)
+		region := r.URL.Query().Get("region")
+
+		var provinces []federation.Province
+		var err error
+		if region != "" {
+			provinces, err = s.federationSvc.ListProvincesByRegion(r.Context(), federation.RegionCode(region))
+		} else {
+			provinces, err = s.federationSvc.ListProvinces(r.Context())
+		}
 		if err != nil {
 			internalError(w, err)
 			return
 		}
-		success(w, http.StatusOK, map[string]any{"provinces": provinces, "total": len(provinces)})
+		// Apply search filter
+		if params.Search != "" {
+			q := strings.ToLower(params.Search)
+			var filtered []federation.Province
+			for _, pv := range provinces {
+				if strings.Contains(strings.ToLower(pv.Name), q) || strings.Contains(strings.ToLower(pv.Code), q) {
+					filtered = append(filtered, pv)
+				}
+			}
+			provinces = filtered
+		}
+		result := federation.Paginate(provinces, params)
+		success(w, http.StatusOK, result)
 
 	case r.Method == "POST" && id == "":
 		if !requireRole(w, p, federationWriteRoles...) {
@@ -69,7 +92,7 @@ func (s *Server) handleFederationProvinceRoutes(w http.ResponseWriter, r *http.R
 		}
 		created, err := s.federationSvc.CreateProvince(r.Context(), prov)
 		if err != nil {
-			badRequest(w, err.Error())
+			federationValidationError(w, err)
 			return
 		}
 		success(w, http.StatusCreated, created)
@@ -80,7 +103,7 @@ func (s *Server) handleFederationProvinceRoutes(w http.ResponseWriter, r *http.R
 		}
 		prov, err := s.federationSvc.GetProvince(r.Context(), id)
 		if err != nil {
-			notFoundError(w, "province not found")
+			federationNotFound(w, "Tỉnh/TP", id)
 			return
 		}
 		success(w, http.StatusOK, prov)
@@ -104,7 +127,9 @@ func (s *Server) handleFederationUnitRoutes(w http.ResponseWriter, r *http.Reque
 			internalError(w, err)
 			return
 		}
-		success(w, http.StatusOK, map[string]any{"units": units, "total": len(units)})
+		params := parsePagination(r)
+		result := federation.Paginate(units, params)
+		success(w, http.StatusOK, result)
 
 	case r.Method == "POST" && id == "":
 		if !requireRole(w, p, federationWriteRoles...) {
@@ -168,12 +193,18 @@ func (s *Server) handlePersonnelRoutes(w http.ResponseWriter, r *http.Request, p
 		if !requireRole(w, p, federationReadRoles...) {
 			return
 		}
+		queryUnitID := r.URL.Query().Get("unit_id")
+		if unitID == "" {
+			unitID = queryUnitID
+		}
 		list, err := s.federationSvc.ListPersonnel(r.Context(), unitID)
 		if err != nil {
 			internalError(w, err)
 			return
 		}
-		success(w, http.StatusOK, map[string]any{"personnel": list, "unit_id": unitID})
+		params := parsePagination(r)
+		result := federation.Paginate(list, params)
+		success(w, http.StatusOK, result)
 
 	case r.Method == "POST":
 		if !requireRole(w, p, federationWriteRoles...) {

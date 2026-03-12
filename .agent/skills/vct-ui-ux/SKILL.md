@@ -1,11 +1,11 @@
 ---
 name: vct-ui-ux
-description: VCT Platform UI/UX design system — tokens, component catalog, theming, and visual standards for Võ Cổ Truyền Platform.
+description: VCT Platform UI/UX master skill — design tokens, component catalog, persona maps, user research, theming, accessibility (WCAG 2.1 AA), responsive layout, animation standards, and pre-delivery visual quality checklist.
 ---
 
 # VCT Platform UI/UX Design System
 
-> **When to activate**: Any task involving UI design, styling, component creation, theming, layout, or visual polish for the VCT Platform.
+> **When to activate**: Any task involving UI design, styling, component creation, theming, layout, visual polish, user research, wireframes, usability audit, or accessibility review.
 
 ---
 
@@ -13,14 +13,29 @@ description: VCT Platform UI/UX design system — tokens, component catalog, the
 
 VCT Platform is a **sports management system** for Vietnamese Traditional Martial Arts (Võ Cổ Truyền). The design must feel:
 
-- **Professional & Authoritative** — This is a national federation platform, not a consumer app
+- **Professional & Authoritative** — National federation platform, not a consumer app
 - **Dark-first with Light support** — Both modes MUST use design tokens, never hardcoded colors
 - **Information-dense but clean** — Dashboards, data tables, forms are the primary UI patterns
 - **Culturally respectful** — Honor Vietnamese martial arts heritage through subtle design cues
+- **Premium feel** — NEVER ship a "basic/simple" UI
 
 ---
 
-## 2. CSS Design Tokens (Mandatory)
+## 2. User Personas (from UX Research)
+
+| Persona | Role | Tech Level | Primary Device | Key Need |
+|---|---|---|---|---|
+| Chủ tịch LĐ | Federation President | Medium | Desktop | Executive oversight |
+| Quản lý tỉnh | Provincial Manager | Medium | Desktop + Mobile | Province management |
+| Chủ CLB | Club Owner | Low-Medium | Mobile | Club operations |
+| HLV | Coach | Medium | Tablet + Mobile | Training management |
+| VĐV | Athlete | High | Mobile | Competition & progress |
+| Trọng tài | Referee | Medium | Tablet | Real-time scoring |
+| Phụ huynh | Parent | Low-Medium | Mobile | Child's progress |
+
+---
+
+## 3. CSS Design Tokens (Mandatory)
 
 All styling MUST use VCT CSS custom properties. **NEVER hardcode colors.**
 
@@ -57,62 +72,44 @@ text-vct-text, text-vct-text-muted, text-vct-text-secondary
 border-vct-border
 ```
 
-### Dark Mode
+### Theme System
 - Toggle via `document.documentElement.classList.add('dark')`
 - `ThemeProvider` at `packages/app/features/theme/ThemeProvider.tsx`
-- Use `useTheme()` hook for `{ theme, toggleTheme }`
+- `useTheme()` hook: `{ theme, toggleTheme }`
 - Stored in `localStorage` key: `vct-theme`
+- Light mode: `--bg: #ffffff; --surface: #f8fafc; --text: #0f172a;`
+- Dark mode: `--bg: #0f172a; --surface: #1e293b; --text: #f8fafc;`
 
 ---
 
-## 3. Component Library (`@vct/ui`)
+## 4. Component Library (`@vct/ui`)
 
 All reusable components live in `packages/app/features/components/` and are exported from `packages/ui/src/index.ts`.
 
 ### Naming Convention
 - All components: `VCT_ComponentName` (e.g., `VCT_Button`, `VCT_Card`, `VCT_Modal`)
-- Module prefix categories:
-  - `vct-ui-layout` — `VCT_Card`, `VCT_Section`, `VCT_PageHeader`
-  - `vct-ui-form` — `VCT_Input`, `VCT_Select`, `VCT_Button`
-  - `vct-ui-data-display` — `VCT_Badge`, `VCT_Table`
-  - `vct-ui-overlay` — `VCT_Modal`, `VCT_Dialog`
-  - `vct-ui-feedback` — `VCT_Toast`, `VCT_Alert`
-  - `vct-ui-navigation` — `VCT_Tabs`, `VCT_Breadcrumb`
 
-### Key Components Available
+### Key Components
 | Component | Usage |
 |-----------|-------|
 | `VCT_Card` | Container with elevation |
-| `VCT_Button` | Primary actions |
-| `VCT_IconButton` | Toolbar/icon-only actions |
-| `VCT_Input` | Text inputs |
-| `VCT_Select` | Dropdowns |
-| `VCT_Textarea` | Multi-line input |
-| `VCT_Modal` | Overlays/dialogs |
-| `VCT_Badge` | Status indicators |
-| `VCT_Tooltip` | Hover info |
-| `VCT_Dropdown` | Context menus |
-| `VCT_Tabs` | Tab navigation |
-| `VCT_DataGrid` | Complex data tables |
-| `VCT_ResponsiveTable` | Mobile-friendly tables |
-| `VCT_DatePicker` | Date selection |
-| `VCT_Wizard` | Multi-step forms |
-| `VCT_FileUpload` | File uploads |
-| `VCT_Timeline` | Event history |
-| `VCT_StatBlock` | Statistic display |
-| `VCT_ProfileHeader` | User profile headers |
-| `VCT_InfoGrid` | Key-value info display |
-| `VCT_Calendar` | Calendar views |
+| `VCT_Button` / `VCT_IconButton` | Primary/icon actions |
+| `VCT_Input` / `VCT_Select` / `VCT_Textarea` | Form elements |
+| `VCT_Modal` / `VCT_Drawer` / `VCT_Sheet` | Overlays/side panels |
+| `VCT_Badge` / `VCT_Tooltip` | Status indicators / hover info |
+| `VCT_Tabs` / `VCT_Dropdown` | Tab nav / context menus |
+| `VCT_DataGrid` / `VCT_ResponsiveTable` | Data display |
+| `VCT_DatePicker` / `VCT_Calendar` | Date/time selection |
+| `VCT_Wizard` / `VCT_FileUpload` | Multi-step forms / uploads |
+| `VCT_Timeline` / `VCT_StatBlock` / `VCT_InfoGrid` | Info display |
 | `VCT_PageSkeleton` | Loading skeleton |
-| `VCT_Drawer` / `VCT_Sheet` | Side panels |
 | `VCT_CommandPalette` | Keyboard-driven command |
 | `VCT_QRCode` / `VCT_QRScanner` | QR functionality |
 
 ### Chart Components
 | Component | Usage |
 |-----------|-------|
-| `VCT_BarChart` | Vertical bar charts |
-| `VCT_HorizontalBarChart` | Horizontal bars |
+| `VCT_BarChart` / `VCT_HorizontalBarChart` | Bar charts |
 | `VCT_DonutChart` | Pie/donut charts |
 | `VCT_StatCard` | Stat with sparkline |
 | `VCT_ChartProgressBar` | Progress indicators |
@@ -122,12 +119,12 @@ All reusable components live in `packages/app/features/components/` and are expo
 import { VCT_Icons } from '../components/vct-icons'
 // Usage: <VCT_Icons.Users size={18} />
 ```
-- **NEVER** import icons directly from `lucide-react` or other packages
-- Always use `VCT_Icons.IconName` which wraps Lucide icons
+- **NEVER** import icons directly from `lucide-react`
+- Always use `VCT_Icons.IconName`
 
 ---
 
-## 4. Layout Architecture
+## 5. Layout Architecture
 
 ### AppShell Pattern
 ```
@@ -144,29 +141,20 @@ import { VCT_Icons } from '../components/vct-icons'
 └─────────────────────────────────────────────────┘
 ```
 
-### Sidebar
-- `VCT_Sidebar` at `packages/app/features/layout/sidebar.tsx`
-- Collapsible (88px collapsed / 272px expanded)
-- Mobile: full overlay with slide animation
-- Nav configured via `route-registry.ts` → `getSidebarGroups(role)`
-- Active state uses longest-path matching algorithm
-
 ### Responsive Breakpoints
-```
-Mobile:  < 768px  (sidebar hidden, bottom tabs)
-Tablet:  768–1024px (collapsed sidebar)
-Desktop: > 1024px (full sidebar)
-```
+| Breakpoint | Width | Target | Sidebar |
+|---|---|---|---|
+| Mobile | < 640px | Phone (VĐV, Phụ huynh) | Hidden, hamburger |
+| Tablet | 640–1024px | Tablet (Trọng tài scoring) | Collapsed (88px) |
+| Desktop | > 1024px | Admin dashboards | Full (272px) |
 
 ---
 
-## 5. Page Pattern
-
-Every feature page follows this structure:
+## 6. Page Pattern
 
 ```tsx
 'use client'
-import { VCT_Card, VCT_PageHeader, VCT_Badge } from '@vct/ui'
+import { VCT_Card } from '@vct/ui'
 import { VCT_Icons } from '../components/vct-icons'
 import { useI18n } from '../i18n'
 import { useTheme } from '../theme/ThemeProvider'
@@ -177,69 +165,88 @@ export function Page_feature_name() {
 
   return (
     <div style={{ padding: 24, display: 'flex', flexDirection: 'column', gap: 24 }}>
-      {/* Page Header */}
-      <div>
-        <h1 className="text-2xl font-bold text-vct-text">{t('feature.title')}</h1>
-        <p className="text-vct-text-muted">{t('feature.subtitle')}</p>
-      </div>
-
-      {/* Content in Cards */}
-      <VCT_Card>
-        {/* Content */}
-      </VCT_Card>
+      <h1 className="text-2xl font-bold text-vct-text">{t('feature.title')}</h1>
+      <p className="text-vct-text-muted">{t('feature.subtitle')}</p>
+      <VCT_Card>{/* Content */}</VCT_Card>
     </div>
   )
 }
 ```
 
 ### File Naming
-- Pages: `Page_module_submodule.tsx` (e.g., `Page_athlete_profile.tsx`)
+- Pages: `Page_module_submodule.tsx`
 - Components: `VCT_ComponentName.tsx`
 - Feature dirs: `packages/app/features/{module}/`
 
 ---
 
-## 6. Animation Standards
+## 7. Animation Standards
 
-Using `framer-motion` for all animations:
-
+Using `framer-motion`:
 ```tsx
-import { motion, AnimatePresence } from 'framer-motion'
-
-// Standard transitions
 transition={{ duration: 0.22, ease: [0.4, 0, 0.2, 1] }}
-
-// Page enter animation
 initial={{ opacity: 0, y: 8 }}
 animate={{ opacity: 1, y: 0 }}
 ```
-
-### Rules
-- Max transition duration: 300ms for UI elements
-- Use `AnimatePresence` for mount/unmount animations
+- Max transition: 300ms for UI elements
 - Always respect `prefers-reduced-motion`
 - Sidebar collapse/expand: 220ms ease-out
 
 ---
 
-## 7. Anti-Patterns (NEVER Do These)
+## 8. Pre-Delivery Visual Quality Checklist
 
-1. ❌ **NEVER** hardcode colors — use `var(--vct-*)` tokens
-2. ❌ **NEVER** import icons directly from `lucide-react` — use `VCT_Icons`
-3. ❌ **NEVER** use inline `color: '#fff'` — use `text-vct-text` classes
-4. ❌ **NEVER** create new component files without `VCT_` prefix
-5. ❌ **NEVER** use `dark:` Tailwind modifier — theme switching is via CSS vars
-6. ❌ **NEVER** skip `useI18n()` for user-facing text
-7. ❌ **NEVER** use `<a>` tags directly — use `onNavigate()` from router
-8. ❌ **NEVER** make the design look "simple/basic" — VCT requires premium feel
+### Visual Quality
+- [ ] No emojis used as icons (use SVG/VCT_Icons instead)
+- [ ] All icons from `VCT_Icons` (wraps Lucide)
+- [ ] Hover states don't cause layout shift
+- [ ] Use theme tokens (never hardcode colors)
+
+### Interaction
+- [ ] All clickable elements have `cursor-pointer`
+- [ ] Hover states provide clear visual feedback
+- [ ] Transitions are smooth (150–300ms)
+- [ ] Focus states visible for keyboard navigation
+
+### Light/Dark Mode
+- [ ] Light mode: text contrast ≥ 4.5:1
+- [ ] Glass/transparent elements visible in both modes
+- [ ] Borders visible in both modes
+- [ ] Test BOTH modes before delivery
+
+### Layout
+- [ ] Responsive at 375px, 768px, 1024px, 1440px
+- [ ] No horizontal scroll on mobile
+- [ ] No content hidden behind fixed elements
+
+### Accessibility (WCAG 2.1 AA)
+- [ ] All interactive elements keyboard-navigable
+- [ ] Images have alt text
+- [ ] Form fields have labels (not just placeholders)
+- [ ] Touch targets ≥ 44px on mobile
+- [ ] Skip-to-content link present
+- [ ] `aria-current="page"` on active nav items
 
 ---
 
-## 8. Accessibility Checklist
+## 9. Anti-Patterns (NEVER Do These)
 
-- [ ] All interactive elements: `aria-label` or visible label
-- [ ] Buttons: `type="button"` unless form submit
-- [ ] Active navigation: `aria-current="page"`
-- [ ] Modals: focus trap, Escape key to close
-- [ ] Color contrast: 4.5:1 minimum for text
-- [ ] Keyboard navigation: all actions reachable via Tab/Enter
+1. ❌ **NEVER** hardcode colors — use `var(--vct-*)` tokens
+2. ❌ **NEVER** import icons from `lucide-react` — use `VCT_Icons`
+3. ❌ **NEVER** use inline `color: '#fff'` — use token classes
+4. ❌ **NEVER** create components without `VCT_` prefix
+5. ❌ **NEVER** use `dark:` Tailwind modifier — use CSS vars
+6. ❌ **NEVER** skip `useI18n()` for user-facing text
+7. ❌ **NEVER** use `<a>` tags directly — use `onNavigate()`
+8. ❌ **NEVER** make the design look "simple/basic"
+
+---
+
+## 10. Cross-Reference to Other Roles
+
+| Situation | Consult |
+|---|---|
+| Component doesn't exist | → **Tech Lead** for implementation |
+| Business flow unclear | → **BA** for requirements |
+| Feature priority | → **PO** for backlog order |
+| Implementation feasibility | → **SA** for architecture constraints |

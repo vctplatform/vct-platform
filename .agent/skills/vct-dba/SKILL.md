@@ -285,3 +285,55 @@ Every DBA output must include:
 | Backup scheduling | → **DevOps** for automation |
 | Performance targets | → **CTO** for SLO definitions |
 | Cloud cost | → **PM** for budget approval |
+
+---
+
+## 11. Table Partitioning (Large Tables)
+
+For tables expected to grow large (scoring events, audit logs):
+```sql
+-- Range partition by month (scoring_events)
+CREATE TABLE scoring_events (
+    id UUID DEFAULT gen_random_uuid(),
+    match_id UUID NOT NULL,
+    event_type TEXT NOT NULL,
+    created_at TIMESTAMPTZ DEFAULT now()
+) PARTITION BY RANGE (created_at);
+
+-- Create monthly partitions
+CREATE TABLE scoring_events_2026_01 PARTITION OF scoring_events
+    FOR VALUES FROM ('2026-01-01') TO ('2026-02-01');
+CREATE TABLE scoring_events_2026_02 PARTITION OF scoring_events
+    FOR VALUES FROM ('2026-02-01') TO ('2026-03-01');
+```
+
+### When to Partition
+| Table | Partition? | Strategy |
+|-------|-----------|----------|
+| scoring_events | ✅ | Monthly by `created_at` |
+| audit_logs | ✅ | Monthly by `created_at` |
+| athletes | ❌ | Too small (< 100K rows) |
+| tournaments | ❌ | Too small |
+
+---
+
+## 12. VACUUM Strategy
+
+```sql
+-- Check table bloat
+SELECT schemaname, tablename, n_dead_tup, last_autovacuum
+FROM pg_stat_user_tables
+ORDER BY n_dead_tup DESC;
+
+-- Manual VACUUM for high-churn tables after bulk operations
+VACUUM ANALYZE scoring_events;
+VACUUM ANALYZE registrations;
+```
+
+### Autovacuum Tuning (for high-churn tables)
+```sql
+ALTER TABLE scoring_events SET (
+    autovacuum_vacuum_scale_factor = 0.05,   -- vacuum at 5% dead tuples (default 20%)
+    autovacuum_analyze_scale_factor = 0.02   -- analyze at 2%
+);
+```

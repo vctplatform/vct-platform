@@ -252,3 +252,47 @@ Every Security Engineer output must include:
 | Infrastructure hardening | → **DevOps** for infra config |
 | Data privacy requirements | → **BA** for regulation mapping |
 | Vulnerability fix priority | → **PM** for sprint planning |
+
+---
+
+## 9. Rate Limiting Patterns
+
+```go
+// Token bucket rate limiter per IP
+type RateLimiter struct {
+    visitors map[string]*rate.Limiter
+    mu       sync.RWMutex
+    r        rate.Limit   // requests per second
+    b        int          // burst size
+}
+
+// Endpoint-specific limits
+var limits = map[string]rate.Limit{
+    "/api/v1/auth/login":    rate.Every(12 * time.Second),  // 5/min
+    "/api/v1/auth/register": rate.Every(60 * time.Second),  // 1/min
+    "/api/v1/":              rate.Every(100 * time.Millisecond), // 10/sec
+}
+```
+
+### Rate Limit Response (429)
+```json
+{
+    "success": false,
+    "error": {
+        "code": "RATE_LIMITED",
+        "message": "Quá nhiều yêu cầu, vui lòng thử lại sau"
+    }
+}
+```
+
+---
+
+## 10. CSRF Protection
+
+```
+□ SameSite=Strict on session cookies
+□ Custom header check (X-Requested-With)
+□ Referrer header validation
+□ State parameter in OAuth flows
+□ Double-submit cookie pattern for forms
+```

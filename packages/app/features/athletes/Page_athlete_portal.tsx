@@ -71,7 +71,7 @@ function deriveGoals(profile: AthleteProfile | null) {
         }))
     }
     // Fallback: derive from profile stats
-    const goals = []
+    const goals: Array<{ id: number; title: string; progress: number; icon: React.ReactNode; color: string }> = []
     if (profile) {
         goals.push({
             id: 1, title: 'Nâng đẳng cấp đai', progress: Math.min(((profile.elo_rating || 0) / 2000) * 100, 95),
@@ -170,7 +170,7 @@ export function Page_athlete_portal() {
     // Derived data from profile
     const skillStats = deriveSkillStats(profile)
     const beltHistory = deriveBeltHistory(profile)
-    const goals = deriveGoals(profile)
+    const goals: { id: number; title: string; progress: number; icon: React.ReactNode; color: string }[] = deriveGoals(profile)
 
     return (
         <VCT_PageContainer size="wide" animated>

@@ -14,7 +14,7 @@ description: VCT Platform frontend patterns — Next.js + Expo monorepo, shared 
 ```
 vct-platform/
 ├── apps/
-│   ├── next/          # Next.js 14 web app (pages router via File System)
+│   ├── next/          # Next.js 15+ web app (React 19, pages router via File System)
 │   └── expo/          # Expo/React Native mobile app
 ├── packages/
 │   ├── app/           # Shared features (cross-platform)
@@ -264,3 +264,74 @@ When creating a new feature:
 6. [ ] Implement API integration with loading/error states
 7. [ ] Add sidebar navigation entry for the appropriate role
 8. [ ] Test in both light and dark themes
+
+---
+
+## 10. Advanced Data Fetching (SWR)
+
+```tsx
+import useSWR from 'swr'
+
+const fetcher = (url: string) => apiCall(url)
+
+function Page_athletes() {
+  const { data, error, isLoading, mutate } = useSWR('/api/v1/athletes/', fetcher)
+
+  if (isLoading) return <VCT_PageSkeleton />
+  if (error) return <ErrorBanner message={error.message} onRetry={() => mutate()} />
+
+  return <AthleteTable data={data} />
+}
+```
+
+### SWR Benefits
+- Automatic request deduplication
+- Built-in cache + revalidation
+- Focus/reconnect revalidation
+- Optimistic UI support via `mutate()`
+
+---
+
+## 11. Form Validation
+
+```tsx
+// Inline validation pattern (no external lib needed)
+function validateForm(data: CreateAthleteInput): Record<string, string> {
+  const errors: Record<string, string> = {}
+  if (!data.name.trim()) errors.name = t('validation.required')
+  if (data.age < 6 || data.age > 80) errors.age = t('validation.age_range')
+  if (!data.club_id) errors.club_id = t('validation.select_club')
+  return errors
+}
+
+// Usage
+const [errors, setErrors] = useState<Record<string, string>>({})
+const handleSubmit = () => {
+  const validation = validateForm(formData)
+  if (Object.keys(validation).length > 0) {
+    setErrors(validation)
+    return
+  }
+  // Proceed with API call
+}
+```
+
+---
+
+## 12. Optimistic UI
+
+```tsx
+const handleDelete = async (id: string) => {
+  // 1. Optimistically remove from local state
+  setItems(prev => prev.filter(i => i.id !== id))
+
+  try {
+    // 2. Send request to backend
+    await apiCall(`/api/v1/entity/${id}`, { method: 'DELETE' })
+  } catch {
+    // 3. Rollback on failure
+    mutate()  // Re-fetch from server
+    toast.error(t('error.delete_failed'))
+  }
+}
+```

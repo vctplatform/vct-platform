@@ -12,9 +12,12 @@ import { VCT_PageContainer, VCT_StatRow } from '../components/vct-ui'
 import type { StatItem } from '../components/VCT_StatRow'
 import { VCT_Icons } from '../components/vct-icons'
 import {
+  ATTENDANCE_SEED,
   BELT_EXAM_SEED,
   CLASS_SEED,
   DAY_LABEL,
+  EQUIPMENT_SEED,
+  FACILITY_SEED,
   FINANCE_ENTRY_SEED,
   MEMBER_SEED,
   TOURNAMENT_SEED,
@@ -35,6 +38,9 @@ export const Page_club_dashboard = () => {
   const [tournaments] = useClubStoredState('tournaments', TOURNAMENT_SEED)
   const [financeEntries] = useClubStoredState('finance', FINANCE_ENTRY_SEED)
   const [beltExams] = useClubStoredState('belt-exams', BELT_EXAM_SEED)
+  const [attendance] = useClubStoredState('attendance', ATTENDANCE_SEED)
+  const [equipment] = useClubStoredState('equipment', EQUIPMENT_SEED)
+  const [facilities] = useClubStoredState('facilities', FACILITY_SEED)
   const [toast, setToast] = React.useState({
     show: false,
     msg: '',
@@ -61,6 +67,19 @@ export const Page_club_dashboard = () => {
     (item) => item.status === 'ongoing'
   ).length
   const upcomingExams = beltExams.filter((item) => item.status === 'upcoming').length
+
+  // New module KPIs
+  const attendanceRate = React.useMemo(() => {
+    if (attendance.length === 0) return 0
+    const ok = attendance.filter(r => r.status === 'present' || r.status === 'late').length
+    return Math.round((ok / attendance.length) * 100)
+  }, [attendance])
+  const equipmentValue = React.useMemo(() => equipment.reduce((s, e) => s + e.totalValue, 0), [equipment])
+  const needReplace = React.useMemo(() => equipment.filter(e => e.condition === 'damaged' || e.condition === 'retired').reduce((s, e) => s + e.quantity, 0), [equipment])
+  const overdueMaint = React.useMemo(() => {
+    const today = new Date().toISOString().slice(0, 10)
+    return facilities.filter(f => f.nextMaintenanceDate && f.nextMaintenanceDate <= today).length
+  }, [facilities])
 
   const kpis: StatItem[] = [
     {
@@ -171,10 +190,31 @@ export const Page_club_dashboard = () => {
     },
     {
       id: 'cert',
-      label: 'Thang dai',
-      desc: 'Ky thi dai va chung nhan',
+      label: 'Thăng đai',
+      desc: 'Kỳ thi đai và chứng nhận',
       href: '/club/certifications',
       icon: <VCT_Icons.Award size={18} />,
+    },
+    {
+      id: 'attendance',
+      label: 'Điểm danh',
+      desc: 'Ghi nhận điểm danh hàng ngày',
+      href: '/club/attendance',
+      icon: <VCT_Icons.Check size={18} />,
+    },
+    {
+      id: 'equipment',
+      label: 'Thiết bị',
+      desc: 'Kiểm kê trang thiết bị',
+      href: '/club/equipment',
+      icon: <VCT_Icons.Layers size={18} />,
+    },
+    {
+      id: 'facilities',
+      label: 'Cơ sở vật chất',
+      desc: 'Phòng tập, sân đấu, kho',
+      href: '/club/facilities',
+      icon: <VCT_Icons.Building size={18} />,
     },
   ]
 
@@ -196,7 +236,15 @@ export const Page_club_dashboard = () => {
         </p>
       </div>
 
-      <VCT_StatRow items={kpis} className="mb-6" />
+      <VCT_StatRow items={kpis} className="mb-4" />
+
+      {/* New module KPIs */}
+      <VCT_StatRow items={[
+        { label: 'Tỷ lệ điểm danh', value: `${attendanceRate}%`, icon: <VCT_Icons.Activity size={18} />, color: attendanceRate >= 80 ? '#10b981' : '#f59e0b' },
+        { label: 'Giá trị thiết bị', value: formatCurrency(equipmentValue), icon: <VCT_Icons.Layers size={18} />, color: '#8b5cf6', sub: needReplace > 0 ? `${needReplace} cần thay` : undefined },
+        { label: 'Cơ sở vật chất', value: facilities.length, icon: <VCT_Icons.Building size={18} />, color: '#0ea5e9', sub: overdueMaint > 0 ? `${overdueMaint} quá hạn bảo trì` : undefined },
+        { label: 'Sắp thi đai', value: upcomingExams, icon: <VCT_Icons.Award size={18} />, color: '#f59e0b' },
+      ] as StatItem[]} className="mb-6" />
 
       <div className="mb-6 grid grid-cols-1 gap-4 lg:grid-cols-3">
         <VCT_Card title="Canh bao van hanh" className="lg:col-span-2">
