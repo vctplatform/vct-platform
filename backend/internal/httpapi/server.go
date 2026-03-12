@@ -334,6 +334,7 @@ func New(cfg config.Config) *Server {
 // Handler returns the fully wired HTTP handler with CORS and logging.
 func (s *Server) Handler() http.Handler {
 	mux := http.NewServeMux()
+	mux.HandleFunc("/", s.handleRoot)
 	mux.HandleFunc("/healthz", s.handleHealth)
 	mux.HandleFunc("/readyz", s.handleReadiness)
 	mux.HandleFunc("/api/v1/ws", s.handleWebSocket)
@@ -433,6 +434,26 @@ func (s *Server) Handler() http.Handler {
 	// Generic entity CRUD (catch-all for unmigrated entities)
 	mux.HandleFunc("/api/v1/", s.handleEntityRoutes)
 	return withRecover(withRequestID(withRateLimit(s.rateLimiter)(withBodyLimit(s.withCORS(s.withLogging(mux))))))
+}
+
+// handleRoot returns a JSON welcome response at the root path.
+func (s *Server) handleRoot(w http.ResponseWriter, r *http.Request) {
+	// Only respond to exact root path; let other unmatched paths 404
+	if r.URL.Path != "/" {
+		http.NotFound(w, r)
+		return
+	}
+	success(w, http.StatusOK, map[string]any{
+		"service":     "vct-platform-api",
+		"status":      "running",
+		"version":     "1.0.0",
+		"time":        time.Now().UTC(),
+		"endpoints": map[string]string{
+			"health":  "/healthz",
+			"ready":   "/readyz",
+			"api":     "/api/v1/",
+		},
+	})
 }
 
 func (s *Server) handleHealth(w http.ResponseWriter, _ *http.Request) {
