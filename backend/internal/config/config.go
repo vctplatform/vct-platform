@@ -88,7 +88,7 @@ func (c Config) Validate() error {
 	}
 
 	env := strings.TrimSpace(strings.ToLower(c.Environment))
-	if (env == "production" || env == "staging") && c.AllowDemoUsers {
+	if env == "production" && c.AllowDemoUsers {
 		return fmt.Errorf("VCT_ALLOW_DEMO_USERS must be false for %s", env)
 	}
 	if (env == "production" || env == "staging") && secret == DefaultJWTSecret {
