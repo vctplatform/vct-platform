@@ -8,7 +8,7 @@
   ],
   "devDependencies": {
     "@playwright/test": "^1.52.0",
-    "@types/react": "^18.2.21",
+    "@types/react": "^19.2.0",
     "@types/react-dom": "^19.2.3",
     "eslint": "^8.21.0",
     "turbo": "^2.4.4",
@@ -35,7 +35,7 @@
     "web": "npm run dev:web",
     "backend": "go -C backend run ./cmd/server"
   },
-  "packageManager": "yarn@4.7.0",
+
   "eslintConfig": {
     "extends": "next",
     "settings": {
