@@ -15,19 +15,7 @@ export const ENTITY_AUTHZ_ROLES = [
   "coach",
   "delegate",
   "athlete",
-  "medical_staff",
-  "provincial_president",
-  "provincial_vice_president",
-  "provincial_secretary",
-  "provincial_technical_head",
-  "provincial_referee_head",
-  "provincial_committee_member",
-  "provincial_accountant",
-  "club_leader",
-  "club_vice_leader",
-  "club_secretary",
-  "club_accountant",
-  "parent"
+  "medical_staff"
 ] as const
 export type EntityAuthzRole = (typeof ENTITY_AUTHZ_ROLES)[number]
 
@@ -632,96 +620,6 @@ export const ENTITY_AUTHZ_POLICY = {
       "view",
       "update"
     ]
-  },
-  "provincial_president": {
-    "clubs": ["view", "create", "update"],
-    "athletes": ["view", "export"],
-    "budgets": ["view", "update", "export"],
-    "tournaments": ["view", "create", "update"],
-    "results": ["view", "export"],
-    "schedule": ["view"],
-    "provinces": ["view", "update"]
-  },
-  "provincial_vice_president": {
-    "clubs": ["view", "update"],
-    "athletes": ["view", "export"],
-    "budgets": ["view"],
-    "tournaments": ["view", "update"],
-    "results": ["view", "export"],
-    "schedule": ["view"],
-    "provinces": ["view"]
-  },
-  "provincial_secretary": {
-    "clubs": ["view", "create", "update"],
-    "athletes": ["view", "create", "update", "import", "export"],
-    "budgets": ["view"],
-    "tournaments": ["view", "update"],
-    "results": ["view", "export"],
-    "schedule": ["view", "update"],
-    "provinces": ["view", "update"]
-  },
-  "provincial_technical_head": {
-    "clubs": ["view"],
-    "athletes": ["view", "export"],
-    "tournaments": ["view", "create", "update"],
-    "results": ["view", "export"],
-    "schedule": ["view", "update"],
-    "techniques": ["view", "create", "update"]
-  },
-  "provincial_referee_head": {
-    "athletes": ["view"],
-    "tournaments": ["view"],
-    "results": ["view"],
-    "schedule": ["view"],
-    "referees": ["view", "create", "update"],
-    "referee-assignments": ["view", "create", "update"]
-  },
-  "provincial_committee_member": {
-    "clubs": ["view"],
-    "athletes": ["view"],
-    "budgets": ["view"],
-    "tournaments": ["view"],
-    "results": ["view"],
-    "schedule": ["view"]
-  },
-  "provincial_accountant": {
-    "budgets": ["view", "create", "update", "export"],
-    "clubs": ["view"],
-    "athletes": ["view"]
-  },
-  "club_leader": {
-    "clubs": ["view", "update"],
-    "athletes": ["view", "create", "update", "import", "export"],
-    "registration": ["view", "create", "update"],
-    "results": ["view"],
-    "schedule": ["view"],
-    "budgets": ["view", "create", "update"]
-  },
-  "club_vice_leader": {
-    "clubs": ["view", "update"],
-    "athletes": ["view", "create", "update", "export"],
-    "registration": ["view", "create", "update"],
-    "results": ["view"],
-    "schedule": ["view"],
-    "budgets": ["view"]
-  },
-  "club_secretary": {
-    "clubs": ["view"],
-    "athletes": ["view", "create", "update", "import", "export"],
-    "registration": ["view", "create", "update"],
-    "results": ["view"],
-    "schedule": ["view"]
-  },
-  "club_accountant": {
-    "clubs": ["view"],
-    "athletes": ["view"],
-    "budgets": ["view", "create", "update", "export"]
-  },
-  "parent": {
-    "athletes": ["view"],
-    "results": ["view"],
-    "schedule": ["view"],
-    "registration": ["view"]
   }
 } as const satisfies Record<
   EntityAuthzRole,
