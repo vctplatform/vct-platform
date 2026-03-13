@@ -7,7 +7,9 @@ import { VCT_IconButton } from '../components/vct-ui'
 import { VCT_Icons } from '../components/vct-icons'
 import { getSidebarGroups } from './route-registry'
 import { useI18n } from '../i18n'
-import type { UserRole } from '../auth/types'
+import type { UserRole, WorkspaceAccess } from '../auth/types'
+import type { WorkspaceType } from './workspace-types'
+import { WorkspaceSwitcher } from './WorkspaceSwitcher'
 
 interface SidebarNavItem {
   path: string
@@ -35,6 +37,9 @@ interface SidebarProps {
   roleLabel: string
   navGroups?: SidebarNavGroup[]
   workspaceLabel?: string
+  workspaces?: WorkspaceAccess[]
+  currentWorkspaceType?: WorkspaceType
+  onSwitchWorkspace?: (ws: WorkspaceAccess) => void
 }
 
 const isItemActive = (currentPath: string, itemPath: string, allPaths: string[]) => {
@@ -64,6 +69,9 @@ export const VCT_Sidebar = ({
   roleLabel,
   navGroups,
   workspaceLabel,
+  workspaces,
+  currentWorkspaceType,
+  onSwitchWorkspace,
 }: SidebarProps) => {
   const { t } = useI18n()
   const groups = navGroups ?? getSidebarGroups(role)
@@ -149,7 +157,14 @@ export const VCT_Sidebar = ({
         </AnimatePresence>
       </div>
 
-      {workspaceLabel && (!isCollapsed || compactMode) && (
+      {workspaces && currentWorkspaceType && onSwitchWorkspace ? (
+        <WorkspaceSwitcher
+          workspaces={workspaces}
+          currentType={currentWorkspaceType}
+          onSwitch={onSwitchWorkspace}
+          isCollapsed={isCollapsed && !compactMode}
+        />
+      ) : workspaceLabel && (!isCollapsed || compactMode) ? (
         <div className="border-b border-vct-border px-4 py-3">
           <div className="rounded-xl border border-vct-border bg-vct-input px-3 py-2">
             <div className="text-[10px] font-extrabold uppercase tracking-[0.12em] text-vct-text-muted">
@@ -160,7 +175,7 @@ export const VCT_Sidebar = ({
             </div>
           </div>
         </div>
-      )}
+      ) : null}
 
       <nav
         aria-label={t('shell.navCategories')}

@@ -10,7 +10,7 @@ const FEDERATION_SIDEBAR: WorkspaceSidebarConfig = {
     groups: [
         {
             id: 'overview', label: 'ws.fed.overview', items: [
-                { id: 'fed-dashboard', path: '/', label: 'ws.fed.dashboard', icon: 'Dashboard' },
+                { id: 'fed-dashboard', path: '/dashboard', label: 'ws.fed.dashboard', icon: 'Dashboard' },
                 { id: 'fed-calendar', path: '/calendar', label: 'ws.fed.calendar', icon: 'Calendar' },
                 { id: 'fed-approvals', path: '/fed/approvals', label: 'ws.fed.approvals', icon: 'CheckSquare' },
             ],
@@ -70,6 +70,15 @@ const FEDERATION_SIDEBAR: WorkspaceSidebarConfig = {
                 { id: 'fed-community', path: '/community', label: 'ws.fed.news', icon: 'Heart' },
                 { id: 'fed-groups', path: '/community/groups', label: 'ws.fed.groups', icon: 'Users' },
                 { id: 'fed-events', path: '/community/events', label: 'ws.fed.events', icon: 'Calendar' },
+            ],
+        },
+        {
+            id: 'admin', label: 'ws.fed.admin', items: [
+                { id: 'fed-refdata', path: '/fed/master-data', label: 'ws.fed.masterData', icon: 'Database' },
+                { id: 'fed-docs', path: '/fed/documents', label: 'ws.fed.documents', icon: 'FileText' },
+                { id: 'fed-certifications-mgmt', path: '/fed/certifications', label: 'ws.fed.certifications', icon: 'Award' },
+                { id: 'fed-notif', path: '/fed/notifications', label: 'ws.fed.notifications', icon: 'Bell' },
+                { id: 'fed-workflow', path: '/fed/workflow-config', label: 'ws.fed.workflow', icon: 'GitMerge' },
             ],
         },
     ],
@@ -134,14 +143,14 @@ const TOURNAMENT_SIDEBAR: WorkspaceSidebarConfig = {
     groups: [
         {
             id: 'overview', label: 'ws.tourn.overview', items: [
-                { id: 'tourn-dashboard', path: '/', label: 'ws.tourn.dashboard', icon: 'Dashboard' },
+                { id: 'tourn-dashboard', path: '/giai-dau', label: 'ws.tourn.dashboard', icon: 'Dashboard' },
                 { id: 'tourn-mgmt', path: '/giai-dau/quan-ly', label: 'ws.tourn.mgmtDashboard', icon: 'LayoutDashboard' },
                 { id: 'tourn-statistics', path: '/giai-dau/thong-ke', label: 'ws.tourn.statistics', icon: 'BarChart2' },
             ],
         },
         {
             id: 'setup', label: 'ws.tourn.setup', items: [
-                { id: 'tourn-config', path: '/giai-dau', label: 'ws.tourn.config', icon: 'Trophy' },
+                { id: 'tourn-config', path: '/tournament-config', label: 'ws.tourn.config', icon: 'Trophy' },
                 { id: 'tourn-categories-mgmt', path: '/giai-dau/noi-dung', label: 'ws.tourn.categoriesMgmt', icon: 'LayoutList' },
                 { id: 'tourn-categories', path: '/noi-dung', label: 'ws.tourn.categories', icon: 'List' },
                 { id: 'tourn-arenas', path: '/san-dau', label: 'ws.tourn.arenas', icon: 'LayoutGrid' },
@@ -187,7 +196,7 @@ const CLUB_SIDEBAR: WorkspaceSidebarConfig = {
     groups: [
         {
             id: 'overview', label: 'ws.club.overview', items: [
-                { id: 'club-dashboard', path: '/', label: 'ws.club.dashboard', icon: 'Dashboard' },
+                { id: 'club-dashboard', path: '/club', label: 'ws.club.dashboard', icon: 'Dashboard' },
             ],
         },
         {
@@ -233,7 +242,7 @@ const REFEREE_SIDEBAR: WorkspaceSidebarConfig = {
     groups: [
         {
             id: 'overview', label: 'ws.ref.overview', items: [
-                { id: 'ref-dashboard', path: '/', label: 'ws.ref.dashboard', icon: 'Dashboard' },
+                { id: 'ref-dashboard', path: '/referee-scoring', label: 'ws.ref.dashboard', icon: 'Dashboard' },
             ],
         },
         {
@@ -322,30 +331,33 @@ const SYSADMIN_SIDEBAR: WorkspaceSidebarConfig = {
     type: 'system_admin',
     groups: [
         {
-            id: 'overview', label: 'ws.sys.overview', items: [
-                { id: 'sys-dashboard', path: '/admin', label: 'ws.sys.dashboard', icon: 'Dashboard' },
+            id: 'analytics', label: 'ws.sys.analytics', items: [
+                { id: 'sys-dashboard', path: '/admin', label: 'ws.sys.platformAnalytics', icon: 'BarChart2' },
+            ],
+        },
+        {
+            id: 'tenants', label: 'ws.sys.tenants', items: [
+                { id: 'sys-tenants', path: '/admin/tenants', label: 'ws.sys.tenantMgmt', icon: 'Building' },
+                { id: 'sys-users', path: '/admin/users', label: 'ws.sys.users', icon: 'Users' },
             ],
         },
         {
             id: 'access', label: 'ws.sys.access', items: [
-                { id: 'sys-users', path: '/admin/users', label: 'ws.sys.users', icon: 'Users' },
                 { id: 'sys-roles', path: '/admin/roles', label: 'ws.sys.roles', icon: 'Shield' },
-            ],
-        },
-        {
-            id: 'config', label: 'ws.sys.config', items: [
-                { id: 'sys-refdata', path: '/admin/reference-data', label: 'ws.sys.refdata', icon: 'Database' },
                 { id: 'sys-flags', path: '/admin/feature-flags', label: 'ws.sys.flags', icon: 'Flag' },
-                { id: 'sys-documents', path: '/admin/documents', label: 'ws.sys.documents', icon: 'FileText' },
             ],
         },
         {
-            id: 'monitoring', label: 'ws.sys.monitoring', items: [
-                { id: 'sys-data-quality', path: '/admin/data-quality', label: 'ws.sys.dataQuality', icon: 'BarChart2' },
-                { id: 'sys-integrity', path: '/admin/integrity', label: 'ws.sys.integrity', icon: 'ShieldCheck' },
-                { id: 'sys-notifications', path: '/admin/notifications', label: 'ws.sys.notifications', icon: 'Bell' },
-                { id: 'sys-audit', path: '/admin/audit-logs', label: 'ws.sys.audit', icon: 'FileText' },
+            id: 'platform', label: 'ws.sys.platformConfig', items: [
                 { id: 'sys-health', path: '/admin/system', label: 'ws.sys.health', icon: 'Activity' },
+                { id: 'sys-notifications', path: '/admin/notifications', label: 'ws.sys.notifications', icon: 'Bell' },
+            ],
+        },
+        {
+            id: 'security', label: 'ws.sys.security', items: [
+                { id: 'sys-integrity', path: '/admin/integrity', label: 'ws.sys.integrity', icon: 'ShieldCheck' },
+                { id: 'sys-data-quality', path: '/admin/data-quality', label: 'ws.sys.dataQuality', icon: 'Activity' },
+                { id: 'sys-audit', path: '/admin/audit-logs', label: 'ws.sys.audit', icon: 'FileText' },
             ],
         },
     ],

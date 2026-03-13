@@ -1,0 +1,47 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "target": "es5",
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "noEmit": true,
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "jsx": "react-jsx",
+    "incremental": true,
+    "typeRoots": [
+      "../../node_modules/@types"
+    ],
+    "baseUrl": ".",
+    "paths": {
+      "app/*": [
+        "./*"
+      ],
+      "@vct/shared-types": [
+        "../shared-types/src/index.ts"
+      ],
+      "@vct/shared-utils": [
+        "../shared-utils/src/index.ts"
+      ],
+      "@vct/ui": [
+        "../ui/src/index.ts"
+      ]
+    }
+  },
+  "include": [
+    "rnw-overrides.d.ts",
+    "**/*.ts",
+    "**/*.tsx"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
+}

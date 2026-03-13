@@ -106,6 +106,39 @@ All reusable components live in `packages/app/features/components/` and are expo
 | `VCT_CommandPalette` | Keyboard-driven command |
 | `VCT_QRCode` / `VCT_QRScanner` | QR functionality |
 
+### VCT_Drawer (Admin Detail Panel)
+```tsx
+// Used extensively in admin pages for detail panels
+<VCT_Drawer
+  open={!!selectedItem}
+  onClose={() => setSelectedItem(null)}
+  title={selectedItem?.name}
+  width="480px"  // Default width for detail panels
+>
+  {/* Header with avatar/icon */}
+  <VCT_InfoGrid data={infoFields} />
+  
+  {/* Activity timeline */}
+  <VCT_Timeline events={activityLog} />
+  
+  {/* Action buttons */}
+  <div className="drawer-actions">
+    <VCT_Button variant="primary">{t('actions.edit')}</VCT_Button>
+    <VCT_Button variant="danger">{t('actions.delete')}</VCT_Button>
+  </div>
+</VCT_Drawer>
+```
+
+### Admin Page Design Pattern
+```
+Admin pages follow Table + Drawer pattern:
+1. Page header: title, description, search bar, action buttons
+2. Stats row: 3-4 VCT_StatBlock cards showing key metrics
+3. Data table: sortable columns, row click → opens Drawer
+4. Drawer: detail panel with InfoGrid, Timeline, action buttons
+5. Pagination: usePagination hook for client-side paging
+```
+
 ### Chart Components
 | Component | Usage |
 |-----------|-------|

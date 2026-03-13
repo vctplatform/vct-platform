@@ -52,25 +52,39 @@ Each feature lives in `packages/app/features/{module}/`:
 
 ```
 features/
+├── admin/             # Admin workspace (users, roles, system, docs, integrity)
 ├── athletes/          # Athlete management
 ├── auth/              # Login, registration, auth state
+├── calendar/          # Calendar & scheduling
 ├── club/              # Club internal management
+├── clubs/             # Club directory (public-facing)
 ├── community/         # Community features
 ├── dashboard/         # Admin dashboard
+├── data/              # Shared data/constants
 ├── federation/        # National federation
 ├── finance/           # Finance module
 ├── heritage/          # Belt ranking, techniques
+├── home/              # Home/landing page
+├── hooks/             # 18 shared hooks (API, pagination, toast, etc.)
+├── i18n/              # Internationalization
 ├── layout/            # AppShell, Sidebar, Header
+├── mobile/            # Mobile-specific screens
+├── notifications/     # Notification system
+├── organizations/     # Organization management
 ├── parent/            # Parent/guardian module
+├── people/            # People directory
 ├── portals/           # Portal hub
 ├── provincial/        # Provincial federation
 ├── public/            # Public-facing pages (unauthenticated)
+├── pwa/               # Progressive Web App config
+├── rankings/          # Rankings & leaderboards
+├── reporting/         # Reports & analytics
+├── settings/          # User settings
+├── theme/             # Theme system
 ├── tournament/        # Tournament management
 ├── training/          # Training programs
-├── components/        # Shared UI components (VCT_*)
-├── hooks/             # Shared hooks
-├── i18n/              # Internationalization
-└── theme/             # Theme system
+├── user/              # User profile & detail
+└── components/        # Shared UI components (VCT_*)
 ```
 
 ---
@@ -122,7 +136,12 @@ apps/next/pages/
 
 ### API Base URL
 ```env
+# Local development
 NEXT_PUBLIC_API_BASE_URL=http://localhost:18080
+# Production (Vercel) — set in Vercel dashboard
+NEXT_PUBLIC_API_BASE_URL=https://vct-platform-api.fly.dev
+# Staging (Render)
+NEXT_PUBLIC_API_BASE_URL=https://vct-platform-api.onrender.com
 ```
 
 ### Standard Fetch Pattern
@@ -267,35 +286,103 @@ When creating a new feature:
 
 ---
 
-## 10. Advanced Data Fetching (SWR)
+## 10. Custom Hooks Catalog
 
+18 hooks in `packages/app/features/hooks/`:
+
+| Hook | Purpose |
+|------|---------|
+| `useAdminAPI` | Admin CRUD (users, roles, system, docs) |
+| `useApiQuery` | Generic API fetching with loading/error |
+| `useCalendarAPI` | Calendar events |
+| `useClubAPI` | Club management |
+| `useCommunityAPI` | Community features |
+| `useFederationAPI` | Federation PR, international, workflow |
+| `useFinanceAPI` | Finance & billing |
+| `useHeritageAPI` | Belt ranking & techniques |
+| `useNotificationAPI` | Notification CRUD |
+| `usePagination` | Client-side pagination logic |
+| `usePeopleAPI` | People directory |
+| `usePublicAPI` | Public (unauthenticated) data |
+| `useRankingsAPI` | Rankings & leaderboards |
+| `useRealtimeNotifications` | WebSocket notification stream |
+| `useTrainingAPI` | Training programs |
+| `useWebSocket` | Raw WebSocket connection |
+| `useRouteActionGuard` | Route-level permission checks |
+| `useToast` | Toast notification system |
+
+### Usage Pattern
 ```tsx
-import useSWR from 'swr'
+import { useAdminAPI } from '../hooks/useAdminAPI'
 
-const fetcher = (url: string) => apiCall(url)
+function Page_admin_users() {
+  const { users, loading, error, refetch } = useAdminAPI().useUsers()
 
-function Page_athletes() {
-  const { data, error, isLoading, mutate } = useSWR('/api/v1/athletes/', fetcher)
+  if (loading) return <VCT_PageSkeleton />
+  if (error) return <ErrorBanner message={error} onRetry={refetch} />
 
-  if (isLoading) return <VCT_PageSkeleton />
-  if (error) return <ErrorBanner message={error.message} onRetry={() => mutate()} />
-
-  return <AthleteTable data={data} />
+  return <UserTable data={users} />
 }
 ```
 
-### SWR Benefits
-- Automatic request deduplication
-- Built-in cache + revalidation
-- Focus/reconnect revalidation
-- Optimistic UI support via `mutate()`
+---
+
+## 11. Admin Workspace Patterns
+
+Admin pages in `packages/app/features/admin/` follow a **Table + Drawer Detail** pattern:
+
+```
+┌──────────────────────────────────────────────────────┐
+│ Page Header (title, search, filters, action buttons) │
+├──────────────────────────────────────────────────────┤
+│ Data Table (sortable, paginated)                     │
+│   Row → onClick → opens Drawer ─────────────────────►│
+│                                    ┌────────────────┐│
+│                                    │ VCT_Drawer     ││
+│                                    │ Detail Panel   ││
+│                                    │ (user info,    ││
+│                                    │  timeline,     ││
+│                                    │  actions)      ││
+│                                    └────────────────┘│
+└──────────────────────────────────────────────────────┘
+```
+
+### Admin Pages:
+| Page | File | Features |
+|------|------|---------|
+| Users | `Page_admin_users.tsx` | Data table, search, Drawer detail |
+| User Detail | `Page_admin_user_detail.tsx` | Profile, timeline, skeleton loading |
+| Roles | `Page_admin_roles.tsx` | Role matrix, permissions |
+| System | `Page_admin_system.tsx` | Health, config, metrics |
+| Documents | `Page_documents.tsx` | Doc management, Drawer preview |
+| Integrity | `Page_integrity.tsx` | Data integrity checks |
+| Notifications | `Page_notifications_admin.tsx` | Notification center, Drawer |
+| Data Quality | `Page_data_quality.tsx` | Quality metrics, validation |
+| Audit Logs | `Page_audit_logs.tsx` | Activity audit trail |
+| Feature Flags | `Page_admin_feature_flags.tsx` | Toggle features |
+| Reference Data | `Page_admin_reference_data.tsx` | Master data management |
+
+### Drawer Detail Pattern
+```tsx
+const [selectedItem, setSelectedItem] = useState<Item | null>(null)
+
+<VCT_Drawer
+  open={!!selectedItem}
+  onClose={() => setSelectedItem(null)}
+  title={selectedItem?.name}
+>
+  <VCT_InfoGrid data={[
+    { label: t('admin.field'), value: selectedItem?.field },
+  ]} />
+  <VCT_Timeline events={selectedItem?.history} />
+</VCT_Drawer>
+```
 
 ---
 
-## 11. Form Validation
+## 12. Form Validation
 
 ```tsx
-// Inline validation pattern (no external lib needed)
 function validateForm(data: CreateAthleteInput): Record<string, string> {
   const errors: Record<string, string> = {}
   if (!data.name.trim()) errors.name = t('validation.required')
@@ -303,34 +390,19 @@ function validateForm(data: CreateAthleteInput): Record<string, string> {
   if (!data.club_id) errors.club_id = t('validation.select_club')
   return errors
 }
-
-// Usage
-const [errors, setErrors] = useState<Record<string, string>>({})
-const handleSubmit = () => {
-  const validation = validateForm(formData)
-  if (Object.keys(validation).length > 0) {
-    setErrors(validation)
-    return
-  }
-  // Proceed with API call
-}
 ```
 
 ---
 
-## 12. Optimistic UI
+## 13. Optimistic UI
 
 ```tsx
 const handleDelete = async (id: string) => {
-  // 1. Optimistically remove from local state
   setItems(prev => prev.filter(i => i.id !== id))
-
   try {
-    // 2. Send request to backend
     await apiCall(`/api/v1/entity/${id}`, { method: 'DELETE' })
   } catch {
-    // 3. Rollback on failure
-    mutate()  // Re-fetch from server
+    mutate()  // Re-fetch on failure
     toast.error(t('error.delete_failed'))
   }
 }

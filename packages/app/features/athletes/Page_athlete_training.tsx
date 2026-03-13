@@ -62,8 +62,8 @@ function StatCard({ icon, label, value, color, sub }: { icon: React.ReactNode; l
 /* ── Session Card ─────────────────────────────────────────── */
 
 function SessionCard({ session }: { session: TrainingSession }) {
-    const typeInfo = SESSION_TYPE_LABELS[session.type] || SESSION_TYPE_LABELS.regular
-    const statusInfo = STATUS_CONFIG[session.status] || STATUS_CONFIG.scheduled
+    const typeInfo = (SESSION_TYPE_LABELS[session.type] || SESSION_TYPE_LABELS.regular)!
+    const statusInfo = (STATUS_CONFIG[session.status] || STATUS_CONFIG.scheduled)!
 
     return (
         <div className="p-3.5 rounded-xl border border-vct-border bg-vct-elevated hover:border-vct-border-strong transition-all group cursor-default">
@@ -107,7 +107,7 @@ export function Page_athlete_training() {
         if (sessions) {
             for (const s of sessions) {
                 if (!map[s.date]) map[s.date] = []
-                map[s.date].push(s)
+                map[s.date]!.push(s)
             }
         }
         return map
@@ -115,8 +115,8 @@ export function Page_athlete_training() {
 
     const weekLabel = useMemo(() => {
         if (weekDates.length < 2) return ''
-        const start = weekDates[0]
-        const end = weekDates[6]
+        const start = weekDates[0]!
+        const end = weekDates[6]!
         return `${start.getDate()}/${start.getMonth() + 1} – ${end.getDate()}/${end.getMonth() + 1}/${end.getFullYear()}`
     }, [weekDates])
 
@@ -303,8 +303,8 @@ export function Page_athlete_training() {
                                     ) : (
                                         <div className="space-y-1.5">
                                             {daySessions.map(s => {
-                                                const t = SESSION_TYPE_LABELS[s.type]
-                                                const st = STATUS_CONFIG[s.status]
+                                                const t = (SESSION_TYPE_LABELS[s.type] || SESSION_TYPE_LABELS.regular)!
+                                                const st = (STATUS_CONFIG[s.status] || STATUS_CONFIG.scheduled)!
                                                 return (
                                                     <div key={s.id} className="p-1.5 rounded-lg text-[10px] border transition-all hover:scale-[1.02]"
                                                         style={{ borderColor: `${t.color}30`, background: `${t.color}08` }}>
@@ -355,7 +355,7 @@ export function Page_athlete_training() {
                 >
                     <div className="space-y-3">
                         {Object.entries(stats.by_type).map(([type, count]) => {
-                            const info = SESSION_TYPE_LABELS[type] || SESSION_TYPE_LABELS.regular
+                            const info = (SESSION_TYPE_LABELS[type] || SESSION_TYPE_LABELS.regular)!
                             const pct = stats.total_sessions > 0 ? (count / stats.total_sessions) * 100 : 0
                             return (
                                 <div key={type} className="flex items-center gap-3">

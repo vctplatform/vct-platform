@@ -194,6 +194,17 @@ services:
   nats:        port 4222 — Message queue
 ```
 
+### Production Environment (Actual)
+| Layer | Platform | URL |
+|-------|----------|-----|
+| **Frontend** | Vercel | `vct-platform.vercel.app` |
+| **Backend (staging)** | Render | `vct-platform-api.onrender.com` |
+| **Backend (prod)** | Fly.io | `vct-platform-api.fly.dev` |
+| **Database** | Neon PostgreSQL | Managed |
+| **Cache** | Upstash Redis | Managed |
+
+> 📋 Xem workflow `/deploy-production` cho chi tiết triển khai.
+
 ### Environment Configuration Hierarchy
 ```
 .env.example          → Template (committed)
@@ -322,3 +333,6 @@ Every CTO output must include:
 | Priority of tech debt | → **PO** for backlog ordering |
 | Timeline for fixes | → **PM** for sprint capacity |
 | New module design | → **SA** for architecture + **BA** for requirements |
+| Deploy to production | → Workflow `/deploy-production` |
+| Debug common errors | → Workflow `/debug-common-errors` |
+| Create admin page | → Workflow `/admin-page` |

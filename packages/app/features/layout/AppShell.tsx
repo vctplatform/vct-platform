@@ -22,7 +22,7 @@ import {
   isRouteAccessible,
   getPageTitle,
 } from './route-registry'
-import { getFilteredSidebar } from './workspace-resolver'
+import { getFilteredSidebar, resolveWorkspacesForUser } from './workspace-resolver'
 import { WORKSPACE_META } from './workspace-types'
 
 
@@ -183,6 +183,7 @@ const ShellLayout = ({ children }: { children: React.ReactNode }) => {
     isHydrating,
     logout,
     activeWorkspace,
+    setActiveWorkspace,
   } = useAuth()
   const [viewportMode, setViewportMode] = useState<ViewportMode>('desktop')
   const [mobileNavOpen, setMobileNavOpen] = useState(false)
@@ -239,6 +240,31 @@ const ShellLayout = ({ children }: { children: React.ReactNode }) => {
     }
     return getSidebarGroups(currentUser.role)
   }, [activeWorkspace, currentUser])
+
+  const userWorkspaces = useMemo(
+    () => resolveWorkspacesForUser(currentUser),
+    [currentUser]
+  )
+
+  const handleSwitchWorkspace = React.useCallback(
+    (ws: typeof userWorkspaces[number]) => {
+      setActiveWorkspace(ws)
+      // Navigate to workspace dashboard
+      const dashboardPaths: Record<string, string> = {
+        system_admin: '/admin',
+        federation_admin: '/dashboard',
+        tournament_ops: '/giai-dau',
+        club_management: '/club',
+        referee_console: '/referee-scoring',
+        athlete_portal: '/athlete-portal',
+        public_spectator: '/scoreboard',
+        federation_provincial: '/province/dashboard',
+        federation_discipline: '/discipline/dashboard',
+      }
+      router.push(dashboardPaths[ws.type] ?? '/dashboard')
+    },
+    [setActiveWorkspace, router]
+  )
 
   const currentNavMatch = useMemo(
     () => findCurrentNavMatch(navigationGroups, pathname),
@@ -447,6 +473,9 @@ const ShellLayout = ({ children }: { children: React.ReactNode }) => {
           roleLabel={roleLabel}
           navGroups={navigationGroups}
           workspaceLabel={activeWorkspace ? t(activeWorkspace.scopeName) : undefined}
+          workspaces={userWorkspaces}
+          currentWorkspaceType={activeWorkspace?.type}
+          onSwitchWorkspace={handleSwitchWorkspace}
         />
 
         {compactNavigation && mobileNavOpen && (

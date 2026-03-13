@@ -47,10 +47,37 @@ backend/
 │   ├── events/             # Domain event bus
 │   ├── realtime/           # WebSocket hub
 │   └── pkg/                # Shared packages
-├── migrations/             # SQL migrations (0001–0036)
+├── migrations/             # SQL migrations (0001–0036+)
 ├── go.mod                  # Go 1.26, pgx/v5, gorilla/websocket, golang-jwt/v5
 └── Dockerfile
 ```
+
+### Domain Modules Catalog (23 modules)
+| Module | Description | Key Entities |
+|--------|-------------|-------------|
+| `athlete` | VĐV management | Athlete, BeltHistory |
+| `auth` | Authentication + RBAC | User, Session, Role |
+| `club` | CLB management | Club, Membership |
+| `tournament` | Giải đấu management | Tournament, Category, Match |
+| `bracket` | Bracket/draw generation | Bracket, BracketMatch |
+| `finance` | Tài chính | Payment, Invoice, Budget |
+| `registration` | Đăng ký giải | Registration, Entry |
+| `score` | Chấm điểm live | ScoreEntry, ScoreResult |
+| `coach` | HLV management | Coach, CoachAssignment |
+| `referee` | Trọng tài management | Referee, RefAssignment |
+| `venue` | Địa điểm thi đấu | Venue, Tatami, Schedule |
+| `belt` | Đai hạng management | Belt, BeltExam |
+| `activity_log` | Audit trail | ActivityLog |
+| `notification` | Thông báo | Notification, Template |
+| `federation` | Liên đoàn management | Federation, Member |
+| `discipline` | Bộ môn/nội dung | Discipline, DisciplineRule |
+| `certification` | Chứng chỉ | Certificate, IssuedCert |
+| `approval` | Phê duyệt workflow | ApprovalRequest, ApprovalStep |
+| `international` | Quan hệ quốc tế | IntlEvent, Delegation |
+| `organization` | Tổ chức nội bộ | OrgUnit, OrgMember |
+| `orchestrator` | Module coordination | Orchestrator |
+| `report` | Báo cáo tổng hợp | Report, DataExport |
+| `media` | Ảnh/video management | Media, MediaGallery |
 
 ### Clean Architecture Layers
 ```

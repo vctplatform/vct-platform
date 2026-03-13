@@ -4,6 +4,11 @@
     "esModuleInterop": true,
     "strictNullChecks": true,
     "noUncheckedIndexedAccess": true,
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
     "paths": {
       "app/*": [
         "./packages/app/*"
@@ -17,5 +22,16 @@
     },
     "baseUrl": ".",
     "jsx": "react-jsx"
-  }
+  },
+  "include": [
+    "packages/app/rnw-overrides.d.ts",
+    "packages/**/*.ts",
+    "packages/**/*.tsx",
+    "apps/**/*.ts",
+    "apps/**/*.tsx"
+  ],
+  "exclude": [
+    "node_modules",
+    "**/node_modules"
+  ]
 }

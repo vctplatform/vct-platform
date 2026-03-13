@@ -15,6 +15,17 @@ export default [
     },
     rules: {
       '@next/next/no-html-link-for-pages': 'off',
+
+      // ── Stricter rules ─────────────────────────────────
+      'no-console': ['warn', { allow: ['warn', 'error'] }],
+      '@typescript-eslint/no-unused-vars': [
+        'warn',
+        {
+          argsIgnorePattern: '^_',
+          varsIgnorePattern: '^_',
+          caughtErrorsIgnorePattern: '^_',
+        },
+      ],
     },
   },
   {

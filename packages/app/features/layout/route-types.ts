@@ -56,6 +56,7 @@ export type RouteId =
     | 'reports'
     | 'community'
     | 'admin-dashboard'
+    | 'admin-tenants'
     | 'audit-logs'
     | 'people'
     | 'user-detail'

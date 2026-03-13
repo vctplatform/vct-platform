@@ -4,6 +4,7 @@ import * as React from 'react'
 import { useState, useMemo, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { AnimatePresence } from 'framer-motion'
+import { usePagination } from '../hooks/usePagination'
 import {
     VCT_Badge, VCT_Button, VCT_Stack, VCT_Toast,
     VCT_SearchInput, VCT_Modal, VCT_Input, VCT_Field, VCT_Select,
@@ -12,6 +13,9 @@ import {
 } from '../components/vct-ui'
 import type { StatItem } from '../components/VCT_StatRow'
 import { VCT_Icons } from '../components/vct-icons'
+import { VCT_Drawer } from '../components/VCT_Drawer'
+import { VCT_Timeline } from '../components/VCT_Timeline'
+import type { TimelineEvent } from '../components/VCT_Timeline'
 import {
     ROLE_OPTIONS,
     ROLE_COLORS,
@@ -27,8 +31,29 @@ import {
 const BLANK_FORM = { name: '', email: '', phone: '', role: 'VIEWER', scope: '' }
 
 // ════════════════════════════════════════
+// SKELETON ROW
+// ════════════════════════════════════════
+const SkeletonRow = () => (
+    <tr>
+        {[...Array(7)].map((_, j) => (
+            <td key={j} style={{ padding: '14px 16px' }}>
+                <div className="h-4 bg-[var(--vct-bg-elevated)] rounded animate-pulse" style={{ width: `${50 + Math.random() * 50}%` }} />
+            </td>
+        ))}
+    </tr>
+)
+
+// ════════════════════════════════════════
 // MAIN COMPONENT
 // ════════════════════════════════════════
+const MOCK_LOGIN_HISTORY: TimelineEvent[] = [
+    { time: '2 phút trước', title: 'Đăng nhập thành công', description: 'IP: 192.168.1.100 · Chrome 120 · Windows', color: '#10b981' },
+    { time: '3 giờ trước', title: 'Đăng xuất', description: 'Phiên kết thúc bình thường', color: '#94a3b8' },
+    { time: 'Hôm qua 14:30', title: 'Đăng nhập thành công', description: 'IP: 10.0.0.55 · Safari · macOS', color: '#10b981' },
+    { time: 'Hôm qua 09:15', title: 'Đổi mật khẩu', description: 'Mật khẩu được cập nhật thành công', color: '#f59e0b' },
+    { time: '3 ngày trước', title: 'Đăng nhập thất bại', description: 'IP: 45.67.89.12 · Sai mật khẩu 2 lần', color: '#ef4444' },
+]
+
 export const Page_admin_users = () => {
     const router = useRouter()
     const [users, setUsers] = useState<SystemUser[]>(MOCK_USERS)
@@ -40,6 +65,13 @@ export const Page_admin_users = () => {
     const [editingUser, setEditingUser] = useState<SystemUser | null>(null)
     const [deleteTarget, setDeleteTarget] = useState<SystemUser | null>(null)
     const [form, setForm] = useState<any>({ ...BLANK_FORM })
+    const [isLoading, setIsLoading] = useState(true)
+    const [drawerUser, setDrawerUser] = useState<SystemUser | null>(null)
+
+    React.useEffect(() => {
+        const t = setTimeout(() => setIsLoading(false), 800)
+        return () => clearTimeout(t)
+    }, [])
 
     const showToast = useCallback((msg: string, type = 'success') => {
         setToast({ show: true, msg, type })
@@ -56,6 +88,8 @@ export const Page_admin_users = () => {
         return data
     }, [users, roleFilter, search])
 
+    const pagination = usePagination(filtered, { pageSize: 5 })
+
     const openAddModal = useCallback(() => {
         setEditingUser(null)
         setForm({ ...BLANK_FORM })
@@ -68,9 +102,9 @@ export const Page_admin_users = () => {
         setShowModal(true)
     }, [])
 
-    const openUserDetail = useCallback((userId: string) => {
-        router.push(`/users/${userId}`)
-    }, [router])
+    const openUserDetail = useCallback((user: SystemUser) => {
+        setDrawerUser(user)
+    }, [])
 
     const handleSave = () => {
         if (!form.name || !form.email) { showToast('Vui lòng nhập họ tên và email', 'error'); return }
@@ -133,7 +167,15 @@ export const Page_admin_users = () => {
                     <p className="text-sm text-[var(--vct-text-secondary)] mt-1">Quản lý người dùng, phân quyền và trạng thái tài khoản trong hệ thống.</p>
                 </div>
                 <VCT_Stack direction="row" gap={12}>
-                    <VCT_Button variant="outline" icon={<VCT_Icons.Download size={16} />}>Xuất Excel</VCT_Button>
+                    <VCT_Button variant="outline" icon={<VCT_Icons.Download size={16} />} onClick={() => {
+                        const header = 'ID,Tên,Email,SĐT,Vai trò,Phạm vi,Trạng thái,Đăng nhập cuối'
+                        const csv = [header, ...filtered.map(u => `${u.id},${u.name},${u.email},${u.phone},${getRoleLabel(u.role)},${u.scope},${u.status},${u.last_login}`)].join('\n')
+                        const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' })
+                        const url = URL.createObjectURL(blob)
+                        const a = document.createElement('a'); a.href = url; a.download = `vct_users_${new Date().toISOString().slice(0, 10)}.csv`; a.click()
+                        URL.revokeObjectURL(url)
+                        showToast('Đã xuất file Excel thành công!')
+                    }}>Xuất Excel</VCT_Button>
                     <VCT_Button icon={<VCT_Icons.Plus size={16} />} onClick={openAddModal}>Thêm Tài Khoản</VCT_Button>
                 </VCT_Stack>
             </div>
@@ -162,7 +204,23 @@ export const Page_admin_users = () => {
             </div>
 
             {/* ── TABLE ── */}
-            {filtered.length === 0 ? (
+            {isLoading ? (
+                <div className="overflow-hidden rounded-2xl border border-[var(--vct-border-subtle)] bg-[var(--vct-bg-glass)]">
+                    <table className="w-full border-collapse">
+                        <thead>
+                            <tr className="border-b border-[var(--vct-border-strong)] bg-[var(--vct-bg-card)]">
+                                <th style={{ padding: '14px 16px', width: 40 }} />
+                                {['Người dùng', 'Vai trò', 'Phạm vi', 'Trạng thái', 'Đăng nhập cuối', ''].map((h, i) => (
+                                    <th key={i} style={{ padding: '14px 16px', fontSize: 11, fontWeight: 700, textTransform: 'uppercase', opacity: 0.5, textAlign: i === 3 ? 'center' : 'left' }}>{h}</th>
+                                ))}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {[...Array(5)].map((_, i) => <SkeletonRow key={i} />)}
+                        </tbody>
+                    </table>
+                </div>
+            ) : filtered.length === 0 ? (
                 <VCT_EmptyState title="Không tìm thấy tài khoản" description="Thử thay đổi bộ lọc hoặc từ khóa." actionLabel="Thêm tài khoản" onAction={openAddModal} icon="👤" />
             ) : (
                 <div className="overflow-hidden rounded-2xl border border-[var(--vct-border-subtle)] bg-[var(--vct-bg-glass)]">
@@ -178,7 +236,7 @@ export const Page_admin_users = () => {
                             </tr>
                         </thead>
                         <tbody>
-                            {filtered.map((user, idx) => (
+                            {pagination.paginatedItems.map((user, idx) => (
                                 <tr key={user.id} className="group" style={{ borderBottom: '1px solid var(--vct-border-subtle)', background: selectedIds.has(user.id) ? 'rgba(34, 211, 238, 0.05)' : idx % 2 === 0 ? 'transparent' : 'rgba(128,128,128,0.02)' }}>
                                     <td style={{ padding: '14px 16px', textAlign: 'center' }}>
                                         <input type="checkbox" checked={selectedIds.has(user.id)} onChange={() => toggleSelect(user.id)} style={{ width: 16, height: 16, accentColor: '#22d3ee' }} />
@@ -189,7 +247,7 @@ export const Page_admin_users = () => {
                                             <div>
                                                 <button
                                                     type="button"
-                                                    onClick={() => openUserDetail(user.id)}
+                                                    onClick={() => openUserDetail(user)}
                                                     className="text-left text-[13px] font-bold text-[var(--vct-text-primary)] transition-colors hover:text-[var(--vct-accent-cyan)]"
                                                 >
                                                     {user.name}
@@ -212,7 +270,7 @@ export const Page_admin_users = () => {
                                     </td>
                                     <td style={{ padding: '14px 16px', textAlign: 'right' }}>
                                         <VCT_Stack direction="row" gap={4} justify="flex-end">
-                                            <button type="button" onClick={() => openUserDetail(user.id)} className="p-1.5 text-[var(--vct-text-tertiary)] hover:text-white opacity-0 group-hover:opacity-100 transition-all rounded-md hover:bg-white/10"><VCT_Icons.Eye size={16} /></button>
+                                            <button type="button" onClick={() => openUserDetail(user)} className="p-1.5 text-[var(--vct-text-tertiary)] hover:text-white opacity-0 group-hover:opacity-100 transition-all rounded-md hover:bg-white/10"><VCT_Icons.Eye size={16} /></button>
                                             <button type="button" onClick={() => openEditModal(user)} className="p-1.5 text-[var(--vct-text-tertiary)] hover:text-white opacity-0 group-hover:opacity-100 transition-all rounded-md hover:bg-white/10"><VCT_Icons.Edit size={16} /></button>
                                             <button type="button" onClick={() => setDeleteTarget(user)} className="p-1.5 text-[#ef4444] opacity-0 group-hover:opacity-100 transition-all rounded-md hover:bg-[#ef444420]"><VCT_Icons.Trash size={16} /></button>
                                         </VCT_Stack>
@@ -221,6 +279,18 @@ export const Page_admin_users = () => {
                             ))}
                         </tbody>
                     </table>
+                    {pagination.totalPages > 1 && (
+                        <div className="flex items-center justify-between px-4 py-3 border-t border-[var(--vct-border-subtle)]">
+                            <span className="text-xs text-[var(--vct-text-tertiary)]">
+                                Hiển thị {(pagination.currentPage - 1) * pagination.pageSize + 1}–{Math.min(pagination.currentPage * pagination.pageSize, pagination.totalItems)} / {pagination.totalItems}
+                            </span>
+                            <div className="flex gap-2">
+                                <button onClick={pagination.prev} disabled={!pagination.hasPrev} className="px-3 py-1 text-xs rounded-lg bg-[var(--vct-bg-elevated)] text-[var(--vct-text-secondary)] disabled:opacity-30 hover:bg-[var(--vct-bg-base)] transition-colors">← Trước</button>
+                                <span className="px-3 py-1 text-xs text-[var(--vct-text-tertiary)]">{pagination.currentPage}/{pagination.totalPages}</span>
+                                <button onClick={pagination.next} disabled={!pagination.hasNext} className="px-3 py-1 text-xs rounded-lg bg-[var(--vct-bg-elevated)] text-[var(--vct-text-secondary)] disabled:opacity-30 hover:bg-[var(--vct-bg-base)] transition-colors">Sau →</button>
+                            </div>
+                        </div>
+                    )}
                 </div>
             )}
 
@@ -253,6 +323,42 @@ export const Page_admin_users = () => {
             <VCT_ConfirmDialog isOpen={!!deleteTarget} onClose={() => setDeleteTarget(null)} onConfirm={handleDelete}
                 title="Vô hiệu hóa tài khoản" message={`Bạn có chắc muốn vô hiệu hóa tài khoản "${deleteTarget?.name}"? Tài khoản sẽ không thể đăng nhập cho đến khi được kích hoạt lại.`}
                 confirmLabel="Vô hiệu hóa" />
+
+            {/* ── USER DETAIL DRAWER ── */}
+            <VCT_Drawer isOpen={!!drawerUser} onClose={() => setDrawerUser(null)} title="Chi tiết tài khoản" width={520} footer={
+                <VCT_Stack direction="row" gap={8} justify="flex-end">
+                    <VCT_Button variant="outline" onClick={() => { if (drawerUser) { openEditModal(drawerUser); setDrawerUser(null) } }}>Chỉnh sửa</VCT_Button>
+                    <VCT_Button variant="outline" onClick={() => drawerUser && router.push(`/admin/users/${drawerUser.id}`)}>Xem trang chi tiết</VCT_Button>
+                </VCT_Stack>
+            }>
+                {drawerUser && (
+                    <div className="space-y-6">
+                        {/* Header */}
+                        <div className="flex items-center gap-4 pb-4 border-b border-[var(--vct-border-subtle)]">
+                            <VCT_AvatarLetter name={drawerUser.name} size={56} />
+                            <div>
+                                <div className="text-lg font-bold text-[var(--vct-text-primary)]">{drawerUser.name}</div>
+                                <div className="text-sm text-[var(--vct-text-secondary)]">{drawerUser.email}</div>
+                                <VCT_Badge text={STATUS_MAP[drawerUser.status]?.label || 'N/A'} type={STATUS_MAP[drawerUser.status]?.type || 'neutral'} />
+                            </div>
+                        </div>
+                        {/* Info Grid */}
+                        <div className="grid grid-cols-2 gap-4 text-sm">
+                            <div><div className="text-[10px] uppercase text-[var(--vct-text-tertiary)] mb-1">ID</div><div className="font-mono text-[var(--vct-accent-cyan)]">{drawerUser.id}</div></div>
+                            <div><div className="text-[10px] uppercase text-[var(--vct-text-tertiary)] mb-1">SĐT</div><div className="text-[var(--vct-text-primary)]">{drawerUser.phone}</div></div>
+                            <div><div className="text-[10px] uppercase text-[var(--vct-text-tertiary)] mb-1">Vai trò</div><span style={{ fontSize: 11, fontWeight: 700, padding: '3px 8px', borderRadius: 6, color: ROLE_COLORS[drawerUser.role] || '#94a3b8', background: `${ROLE_COLORS[drawerUser.role] || '#94a3b8'}15` }}>{getRoleLabel(drawerUser.role)}</span></div>
+                            <div><div className="text-[10px] uppercase text-[var(--vct-text-tertiary)] mb-1">Phạm vi</div><div className="text-[var(--vct-text-primary)]">{drawerUser.scope}</div></div>
+                            <div><div className="text-[10px] uppercase text-[var(--vct-text-tertiary)] mb-1">Đăng nhập cuối</div><div className="text-[var(--vct-text-primary)]">{drawerUser.last_login}</div></div>
+                            <div><div className="text-[10px] uppercase text-[var(--vct-text-tertiary)] mb-1">Ngày tạo</div><div className="text-[var(--vct-text-primary)]">{drawerUser.created_at}</div></div>
+                        </div>
+                        {/* Login History */}
+                        <div>
+                            <h3 className="font-bold text-sm text-[var(--vct-text-primary)] mb-3 flex items-center gap-2"><VCT_Icons.Clock size={14} /> Lịch sử hoạt động</h3>
+                            <VCT_Timeline events={MOCK_LOGIN_HISTORY} maxHeight={280} />
+                        </div>
+                    </div>
+                )}
+            </VCT_Drawer>
         </VCT_PageContainer>
     )
 }

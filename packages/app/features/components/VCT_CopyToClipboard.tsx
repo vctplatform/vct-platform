@@ -30,7 +30,7 @@ export const VCT_CopyToClipboard = ({
     className,
 }: VCTCopyToClipboardProps) => {
     const [copied, setCopied] = React.useState(false)
-    const timerRef = React.useRef<number | undefined>()
+    const timerRef = React.useRef<number | undefined>(undefined)
 
     const handleCopy = async () => {
         try {

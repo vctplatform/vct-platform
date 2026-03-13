@@ -4,7 +4,8 @@ import * as React from 'react'
 import { useState, useMemo, useCallback } from 'react'
 import {
     VCT_Badge, VCT_Button, VCT_Stack, VCT_Toast,
-    VCT_SearchInput, VCT_Tabs, VCT_PageContainer, VCT_StatRow
+    VCT_SearchInput, VCT_Tabs, VCT_PageContainer, VCT_StatRow,
+    VCT_ConfirmDialog, VCT_EmptyState
 } from '../components/vct-ui'
 import type { StatItem } from '../components/VCT_StatRow'
 import { VCT_Icons } from '../components/vct-icons'
@@ -47,6 +48,33 @@ const STATUS_STYLES: Record<string, { label: string; color: string; bgColor: str
 }
 
 // ════════════════════════════════════════
+// SKELETON COMPONENT
+// ════════════════════════════════════════
+const SkeletonFlagCard = () => (
+    <div className="bg-[var(--vct-bg-elevated)] border border-[var(--vct-border-strong)] rounded-2xl p-5 animate-pulse">
+        <div className="flex items-start justify-between gap-4">
+            <div className="flex-1 space-y-3">
+                <div className="flex items-center gap-3">
+                    <div className="h-5 w-40 bg-[var(--vct-bg-card)] rounded" />
+                    <div className="h-4 w-24 bg-[var(--vct-bg-card)] rounded" />
+                </div>
+                <div className="h-4 w-3/4 bg-[var(--vct-bg-card)] rounded" />
+                <div className="flex gap-4">
+                    <div className="h-3 w-20 bg-[var(--vct-bg-card)] rounded" />
+                    <div className="h-3 w-28 bg-[var(--vct-bg-card)] rounded" />
+                    <div className="h-3 w-24 bg-[var(--vct-bg-card)] rounded" />
+                </div>
+            </div>
+            <div className="flex items-center gap-4 shrink-0">
+                <div className="h-5 w-[120px] bg-[var(--vct-bg-card)] rounded" />
+                <div className="h-7 w-14 bg-[var(--vct-bg-card)] rounded-full" />
+            </div>
+        </div>
+        <div className="mt-3 h-1 rounded-full bg-[var(--vct-border-strong)]" />
+    </div>
+)
+
+// ════════════════════════════════════════
 // MAIN COMPONENT
 // ════════════════════════════════════════
 export const Page_admin_feature_flags = () => {
@@ -54,6 +82,13 @@ export const Page_admin_feature_flags = () => {
     const [search, setSearch] = useState('')
     const [moduleFilter, setModuleFilter] = useState('Tất cả')
     const [toast, setToast] = useState({ show: false, msg: '', type: 'success' })
+    const [isLoading, setIsLoading] = useState(true)
+    const [confirmToggle, setConfirmToggle] = useState<FeatureFlag | null>(null)
+
+    React.useEffect(() => {
+        const t = setTimeout(() => setIsLoading(false), 800)
+        return () => clearTimeout(t)
+    }, [])
 
     const showToast = useCallback((msg: string, type = 'success') => {
         setToast({ show: true, msg, type })
@@ -70,14 +105,22 @@ export const Page_admin_feature_flags = () => {
         return data
     }, [flags, moduleFilter, search])
 
-    const toggleFlag = (id: string) => {
+    const doToggle = (flag: FeatureFlag) => {
         setFlags(prev => prev.map(f => {
-            if (f.id !== id) return f
+            if (f.id !== flag.id) return f
             const newStatus = f.status === 'enabled' ? 'disabled' : 'enabled'
             return { ...f, status: newStatus, rollout_pct: newStatus === 'enabled' ? 100 : 0, updated_at: new Date().toLocaleString('vi-VN'), updated_by: 'admin@vct.vn' }
         }))
-        const flag = flags.find(f => f.id === id)
-        showToast(`${flag?.name}: ${flag?.status === 'enabled' ? 'Đã tắt' : 'Đã bật'}`, flag?.status === 'enabled' ? 'warning' : 'success')
+        showToast(`${flag.name}: ${flag.status === 'enabled' ? 'Đã tắt' : 'Đã bật'}`, flag.status === 'enabled' ? 'warning' : 'success')
+    }
+
+    const toggleFlag = (flag: FeatureFlag) => {
+        // Confirm if toggling an enabled critical feature
+        if (flag.status === 'enabled' && flag.scope === 'global') {
+            setConfirmToggle(flag)
+            return
+        }
+        doToggle(flag)
     }
 
     const updateRollout = (id: string, pct: number) => {
@@ -86,6 +129,16 @@ export const Page_admin_feature_flags = () => {
             const status = pct === 0 ? 'disabled' : pct === 100 ? 'enabled' : 'partial'
             return { ...f, rollout_pct: pct, status: status as any, updated_at: new Date().toLocaleString('vi-VN') }
         }))
+    }
+
+    const handleExportCSV = () => {
+        const header = 'ID,Key,Tên,Module,Trạng thái,Rollout %,Scope,Cập nhật,Bởi'
+        const csv = [header, ...flags.map(f => `${f.id},${f.key},"${f.name}",${f.module},${STATUS_STYLES[f.status]?.label},${f.rollout_pct}%,${f.scope},${f.updated_at},${f.updated_by}`)].join('\n')
+        const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' })
+        const url = URL.createObjectURL(blob)
+        const a = document.createElement('a'); a.href = url; a.download = `vct_feature_flags_${new Date().toISOString().slice(0, 10)}.csv`; a.click()
+        URL.revokeObjectURL(url)
+        showToast('Đã xuất danh sách feature flags!')
     }
 
     return (
@@ -97,6 +150,7 @@ export const Page_admin_feature_flags = () => {
                     <h1 className="text-2xl font-bold tracking-tight text-[var(--vct-text-primary)]">Feature Flags</h1>
                     <p className="text-sm text-[var(--vct-text-secondary)] mt-1">Bật/tắt tính năng, kiểm soát rollout theo phần trăm hoặc phạm vi.</p>
                 </div>
+                <VCT_Button variant="outline" icon={<VCT_Icons.Download size={16} />} onClick={handleExportCSV}>Xuất CSV</VCT_Button>
             </div>
 
             {/* ── KPI ── */}
@@ -121,56 +175,72 @@ export const Page_admin_feature_flags = () => {
 
             {/* ── FLAG CARDS ── */}
             <div className="space-y-3">
-                {filtered.map(flag => {
-                    const st = STATUS_STYLES[flag.status] || STATUS_STYLES.disabled!
-                    return (
-                        <div key={flag.id} className="bg-[var(--vct-bg-elevated)] border border-[var(--vct-border-strong)] rounded-2xl p-5 hover:border-[var(--vct-accent-cyan)] transition-all">
-                            <div className="flex items-start justify-between gap-4">
-                                <div className="flex-1">
-                                    <div className="flex items-center gap-3 mb-1">
-                                        <span className="font-bold text-[var(--vct-text-primary)]">{flag.name}</span>
-                                        <span className="font-mono text-[10px] text-[var(--vct-accent-cyan)] bg-[var(--vct-accent-cyan)]/10 px-2 py-0.5 rounded">{flag.key}</span>
-                                        <VCT_Badge text={flag.module} type="info" />
+                {isLoading ? (
+                    [...Array(4)].map((_, i) => <SkeletonFlagCard key={i} />)
+                ) : filtered.length === 0 ? (
+                    <VCT_EmptyState title="Không tìm thấy feature flag" description="Thử thay đổi bộ lọc hoặc từ khóa tìm kiếm." icon="🚩" />
+                ) : (
+                    filtered.map(flag => {
+                        const st = STATUS_STYLES[flag.status] || STATUS_STYLES.disabled!
+                        return (
+                            <div key={flag.id} className="bg-[var(--vct-bg-elevated)] border border-[var(--vct-border-strong)] rounded-2xl p-5 hover:border-[var(--vct-accent-cyan)] transition-all">
+                                <div className="flex items-start justify-between gap-4">
+                                    <div className="flex-1">
+                                        <div className="flex items-center gap-3 mb-1">
+                                            <span className="font-bold text-[var(--vct-text-primary)]">{flag.name}</span>
+                                            <span className="font-mono text-[10px] text-[var(--vct-accent-cyan)] bg-[var(--vct-accent-cyan)]/10 px-2 py-0.5 rounded">{flag.key}</span>
+                                            <VCT_Badge text={flag.module} type="info" />
+                                        </div>
+                                        <p className="text-sm text-[var(--vct-text-secondary)] mb-3">{flag.description}</p>
+                                        <div className="flex items-center gap-4 text-[11px] text-[var(--vct-text-tertiary)]">
+                                            <span className="flex items-center gap-1"><VCT_Icons.Layers size={10} /> Scope: {flag.scope}</span>
+                                            <span className="flex items-center gap-1"><VCT_Icons.Clock size={10} /> {flag.updated_at}</span>
+                                            <span className="flex items-center gap-1"><VCT_Icons.User size={10} /> {flag.updated_by}</span>
+                                        </div>
                                     </div>
-                                    <p className="text-sm text-[var(--vct-text-secondary)] mb-3">{flag.description}</p>
-                                    <div className="flex items-center gap-4 text-[11px] text-[var(--vct-text-tertiary)]">
-                                        <span className="flex items-center gap-1"><VCT_Icons.Layers size={10} /> Scope: {flag.scope}</span>
-                                        <span className="flex items-center gap-1"><VCT_Icons.Clock size={10} /> {flag.updated_at}</span>
-                                        <span className="flex items-center gap-1"><VCT_Icons.User size={10} /> {flag.updated_by}</span>
+
+                                    <div className="flex items-center gap-4 shrink-0">
+                                        {/* Rollout slider */}
+                                        <div className="flex flex-col items-center gap-1 w-[120px]">
+                                            <div className="text-[11px] font-bold" style={{ color: st.color }}>{flag.rollout_pct}%</div>
+                                            <input
+                                                type="range" min="0" max="100" step="5"
+                                                value={flag.rollout_pct}
+                                                onChange={(e) => updateRollout(flag.id, parseInt(e.target.value))}
+                                                className="w-full h-1.5 rounded-full appearance-none cursor-pointer"
+                                                style={{ accentColor: st.color, background: `linear-gradient(to right, ${st.color} ${flag.rollout_pct}%, var(--vct-border-strong) ${flag.rollout_pct}%)` }}
+                                            />
+                                        </div>
+
+                                        {/* Toggle */}
+                                        <button onClick={() => toggleFlag(flag)}
+                                            className={`relative w-14 h-7 rounded-full transition-all duration-300 ${flag.status !== 'disabled' ? 'bg-[#10b981] shadow-[0_0_12px_#10b98140]' : 'bg-[var(--vct-border-strong)]'
+                                                }`}>
+                                            <div className={`absolute top-1 w-5 h-5 rounded-full bg-white shadow-md transition-all duration-300 ${flag.status !== 'disabled' ? 'left-8' : 'left-1'
+                                                }`}></div>
+                                        </button>
                                     </div>
                                 </div>
 
-                                <div className="flex items-center gap-4 shrink-0">
-                                    {/* Rollout slider */}
-                                    <div className="flex flex-col items-center gap-1 w-[120px]">
-                                        <div className="text-[11px] font-bold" style={{ color: st.color }}>{flag.rollout_pct}%</div>
-                                        <input
-                                            type="range" min="0" max="100" step="5"
-                                            value={flag.rollout_pct}
-                                            onChange={(e) => updateRollout(flag.id, parseInt(e.target.value))}
-                                            className="w-full h-1.5 rounded-full appearance-none cursor-pointer"
-                                            style={{ accentColor: st.color, background: `linear-gradient(to right, ${st.color} ${flag.rollout_pct}%, var(--vct-border-strong) ${flag.rollout_pct}%)` }}
-                                        />
-                                    </div>
-
-                                    {/* Toggle */}
-                                    <button onClick={() => toggleFlag(flag.id)}
-                                        className={`relative w-14 h-7 rounded-full transition-all duration-300 ${flag.status !== 'disabled' ? 'bg-[#10b981] shadow-[0_0_12px_#10b98140]' : 'bg-[var(--vct-border-strong)]'
-                                            }`}>
-                                        <div className={`absolute top-1 w-5 h-5 rounded-full bg-white shadow-md transition-all duration-300 ${flag.status !== 'disabled' ? 'left-8' : 'left-1'
-                                            }`}></div>
-                                    </button>
+                                {/* Progress bar */}
+                                <div className="mt-3 h-1 rounded-full bg-[var(--vct-border-strong)] overflow-hidden">
+                                    <div className="h-full rounded-full transition-all duration-500" style={{ width: `${flag.rollout_pct}%`, background: st.color }}></div>
                                 </div>
                             </div>
-
-                            {/* Progress bar */}
-                            <div className="mt-3 h-1 rounded-full bg-[var(--vct-border-strong)] overflow-hidden">
-                                <div className="h-full rounded-full transition-all duration-500" style={{ width: `${flag.rollout_pct}%`, background: st.color }}></div>
-                            </div>
-                        </div>
-                    )
-                })}
+                        )
+                    })
+                )}
             </div>
+
+            {/* ── CONFIRM TOGGLE DIALOG ── */}
+            <VCT_ConfirmDialog
+                isOpen={!!confirmToggle}
+                onClose={() => setConfirmToggle(null)}
+                onConfirm={() => { if (confirmToggle) doToggle(confirmToggle); setConfirmToggle(null) }}
+                title="Tắt tính năng toàn hệ thống"
+                message={`Bạn có chắc muốn tắt "${confirmToggle?.name}"? Tính năng này đang hoạt động trên toàn hệ thống (scope: global).`}
+                confirmLabel="Tắt tính năng"
+            />
         </VCT_PageContainer>
     )
 }

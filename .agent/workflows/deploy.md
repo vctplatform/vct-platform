@@ -117,3 +117,25 @@ Checklist:
 □ Security review: PASS/FAIL
 □ Ready to deploy: YES/NO
 ```
+
+---
+
+## Bước 6: Platform-Specific Checks
+
+### Vercel (Frontend)
+- [ ] `NEXT_PUBLIC_API_BASE_URL` set đúng (không có `/api/v1`)
+- [ ] Không có secrets trong NEXT_PUBLIC_* vars
+- [ ] Preview deployment test OK
+
+### Render / Fly.io (Backend)
+- [ ] VCT_CORS_ORIGINS chứa production frontend URL
+- [ ] VCT_POSTGRES_URL kết nối được
+- [ ] VCT_JWT_SECRET khác default
+- [ ] Health check: `/healthz` trả về 200
+- [ ] Anti-cold-start cron configured (Render free tier)
+
+### Neon (Database)
+- [ ] Migrations backward-compatible
+- [ ] Snapshot/branch ready cho rollback
+
+> 💡 Xem chi tiết: sử dụng workflow `/deploy-production`

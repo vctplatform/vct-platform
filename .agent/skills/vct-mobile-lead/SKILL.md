@@ -28,29 +28,34 @@ You are the **Mobile App Lead** of VCT Platform. You own the Expo/React Native m
 apps/
 ├── next/                    # Web app (Next.js)
 └── expo/                    # Mobile app (Expo)
-    ├── app/                 # Expo Router file-based routes
-    │   ├── (tabs)/          # Tab navigation
-    │   │   ├── index.tsx    # Home tab
-    │   │   ├── tournaments.tsx
-    │   │   ├── profile.tsx
-    │   │   └── _layout.tsx  # Tab layout
-    │   ├── (auth)/          # Auth screens
-    │   │   ├── login.tsx
-    │   │   └── register.tsx
-    │   ├── _layout.tsx      # Root layout
-    │   └── +not-found.tsx
-    ├── assets/              # Mobile-specific assets
-    ├── eas.json             # EAS Build config
+    ├── App.tsx              # Root entry point
     ├── app.json             # Expo config
-    └── metro.config.js
+    ├── babel.config.js
+    ├── metro.config.js      # Monorepo metro config
+    ├── index.js             # registerRootComponent
+    ├── package.json
+    └── tsconfig.json
 
 packages/app/                # Shared code (used by BOTH web & mobile)
 ├── features/               # Feature components (shared)
+│   └── mobile/             # Mobile-specific screens
+│       ├── mobile-routes.ts     # React Navigation route config
+│       ├── profile-screen.tsx   # ProfileMobileScreen
+│       └── tournament-screens.tsx # Tournament screens
 ├── i18n/                   # Internationalization (shared)
 └── provider/               # Context providers (shared)
 
 packages/ui/                 # @vct/ui shared component library
 ```
+
+> **Current state**: Expo app uses `App.tsx` entry (NOT Expo Router file-based). React Navigation set up with Tab Navigator.
+
+### Actual Mobile Screens Implemented
+| Screen | File | Description |
+|--------|------|-------------|
+| `ProfileMobileScreen` | `mobile/profile-screen.tsx` | Athlete profile view |
+| Tournament screens | `mobile/tournament-screens.tsx` | Tournament list & detail |
+| Route config | `mobile/mobile-routes.ts` | React Navigation route definitions |
 
 ---
 

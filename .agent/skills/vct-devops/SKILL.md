@@ -35,27 +35,47 @@ services:
   nats:           # NATS messaging — port 4222
 ```
 
-### Production Architecture
+### Production Architecture (Actual)
 ```
                     ┌─────────────┐
-                    │   CDN/CF    │
+                    │   Vercel    │  ← Next.js frontend (auto-deploy)
                     └──────┬──────┘
                            │
                     ┌──────▼──────┐
-                    │ Load Balancer│
+                    │  Go API     │  ← Docker on Render / Fly.io
                     └──────┬──────┘
-               ┌───────────┼───────────┐
-        ┌──────▼──────┐         ┌──────▼──────┐
-        │  Next.js    │         │  Go API     │
-        │  (Vercel)   │         │  (Docker)   │
-        └─────────────┘         └──────┬──────┘
-                                       │
-                    ┌──────────────────┼──────────────────┐
-             ┌──────▼──────┐   ┌──────▼──────┐   ┌──────▼──────┐
-             │ PostgreSQL  │   │    Redis     │   │    MinIO    │
-             │ (Neon/Supa) │   │              │   │             │
-             └─────────────┘   └─────────────┘   └─────────────┘
+                           │
+                ┌──────────┼──────────┐
+         ┌──────▼──────┐  ┌▼─────────┐
+         │ PostgreSQL  │  │  Upstash  │
+         │ (Neon)      │  │  Redis    │
+         └─────────────┘  └──────────┘
 ```
+
+### Deployment Platforms
+| Layer | Platform | URL |
+|-------|----------|-----|
+| **Frontend** | Vercel | `vct-platform.vercel.app` |
+| **Backend (staging)** | Render | `vct-platform-api.onrender.com` |
+| **Backend (prod)** | Fly.io | `vct-platform-api.fly.dev` |
+| **Database** | Neon PostgreSQL | Managed |
+| **Cache** | Upstash Redis | Managed |
+
+### Critical Environment Variables
+```env
+# Vercel (frontend)
+NEXT_PUBLIC_API_BASE_URL=https://vct-platform-api.fly.dev
+
+# Render / Fly.io (backend)
+VCT_POSTGRES_URL=postgres://...@neon.tech/neondb?sslmode=require
+VCT_CORS_ORIGINS=https://vct-platform.vercel.app,http://localhost:3000
+VCT_JWT_SECRET=<strong-secret>
+VCT_STORAGE_DRIVER=postgres
+VCT_DB_AUTO_MIGRATE=true
+VCT_REDIS_URL=rediss://...@upstash-redis.com:6379
+```
+
+> ⚠️ **Common pitfall**: Frontend apiClient already includes `/api/v1` in base — DO NOT double-prefix URLs.
 
 ---
 
@@ -235,32 +255,46 @@ Required fields per log entry:
 
 ## 7. Deployment Strategy
 
-### Zero-Downtime Deployment
+### Vercel (Frontend)
 ```
-1. Build new container image
-2. Push to registry
-3. Rolling update (K8s) or blue-green (manual)
-4. Health check passes → route traffic
-5. Health check fails → auto-rollback
+1. Push to main → Vercel auto-deploys
+2. Preview deployments on PRs
+3. Set env vars in Vercel dashboard
+4. Custom domain configuration
+```
+
+### Render (Backend Staging)
+```
+1. Connect GitHub repo
+2. Auto-deploy on push to main
+3. Build: docker build from Dockerfile
+4. Health check: GET /healthz
+5. Anti-cold-start: cron job pings /healthz every 14 minutes
+```
+
+### Fly.io (Backend Production)
+```
+1. flyctl deploy --remote-only
+2. Health check: GET /healthz
+3. Auto-scaling based on load
+4. Rolling deployments
 ```
 
 ### Rollback Procedure
 ```
-1. Identify failed deployment
-2. kubectl rollout undo deployment/vct-backend   (K8s)
-   OR: Deploy previous image tag                 (Docker)
-3. Verify health checks pass
-4. Investigate root cause
-5. Fix and redeploy
+Vercel:   Instant rollback in Vercel dashboard → Deployments → Promote
+Render:   Manual deploy → select previous commit
+Fly.io:   flyctl releases → flyctl deploy --image <previous>
+Database: Neon → branch from point-in-time restore
 ```
 
 ### Database Migration in Production
 ```
-1. NEVER auto-migrate in production
-2. Run migrations in CI/CD before deployment
-3. Migrations must be backward-compatible
+1. NEVER auto-migrate in production manually
+2. VCT_DB_AUTO_MIGRATE=true handles startup migrations
+3. Migrations MUST be backward-compatible
 4. Test rollback (down migration) in staging first
-5. Take database snapshot before migration
+5. Take Neon branch snapshot before risky migration
 ```
 
 ---

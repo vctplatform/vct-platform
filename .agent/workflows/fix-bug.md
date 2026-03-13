@@ -85,3 +85,20 @@ description: Workflow điều tra và sửa bug cho VCT Platform
    - **Files changed**: Danh sách files đã sửa
    - **Prevention**: Cách tránh bug tương tự trong tương lai
 2. Nếu bug do thiếu test → note để thêm test sau
+
+---
+
+## Quick Reference: Common Fix Patterns
+
+| Bug Type | Keyword tìm | Quick Fix |
+|----------|------------|----------|
+| 401 Auth | `ERR_INVALID_CREDENTIALS` | Check VCT_JWT_SECRET, VCT_ADMIN_PASSWORD |
+| CORS | `Access-Control-Allow-Origin` | Add URL to VCT_CORS_ORIGINS |
+| 404 API | `/api/api/v1/` | Fix NEXT_PUBLIC_API_BASE_URL (remove /api/v1) |
+| 502 Gateway | `502 Bad Gateway` | Check backend logs, restart container |
+| JSX IDE | `IntrinsicElements` | npm ls @types/react, restart TS server |
+| Blank page | `Cannot read properties of null` | Add null checks, loading states |
+| Import error | `Module not found` | Check path aliases, tsconfig paths |
+| Go build | `undefined:` | Check exports, interface implementations |
+
+> 💡 Xem chi tiết: sử dụng workflow `/debug-common-errors`

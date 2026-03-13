@@ -32,7 +32,10 @@ func NewPostgresStore(connectionString string, autoMigrate bool) (*PostgresStore
 		cfg.HealthCheckPeriod = 30 * time.Second
 	}
 
-	pool, err := pgxpool.NewWithConfig(context.Background(), cfg)
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	pool, err := pgxpool.NewWithConfig(ctx, cfg)
 	if err != nil {
 		return nil, fmt.Errorf("postgres connect failed: %w", err)
 	}

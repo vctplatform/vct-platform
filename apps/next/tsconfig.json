@@ -13,7 +13,7 @@
     "noEmit": true,
     "esModuleInterop": true,
     "module": "esnext",
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "resolveJsonModule": true,
     "isolatedModules": true,
     "jsx": "react-jsx",
@@ -31,6 +31,9 @@
       "@vct/shared-types": [
         "../../packages/shared-types/src/index.ts"
       ],
+      "@vct/shared-utils": [
+        "../../packages/shared-utils/src/index.ts"
+      ],
       "@vct/ui": [
         "../../packages/ui/src/index.ts"
       ]
@@ -41,7 +44,7 @@
     "app-env.d.ts",
     "**/*.ts",
     "**/*.tsx",
-    "next.config.js",
+    "next.config.mjs",
     ".next/types/**/*.ts",
     ".next/dev/types/**/*.ts"
   ],

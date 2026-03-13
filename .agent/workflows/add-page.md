@@ -139,3 +139,25 @@ Thêm translation keys cho **CẢ 2 ngôn ngữ**:
    - [ ] Loading skeleton hiển thị trước khi data load xong
    - [ ] Responsive layout
    - [ ] Cả 2 theme hoạt động
+
+---
+
+## Variant: Admin Page (Table + Drawer)
+
+Nếu trang là admin page với data table + detail panel, dùng workflow `/admin-page` thay vì workflow này.
+
+Admin pages có thêm:
+- `VCT_Drawer` cho detail panel (click row → mở drawer)
+- `VCT_StatBlock` cho stats row
+- `VCT_Timeline` cho activity log
+- `usePagination` hook
+- Search/filter pattern
+
+### Custom Hooks có sẵn:
+| Hook | Dùng cho |
+|------|---------|
+| `useAdminAPI` | Admin CRUD operations |
+| `useApiQuery` | Generic API fetching |
+| `usePagination` | Client-side pagination |
+| `useToast` | Toast notifications |
+| `useRouteActionGuard` | Permission checks |

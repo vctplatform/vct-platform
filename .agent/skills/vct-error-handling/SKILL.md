@@ -180,3 +180,90 @@ All backend error messages MUST be in Vietnamese:
 4. ❌ **NEVER** panic for recoverable errors — return errors up the stack
 5. ❌ **NEVER** swallow errors silently — always log and respond
 6. ❌ **NEVER** send 200 OK with error body — use appropriate HTTP status code
+
+---
+
+## 9. Common Error Playbook (Lessons Learned)
+
+These are real errors encountered during development. Use this playbook for quick diagnosis.
+
+### 🔴 ERR_INVALID_CREDENTIALS (401)
+**Symptom**: Login returns 401 even with correct credentials.  
+**Debug steps**:
+1. Check `VCT_JWT_SECRET` is set in backend env (not empty/default)
+2. Check `VCT_ADMIN_PASSWORD` matches what you're entering
+3. Check backend logs for specific auth error message
+4. Verify config loads correctly: `GET /healthz` → check running config
+5. Common cause: `.env` not loaded, or env var name mismatch
+
+### 🔴 502 Bad Gateway
+**Symptom**: Frontend gets 502 from API.  
+**Debug steps**:
+1. Check if backend container is running (Render/Fly.io dashboard)
+2. Check backend logs for panic/crash → fix code error
+3. Check database connection: `VCT_POSTGRES_URL` correct?
+4. Check if Render/Fly.io went to sleep (cold start) → ping `/healthz`
+5. Common cause: Backend crashed on startup due to bad config or migration
+
+### 🟠 CORS Errors
+**Symptom**: Browser shows "Access-Control-Allow-Origin" error.  
+**Debug steps**:
+1. Check `VCT_CORS_ORIGINS` includes frontend URL
+2. Must include **both** `http://localhost:3000` AND production URL
+3. Multiple origins: comma-separated `VCT_CORS_ORIGINS=url1,url2`
+4. Restart backend after changing CORS config
+5. Common cause: Missing production frontend URL in CORS origins
+
+### 🟠 Double API Prefix (`/api/api/v1/...` → 404)
+**Symptom**: All API calls return 404 in production.  
+**Debug steps**:
+1. Check `NEXT_PUBLIC_API_BASE_URL` — should be just the base domain
+2. Frontend `apiClient` already adds `/api/v1` prefix
+3. If base URL is `https://api.example.com/api/v1`, the call becomes `/api/v1/api/v1/...`
+4. **Fix**: Set `NEXT_PUBLIC_API_BASE_URL=https://api.example.com` (no path)
+5. Common cause: Copy-pasting full API URL including path prefix
+
+### 🟡 JSX IntrinsicElements IDE Errors
+**Symptom**: IDE shows "Property does not exist on JSX.IntrinsicElements" but `tsc` compiles fine.  
+**Debug steps**:
+1. Check for duplicate `@types/react` in `node_modules`
+2. Run `npm ls @types/react` — should show only one version
+3. Check `tsconfig.json` → `jsx` should be `"preserve"` for Next.js
+4. Delete `node_modules/.cache` and restart IDE TS server
+5. Common cause: Multiple versions of `@types/react` from different packages
+
+### 🟡 404 on Deployment (Render/Fly.io)
+**Symptom**: Deployed backend returns 404 for all routes.  
+**Debug steps**:
+1. Check container started successfully (logs for "Listening on :18080")
+2. Check `PORT` env var matches what platform expects
+3. Check health endpoint: `GET /healthz` → should return 200
+4. Check migrations ran successfully on startup
+5. Common cause: Container port mismatch or migration failure on first deploy
+
+---
+
+## 10. Debug Decision Tree
+
+```
+Error occurred?
+  │
+  ├─ Frontend error (browser)
+  │   ├─ Network error → Check backend running? CORS config?
+  │   ├─ 401 → Check auth token, JWT secret, login credentials
+  │   ├─ 404 → Check API URL prefix (double /api/api?)
+  │   ├─ 500/502 → Check backend logs for panic/crash
+  │   └─ TypeScript/JSX error → Check tsconfig, @types/react versions
+  │
+  ├─ Backend error (Go)
+  │   ├─ Compile error → go build ./... , check imports
+  │   ├─ Runtime panic → Check nil pointer, map access, slice bounds
+  │   ├─ DB error → Check VCT_POSTGRES_URL, migration status
+  │   └─ Auth error → Check VCT_JWT_SECRET, token expiry
+  │
+  └─ Deployment error
+      ├─ Build fails → Check Dockerfile, go.mod, package.json
+      ├─ Health check fails → Check /healthz, port config
+      ├─ Cold start → Render free tier sleeps after 15min → add cron ping
+      └─ Env vars → Check all VCT_* vars set in platform dashboard
+```

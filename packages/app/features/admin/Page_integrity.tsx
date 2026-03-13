@@ -3,9 +3,15 @@
 import * as React from 'react'
 import { useState, useMemo } from 'react'
 import {
-    VCT_Button, VCT_Stack, VCT_SearchInput, VCT_Badge, VCT_Select
+    VCT_Button, VCT_Stack, VCT_SearchInput, VCT_Badge, VCT_Select,
+    VCT_StatRow
 } from '../components/vct-ui'
+import type { StatItem } from '../components/VCT_StatRow'
 import { VCT_Icons } from '../components/vct-icons'
+import { VCT_Drawer } from '../components/VCT_Drawer'
+import { VCT_Timeline } from '../components/VCT_Timeline'
+import type { TimelineEvent } from '../components/VCT_Timeline'
+import { usePagination } from '../hooks/usePagination'
 
 // ════════════════════════════════════════
 // MOCK DATA — Integrity Monitoring
@@ -48,12 +54,48 @@ const TYPE_LABELS: Record<string, string> = {
 }
 
 // ════════════════════════════════════════
+// SKELETON + PAGINATION BAR
+// ════════════════════════════════════════
+const SkeletonRow = () => (
+    <tr>
+        {[...Array(7)].map((_, i) => (
+            <td key={i} className="p-4">
+                <div className="h-4 bg-[var(--vct-bg-elevated)] rounded animate-pulse" style={{ width: `${50 + Math.random() * 50}%` }} />
+            </td>
+        ))}
+    </tr>
+)
+
+const PaginationBar = ({ currentPage, totalPages, totalItems, pageSize, hasPrev, hasNext, prev, next }: {
+    currentPage: number; totalPages: number; totalItems: number; pageSize: number
+    hasPrev: boolean; hasNext: boolean; prev: () => void; next: () => void
+}) => totalPages <= 1 ? null : (
+    <div className="flex items-center justify-between px-4 py-3 border-t border-[var(--vct-border-subtle)]">
+        <span className="text-xs text-[var(--vct-text-tertiary)]">
+            Hiển thị {(currentPage - 1) * pageSize + 1}–{Math.min(currentPage * pageSize, totalItems)} / {totalItems}
+        </span>
+        <div className="flex gap-2">
+            <button onClick={prev} disabled={!hasPrev} className="px-3 py-1 text-xs rounded-lg bg-[var(--vct-bg-elevated)] text-[var(--vct-text-secondary)] disabled:opacity-30 hover:bg-[var(--vct-bg-base)] transition-colors">← Trước</button>
+            <span className="px-3 py-1 text-xs text-[var(--vct-text-tertiary)]">{currentPage}/{totalPages}</span>
+            <button onClick={next} disabled={!hasNext} className="px-3 py-1 text-xs rounded-lg bg-[var(--vct-bg-elevated)] text-[var(--vct-text-secondary)] disabled:opacity-30 hover:bg-[var(--vct-bg-base)] transition-colors">Sau →</button>
+        </div>
+    </div>
+)
+
+// ════════════════════════════════════════
 // MAIN COMPONENT
 // ════════════════════════════════════════
 export const Page_integrity = () => {
     const [search, setSearch] = useState('')
     const [severityFilter, setSeverityFilter] = useState('all')
     const [statusFilter, setStatusFilter] = useState('all')
+    const [isLoading, setIsLoading] = useState(true)
+    const [drawerAlert, setDrawerAlert] = useState<typeof MOCK_ALERTS[0] | null>(null)
+
+    React.useEffect(() => {
+        const t = setTimeout(() => setIsLoading(false), 800)
+        return () => clearTimeout(t)
+    }, [])
 
     const filtered = useMemo(() => {
         let v = MOCK_ALERTS
@@ -65,6 +107,8 @@ export const Page_integrity = () => {
         }
         return v
     }, [search, severityFilter, statusFilter])
+
+    const pagination = usePagination(filtered, { pageSize: 5 })
 
     const stats = useMemo(() => ({
         total: MOCK_ALERTS.length,
@@ -80,28 +124,22 @@ export const Page_integrity = () => {
                     <h1 className="text-2xl font-bold tracking-tight text-[var(--vct-text-primary)]">Giám Sát Liêm Chính</h1>
                     <p className="text-sm text-[var(--vct-text-secondary)] mt-1">Anti-match-fixing. Theo dõi cảnh báo bất thường trong thi đấu, chấm điểm, cân nặng.</p>
                 </div>
-                <VCT_Button variant="outline" icon={<VCT_Icons.Download size={16} />}>Xuất báo cáo</VCT_Button>
+                <VCT_Button variant="outline" icon={<VCT_Icons.Download size={16} />} onClick={() => {
+                    const header = 'Mức độ,Trạng thái,Loại,Giải đấu,Chi tiết,Phụ trách,Thời gian'
+                    const csv = [header, ...filtered.map(a => `${a.severity},${a.status},${TYPE_LABELS[a.type] || a.type},${a.tournament},"${a.detail}",${a.assigned_to || '—'},${a.reported_at}`)].join('\n')
+                    const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' })
+                    const url = URL.createObjectURL(blob)
+                    const a2 = document.createElement('a'); a2.href = url; a2.download = `vct_integrity_report_${new Date().toISOString().slice(0, 10)}.csv`; a2.click()
+                    URL.revokeObjectURL(url)
+                }}>Xuất báo cáo</VCT_Button>
             </div>
 
-            {/* ── STAT CARDS ── */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-                <div className="bg-[var(--vct-bg-card)] border border-[var(--vct-border-strong)] rounded-2xl p-4 text-center">
-                    <div className="text-[10px] uppercase tracking-wider text-[var(--vct-text-tertiary)] font-bold mb-1">Tổng cảnh báo</div>
-                    <div className="text-3xl font-bold text-[var(--vct-text-primary)]">{stats.total}</div>
-                </div>
-                <div className="bg-[var(--vct-bg-card)] border border-[var(--vct-border-strong)] rounded-2xl p-4 text-center">
-                    <div className="text-[10px] uppercase tracking-wider text-[var(--vct-text-tertiary)] font-bold mb-1">Critical</div>
-                    <div className="text-3xl font-bold" style={{ color: 'var(--vct-accent-red,#ef4444)' }}>{stats.critical}</div>
-                </div>
-                <div className="bg-[var(--vct-bg-card)] border border-[var(--vct-border-strong)] rounded-2xl p-4 text-center">
-                    <div className="text-[10px] uppercase tracking-wider text-[var(--vct-text-tertiary)] font-bold mb-1">Đang điều tra</div>
-                    <div className="text-3xl font-bold" style={{ color: 'var(--vct-accent-yellow,#eab308)' }}>{stats.investigating}</div>
-                </div>
-                <div className="bg-[var(--vct-bg-card)] border border-[var(--vct-border-strong)] rounded-2xl p-4 text-center">
-                    <div className="text-[10px] uppercase tracking-wider text-[var(--vct-text-tertiary)] font-bold mb-1">Mới / Chưa xử lý</div>
-                    <div className="text-3xl font-bold" style={{ color: 'var(--vct-accent-blue,#3b82f6)' }}>{stats.newAlerts}</div>
-                </div>
-            </div>
+            <VCT_StatRow items={[
+                { label: 'Tổng cảnh báo', value: stats.total, icon: <VCT_Icons.Shield size={18} />, color: '#0ea5e9' },
+                { label: 'Critical', value: stats.critical, icon: <VCT_Icons.Alert size={18} />, color: '#ef4444' },
+                { label: 'Đang điều tra', value: stats.investigating, icon: <VCT_Icons.Activity size={18} />, color: '#f59e0b' },
+                { label: 'Mới / Chưa xử lý', value: stats.newAlerts, icon: <VCT_Icons.Clock size={18} />, color: '#3b82f6' },
+            ] as StatItem[]} className="mb-8" />
 
             {/* ── FILTERS ── */}
             <div className="flex flex-wrap gap-4 mb-6">
@@ -141,22 +179,62 @@ export const Page_integrity = () => {
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-[var(--vct-border-subtle)]">
-                        {filtered.map(alert => (
-                            <tr key={alert.id} className="hover:bg-white/5 transition-colors text-sm">
-                                <td className="p-4"><VCT_Badge type={SEVERITY_MAP[alert.severity]?.type || 'info'} text={alert.severity} /></td>
-                                <td className="p-4"><VCT_Badge type={STATUS_MAP[alert.status]?.type || 'neutral'} text={alert.status.replace(/_/g, ' ')} /></td>
-                                <td className="p-4 text-[var(--vct-text-primary)] font-semibold">{TYPE_LABELS[alert.type] || alert.type}</td>
-                                <td className="p-4 text-[var(--vct-text-secondary)]">{alert.tournament}</td>
-                                <td className="p-4 text-[var(--vct-text-secondary)]">
-                                    <div className="line-clamp-2 text-[12px]">{alert.detail}</div>
-                                </td>
-                                <td className="p-4 text-[var(--vct-accent-cyan)]">{alert.assigned_to || '—'}</td>
-                                <td className="p-4 font-mono text-[11px] text-[var(--vct-text-tertiary)]">{alert.reported_at}</td>
-                            </tr>
-                        ))}
+                        {isLoading ? (
+                            [...Array(5)].map((_, i) => <SkeletonRow key={i} />)
+                        ) : pagination.paginatedItems.length === 0 ? (
+                            <tr><td colSpan={7} className="p-12 text-center text-[var(--vct-text-tertiary)]">Không tìm thấy cảnh báo nào</td></tr>
+                        ) : (
+                            pagination.paginatedItems.map(alert => (
+                                <tr key={alert.id} className="hover:bg-white/5 transition-colors text-sm cursor-pointer" onClick={() => setDrawerAlert(alert)}>
+                                    <td className="p-4"><VCT_Badge type={SEVERITY_MAP[alert.severity]?.type || 'info'} text={alert.severity} /></td>
+                                    <td className="p-4"><VCT_Badge type={STATUS_MAP[alert.status]?.type || 'neutral'} text={alert.status.replace(/_/g, ' ')} /></td>
+                                    <td className="p-4 text-[var(--vct-text-primary)] font-semibold">{TYPE_LABELS[alert.type] || alert.type}</td>
+                                    <td className="p-4 text-[var(--vct-text-secondary)]">{alert.tournament}</td>
+                                    <td className="p-4 text-[var(--vct-text-secondary)]">
+                                        <div className="line-clamp-2 text-[12px]">{alert.detail}</div>
+                                    </td>
+                                    <td className="p-4 text-[var(--vct-accent-cyan)]">{alert.assigned_to || '—'}</td>
+                                    <td className="p-4 font-mono text-[11px] text-[var(--vct-text-tertiary)]">{alert.reported_at}</td>
+                                </tr>
+                            ))
+                        )}
                     </tbody>
                 </table>
+                {!isLoading && <PaginationBar {...pagination} />}
             </div>
+
+            {/* ── ALERT DETAIL DRAWER ── */}
+            <VCT_Drawer isOpen={!!drawerAlert} onClose={() => setDrawerAlert(null)} title="Chi tiết cảnh báo" width={560}>
+                {drawerAlert && (
+                    <div className="space-y-5">
+                        <div className="flex items-center gap-3 pb-4 border-b border-[var(--vct-border-subtle)]">
+                            <VCT_Badge type={SEVERITY_MAP[drawerAlert.severity]?.type || 'info'} text={drawerAlert.severity} />
+                            <VCT_Badge type={STATUS_MAP[drawerAlert.status]?.type || 'neutral'} text={drawerAlert.status.replace(/_/g, ' ')} />
+                            <span className="font-mono text-xs text-[var(--vct-text-tertiary)] ml-auto">{drawerAlert.id}</span>
+                        </div>
+                        <div className="grid grid-cols-2 gap-4 text-sm">
+                            <div><div className="text-[10px] uppercase text-[var(--vct-text-tertiary)] mb-1">Loại</div><div className="font-semibold text-[var(--vct-text-primary)]">{TYPE_LABELS[drawerAlert.type] || drawerAlert.type}</div></div>
+                            <div><div className="text-[10px] uppercase text-[var(--vct-text-tertiary)] mb-1">Nguồn</div><div className="text-[var(--vct-text-primary)]">{drawerAlert.source.replace(/_/g, ' ')}</div></div>
+                            <div><div className="text-[10px] uppercase text-[var(--vct-text-tertiary)] mb-1">Giải đấu</div><div className="text-[var(--vct-accent-cyan)]">{drawerAlert.tournament}</div></div>
+                            <div><div className="text-[10px] uppercase text-[var(--vct-text-tertiary)] mb-1">Trận</div><div className="text-[var(--vct-text-primary)]">{drawerAlert.match || '—'}</div></div>
+                            <div><div className="text-[10px] uppercase text-[var(--vct-text-tertiary)] mb-1">Phụ trách</div><div className="font-semibold text-[var(--vct-accent-cyan)]">{drawerAlert.assigned_to || 'Chưa giao'}</div></div>
+                            <div><div className="text-[10px] uppercase text-[var(--vct-text-tertiary)] mb-1">Thời gian</div><div className="font-mono text-[var(--vct-text-primary)]">{drawerAlert.reported_at}</div></div>
+                        </div>
+                        <div>
+                            <div className="text-[10px] uppercase text-[var(--vct-text-tertiary)] mb-2">Chi tiết forensic</div>
+                            <div className="text-sm text-[var(--vct-text-primary)] p-4 bg-[var(--vct-bg-base)] rounded-xl border border-[var(--vct-border-subtle)] leading-relaxed">{drawerAlert.detail}</div>
+                        </div>
+                        <div>
+                            <div className="text-[10px] uppercase text-[var(--vct-text-tertiary)] mb-2">Lịch sử xử lý</div>
+                            <VCT_Timeline events={[
+                                { time: drawerAlert.reported_at, title: 'Cảnh báo được tạo', description: `Nguồn: ${drawerAlert.source.replace(/_/g, ' ')}`, icon: <VCT_Icons.Alert size={14} />, color: '#ef4444' },
+                                ...(drawerAlert.assigned_to ? [{ time: drawerAlert.reported_at.replace(/\d{2}:\d{2}$/, '12:00'), title: `Giao cho ${drawerAlert.assigned_to}`, description: 'Bởi System Admin', icon: <VCT_Icons.Users size={14} />, color: '#0ea5e9' }] : []),
+                                ...(drawerAlert.status !== 'NEW' ? [{ time: drawerAlert.reported_at.replace(/\d{2}:\d{2}$/, '14:30'), title: `Chuyển trạng thái: ${drawerAlert.status.replace(/_/g, ' ')}`, icon: <VCT_Icons.CheckCircle size={14} />, color: '#10b981' }] : []),
+                            ] as TimelineEvent[]} maxHeight={200} />
+                        </div>
+                    </div>
+                )}
+            </VCT_Drawer>
         </div>
     )
 }

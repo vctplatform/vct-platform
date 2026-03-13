@@ -8,6 +8,8 @@ export interface VCTFieldProps extends React.HTMLAttributes<HTMLDivElement> {
   error?: ReactNode
   children: ReactNode
   tip?: string
+  hint?: string
+  required?: boolean
 }
 
 export interface VCTInputProps
@@ -101,6 +103,8 @@ export const VCT_Field = ({
   error,
   children,
   tip,
+  hint,
+  required,
   className,
   ...rest
 }: VCTFieldProps) => (
@@ -108,9 +112,12 @@ export const VCT_Field = ({
     {label ? (
       <label className="inline-flex items-center gap-1 text-xs font-bold text-vct-text-secondary">
         <span>{label}</span>
-        {tip ? (
+        {required ? (
+          <span className="text-red-500">*</span>
+        ) : null}
+        {(tip || hint) ? (
           <span
-            title={tip}
+            title={tip || hint}
             className="inline-flex h-4 w-4 items-center justify-center rounded-full border border-vct-border text-[10px] text-vct-text-muted"
           >
             i

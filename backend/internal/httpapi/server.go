@@ -274,10 +274,14 @@ func New(cfg config.Config) *Server {
 	// ── Upgrade to PG adapters when storage driver is postgres ──
 	if storageDriver == "postgres" && cfg.PostgresURL != "" {
 		db, err := sql.Open("pgx", cfg.PostgresURL)
+		
+		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+		defer cancel()
+
 		if err != nil {
 			log.Printf("PG adapters: sql.Open failed (%v), keeping in-memory stores", err)
-		} else if err := db.Ping(); err != nil {
-			log.Printf("PG adapters: db.Ping failed (%v), keeping in-memory stores", err)
+		} else if err := db.PingContext(ctx); err != nil {
+			log.Printf("PG adapters: db.PingContext failed (%v), keeping in-memory stores", err)
 			_ = db.Close()
 		} else {
 			s.sqlDB = db

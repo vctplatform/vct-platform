@@ -60,6 +60,13 @@ const ROUTE_PERMISSION_MAP: Record<string, string[]> = {
     '/finance/sponsorship': ['payment.read'],
     '/finance/budget': ['payment.read'],
 
+    // Federation Admin (Org-level)
+    '/fed/master-data': ['system.manage_config'],
+    '/fed/documents': ['system.manage_config'],
+    '/fed/certifications': ['system.manage_config'],
+    '/fed/notifications': ['system.manage_config'],
+    '/fed/workflow-config': ['system.manage_config'],
+
     // Community
     '/community': ['community.create_post'],
     '/community/groups': ['community.manage_groups'],
@@ -67,6 +74,7 @@ const ROUTE_PERMISSION_MAP: Record<string, string[]> = {
 
     // Admin
     '/admin': ['system.manage_config'],
+    '/admin/tenants': ['system.manage_tenants'],
     '/admin/users': ['system.manage_users'],
     '/admin/roles': ['system.manage_users'],
     '/admin/reference-data': ['system.manage_config'],

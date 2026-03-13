@@ -204,8 +204,9 @@ Requires: CTO approval
 | vct-cto | 2026-03-11 | ✅ Current | 🟢 |
 | vct-pm | 2026-03-11 | ✅ Current | 🟢 |
 | vct-qa | 2026-03-11 | ✅ Current | 🟢 |
-| vct-ux-designer | 2026-03-11 | ✅ Current | 🟢 |
-| vct-devops | 2026-03-11 | ✅ Current | 🟢 |
+| vct-frontend | 2026-03-13 | ✅ Upgraded | 🟢 |
+| vct-backend-go | 2026-03-13 | ✅ Upgraded | 🟢 |
+| vct-devops | 2026-03-13 | ✅ Upgraded | 🟢 |
 | vct-dba | 2026-03-11 | ✅ Current | 🟢 |
 | vct-security | 2026-03-11 | ✅ Current | 🟢 |
 | vct-tech-lead | 2026-03-11 | ✅ Current | 🟢 |
@@ -215,9 +216,26 @@ Requires: CTO approval
 | vct-release-manager | 2026-03-11 | ✅ Current | 🟢 |
 | vct-auditor | 2026-03-11 | ✅ Current | 🟢 |
 | vct-orchestrator | 2026-03-11 | ✅ Current | 🟢 |
+| vct-error-handling | 2026-03-13 | ✅ Upgraded | 🟢 |
+| vct-ui-ux | 2026-03-13 | ✅ Upgraded | 🟢 |
+| vct-skill-evolver | 2026-03-13 | ✅ Upgraded | 🟢 |
+| vct-cto | 2026-03-13 | ✅ Upgraded | 🟢 |
+| vct-mobile-lead | 2026-03-13 | ✅ Upgraded | 🟢 |
 
 Legend: 🟢 Current | 🟡 Minor update needed | 🔴 Major update needed
 ```
+
+### Upgrade Log (2026-03-13)
+| Skill | Changes | Reason |
+|---|---|---|
+| vct-frontend | +18 hooks, +33 modules, +admin Drawer patterns | Reflect actual project state |
+| vct-devops | +Vercel/Render/Fly.io deployment, +CORS config | Real deployment platforms |
+| vct-error-handling | +Error playbook (6 errors), +debug tree | Lessons from debugging |
+| vct-ui-ux | +VCT_Drawer pattern, +admin page design | Admin workspace patterns |
+| vct-skill-evolver | Updated tracker, +upgrade log | Keep meta-tracking current |
+| vct-backend-go | +23 domain modules catalog | Reflect actual modules |
+| vct-mobile-lead | +Expo/React Navigation setup, +actual screens | Reflect mobile progress |
+| vct-cto | +production platforms, +workflow cross-refs | Real infrastructure |
 
 ### Staleness Thresholds
 | Threshold | Urgency | Action |
