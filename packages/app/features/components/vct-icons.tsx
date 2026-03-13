@@ -91,7 +91,11 @@ import {
     Image as ImageIcon,
     MinusCircle,
     Target,
-    Globe
+    Globe,
+    Share2,
+    Type,
+    Palette,
+    Smartphone
 } from 'lucide-react';
 
 /**
@@ -241,4 +245,9 @@ export const VCT_Icons = {
     Image: (p: IconProps) => <ImageIcon {...defaultProps} {...p} />,
     Target: (p: IconProps) => <Target {...defaultProps} {...p} />,
     Globe: (p: IconProps) => <Globe {...defaultProps} {...p} />,
+    Share: (p: IconProps) => <Share2 {...defaultProps} {...p} />,
+    Share2: (p: IconProps) => <Share2 {...defaultProps} {...p} />,
+    Type: (p: IconProps) => <Type {...defaultProps} {...p} />,
+    Palette: (p: IconProps) => <Palette {...defaultProps} {...p} />,
+    Smartphone: (p: IconProps) => <Smartphone {...defaultProps} {...p} />,
 };

@@ -196,7 +196,7 @@ export const Page_admin_user_detail = ({ userId }: PageAdminUserDetailProps) => 
 
     return (
         <VCT_PageContainer size="wide" animated>
-            {toast && <VCT_Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
+            {toast && <VCT_Toast isVisible={!!toast} message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
 
             {isLoading ? (
                 <>
