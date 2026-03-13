@@ -10,7 +10,8 @@
     "@playwright/test": "^1.52.0",
     "@types/react": "^19.2.0",
     "@types/react-dom": "^19.2.3",
-    "eslint": "^8.21.0",
+    "eslint": "^9.28.0",
+    "@eslint/eslintrc": "^3.3.1",
     "turbo": "^2.4.4",
     "typescript": "^5.2.2"
   },
@@ -36,18 +37,7 @@
     "backend": "go -C backend run ./cmd/server"
   },
 
-  "eslintConfig": {
-    "extends": "next",
-    "settings": {
-      "next": {
-        "rootDir": "apps/next/"
-      }
-    },
-    "rules": {
-      "@next/next/no-html-link-for-pages": "off"
-    },
-    "root": true
-  },
+
   "prettier": {
     "semi": false,
     "useTabs": false,

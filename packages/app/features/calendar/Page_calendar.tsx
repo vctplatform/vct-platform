@@ -90,7 +90,7 @@ export function Page_calendar() {
         if (apiEvents && apiEvents.length > 0) {
             return apiEvents.map(e => ({
                 id: e.id, title: e.title, type: (e.type || 'tournament') as any,
-                date: e.date || e.start_date, endDate: e.end_date,
+                date: e.date || e.start_date || '', endDate: e.end_date || '',
                 location: e.location || '', status: (e.status || 'upcoming') as any,
                 participants: e.participants || 0, description: e.description,
             }))
