@@ -4,7 +4,7 @@ import { Pressable, View } from 'react-native'
 import { useRouter } from 'solito/navigation'
 import { useAuth } from '../../features/auth/AuthProvider'
 import { Icon, VCTIcons } from '../../features/mobile/icons'
-import { Colors, FontWeight } from '../../features/mobile/mobile-theme'
+import { useThemeColors, FontWeight } from '../../features/mobile/mobile-theme'
 import { hapticLight } from '../../features/mobile/haptics'
 
 // ═══════════════════════════════════════════════════════════════
@@ -97,12 +97,14 @@ const MedicalIncidents = React.lazy(() =>
 const Tab = createBottomTabNavigator()
 
 function SuspenseWrap({ children }: { children: React.ReactNode }) {
-  return <React.Suspense fallback={<View style={{ flex: 1, backgroundColor: Colors.bgBase }} />}>{children}</React.Suspense>
+  const { colors } = useThemeColors()
+  return <React.Suspense fallback={<View style={{ flex: 1, backgroundColor: colors.bgBase }} />}>{children}</React.Suspense>
 }
 
 /** Notification bell header button */
 function NotificationBell() {
   const router = useRouter()
+  const { colors } = useThemeColors()
   return (
     <Pressable
       onPress={() => { hapticLight(); router.push('/notifications') }}
@@ -110,11 +112,11 @@ function NotificationBell() {
       accessibilityLabel="Xem thông báo"
       style={{ width: 44, height: 44, borderRadius: 22, justifyContent: 'center', alignItems: 'center', marginRight: 8 }}
     >
-      <Icon name={VCTIcons.notificationsOutline} size={22} color={Colors.textSecondary} />
+      <Icon name={VCTIcons.notificationsOutline} size={22} color={colors.textSecondary} />
       <View style={{
         position: 'absolute', top: 8, right: 8,
         width: 8, height: 8, borderRadius: 4,
-        backgroundColor: Colors.red, borderWidth: 1.5, borderColor: Colors.bgBase,
+        backgroundColor: colors.red, borderWidth: 1.5, borderColor: colors.bgBase,
       }} />
     </Pressable>
   )
@@ -148,33 +150,34 @@ function getRoleGroup(role?: string): 'athlete' | 'parent' | 'club' | 'btc' | 'r
 
 export function TabNavigator() {
   const { currentUser } = useAuth()
+  const { colors } = useThemeColors()
   const roleGroup = getRoleGroup(currentUser.role)
 
   const tabBarStyle = {
-    backgroundColor: Colors.bgBase,
-    borderTopColor: Colors.border,
+    backgroundColor: colors.bgBase,
+    borderTopColor: colors.border,
     borderTopWidth: 1,
     height: 60,
     paddingBottom: 8,
     paddingTop: 4,
   }
   const headerStyle = {
-    backgroundColor: Colors.bgBase,
+    backgroundColor: colors.bgBase,
     shadowColor: 'transparent' as const,
     elevation: 0,
     borderBottomWidth: 1,
-    borderBottomColor: Colors.border,
+    borderBottomColor: colors.border,
   }
 
   return (
     <Tab.Navigator
       screenOptions={{
-        tabBarActiveTintColor: Colors.accent,
-        tabBarInactiveTintColor: Colors.textMuted,
+        tabBarActiveTintColor: colors.accent,
+        tabBarInactiveTintColor: colors.textMuted,
         tabBarStyle,
         tabBarLabelStyle: { fontSize: 10, fontWeight: FontWeight.bold },
         headerStyle,
-        headerTitleStyle: { fontSize: 18, fontWeight: FontWeight.black, color: Colors.textPrimary },
+        headerTitleStyle: { fontSize: 18, fontWeight: FontWeight.black, color: colors.textPrimary },
         headerRight: () => <NotificationBell />,
       }}
     >
