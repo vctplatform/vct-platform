@@ -3,6 +3,7 @@ import { useState, useCallback } from 'react'
 import {
   ActivityIndicator,
   Animated,
+  Image,
   KeyboardAvoidingView,
   Platform,
   Pressable,
@@ -18,26 +19,30 @@ import { Icon, VCTIcons } from './icons'
 import { hapticLight, hapticSuccess, hapticError } from './haptics'
 
 // ═══════════════════════════════════════════════════════════════
-// VCT PLATFORM — Mobile Login Screen (v2)
-// SVG icons, password toggle, forgot password, haptics, a11y
+// VCT PLATFORM — Mobile Login Screen (v3)
+// Real logo, cyan accent, synced with web design system
 // ═══════════════════════════════════════════════════════════════
 
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const logoSource = require('app/assets/logo-vct.png')
+
 const s = StyleSheet.create({
-  container: { flex: 1, backgroundColor: Colors.bgDark },
+  container: { flex: 1, backgroundColor: Colors.bgBase },
   scroll: { flexGrow: 1, justifyContent: 'center', padding: Space.xxl },
 
-  heroWrap: { alignItems: 'center', marginBottom: 40 },
-  logoCircle: {
-    width: 88, height: 88, borderRadius: 44,
-    backgroundColor: Colors.overlay(Colors.accent, 0.15), justifyContent: 'center', alignItems: 'center',
-    marginBottom: 20, borderWidth: 2, borderColor: Colors.overlay(Colors.accent, 0.3),
+  heroWrap: { alignItems: 'center', marginBottom: 36 },
+  logoImage: {
+    width: 120, height: 120, marginBottom: 16,
   },
-  brandText: { fontSize: 28, fontWeight: FontWeight.black, color: Colors.textWhite, letterSpacing: 1, marginBottom: 4 },
-  brandSub: { fontSize: 13, color: Colors.textMuted, fontWeight: FontWeight.semibold },
+  brandText: {
+    fontSize: 13, fontWeight: FontWeight.bold, color: Colors.textMuted,
+    letterSpacing: 2, textTransform: 'uppercase',
+  },
+  brandSub: { fontSize: 13, color: Colors.textMuted, fontWeight: FontWeight.medium, marginTop: 4 },
 
   formCard: {
     borderRadius: Radius.xl, padding: Space.xxl,
-    backgroundColor: '#1e293b', borderWidth: 1, borderColor: Colors.borderLight,
+    backgroundColor: Colors.bgCard, borderWidth: 1, borderColor: Colors.border,
   },
   label: {
     fontSize: 12, fontWeight: FontWeight.extrabold, color: Colors.textMuted,
@@ -45,26 +50,25 @@ const s = StyleSheet.create({
   },
   inputWrap: {
     flexDirection: 'row', alignItems: 'center', gap: 10,
-    backgroundColor: Colors.bgInput, borderRadius: Radius.md, borderWidth: 1, borderColor: '#475569',
+    backgroundColor: Colors.bgInput, borderRadius: Radius.md, borderWidth: 1, borderColor: Colors.border,
     paddingHorizontal: 14, marginBottom: 18,
   },
-  input: { flex: 1, height: 48, color: Colors.textWhite, fontSize: 15, fontWeight: FontWeight.semibold },
+  input: { flex: 1, height: 48, color: Colors.textPrimary, fontSize: 15, fontWeight: FontWeight.semibold },
 
   loginBtn: {
     borderRadius: Radius.md, height: 52, justifyContent: 'center', alignItems: 'center',
     backgroundColor: Colors.accent, marginTop: 6,
-    shadowColor: Colors.accent, shadowOpacity: 0.3, shadowRadius: 10, elevation: 4,
     minHeight: Touch.minSize,
   },
   loginBtnDisabled: { opacity: 0.5 },
   loginBtnText: { fontSize: 16, fontWeight: FontWeight.black, color: '#fff', letterSpacing: 0.5 },
 
   errorBox: {
-    backgroundColor: Colors.overlay(Colors.red, 0.12), borderRadius: Radius.md, padding: Space.md,
+    backgroundColor: Colors.statusErrorBg, borderRadius: Radius.md, padding: Space.md,
     marginBottom: Space.lg, borderWidth: 1, borderColor: Colors.overlay(Colors.red, 0.2),
     flexDirection: 'row', alignItems: 'center', gap: 8,
   },
-  errorText: { color: Colors.red, fontSize: 12, fontWeight: FontWeight.bold, flex: 1 },
+  errorText: { color: Colors.statusErrorFg, fontSize: 12, fontWeight: FontWeight.bold, flex: 1 },
 
   forgotBtn: { alignSelf: 'flex-end', marginTop: -10, marginBottom: 14 },
   forgotText: { fontSize: 12, fontWeight: FontWeight.semibold, color: Colors.textMuted },
@@ -76,10 +80,10 @@ const s = StyleSheet.create({
   },
   demoTitle: { color: Colors.gold, fontSize: 11, fontWeight: FontWeight.extrabold, textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 4 },
   demoText: { color: Colors.textMuted, fontSize: 12, lineHeight: 18 },
-  demoCode: { color: '#e2e8f0', fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace', fontWeight: FontWeight.bold },
+  demoCode: { color: Colors.textPrimary, fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace', fontWeight: FontWeight.bold },
 
   footer: { alignItems: 'center', marginTop: Space.xxxl, paddingBottom: Space.lg },
-  footerText: { color: '#475569', fontSize: 11, fontWeight: FontWeight.semibold },
+  footerText: { color: Colors.textMuted, fontSize: 11, fontWeight: FontWeight.semibold },
 })
 
 const DEMO_ACCOUNTS = [
@@ -104,8 +108,8 @@ export function LoginMobileScreen() {
     // Logo breathing animation
     Animated.loop(
       Animated.sequence([
-        Animated.timing(logoScale, { toValue: 1.08, duration: 1200, useNativeDriver: true }),
-        Animated.timing(logoScale, { toValue: 1, duration: 1200, useNativeDriver: true }),
+        Animated.timing(logoScale, { toValue: 1.06, duration: 1500, useNativeDriver: true }),
+        Animated.timing(logoScale, { toValue: 1, duration: 1500, useNativeDriver: true }),
       ])
     ).start()
     // Form slide-up entrance
@@ -163,18 +167,17 @@ export function LoginMobileScreen() {
     <KeyboardAvoidingView style={s.container} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
       <ScrollView contentContainerStyle={s.scroll} keyboardShouldPersistTaps="handled">
         <View style={s.heroWrap}>
-          <Animated.View style={[s.logoCircle, { transform: [{ scale: logoScale }] }]}>
-            <Icon name={VCTIcons.fitness} size={42} color={Colors.accent} />
+          <Animated.View style={{ transform: [{ scale: logoScale }] }}>
+            <Image source={logoSource} style={s.logoImage} resizeMode="contain" />
           </Animated.View>
-          <Text style={s.brandText}>VCT PLATFORM</Text>
-          <Text style={s.brandSub}>Nền tảng Võ Cổ Truyền Việt Nam</Text>
+          <Text style={s.brandText}>Nền tảng Võ Cổ Truyền Việt Nam</Text>
         </View>
 
         {/* FORM — animated entrance */}
         <Animated.View style={[s.formCard, { transform: [{ translateY: formSlide }], opacity: formOpacity }]} accessibilityRole="form">
           {error ? (
             <View style={s.errorBox} accessibilityRole="alert">
-              <Icon name={VCTIcons.alert} size={18} color={Colors.red} />
+              <Icon name={VCTIcons.alert} size={18} color={Colors.statusErrorFg} />
               <Text style={s.errorText}>{error}</Text>
             </View>
           ) : null}
@@ -185,7 +188,7 @@ export function LoginMobileScreen() {
             <TextInput
               style={s.input}
               placeholder="Nhập tên đăng nhập"
-              placeholderTextColor="#64748b"
+              placeholderTextColor={Colors.textMuted}
               autoCapitalize="none"
               autoCorrect={false}
               value={username}
@@ -202,7 +205,7 @@ export function LoginMobileScreen() {
             <TextInput
               style={s.input}
               placeholder="Nhập mật khẩu"
-              placeholderTextColor="#64748b"
+              placeholderTextColor={Colors.textMuted}
               secureTextEntry={!showPassword}
               value={password}
               onChangeText={setPassword}

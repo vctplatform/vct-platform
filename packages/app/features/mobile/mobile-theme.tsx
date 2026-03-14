@@ -3,14 +3,14 @@ import { createContext, useCallback, useContext, useMemo, useState } from 'react
 import { StyleSheet } from 'react-native'
 
 // ═══════════════════════════════════════════════════════════════
-// VCT PLATFORM — Mobile Design System (v2)
-// Dark-first theming, design tokens, shared styles
+// VCT PLATFORM — Mobile Design System (v3)
+// Synced with web globals.css tokens. Dark-first by default.
 // ═══════════════════════════════════════════════════════════════
 
-// ── Color Palette ────────────────────────────────────────────
+// ── Color Palette (aligned with web --vct-* tokens) ──────────
 
 interface ThemePalette {
-  bgBase: string; bgDark: string; bgCard: string; bgInput: string
+  bgBase: string; bgDark: string; bgCard: string; bgInput: string; bgElevated: string
   accent: string; accentDark: string; gold: string; green: string; red: string; purple: string; cyan: string
   textPrimary: string; textSecondary: string; textWhite: string; textMuted: string
   border: string; borderLight: string; borderAccent: string
@@ -22,27 +22,27 @@ interface ThemePalette {
 }
 
 const LIGHT: ThemePalette = {
-  bgBase: '#f8fafc', bgDark: '#0f172a', bgCard: '#ffffff', bgInput: '#f1f5f9',
-  accent: '#3b82f6', accentDark: '#2563eb', gold: '#f59e0b', green: '#22c55e', red: '#ef4444', purple: '#8b5cf6', cyan: '#06b6d4',
-  textPrimary: '#0f172a', textSecondary: '#64748b', textWhite: '#ffffff', textMuted: '#94a3b8',
-  border: '#e2e8f0', borderLight: 'rgba(255,255,255,0.06)', borderAccent: 'rgba(59,130,246,0.2)',
-  statusOkBg: '#dcfce7', statusOkFg: '#166534',
-  statusWarnBg: '#fef3c7', statusWarnFg: '#92400e',
-  statusErrorBg: '#fee2e2', statusErrorFg: '#991b1b',
-  statusInfoBg: '#dbeafe', statusInfoFg: '#1e40af',
-  skeleton: '#e2e8f0', trackBg: '#f1f5f9',
+  bgBase: '#f0f4f8', bgDark: '#0b1120', bgCard: '#ffffff', bgInput: '#e8edf3', bgElevated: '#ffffff',
+  accent: '#0ea5e9', accentDark: '#0284c7', gold: '#eab308', green: '#10b981', red: '#ef4444', purple: '#8b5cf6', cyan: '#0ea5e9',
+  textPrimary: '#0f172a', textSecondary: '#334155', textWhite: '#ffffff', textMuted: '#64748b',
+  border: '#dde3ec', borderLight: 'rgba(255,255,255,0.06)', borderAccent: 'rgba(14,165,233,0.2)',
+  statusOkBg: 'rgba(16,185,129,0.12)', statusOkFg: '#10b981',
+  statusWarnBg: 'rgba(245,158,11,0.12)', statusWarnFg: '#f59e0b',
+  statusErrorBg: 'rgba(239,68,68,0.12)', statusErrorFg: '#ef4444',
+  statusInfoBg: 'rgba(59,130,246,0.12)', statusInfoFg: '#3b82f6',
+  skeleton: '#e8edf3', trackBg: '#f0f4f8',
 }
 
 const DARK: ThemePalette = {
-  bgBase: '#0f172a', bgDark: '#020617', bgCard: '#1e293b', bgInput: '#334155',
-  accent: '#60a5fa', accentDark: '#3b82f6', gold: '#fbbf24', green: '#4ade80', red: '#f87171', purple: '#a78bfa', cyan: '#22d3ee',
-  textPrimary: '#f1f5f9', textSecondary: '#94a3b8', textWhite: '#ffffff', textMuted: '#64748b',
-  border: '#334155', borderLight: 'rgba(255,255,255,0.08)', borderAccent: 'rgba(96,165,250,0.25)',
-  statusOkBg: 'rgba(34,197,94,0.15)', statusOkFg: '#4ade80',
-  statusWarnBg: 'rgba(245,158,11,0.15)', statusWarnFg: '#fbbf24',
-  statusErrorBg: 'rgba(239,68,68,0.15)', statusErrorFg: '#f87171',
-  statusInfoBg: 'rgba(59,130,246,0.15)', statusInfoFg: '#60a5fa',
-  skeleton: '#334155', trackBg: '#1e293b',
+  bgBase: '#0b1120', bgDark: '#060c1a', bgCard: '#162032', bgInput: '#1e293b', bgElevated: '#162032',
+  accent: '#22d3ee', accentDark: '#0ea5e9', gold: '#facc15', green: '#34d399', red: '#f87171', purple: '#a78bfa', cyan: '#22d3ee',
+  textPrimary: '#f1f5f9', textSecondary: '#cbd5e1', textWhite: '#ffffff', textMuted: '#94a3b8',
+  border: '#1e293b', borderLight: 'rgba(255,255,255,0.08)', borderAccent: 'rgba(34,211,238,0.25)',
+  statusOkBg: 'rgba(52,211,153,0.15)', statusOkFg: '#34d399',
+  statusWarnBg: 'rgba(251,191,36,0.15)', statusWarnFg: '#fbbf24',
+  statusErrorBg: 'rgba(248,113,113,0.15)', statusErrorFg: '#f87171',
+  statusInfoBg: 'rgba(96,165,250,0.15)', statusInfoFg: '#60a5fa',
+  skeleton: '#1e293b', trackBg: '#162032',
 }
 
 /** Color overlay helper */
@@ -66,14 +66,14 @@ interface ThemeContextValue {
 }
 
 const ThemeContext = createContext<ThemeContextValue>({
-  mode: 'light',
-  colors: { ...LIGHT, overlay },
+  mode: 'dark',
+  colors: { ...DARK, overlay },
   toggleTheme: () => {},
-  isDark: false,
+  isDark: true,
 })
 
 export function MobileThemeProvider({ children }: { children: React.ReactNode }) {
-  const [mode, setMode] = useState<ThemeMode>('light')
+  const [mode, setMode] = useState<ThemeMode>('dark')
 
   const toggleTheme = useCallback(() => {
     setMode(m => (m === 'light' ? 'dark' : 'light'))
@@ -93,11 +93,10 @@ export function useThemeColors() {
   return useContext(ThemeContext)
 }
 
-// ── Static exports (backward compat) ─────────────────────────
-// These remain for screens not yet migrated to dynamic theme
+// ── Static exports (backward compat — now defaults DARK) ─────
 
 export const Colors = {
-  ...LIGHT,
+  ...DARK,
   overlay,
 } as const
 
@@ -127,52 +126,51 @@ export const Touch = {
   minSizeSm: 36,
 } as const
 
-/** Shared styles — uses static Colors for backward compat */
+/** Shared styles — dark by default */
 export const SharedStyles = StyleSheet.create({
-  page: { flex: 1, backgroundColor: LIGHT.bgBase },
-  pageDark: { flex: 1, backgroundColor: LIGHT.bgDark },
+  page: { flex: 1, backgroundColor: DARK.bgBase },
+  pageDark: { flex: 1, backgroundColor: DARK.bgDark },
   scrollContent: { padding: Space.lg, paddingBottom: 40 },
 
   card: {
     borderRadius: Radius.lg, padding: Space.lg, marginBottom: Space.md,
-    backgroundColor: LIGHT.bgCard, borderWidth: 1, borderColor: LIGHT.border,
+    backgroundColor: DARK.bgCard, borderWidth: 1, borderColor: DARK.border,
   },
   heroCard: {
     borderRadius: Radius.xl, padding: Space.xxl, marginBottom: Space.lg,
-    backgroundColor: LIGHT.bgDark,
-    shadowColor: '#000', shadowOpacity: 0.15, shadowRadius: 12, elevation: 4,
+    backgroundColor: DARK.bgDark,
   },
 
   statsRow: { flexDirection: 'row', gap: 10, marginBottom: Space.lg },
   statBox: {
     flex: 1, borderRadius: Radius.lg, padding: 14, alignItems: 'center',
-    backgroundColor: LIGHT.bgCard, borderWidth: 1, borderColor: LIGHT.border,
+    backgroundColor: DARK.bgCard, borderWidth: 1, borderColor: DARK.border,
   },
-  statValue: { fontSize: 22, fontWeight: FontWeight.black, color: LIGHT.textPrimary, marginBottom: 2 },
+  statValue: { fontSize: 22, fontWeight: FontWeight.black, color: DARK.textPrimary, marginBottom: 2 },
   statLabel: {
-    fontSize: 10, fontWeight: FontWeight.bold, color: LIGHT.textSecondary,
+    fontSize: 10, fontWeight: FontWeight.bold, color: DARK.textSecondary,
     textTransform: 'uppercase', letterSpacing: 0.5,
   },
 
   actionRow: { flexDirection: 'row', gap: 10, marginBottom: Space.lg },
   actionBtn: {
     flex: 1, borderRadius: Radius.md, padding: 14, alignItems: 'center',
-    backgroundColor: LIGHT.bgCard, borderWidth: 1, borderColor: LIGHT.border,
+    backgroundColor: DARK.bgCard, borderWidth: 1, borderColor: DARK.border,
     minHeight: Touch.minSize,
   },
   actionIcon: { fontSize: 22, marginBottom: 6 },
-  actionLabel: { fontSize: 11, fontWeight: FontWeight.bold, color: LIGHT.textSecondary },
+  actionLabel: { fontSize: 11, fontWeight: FontWeight.bold, color: DARK.textSecondary },
 
-  sectionTitle: { fontSize: 16, fontWeight: FontWeight.extrabold, color: LIGHT.textPrimary, marginBottom: 12, marginTop: 8 },
-  sectionSub: { fontSize: 11, color: LIGHT.textSecondary, marginBottom: 10 },
+  sectionTitle: { fontSize: 16, fontWeight: FontWeight.extrabold, color: DARK.textPrimary, marginBottom: 12, marginTop: 8 },
+  sectionSub: { fontSize: 11, color: DARK.textSecondary, marginBottom: 10 },
 
   skillRow: { flexDirection: 'row', alignItems: 'center', gap: 10, marginBottom: 10 },
-  skillLabel: { width: 64, fontSize: 11, fontWeight: FontWeight.semibold, color: LIGHT.textSecondary, textAlign: 'right' },
-  skillTrack: { flex: 1, height: 8, backgroundColor: LIGHT.trackBg, borderRadius: 4, overflow: 'hidden' },
+  skillLabel: { width: 64, fontSize: 11, fontWeight: FontWeight.semibold, color: DARK.textSecondary, textAlign: 'right' },
+  skillTrack: { flex: 1, height: 8, backgroundColor: DARK.trackBg, borderRadius: 4, overflow: 'hidden' },
   skillFill: { height: '100%', borderRadius: 4 },
   skillValue: { width: 28, fontSize: 11, fontWeight: FontWeight.extrabold, textAlign: 'right' },
 
-  progressTrack: { height: 6, backgroundColor: LIGHT.trackBg, borderRadius: 3, overflow: 'hidden', marginTop: 6 },
+  progressTrack: { height: 6, backgroundColor: DARK.trackBg, borderRadius: 3, overflow: 'hidden', marginTop: 6 },
   progressFill: { height: '100%', borderRadius: 3 },
 
   badge: { paddingHorizontal: 10, paddingVertical: 4, borderRadius: Radius.pill, alignSelf: 'flex-start' },
@@ -181,9 +179,9 @@ export const SharedStyles = StyleSheet.create({
   emptyBox: {
     paddingVertical: 32, alignItems: 'center', justifyContent: 'center',
     borderRadius: Radius.lg, borderWidth: 1, borderStyle: 'dashed',
-    borderColor: LIGHT.border, backgroundColor: LIGHT.bgCard, marginBottom: 12,
+    borderColor: DARK.border, backgroundColor: DARK.bgCard, marginBottom: 12,
   },
-  emptyText: { fontSize: 13, color: LIGHT.textSecondary, marginTop: 8, textAlign: 'center' },
+  emptyText: { fontSize: 13, color: DARK.textSecondary, marginTop: 8, textAlign: 'center' },
 
   row: { flexDirection: 'row', alignItems: 'center' },
   rowBetween: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },

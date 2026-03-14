@@ -151,7 +151,7 @@ export function TabNavigator() {
   const roleGroup = getRoleGroup(currentUser.role)
 
   const tabBarStyle = {
-    backgroundColor: Colors.bgCard,
+    backgroundColor: Colors.bgBase,
     borderTopColor: Colors.border,
     borderTopWidth: 1,
     height: 60,
@@ -159,7 +159,7 @@ export function TabNavigator() {
     paddingTop: 4,
   }
   const headerStyle = {
-    backgroundColor: Colors.bgCard,
+    backgroundColor: Colors.bgBase,
     shadowColor: 'transparent' as const,
     elevation: 0,
     borderBottomWidth: 1,

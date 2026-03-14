@@ -1022,6 +1022,11 @@
   dependencies:
     chalk "^4.1.2"
 
+"@expo/dom-webview@^55.0.3":
+  version "55.0.3"
+  resolved "https://registry.npmjs.org/@expo/dom-webview/-/dom-webview-55.0.3.tgz"
+  integrity sha512-bY4/rfcZ0f43DvOtMn8/kmPlmo01tex5hRoc5hKbwBwQjqWQuQt0ACwu7akR9IHI4j0WNG48eL6cZB6dZUFrzg==
+
 "@expo/env@~2.0.8":
   version "2.0.11"
   resolved "https://registry.npmjs.org/@expo/env/-/env-2.0.11.tgz"
@@ -1076,6 +1081,15 @@
     "@babel/code-frame" "^7.20.0"
     json5 "^2.2.3"
 
+"@expo/log-box@55.0.7":
+  version "55.0.7"
+  resolved "https://registry.npmjs.org/@expo/log-box/-/log-box-55.0.7.tgz"
+  integrity sha512-m7V1k2vlMp4NOj3fopjOg4zl/ANXyTRF3HMTMep2GZAKsPiDzgOQ41nm8CaU50/HlDIGXlCObss07gOn20UpHQ==
+  dependencies:
+    "@expo/dom-webview" "^55.0.3"
+    anser "^1.4.9"
+    stacktrace-parser "^0.1.10"
+
 "@expo/metro-config@~54.0.14", "@expo/metro-config@54.0.14":
   version "54.0.14"
   resolved "https://registry.npmjs.org/@expo/metro-config/-/metro-config-54.0.14.tgz"
@@ -1102,6 +1116,17 @@
     minimatch "^9.0.0"
     postcss "~8.4.32"
     resolve-from "^5.0.0"
+
+"@expo/metro-runtime@^55.0.6":
+  version "55.0.6"
+  resolved "https://registry.npmjs.org/@expo/metro-runtime/-/metro-runtime-55.0.6.tgz"
+  integrity sha512-l8VvgKN9md+URjeQDB+DnHVmvpcWI6zFLH6yv7GTv4sfRDKyaZ5zDXYjTP1phYdgW6ea2NrRtCGNIxylWhsgtg==
+  dependencies:
+    "@expo/log-box" "55.0.7"
+    anser "^1.4.9"
+    pretty-format "^29.7.0"
+    stacktrace-parser "^0.1.10"
+    whatwg-fetch "^3.0.0"
 
 "@expo/metro@~54.2.0":
   version "54.2.0"
@@ -3606,9 +3631,11 @@ event-target-shim@^5.0.0:
   version "1.0.0"
   resolved "file:apps/expo"
   dependencies:
+    "@expo/vector-icons" "^15.1.1"
     "@react-navigation/bottom-tabs" "^7.15.5"
     app "*"
     expo "^54.0.16"
+    expo-haptics "^55.0.8"
     expo-image "~3.0.10"
     expo-linear-gradient "~15.0.7"
     expo-linking "~8.0.8"

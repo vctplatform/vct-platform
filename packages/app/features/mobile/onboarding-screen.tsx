@@ -1,14 +1,17 @@
 import * as React from 'react'
-import { Animated, Dimensions, Pressable, StyleSheet, Text, View } from 'react-native'
+import { Animated, Dimensions, Image, Pressable, StyleSheet, Text, View } from 'react-native'
 import { useRouter } from 'solito/navigation'
 import { Colors, FontWeight, Radius, Space, Touch, SharedStyles } from './mobile-theme'
 import { Icon, VCTIcons } from './icons'
 import { hapticLight, hapticSelection } from './haptics'
 
 // ═══════════════════════════════════════════════════════════════
-// VCT PLATFORM — Mobile Onboarding Screen
-// 3-slide welcome carousel for unified app context
+// VCT PLATFORM — Mobile Onboarding Screen (v3)
+// Real logo on first slide, synced with web design system
 // ═══════════════════════════════════════════════════════════════
+
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const logoSource = require('app/assets/logo-vct.png')
 
 const { width } = Dimensions.get('window')
 
@@ -17,7 +20,7 @@ const SLIDES = [
     key: '1',
     title: 'Hệ Sinh Thái\nVõ Cổ Truyền',
     subtitle: 'Nền tảng quản lý võ thuật chuyên nghiệp đầu tiên tại Việt Nam, kết nối Liên đoàn, Võ đường và Vận động viên.',
-    icon: VCTIcons.globe,
+    icon: null, // use logo image
     color: Colors.accent,
   },
   {
@@ -96,14 +99,18 @@ export function OnboardingMobileScreen() {
           return (
             <View key={slide.key} style={{ width, flex: 1, padding: Space.xl, justifyContent: 'center' }}>
               <Animated.View style={{ alignItems: 'center', marginBottom: 40, transform: [{ translateX }] }}>
-                <View style={{
-                  width: 140, height: 140, borderRadius: 70,
-                  backgroundColor: Colors.overlay(slide.color, 0.1),
-                  justifyContent: 'center', alignItems: 'center',
-                  borderWidth: 2, borderColor: Colors.overlay(slide.color, 0.2),
-                }}>
-                  <Icon name={slide.icon} size={64} color={slide.color} />
-                </View>
+                {slide.icon === null ? (
+                  <Image source={logoSource} style={{ width: 160, height: 160 }} resizeMode="contain" />
+                ) : (
+                  <View style={{
+                    width: 140, height: 140, borderRadius: 70,
+                    backgroundColor: Colors.overlay(slide.color, 0.1),
+                    justifyContent: 'center', alignItems: 'center',
+                    borderWidth: 2, borderColor: Colors.overlay(slide.color, 0.2),
+                  }}>
+                    <Icon name={slide.icon} size={64} color={slide.color} />
+                  </View>
+                )}
               </Animated.View>
 
               <Animated.View style={{ opacity, alignItems: 'center', paddingHorizontal: 10 }}>
@@ -154,7 +161,6 @@ export function OnboardingMobileScreen() {
           style={{
             width: '100%', paddingVertical: 16, borderRadius: Radius.pill, backgroundColor: Colors.accent,
             alignItems: 'center', justifyContent: 'center', minHeight: Touch.minSize,
-            shadowColor: Colors.accent, shadowOpacity: 0.3, shadowRadius: 10, elevation: 4,
           }}
           onPress={goToNextSlide}
           accessibilityRole="button"
