@@ -12,12 +12,18 @@ All `.md` documentation files created by the AI agent MUST be placed inside the 
 docs/
 ├── api/                  # API documentation
 ├── architecture/         # Architecture & system design docs
+├── audit/                # Audit reports, code review results
 ├── business-analysis/    # Business analysis, evaluations, audits
+├── deployment/           # Deployment guides & configs
 ├── guides/               # How-to guides, tutorials, onboarding
-├── infrastructure/       # Deployment, CI/CD, DevOps docs
+├── infrastructure/       # CI/CD, DevOps, cloud infra docs
+├── plans/                # Implementation plans, roadmaps
 ├── prompts/              # AI prompts and templates
 ├── regulations/          # Rules, regulations, compliance docs
+├── reports/              # Analysis reports, critique reports, status reports
 ├── skills/               # AI agent skill definitions
+├── tasks/                # Task tracking, checklists
+├── walkthroughs/         # Feature walkthroughs, proof-of-work docs
 └── *.html                # Pitch decks, presentations
 ```
 
@@ -30,6 +36,21 @@ docs/
 3. If no existing subdirectory fits, create a new descriptive subdirectory under `docs/`.
 4. Use kebab-case for file and directory names (e.g., `tournament-workflow.md`).
 5. Backend-specific docs go in `backend/docs/`.
+
+## AI Artifacts Rule
+
+> [!IMPORTANT]
+> **All AI-generated artifacts** (implementation plans, walkthroughs, task lists, analysis reports, critiques, etc.) related to vct-platform **MUST be saved directly in `docs/`** — NOT in the Antigravity brain directory (`~/.gemini/antigravity/brain/`).
+
+When creating artifacts during a conversation:
+- **Implementation plans** → `docs/plans/<descriptive-name>.md`
+- **Walkthroughs** → `docs/walkthroughs/<descriptive-name>.md`
+- **Task checklists** → `docs/tasks/<descriptive-name>.md`
+- **Audit/critique reports** → `docs/reports/<descriptive-name>.md`
+- **Architecture decisions** → `docs/architecture/<descriptive-name>.md`
+- **Business analysis** → `docs/business-analysis/<descriptive-name>.md`
+
+This ensures all project knowledge stays **inside the repository** and is accessible to all team members, not locked in AI agent local storage.
 
 ## When Creating New Documentation
 
@@ -44,7 +65,11 @@ docs/
 |---|---|
 | Business analysis report | `docs/business-analysis/admin-processes.md` |
 | API endpoint docs | `docs/api/tournament-endpoints.md` |
-| Deployment guide | `docs/infrastructure/fly-io-deployment.md` |
+| Deployment guide | `docs/deployment/fly-io-deployment.md` |
 | System architecture | `docs/architecture/rbac-design.md` |
-| Feature walkthrough | `docs/guides/tournament-setup.md` |
+| Feature walkthrough | `docs/walkthroughs/tournament-setup.md` |
 | Regulation rules | `docs/regulations/vo-co-truyen-rules.md` |
+| AI critique/analysis | `docs/reports/mobile-athlete-critique.md` |
+| Implementation plan | `docs/plans/realtime-scoring-plan.md` |
+| Task checklist | `docs/tasks/sprint-3-tasks.md` |
+| Audit report | `docs/audit/security-audit-2026.md` |

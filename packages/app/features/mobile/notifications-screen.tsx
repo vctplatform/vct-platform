@@ -1,31 +1,33 @@
 import * as React from 'react'
 import { useMemo, useCallback } from 'react'
 import { FlatList, Pressable, RefreshControl, Text, View } from 'react-native'
-import { Colors, SharedStyles, FontWeight, Radius, Space } from './mobile-theme'
+import { Colors, SharedStyles, FontWeight, Radius, Space, Touch } from './mobile-theme'
 import { ScreenSkeleton } from './mobile-ui'
+import { Icon, VCTIcons } from './icons'
+import { hapticLight } from './haptics'
 import { useNotifications } from './useAthleteData'
 import type { MockNotification } from './mock-data'
 
 // ═══════════════════════════════════════════════════════════════
-// VCT PLATFORM — Mobile Notifications Screen
-// Uses API hook with loading state and pull-to-refresh
+// VCT PLATFORM — Mobile Notifications Screen (v2)
+// SVG icons, a11y, haptics, empty CTA
 // ═══════════════════════════════════════════════════════════════
 
-const NOTIF_TYPE_CFG: Record<string, { emoji: string; color: string; label: string }> = {
-  tournament: { emoji: '🏆', color: Colors.gold, label: 'Giải đấu' },
-  training: { emoji: '🥋', color: Colors.green, label: 'Tập luyện' },
-  system: { emoji: '⚙️', color: Colors.textSecondary, label: 'Hệ thống' },
-  result: { emoji: '🏅', color: Colors.purple, label: 'Kết quả' },
+const NOTIF_TYPE_CFG: Record<string, { icon: React.ComponentProps<typeof Icon>['name']; color: string; label: string }> = {
+  tournament: { icon: VCTIcons.trophy, color: Colors.gold, label: 'Giải đấu' },
+  training: { icon: VCTIcons.fitness, color: Colors.green, label: 'Tập luyện' },
+  system: { icon: VCTIcons.settings, color: Colors.textSecondary, label: 'Hệ thống' },
+  result: { icon: VCTIcons.medal, color: Colors.purple, label: 'Kết quả' },
 }
 
 type FilterType = 'all' | 'tournament' | 'training' | 'system' | 'result'
 
-const FILTERS: { key: FilterType; label: string }[] = [
+const FILTERS: { key: FilterType; label: string; icon?: React.ComponentProps<typeof Icon>['name'] }[] = [
   { key: 'all', label: 'Tất cả' },
-  { key: 'tournament', label: '🏆 Giải đấu' },
-  { key: 'training', label: '🥋 Tập luyện' },
-  { key: 'result', label: '🏅 Kết quả' },
-  { key: 'system', label: '⚙️ Hệ thống' },
+  { key: 'tournament', label: 'Giải đấu', icon: VCTIcons.trophy },
+  { key: 'training', label: 'Tập luyện', icon: VCTIcons.fitness },
+  { key: 'result', label: 'Kết quả', icon: VCTIcons.medal },
+  { key: 'system', label: 'Hệ thống', icon: VCTIcons.settings },
 ]
 
 export function NotificationsMobileScreen() {
@@ -42,14 +44,16 @@ export function NotificationsMobileScreen() {
     const cfg = NOTIF_TYPE_CFG[item.type] ?? NOTIF_TYPE_CFG['system']!
     return (
       <Pressable
-        style={[SharedStyles.card, !item.read && { backgroundColor: '#f0f9ff', borderColor: Colors.overlay(Colors.accent, 0.15) }]}
-        onPress={() => markAsRead(item.id)}
+        style={[SharedStyles.card, !item.read && { backgroundColor: Colors.overlay(Colors.accent, 0.04), borderColor: Colors.overlay(Colors.accent, 0.15) }]}
+        onPress={() => { hapticLight(); markAsRead(item.id) }}
         android_ripple={{ color: 'rgba(0,0,0,0.03)' }}
+        accessibilityRole="button"
+        accessibilityLabel={`${item.read ? '' : 'Chưa đọc: '}${item.title}. ${item.body}`}
       >
         <View style={[SharedStyles.rowBetween, { marginBottom: 6 }]}>
           <View style={[SharedStyles.row, { gap: 6 }]}>
             {!item.read && <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: Colors.accent, marginRight: 2 }} />}
-            <Text style={{ fontSize: 14 }}>{cfg.emoji}</Text>
+            <Icon name={cfg.icon} size={16} color={cfg.color} />
             <Text style={{ fontSize: 10, fontWeight: FontWeight.extrabold, color: cfg.color, textTransform: 'uppercase', letterSpacing: 0.5 }}>{cfg.label}</Text>
           </View>
           <Text style={{ fontSize: 10, color: Colors.textSecondary }}>{item.time}</Text>
@@ -66,7 +70,7 @@ export function NotificationsMobileScreen() {
     <View>
       <View style={[SharedStyles.rowBetween, { marginBottom: 16 }]}>
         <View style={[SharedStyles.row, { gap: 10 }]}>
-          <Text style={{ fontSize: 22, fontWeight: FontWeight.black, color: Colors.textPrimary }}>Thông báo</Text>
+          <Text style={{ fontSize: 22, fontWeight: FontWeight.black, color: Colors.textPrimary }} accessibilityRole="header">Thông báo</Text>
           {unreadCount > 0 && (
             <View style={{ minWidth: 18, height: 18, borderRadius: 9, backgroundColor: Colors.red, justifyContent: 'center', alignItems: 'center', paddingHorizontal: 4 }}>
               <Text style={{ fontSize: 10, fontWeight: FontWeight.black, color: '#fff' }}>{unreadCount}</Text>
@@ -75,8 +79,10 @@ export function NotificationsMobileScreen() {
         </View>
         {unreadCount > 0 && (
           <Pressable
-            style={{ paddingHorizontal: 12, paddingVertical: 6, borderRadius: 10, backgroundColor: Colors.overlay(Colors.accent, 0.08) }}
-            onPress={markAllRead}
+            style={{ paddingHorizontal: 12, paddingVertical: 8, borderRadius: Radius.sm, backgroundColor: Colors.overlay(Colors.accent, 0.08), minHeight: Touch.minSizeSm }}
+            onPress={() => { hapticLight(); markAllRead() }}
+            accessibilityRole="button"
+            accessibilityLabel="Đánh dấu tất cả đã đọc"
           >
             <Text style={{ fontSize: 11, fontWeight: FontWeight.extrabold, color: Colors.accent }}>Đọc tất cả</Text>
           </Pressable>
@@ -87,12 +93,18 @@ export function NotificationsMobileScreen() {
           <Pressable
             key={f.key}
             style={{
-              paddingHorizontal: 14, paddingVertical: 8, borderRadius: Radius.pill,
+              flexDirection: 'row', alignItems: 'center', gap: 4,
+              paddingHorizontal: 12, paddingVertical: 8, borderRadius: Radius.pill,
               backgroundColor: filter === f.key ? Colors.accent : Colors.bgCard,
               borderWidth: 1, borderColor: filter === f.key ? Colors.accent : Colors.border,
+              minHeight: Touch.minSizeSm,
             }}
-            onPress={() => setFilter(f.key)}
+            onPress={() => { hapticLight(); setFilter(f.key) }}
+            accessibilityRole="button"
+            accessibilityLabel={f.label}
+            accessibilityState={{ selected: filter === f.key }}
           >
+            {f.icon && <Icon name={f.icon} size={12} color={filter === f.key ? '#fff' : Colors.textSecondary} />}
             <Text style={{ fontSize: 11, fontWeight: FontWeight.extrabold, color: filter === f.key ? '#fff' : Colors.textSecondary }}>{f.label}</Text>
           </Pressable>
         ))}
@@ -101,8 +113,8 @@ export function NotificationsMobileScreen() {
   )
 
   const emptyComponent = (
-    <View style={SharedStyles.emptyBox}>
-      <Text style={{ fontSize: 36 }}>🔔</Text>
+    <View style={SharedStyles.emptyBox} accessibilityLabel="Không có thông báo">
+      <Icon name={VCTIcons.notificationsOutline} size={36} color={Colors.textMuted} />
       <Text style={[SharedStyles.emptyText, { fontWeight: FontWeight.bold }]}>Không có thông báo</Text>
       <Text style={[SharedStyles.emptyText, { fontSize: 11, maxWidth: 260 }]}>
         Bạn chưa có thông báo nào{filter !== 'all' ? ` trong mục ${FILTERS.find(f => f.key === filter)?.label}` : ''}.

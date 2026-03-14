@@ -50,6 +50,9 @@ export interface MockNotification {
   id: string; type: 'tournament' | 'training' | 'system' | 'result'
   title: string; body: string; time: string; read: boolean
 }
+export interface MockRanking {
+  label: string; rank: string; trend: string
+}
 
 // ── Mock Data ──
 
@@ -129,4 +132,15 @@ export const MOCK_TYPE_BREAKDOWN = [
   { type: 'sparring' as const, count: 8 },
   { type: 'exam' as const, count: 6 },
   { type: 'special' as const, count: 4 },
+]
+
+export const MOCK_RANKINGS: MockRanking[] = [
+  { label: 'Toàn quốc (ĐK Nam 60kg)', rank: '#—', trend: '—' },
+  { label: 'Khu vực', rank: '#—', trend: '—' },
+  { label: 'Tỉnh/Thành', rank: '#—', trend: '—' },
+]
+
+export const MOCK_ELO_HISTORY: number[] = [
+  1000, 1020, 1015, 1050, 1080, 1075, 1100, 1130, 1150, 1200,
+  1220, 1250, 1280, 1300, 1320, 1350, 1380, 1400, 1420, 1450,
 ]

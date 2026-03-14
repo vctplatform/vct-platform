@@ -1,168 +1,169 @@
 import * as React from 'react'
-import { ScrollView, StyleSheet, Text, View, Pressable } from 'react-native'
+import { Pressable, RefreshControl, ScrollView, Text, View } from 'react-native'
 import { useRouter } from 'solito/navigation'
-import { useAuth } from '../auth/AuthProvider'
+import { useAuth } from '../../auth/AuthProvider'
+import { Colors, SharedStyles, FontWeight, Radius, Space, Touch } from '../mobile-theme'
+import { Badge, ScreenSkeleton } from '../mobile-ui'
+import { Icon, VCTIcons } from '../icons'
+import { hapticLight } from '../haptics'
+import { useAthleteProfileMe } from '../useAthleteData'
+import { EditProfileModal } from '../edit-profile-modal'
 
 // ═══════════════════════════════════════════════════════════════
-// VCT PLATFORM — Mobile Profile Screen
-// Athlete profile view with stats, belt info, and quick actions
+// VCT PLATFORM — Profile Screen (v3)
+// Personal info focus — personal details, belt timeline, CLB info
+// De-duplicated: no stats row, no quick nav (those are in Portal)
 // ═══════════════════════════════════════════════════════════════
 
-const styles = StyleSheet.create({
-    page: { flex: 1, backgroundColor: '#f8fafc' },
-    content: { padding: 16, paddingBottom: 40 },
-
-    // Hero card
-    heroCard: {
-        borderRadius: 20, padding: 24, marginBottom: 16,
-        backgroundColor: '#0f172a',
-        shadowColor: '#000', shadowOpacity: 0.15, shadowRadius: 12, elevation: 4,
-    },
-    avatarCircle: {
-        width: 72, height: 72, borderRadius: 36,
-        backgroundColor: 'rgba(59, 130, 246, 0.2)', justifyContent: 'center', alignItems: 'center',
-        marginBottom: 12, borderWidth: 2, borderColor: 'rgba(59, 130, 246, 0.4)',
-    },
-    avatarEmoji: { fontSize: 32 },
-    heroName: { fontSize: 22, fontWeight: '900', color: '#ffffff', marginBottom: 4 },
-    heroRole: { fontSize: 13, color: '#94a3b8', fontWeight: '600' },
-    heroBadge: {
-        marginTop: 8, flexDirection: 'row', gap: 8,
-    },
-    badge: {
-        paddingHorizontal: 10, paddingVertical: 4, borderRadius: 999,
-        backgroundColor: 'rgba(245, 158, 11, 0.15)',
-    },
-    badgeText: { fontSize: 11, fontWeight: '800', color: '#f59e0b' },
-
-    // Stats row
-    statsRow: { flexDirection: 'row', gap: 10, marginBottom: 16 },
-    statBox: {
-        flex: 1, borderRadius: 16, padding: 14,
-        backgroundColor: '#ffffff', borderWidth: 1, borderColor: '#e2e8f0',
-    },
-    statValue: { fontSize: 22, fontWeight: '900', color: '#0f172a', marginBottom: 2 },
-    statLabel: { fontSize: 10, fontWeight: '700', color: '#64748b', textTransform: 'uppercase', letterSpacing: 0.5 },
-
-    // Section
-    sectionTitle: { fontSize: 16, fontWeight: '800', color: '#0f172a', marginBottom: 12 },
-    card: {
-        borderRadius: 16, padding: 16, marginBottom: 12,
-        backgroundColor: '#ffffff', borderWidth: 1, borderColor: '#e2e8f0',
-    },
-
-    // Action buttons
-    actionRow: { flexDirection: 'row', gap: 10, marginBottom: 16 },
-    actionBtn: {
-        flex: 1, borderRadius: 14, padding: 14, alignItems: 'center',
-        backgroundColor: '#ffffff', borderWidth: 1, borderColor: '#e2e8f0',
-    },
-    actionIcon: { fontSize: 22, marginBottom: 6 },
-    actionLabel: { fontSize: 11, fontWeight: '700', color: '#334155' },
-
-    // Skill bar
-    skillRow: { flexDirection: 'row', alignItems: 'center', gap: 10, marginBottom: 10 },
-    skillLabel: { width: 64, fontSize: 11, fontWeight: '600', color: '#64748b', textAlign: 'right' },
-    skillTrack: { flex: 1, height: 8, backgroundColor: '#f1f5f9', borderRadius: 4, overflow: 'hidden' },
-    skillFill: { height: '100%', borderRadius: 4 },
-    skillValue: { width: 28, fontSize: 11, fontWeight: '800', textAlign: 'right' },
-})
-
-const SKILLS = [
-    { label: 'Kỹ thuật', value: 78, color: '#3b82f6' },
-    { label: 'Thể lực', value: 65, color: '#22c55e' },
-    { label: 'Tốc độ', value: 72, color: '#f59e0b' },
-    { label: 'Sức mạnh', value: 58, color: '#ef4444' },
-    { label: 'Phản xạ', value: 82, color: '#8b5cf6' },
-    { label: 'Tinh thần', value: 88, color: '#06b6d4' },
-]
+function InfoField({ icon, label, value }: {
+  icon: React.ComponentProps<typeof Icon>['name']; label: string; value: string | undefined
+}) {
+  return (
+    <View style={[SharedStyles.rowBetween, {
+      paddingVertical: 12,
+      borderBottomWidth: 1, borderBottomColor: Colors.border,
+    }]} accessibilityLabel={`${label}: ${value || 'Chưa cập nhật'}`}>
+      <View style={[SharedStyles.row, { gap: 10 }]}>
+        <Icon name={icon} size={16} color={Colors.textSecondary} />
+        <Text style={{ fontSize: 13, fontWeight: FontWeight.semibold, color: Colors.textSecondary }}>{label}</Text>
+      </View>
+      <Text style={{ fontSize: 13, fontWeight: FontWeight.bold, color: value ? Colors.textPrimary : Colors.textMuted }}>
+        {value || 'Chưa cập nhật'}
+      </Text>
+    </View>
+  )
+}
 
 export function ProfileMobileScreen() {
-    const { currentUser } = useAuth()
-    const router = useRouter()
+  const { currentUser } = useAuth()
+  const router = useRouter()
+  const { data, isLoading, refetch } = useAthleteProfileMe()
+  const [editVisible, setEditVisible] = React.useState(false)
 
-    return (
-        <ScrollView style={styles.page} contentContainerStyle={styles.content}>
-            {/* HERO */}
-            <View style={styles.heroCard}>
-                <View style={styles.avatarCircle}>
-                    <Text style={styles.avatarEmoji}>🥋</Text>
-                </View>
-                <Text style={styles.heroName}>{(currentUser as unknown as Record<string, string>).displayName || 'VĐV Demo'}</Text>
-                <Text style={styles.heroRole}>Vận động viên · {currentUser.role}</Text>
-                <View style={styles.heroBadge}>
-                    <View style={styles.badge}><Text style={styles.badgeText}>🥋 Lam đai 2</Text></View>
-                    <View style={[styles.badge, { backgroundColor: 'rgba(59, 130, 246, 0.15)' }]}>
-                        <Text style={[styles.badgeText, { color: '#3b82f6' }]}>Elo: 1450</Text>
-                    </View>
-                </View>
+  if (isLoading || !data) return <ScreenSkeleton />
+
+  return (
+    <>
+      <ScrollView
+        style={SharedStyles.page}
+        contentContainerStyle={SharedStyles.scrollContent}
+        refreshControl={<RefreshControl refreshing={isLoading} onRefresh={refetch} tintColor={Colors.accent} />}
+      >
+        {/* HERO — with avatar */}
+        <View style={SharedStyles.heroCard}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 16 }}>
+            <View style={{
+              width: 72, height: 72, borderRadius: 36,
+              backgroundColor: Colors.overlay(Colors.accent, 0.2), justifyContent: 'center', alignItems: 'center',
+              borderWidth: 2, borderColor: Colors.overlay(Colors.accent, 0.4),
+            }}>
+              <Icon name={VCTIcons.fitness} size={32} color={Colors.accent} />
             </View>
-
-            {/* STATS */}
-            <View style={styles.statsRow}>
-                <View style={styles.statBox}>
-                    <Text style={styles.statValue}>12</Text>
-                    <Text style={styles.statLabel}>Giải đấu</Text>
-                </View>
-                <View style={styles.statBox}>
-                    <Text style={[styles.statValue, { color: '#f59e0b' }]}>5</Text>
-                    <Text style={styles.statLabel}>Huy chương</Text>
-                </View>
-                <View style={styles.statBox}>
-                    <Text style={[styles.statValue, { color: '#22c55e' }]}>87%</Text>
-                    <Text style={styles.statLabel}>Tỷ lệ tập</Text>
-                </View>
+            <View style={{ flex: 1 }}>
+              <Text style={{ fontSize: 22, fontWeight: FontWeight.black, color: Colors.textWhite, marginBottom: 4 }}>
+                {currentUser.name || data.name}
+              </Text>
+              <Text style={{ fontSize: 13, color: Colors.textMuted, fontWeight: FontWeight.semibold }}>
+                Vận động viên · {data.club}
+              </Text>
+              <View style={{ flexDirection: 'row', gap: 8, marginTop: 8, flexWrap: 'wrap' }}>
+                <Badge label={data.belt} bg={Colors.overlay(Colors.gold, 0.15)} fg={Colors.gold} icon={VCTIcons.ribbon} />
+                {data.isActive && <Badge label="Đang hoạt động" bg={Colors.overlay(Colors.green, 0.15)} fg={Colors.green} icon={VCTIcons.checkmark} />}
+              </View>
             </View>
+          </View>
+        </View>
 
-            {/* QUICK ACTIONS */}
-            <View style={styles.actionRow}>
-                <Pressable style={styles.actionBtn} onPress={() => router.push('/athlete-portal')}>
-                    <Text style={styles.actionIcon}>🏠</Text>
-                    <Text style={styles.actionLabel}>Cổng VĐV</Text>
-                </Pressable>
-                <Pressable style={styles.actionBtn} onPress={() => router.push('/athlete-training')}>
-                    <Text style={styles.actionIcon}>📋</Text>
-                    <Text style={styles.actionLabel}>Lịch tập</Text>
-                </Pressable>
-                <Pressable style={styles.actionBtn} onPress={() => router.push('/athlete-results')}>
-                    <Text style={styles.actionIcon}>🏆</Text>
-                    <Text style={styles.actionLabel}>Thành tích</Text>
-                </Pressable>
-                <Pressable style={styles.actionBtn} onPress={() => router.push('/athlete-rankings')}>
-                    <Text style={styles.actionIcon}>📊</Text>
-                    <Text style={styles.actionLabel}>Xếp hạng</Text>
-                </Pressable>
+        {/* EDIT PROFILE BUTTON */}
+        <Pressable
+          onPress={() => { hapticLight(); setEditVisible(true) }}
+          accessibilityRole="button"
+          accessibilityLabel="Chỉnh sửa hồ sơ"
+          style={{
+            flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8,
+            borderRadius: Radius.md, padding: 14, marginBottom: Space.lg,
+            backgroundColor: Colors.bgCard, borderWidth: 1, borderColor: Colors.border,
+            minHeight: Touch.minSize,
+          }}
+        >
+          <Icon name={VCTIcons.edit} size={18} color={Colors.accent} />
+          <Text style={{ fontSize: 14, fontWeight: FontWeight.extrabold, color: Colors.accent }}>Chỉnh sửa hồ sơ</Text>
+        </Pressable>
+
+        {/* PERSONAL INFO */}
+        <Text style={SharedStyles.sectionTitle}>Thông tin cá nhân</Text>
+        <View style={SharedStyles.card}>
+          <InfoField icon={VCTIcons.mail} label="Email" value={data.email || currentUser.email} />
+          <InfoField icon={VCTIcons.phone} label="Điện thoại" value={data.phone} />
+          <InfoField icon={VCTIcons.person} label="Giới tính" value={data.gender === 'male' ? 'Nam' : data.gender === 'female' ? 'Nữ' : data.gender} />
+          <InfoField icon={VCTIcons.calendar} label="Ngày sinh" value={data.dateOfBirth} />
+          <View style={[SharedStyles.rowBetween, { paddingVertical: 12 }]}
+            accessibilityLabel={`CLB: ${data.club}`}>
+            <View style={[SharedStyles.row, { gap: 10 }]}>
+              <Icon name={VCTIcons.home} size={16} color={Colors.textSecondary} />
+              <Text style={{ fontSize: 13, fontWeight: FontWeight.semibold, color: Colors.textSecondary }}>CLB</Text>
             </View>
+            <Text style={{ fontSize: 13, fontWeight: FontWeight.bold, color: Colors.textPrimary }}>{data.club}</Text>
+          </View>
+        </View>
 
-            {/* SKILL RADAR */}
-            <Text style={styles.sectionTitle}>Chỉ số kỹ năng</Text>
-            <View style={styles.card}>
-                {SKILLS.map(s => (
-                    <View key={s.label} style={styles.skillRow}>
-                        <Text style={styles.skillLabel}>{s.label}</Text>
-                        <View style={styles.skillTrack}>
-                            <View style={[styles.skillFill, { width: `${s.value}%`, backgroundColor: s.color }]} />
-                        </View>
-                        <Text style={[styles.skillValue, { color: s.color }]}>{s.value}</Text>
-                    </View>
-                ))}
+        {/* BELT TIMELINE — full */}
+        <Text style={SharedStyles.sectionTitle}>Hành trình thăng đai</Text>
+        <View style={SharedStyles.card}>
+          {data.beltHistory.map((b, idx) => (
+            <View key={idx} style={{ flexDirection: 'row', alignItems: 'center', gap: 12, marginBottom: idx < data.beltHistory.length - 1 ? 14 : 0, position: 'relative' }}>
+              {idx < data.beltHistory.length - 1 && (
+                <View style={{ position: 'absolute', left: 5, top: 14, height: 26, width: 2, backgroundColor: Colors.border }} />
+              )}
+              <View style={{ width: 12, height: 12, borderRadius: 6, borderWidth: 2, borderColor: Colors.bgCard, backgroundColor: b.color }} />
+              <View style={[SharedStyles.rowBetween, { flex: 1 }]}>
+                <Text style={{ fontSize: 12, fontWeight: FontWeight.bold, color: Colors.textPrimary }}>{b.belt}</Text>
+                <Text style={{ fontSize: 10, color: Colors.textSecondary, fontFamily: 'monospace' }}>{b.date}</Text>
+              </View>
             </View>
+          ))}
+        </View>
 
-            {/* COMPETITION HISTORY */}
-            <Text style={styles.sectionTitle}>Lịch sử thi đấu gần đây</Text>
-            {[
-                { name: 'VĐ Toàn Quốc 2025', result: '🥇 HCV', date: '15/08/2025', category: 'ĐK Nam 60kg' },
-                { name: 'Giải Trẻ TP.HCM 2025', result: '🥈 HCB', date: '20/06/2025', category: 'ĐK Nam 60kg' },
-                { name: 'Cúp CLB 2025', result: '🥉 HCĐ', date: '10/04/2025', category: 'ĐK Nam 60kg' },
-            ].map((c, i) => (
-                <View key={i} style={styles.card}>
-                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
-                        <Text style={{ fontSize: 14, fontWeight: '800', color: '#0f172a' }}>{c.name}</Text>
-                        <Text style={{ fontSize: 13, fontWeight: '700' }}>{c.result}</Text>
-                    </View>
-                    <Text style={{ fontSize: 11, color: '#64748b' }}>{c.category} · {c.date}</Text>
+        {/* SKILL STATS — kept here as personal development */}
+        <Text style={SharedStyles.sectionTitle}>Chỉ số phát triển</Text>
+        <View style={SharedStyles.card}>
+          {data.skills.map(sk => (
+            <View key={sk.label} style={SharedStyles.skillRow} accessibilityLabel={`${sk.label}: ${sk.value} phần trăm`}>
+              <Text style={SharedStyles.skillLabel}>{sk.label}</Text>
+              <View style={SharedStyles.skillTrack}>
+                <View style={[SharedStyles.skillFill, { width: `${sk.value}%`, backgroundColor: sk.color }]} />
+              </View>
+              <Text style={[{ width: 28, fontSize: 11, fontWeight: FontWeight.extrabold, textAlign: 'right' as const }, { color: sk.color }]}>{sk.value}</Text>
+            </View>
+          ))}
+        </View>
+
+        {/* GOALS */}
+        <Text style={SharedStyles.sectionTitle}>Mục tiêu cá nhân</Text>
+        <View style={SharedStyles.card}>
+          {data.goals.map(g => (
+            <View key={g.title} style={{ marginBottom: 14 }} accessibilityLabel={`${g.title}: ${g.progress}%`}>
+              <View style={[SharedStyles.rowBetween, { marginBottom: 4 }]}>
+                <View style={[SharedStyles.row, { gap: 8 }]}>
+                  {g.icon && <Text style={{ fontSize: 14 }}>{g.icon}</Text>}
+                  <Text style={{ fontSize: 12, fontWeight: FontWeight.bold, color: Colors.textPrimary }}>{g.title}</Text>
                 </View>
-            ))}
-        </ScrollView>
-    )
+                <Text style={{ fontSize: 11, fontWeight: FontWeight.extrabold, color: g.color }}>{g.progress}%</Text>
+              </View>
+              <View style={SharedStyles.progressTrack}>
+                <View style={[SharedStyles.progressFill, { width: `${g.progress}%`, backgroundColor: g.color }]} />
+              </View>
+            </View>
+          ))}
+        </View>
+      </ScrollView>
+
+      <EditProfileModal
+        visible={editVisible}
+        onClose={() => setEditVisible(false)}
+        onSuccess={() => { setEditVisible(false); refetch() }}
+        profile={data}
+      />
+    </>
+  )
 }

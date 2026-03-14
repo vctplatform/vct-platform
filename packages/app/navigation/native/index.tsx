@@ -31,6 +31,9 @@ import {
   AthleteTrainingMobileScreen,
   AthleteResultsMobileScreen,
   AthleteRankingsMobileScreen,
+  AthleteElearningMobileScreen,
+  TournamentDetailMobileScreen,
+  TrainingDetailMobileScreen,
 } from 'app/features/mobile/athlete'
 import { LoginMobileScreen } from 'app/features/mobile/login-screen'
 import { UserDetailScreen } from 'app/features/user/detail-screen'
@@ -140,6 +143,21 @@ function AuthenticatedStack() {
         name="athlete-rankings"
         component={AthleteRankingsMobileScreen}
         options={{ title: 'Xếp hạng' }}
+      />
+      <Stack.Screen
+        name="athlete-elearning"
+        component={AthleteElearningMobileScreen}
+        options={{ title: 'E-Learning' }}
+      />
+      <Stack.Screen
+        name="tournament-detail"
+        component={TournamentDetailMobileScreen}
+        options={{ title: 'Chi tiết giải' }}
+      />
+      <Stack.Screen
+        name="training-detail"
+        component={TrainingDetailMobileScreen}
+        options={{ title: 'Chi tiết buổi tập' }}
       />
     </Stack.Navigator>
   )
