@@ -355,6 +355,7 @@ export function Page_register() {
                     <div className="rg-otp__grid">
                       {otp.map((digit, i) => (
                         <input key={i} id={`otp-${i}`} type="text" inputMode="numeric" maxLength={1}
+                          aria-label={`Mã OTP số ${i + 1}`} placeholder="·"
                           value={digit} onChange={e => handleOtpChange(i, e.target.value)}
                           className="rg-otp__inp" />
                       ))}
@@ -363,7 +364,7 @@ export function Page_register() {
                       <span className="v-btn__shimmer" />
                       <span className="v-btn__content"><VCT_Icons.CheckCircle size={16} /> {loading ? 'Đang xác thực...' : t('otpVerify')}</span>
                     </button>
-                    <div style={{ display: 'flex', gap: 12, alignItems: 'center', justifyContent: 'center' }}>
+                    <div className="rg-otp__actions">
                       <button onClick={() => setStep('info')} className="rg-back">{t('otpBack')}</button>
                       <button onClick={handleResendOTP} className="rg-back" disabled={resendCooldown > 0 || loading}>
                         {resendCooldown > 0 ? `Gửi lại (${resendCooldown}s)` : 'Gửi lại mã'}
@@ -380,7 +381,7 @@ export function Page_register() {
                     <div className="rg-ok__ic"><VCT_Icons.CheckCircle size={44} /></div>
                     <h2 className="rg-ok__t">{t('successTitle')}</h2>
                     <p className="rg-ok__s">{t('successMsg')}</p>
-                    <a href="/login" className="v-btn" style={{ textDecoration: 'none', display: 'inline-flex' }}>
+                    <a href="/login" className="v-btn v-btn--link">
                       <span className="v-btn__shimmer" />
                       <span className="v-btn__content"><VCT_Icons.ArrowRight size={16} /> {t('goLogin')}</span>
                     </a>
@@ -392,11 +393,11 @@ export function Page_register() {
 
           {/* Stats */}
           <div className="v-stats">
-            <a href="/public/provinces" className="v-st" style={{ textDecoration: 'none' }}><strong>{tAuth('stat1v')}</strong><span>{tAuth('stat1l')}</span></a>
+            <a href="/public/provinces" className="v-st v-st--link"><strong>{tAuth('stat1v')}</strong><span>{tAuth('stat1l')}</span></a>
             <div className="v-st__d" />
-            <a href="/public/clubs" className="v-st" style={{ textDecoration: 'none' }}><strong>{tAuth('stat2v')}</strong><span>{tAuth('stat2l')}</span></a>
+            <a href="/public/clubs" className="v-st v-st--link"><strong>{tAuth('stat2v')}</strong><span>{tAuth('stat2l')}</span></a>
             <div className="v-st__d" />
-            <a href="/public/members" className="v-st" style={{ textDecoration: 'none' }}><strong>{tAuth('stat3v')}</strong><span>{tAuth('stat3l')}</span></a>
+            <a href="/public/members" className="v-st v-st--link"><strong>{tAuth('stat3v')}</strong><span>{tAuth('stat3l')}</span></a>
           </div>
         </main>
 
@@ -562,6 +563,9 @@ const CSS = `
 .rg-otp__inp:focus { border-color: var(--inp-f); box-shadow: 0 0 0 3px var(--inp-ring); }
 .rg-back { background: none; border: none; font-family: inherit; font-size: 12px; font-weight: 600; color: var(--tx); cursor: pointer; }
 .rg-back:hover { color: #10b981; }
+.rg-otp__actions { display: flex; gap: 12px; align-items: center; justify-content: center; }
+.v-btn--link { text-decoration: none; display: inline-flex; }
+.v-st--link { text-decoration: none; }
 
 /* ══════ SUCCESS ══════ */
 .rg-ok__ic { width: 72px; height: 72px; border-radius: 50%; background: rgba(16,185,129,0.1); display: flex; align-items: center; justify-content: center; color: #10b981; animation: scIn 0.5s ease-out; }
