@@ -34,6 +34,8 @@ type Config struct {
 	PGPoolMaxConns     int
 	PGPoolMinConns     int
 	PGPoolMaxIdleTime  time.Duration
+	ResendAPIKey       string
+	ResendFromEmail    string
 }
 
 func Load() Config {
@@ -59,6 +61,8 @@ func Load() Config {
 	pgPoolMaxConns := parseInt(getEnv("VCT_PG_POOL_MAX_CONNS", "25"), 25)
 	pgPoolMinConns := parseInt(getEnv("VCT_PG_POOL_MIN_CONNS", "5"), 5)
 	pgPoolMaxIdleTime := parseDuration(getEnv("VCT_PG_POOL_MAX_IDLE_TIME", "30m"), 30*time.Minute)
+	resendAPIKey := getEnv("VCT_RESEND_API_KEY", "")
+	resendFromEmail := getEnv("VCT_RESEND_FROM_EMAIL", "onboarding@resend.dev")
 
 	return Config{
 		Environment:        environment,
@@ -81,6 +85,8 @@ func Load() Config {
 		PGPoolMaxConns:     pgPoolMaxConns,
 		PGPoolMinConns:     pgPoolMinConns,
 		PGPoolMaxIdleTime:  pgPoolMaxIdleTime,
+		ResendAPIKey:       resendAPIKey,
+		ResendFromEmail:    resendFromEmail,
 	}
 }
 

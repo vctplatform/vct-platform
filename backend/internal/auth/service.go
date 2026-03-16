@@ -249,6 +249,7 @@ type Service struct {
 	stopCh            chan struct{}
 	allowSelfRegister bool
 	roleBindings      *RoleBindingStore // Multi-role context support
+	otpStore          *OTPStore         // Pending OTP verifications
 }
 
 func NewService(config ServiceConfig) *Service {
@@ -279,6 +280,7 @@ func NewService(config ServiceConfig) *Service {
 		audit:             make([]AuditEntry, 0, auditLimit),
 		stopCh:            make(chan struct{}),
 		roleBindings:      NewRoleBindingStore(),
+		otpStore:          NewOTPStore(),
 	}
 
 	// Background cleanup goroutine

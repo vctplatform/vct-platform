@@ -33,6 +33,8 @@ export function Page_register() {
   const [toast, setToast] = useState<{ show: boolean; msg: string; type: 'success' | 'error' | 'warning' | 'info' }>({ show: false, msg: '', type: 'success' })
   const [otp, setOtp] = useState(['', '', '', '', '', ''])
   const [focusField, setFocusField] = useState<string | null>(null)
+  const [loading, setLoading] = useState(false)
+  const [resendCooldown, setResendCooldown] = useState(0)
 
   // Theme
   const [isDark, setIsDark] = useState(true)
@@ -75,17 +77,100 @@ export function Page_register() {
     return Object.keys(errs).length === 0
   }
 
-  const handleSubmitInfo = (e: React.FormEvent) => {
+  const handleSubmitInfo = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!validate()) return
-    setStep('verify')
-    flash(t('otpInfo'), 'info')
+    setLoading(true)
+    try {
+      const res = await fetch('/api/v1/auth/send-otp', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: form.email,
+          displayName: form.hoTen,
+          phone: form.soDienThoai,
+          password: form.matKhau,
+          role: 'athlete',
+        }),
+      })
+      const data = await res.json()
+      if (!res.ok) {
+        flash(data.error || data.message || 'Gửi OTP thất bại', 'error')
+        return
+      }
+      setStep('verify')
+      setResendCooldown(60)
+      flash(t('otpInfo'), 'info')
+    } catch {
+      flash('Lỗi kết nối server', 'error')
+    } finally {
+      setLoading(false)
+    }
   }
 
-  const handleVerify = () => {
+  // Countdown timer for resend
+  useEffect(() => {
+    if (resendCooldown <= 0) return
+    const timer = setTimeout(() => setResendCooldown(c => c - 1), 1000)
+    return () => clearTimeout(timer)
+  }, [resendCooldown])
+
+  const handleResendOTP = async () => {
+    if (resendCooldown > 0) return
+    setLoading(true)
+    try {
+      const res = await fetch('/api/v1/auth/send-otp', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: form.email,
+          displayName: form.hoTen,
+          phone: form.soDienThoai,
+          password: form.matKhau,
+          role: 'athlete',
+        }),
+      })
+      if (res.ok) {
+        setResendCooldown(60)
+        setOtp(['', '', '', '', '', ''])
+        flash('Đã gửi lại mã OTP', 'success')
+      } else {
+        const data = await res.json()
+        flash(data.error || 'Gửi lại OTP thất bại', 'error')
+      }
+    } catch {
+      flash('Lỗi kết nối server', 'error')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleVerify = async () => {
     const code = otp.join('')
     if (code.length !== 6) { flash(t('otpWarn'), 'warning'); return }
-    setStep('complete')
+    setLoading(true)
+    try {
+      const res = await fetch('/api/v1/auth/verify-otp', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: form.email, code }),
+      })
+      const data = await res.json()
+      if (!res.ok) {
+        flash(data.error || data.message || 'Xác thực thất bại', 'error')
+        return
+      }
+      // Save tokens
+      if (data.accessToken) {
+        localStorage.setItem('vct-token', data.accessToken)
+        if (data.refreshToken) localStorage.setItem('vct-refresh-token', data.refreshToken)
+      }
+      setStep('complete')
+    } catch {
+      flash('Lỗi kết nối server', 'error')
+    } finally {
+      setLoading(false)
+    }
   }
 
   const handleOtpChange = (index: number, value: string) => {
@@ -248,11 +333,11 @@ export function Page_register() {
                   </label>
                   {errors.chuaDoc && <span className="v-err">{errors.chuaDoc}</span>}
 
-                  <button type="submit" className="v-btn">
+                  <button type="submit" className="v-btn" disabled={loading}>
                     <span className="v-btn__shimmer" />
                     <span className="v-btn__content">
-                      {t('submit')}
-                      <VCT_Icons.ArrowRight size={16} />
+                      {loading ? 'Đang gửi...' : t('submit')}
+                      {!loading && <VCT_Icons.ArrowRight size={16} />}
                     </span>
                   </button>
 
@@ -274,11 +359,16 @@ export function Page_register() {
                           className="rg-otp__inp" />
                       ))}
                     </div>
-                    <button onClick={handleVerify} className="v-btn">
+                    <button onClick={handleVerify} className="v-btn" disabled={loading}>
                       <span className="v-btn__shimmer" />
-                      <span className="v-btn__content"><VCT_Icons.CheckCircle size={16} /> {t('otpVerify')}</span>
+                      <span className="v-btn__content"><VCT_Icons.CheckCircle size={16} /> {loading ? 'Đang xác thực...' : t('otpVerify')}</span>
                     </button>
-                    <button onClick={() => setStep('info')} className="rg-back">{t('otpBack')}</button>
+                    <div style={{ display: 'flex', gap: 12, alignItems: 'center', justifyContent: 'center' }}>
+                      <button onClick={() => setStep('info')} className="rg-back">{t('otpBack')}</button>
+                      <button onClick={handleResendOTP} className="rg-back" disabled={resendCooldown > 0 || loading}>
+                        {resendCooldown > 0 ? `Gửi lại (${resendCooldown}s)` : 'Gửi lại mã'}
+                      </button>
+                    </div>
                   </div>
                 </div>
               )}

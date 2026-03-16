@@ -35,6 +35,7 @@ import (
 	"vct-platform/backend/internal/domain/ranking"
 	"vct-platform/backend/internal/domain/scoring"
 	"vct-platform/backend/internal/domain/tournament"
+	"vct-platform/backend/internal/email"
 	"vct-platform/backend/internal/events"
 	"vct-platform/backend/internal/realtime"
 	"vct-platform/backend/internal/store"
@@ -109,6 +110,9 @@ type Server struct {
 
 	// ── SQL DB (for PG adapters when storage driver is postgres) ──
 	sqlDB *sql.DB
+
+	// ── Email Service (Resend) ────────────────────────────────
+	emailService *email.Service
 }
 
 func New(cfg config.Config) *Server {
@@ -248,6 +252,9 @@ func New(cfg config.Config) *Server {
 			adapter.NewInMemTournamentMgmtStore(),
 			newUUID,
 		), // overridden below when PG is available
+
+		// ── Email Service (Resend for OTP) ────────────────
+		emailService: email.NewService(cfg.ResendAPIKey, cfg.ResendFromEmail),
 	}
 
 	// Wire JWT validation into WebSocket hub for first-message auth
@@ -367,6 +374,9 @@ func (s *Server) Handler() http.Handler {
 	mux.HandleFunc("/api/v1/auth/audit", s.withAuth(s.handleAuthAudit))
 	mux.HandleFunc("/api/v1/auth/switch-context", s.withAuth(s.handleAuthSwitchContext))
 	mux.HandleFunc("/api/v1/auth/my-roles", s.withAuth(s.handleAuthMyRoles))
+	// OTP routes — same rate limit as login
+	mux.Handle("/api/v1/auth/send-otp", loginRL(loginBody(http.HandlerFunc(s.handleAuthSendOTP))))
+	mux.Handle("/api/v1/auth/verify-otp", loginRL(loginBody(http.HandlerFunc(s.handleAuthVerifyOTP))))
 	// Scoring API (requires auth)
 	mux.HandleFunc("/api/v1/scoring/", s.handleScoringRoutes)
 	// Public API (no auth)
