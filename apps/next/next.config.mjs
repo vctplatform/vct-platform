@@ -44,11 +44,9 @@ const nextConfig = {
     const cspDirectives = [
       "default-src 'self'",
       isProd
-        ? "script-src 'self' 'strict-dynamic'"
+        ? "script-src 'self' 'unsafe-inline' 'unsafe-eval'"
         : "script-src 'self' 'unsafe-eval' 'unsafe-inline'",
-      isProd
-        ? "style-src 'self' https://fonts.googleapis.com"
-        : "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+      "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
       "img-src 'self' data: blob: https://images.unsplash.com https://*.googleusercontent.com",
       "font-src 'self' https://fonts.gstatic.com",
       `connect-src 'self' ws: wss:${isProd ? '' : ' http://localhost:*'}`,
@@ -56,7 +54,7 @@ const nextConfig = {
       "base-uri 'self'",
       "form-action 'self'",
       "object-src 'none'",
-      "upgrade-insecure-requests",
+      ...(isProd ? ["upgrade-insecure-requests"] : []),
     ]
 
     return [
