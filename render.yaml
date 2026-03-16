@@ -27,7 +27,7 @@ services:
       - key: VCT_JWT_SECRET
         sync: false
       - key: VCT_CORS_ORIGINS
-        value: "https://vct-platform.vercel.app,https://vct-platform-next.vercel.app,https://*.onrender.com"
+        value: "https://vct-platform.vercel.app,https://vct-platform-next.vercel.app,https://vct-platform-vct-platform.vercel.app,https://*.onrender.com"
       - key: VCT_ALLOW_DEMO_USERS
         value: "false"
       - key: VCT_DB_AUTO_MIGRATE
