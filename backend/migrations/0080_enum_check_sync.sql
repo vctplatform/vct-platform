@@ -91,7 +91,8 @@ ALTER TABLE teams VALIDATE CONSTRAINT chk_teams_status;
 -- 3. DOCUMENTATION: Enum ↔ CHECK mapping view
 -- ════════════════════════════════════════════════════════
 
-CREATE OR REPLACE VIEW system.v_status_mapping AS
+DROP VIEW IF EXISTS system.v_status_mapping CASCADE;
+CREATE VIEW system.v_status_mapping AS
 SELECT * FROM (VALUES
   ('tournaments',    'status',     array_to_string(enum_range(NULL::core.tournament_status)::TEXT[], ', ')),
   ('athletes',       'trang_thai', array_to_string(enum_range(NULL::core.athlete_status)::TEXT[], ', ')),

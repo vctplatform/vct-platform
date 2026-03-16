@@ -61,7 +61,8 @@ DROP TABLE IF EXISTS public.users CASCADE;
 --    will now transparently hit core.users
 -- ════════════════════════════════════════════════════════
 
-CREATE OR REPLACE VIEW public.users AS
+DROP VIEW IF EXISTS public.users CASCADE;
+CREATE VIEW public.users AS
 SELECT
   id, username, email, phone, password_hash,
   full_name, avatar_url, is_active,
@@ -117,14 +118,16 @@ CREATE TRIGGER users_view_update
   INSTEAD OF UPDATE ON public.users
   FOR EACH ROW EXECUTE FUNCTION trigger_users_view_update();
 
-CREATE OR REPLACE VIEW public.sessions AS
+DROP VIEW IF EXISTS public.sessions CASCADE;
+CREATE VIEW public.sessions AS
 SELECT
   id, user_id, token_hash, device_info,
   ip_address, expires_at, created_at, last_active,
   tenant_id
 FROM core.sessions;
 
-CREATE OR REPLACE VIEW public.auth_audit_log AS
+DROP VIEW IF EXISTS public.auth_audit_log CASCADE;
+CREATE VIEW public.auth_audit_log AS
 SELECT
   id, user_id, action, ip_address, user_agent,
   details, created_at, tenant_id

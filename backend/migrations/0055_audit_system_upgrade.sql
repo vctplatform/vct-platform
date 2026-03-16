@@ -136,7 +136,8 @@ END $$;
 --    Quick overview of audit activity
 -- ════════════════════════════════════════════════════════
 
-CREATE OR REPLACE VIEW system.v_audit_summary AS
+DROP VIEW IF EXISTS system.v_audit_summary CASCADE;
+CREATE VIEW system.v_audit_summary AS
 SELECT
   date_trunc('hour', created_at) AS hour,
   table_name,
@@ -153,7 +154,8 @@ ORDER BY hour DESC, event_count DESC;
 --    Shows which tables have/lack audit triggers
 -- ════════════════════════════════════════════════════════
 
-CREATE OR REPLACE VIEW system.v_audit_coverage AS
+DROP VIEW IF EXISTS system.v_audit_coverage CASCADE;
+CREATE VIEW system.v_audit_coverage AS
 SELECT
   n.nspname AS schema_name,
   c.relname AS table_name,

@@ -220,7 +220,8 @@ $$ LANGUAGE plpgsql;
 --    View providing complete schema docs
 -- ════════════════════════════════════════════════════════
 
-CREATE OR REPLACE VIEW system.v_schema_docs AS
+DROP VIEW IF EXISTS system.v_schema_docs CASCADE;
+CREATE VIEW system.v_schema_docs AS
 SELECT
   t.table_schema,
   t.table_name,

@@ -117,7 +117,8 @@ $$ LANGUAGE plpgsql;
 -- 4. MONITORING: Live scoring status
 -- ════════════════════════════════════════════════════════
 
-CREATE OR REPLACE VIEW system.v_trigger_status AS
+DROP VIEW IF EXISTS system.v_trigger_status CASCADE;
+CREATE VIEW system.v_trigger_status AS
 SELECT
   tgname AS trigger_name,
   tgrelid::regclass AS table_name,

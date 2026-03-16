@@ -196,7 +196,8 @@ END; $$ LANGUAGE plpgsql STABLE;
 -- 7. ML MONITORING VIEW
 -- ════════════════════════════════════════════════════════
 
-CREATE OR REPLACE VIEW ml.v_model_performance AS
+DROP VIEW IF EXISTS ml.v_model_performance CASCADE;
+CREATE VIEW ml.v_model_performance AS
 SELECT
   mr.name, mr.version, mr.model_type, mr.status,
   count(p.id) AS total_predictions,

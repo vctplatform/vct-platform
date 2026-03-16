@@ -29,7 +29,7 @@ DECLARE
 BEGIN
   -- ── Match Events (quarterly partitions) ──
   FOR i IN 0..((p_months_ahead / 3) + 1) LOOP
-    v_start := date_trunc('quarter', NOW() + (i || ' quarters')::INTERVAL)::DATE;
+    v_start := date_trunc('quarter', NOW() + ((i * 3) || ' months')::INTERVAL)::DATE;
     v_end := (v_start + INTERVAL '3 months')::DATE;
     v_name := format('tournament.match_events_%s_q%s',
       extract(YEAR FROM v_start)::INT,
@@ -217,7 +217,8 @@ END $$;
 -- 4. CONNECTION MONITORING VIEW
 -- ════════════════════════════════════════════════════════
 
-CREATE OR REPLACE VIEW system.v_connection_stats AS
+DROP VIEW IF EXISTS system.v_connection_stats CASCADE;
+CREATE VIEW system.v_connection_stats AS
 SELECT
   state,
   count(*) AS count,
@@ -233,7 +234,8 @@ GROUP BY state;
 -- 5. PARTITION HEALTH CHECK VIEW
 -- ════════════════════════════════════════════════════════
 
-CREATE OR REPLACE VIEW system.v_partition_health AS
+DROP VIEW IF EXISTS system.v_partition_health CASCADE;
+CREATE VIEW system.v_partition_health AS
 SELECT
   nmsp_parent.nspname  AS parent_schema,
   parent.relname       AS parent_table,

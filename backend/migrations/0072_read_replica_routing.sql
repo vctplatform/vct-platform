@@ -178,7 +178,8 @@ ON CONFLICT (name) DO NOTHING;
 -- 4. CONNECTION POOL STATS VIEW
 -- ════════════════════════════════════════════════════════
 
-CREATE OR REPLACE VIEW system.v_replica_dashboard AS
+DROP VIEW IF EXISTS system.v_replica_dashboard CASCADE;
+CREATE VIEW system.v_replica_dashboard AS
 SELECT
   r.name,
   r.role,
@@ -207,7 +208,8 @@ ORDER BY
 --    Helps Go backend decide connection routing
 -- ════════════════════════════════════════════════════════
 
-CREATE OR REPLACE VIEW system.v_routing_advice AS
+DROP VIEW IF EXISTS system.v_routing_advice CASCADE;
+CREATE VIEW system.v_routing_advice AS
 SELECT
   'read' AS query_type,
   (SELECT name FROM system.replica_registry

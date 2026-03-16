@@ -29,8 +29,7 @@ CREATE TABLE IF NOT EXISTS system.query_cache (
 
 CREATE INDEX IF NOT EXISTS idx_cache_key ON system.query_cache(cache_key);
 CREATE INDEX IF NOT EXISTS idx_cache_group ON system.query_cache(cache_group);
-CREATE INDEX IF NOT EXISTS idx_cache_expires ON system.query_cache(expires_at)
-  WHERE expires_at < NOW();
+CREATE INDEX IF NOT EXISTS idx_cache_expires ON system.query_cache(expires_at);
 CREATE INDEX IF NOT EXISTS idx_cache_source ON system.query_cache USING GIN (source_tables);
 
 -- ════════════════════════════════════════════════════════
@@ -214,13 +213,14 @@ VALUES ('cache_cleanup', '*/10 * * * *', 'cache_manager',
 ON CONFLICT (name) DO NOTHING;
 
 -- Cache stats view
-CREATE OR REPLACE VIEW system.v_cache_stats AS
+DROP VIEW IF EXISTS system.v_cache_stats CASCADE;
+CREATE VIEW system.v_cache_stats AS
 SELECT
   qc.cache_group,
   count(*) AS entries,
   sum(access_count) AS total_hits,
   avg(access_count) AS avg_hits_per_entry,
-  min(created_at) AS oldest_entry,
+  min(qc.created_at) AS oldest_entry,
   max(last_accessed) AS last_access,
   count(*) FILTER (WHERE expires_at < NOW()) AS expired_entries,
   pg_size_pretty(sum(pg_column_size(result_data))) AS data_size,

@@ -198,7 +198,8 @@ EXCEPTION WHEN undefined_table THEN NULL; END $$;
 -- 5. MONITORING: gen_random_uuid check (should be empty)
 -- ════════════════════════════════════════════════════════
 
-CREATE OR REPLACE VIEW system.v_uuid_defaults AS
+DROP VIEW IF EXISTS system.v_uuid_defaults CASCADE;
+CREATE VIEW system.v_uuid_defaults AS
 SELECT
   n.nspname AS schema_name,
   c.relname AS table_name,

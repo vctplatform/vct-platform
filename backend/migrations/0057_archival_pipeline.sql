@@ -212,7 +212,8 @@ ON CONFLICT (name) DO UPDATE SET
 -- 4. ARCHIVE STATS VIEW
 -- ════════════════════════════════════════════════════════
 
-CREATE OR REPLACE VIEW system.v_archive_stats AS
+DROP VIEW IF EXISTS system.v_archive_stats CASCADE;
+CREATE VIEW system.v_archive_stats AS
 SELECT
   source_table,
   count(*) AS archived_count,
@@ -229,7 +230,8 @@ ORDER BY count(*) DESC;
 -- 5. RETENTION POLICY STATUS VIEW
 -- ════════════════════════════════════════════════════════
 
-CREATE OR REPLACE VIEW system.v_retention_status AS
+DROP VIEW IF EXISTS system.v_retention_status CASCADE;
+CREATE VIEW system.v_retention_status AS
 SELECT
   rp.table_name,
   rp.retention_days,

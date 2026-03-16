@@ -235,7 +235,8 @@ $$ LANGUAGE plpgsql;
 -- 4. ANONYMIZATION COVERAGE VIEW
 -- ════════════════════════════════════════════════════════
 
-CREATE OR REPLACE VIEW system.v_anonymization_coverage AS
+DROP VIEW IF EXISTS system.v_anonymization_coverage CASCADE;
+CREATE VIEW system.v_anonymization_coverage AS
 SELECT
   ar.table_name,
   ar.column_name,

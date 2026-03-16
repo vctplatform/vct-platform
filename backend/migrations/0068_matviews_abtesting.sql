@@ -70,7 +70,7 @@ BEGIN
   THEN
     v_start := clock_timestamp();
     BEGIN
-      EXECUTE format('REFRESH MATERIALIZED VIEW CONCURRENTLY %s', p_view_name);
+      EXECUTE format('REFRESH MATERIALIZED VIEW %s', p_view_name);
       v_elapsed := EXTRACT(MILLISECONDS FROM clock_timestamp() - v_start);
 
       UPDATE system.matview_registry SET
@@ -264,7 +264,8 @@ $$ LANGUAGE plpgsql;
 -- 8. EXPERIMENT RESULTS VIEW
 -- ════════════════════════════════════════════════════════
 
-CREATE OR REPLACE VIEW system.v_experiment_results AS
+DROP VIEW IF EXISTS system.v_experiment_results CASCADE;
+CREATE VIEW system.v_experiment_results AS
 SELECT
   e.name AS experiment_name,
   e.status,

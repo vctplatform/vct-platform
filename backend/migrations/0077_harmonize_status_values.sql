@@ -84,7 +84,8 @@ ALTER TABLE teams VALIDATE CONSTRAINT chk_teams_status;
 -- 6. DOCUMENTATION: Status value mapping view
 -- ════════════════════════════════════════════════════════
 
-CREATE OR REPLACE VIEW system.v_status_mapping AS
+DROP VIEW IF EXISTS system.v_status_mapping CASCADE;
+CREATE VIEW system.v_status_mapping AS
 SELECT * FROM (VALUES
   ('tournaments', 'status',     'nhap → cho_duyet → da_duyet → dang_dang_ky → dong_dang_ky → boc_tham → thi_dau → ket_thuc | hoan | huy'),
   ('athletes',    'trang_thai', 'nhap → cho_duyet → da_duyet | tu_choi | dinh_chi | nghi_thi_dau | rut | giai_nghe'),

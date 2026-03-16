@@ -95,7 +95,8 @@ $$ LANGUAGE plpgsql;
 -- 3. RECOVERY POINTS VIEW
 -- ════════════════════════════════════════════════════════
 
-CREATE OR REPLACE VIEW system.v_recovery_points AS
+DROP VIEW IF EXISTS system.v_recovery_points CASCADE;
+CREATE VIEW system.v_recovery_points AS
 SELECT
   id,
   checkpoint_name,
@@ -179,7 +180,8 @@ END $$;
 -- 5. VACUUM MONITORING VIEWS
 -- ════════════════════════════════════════════════════════
 
-CREATE OR REPLACE VIEW system.v_vacuum_stats AS
+DROP VIEW IF EXISTS system.v_vacuum_stats CASCADE;
+CREATE VIEW system.v_vacuum_stats AS
 SELECT
   schemaname || '.' || relname AS table_name,
   n_live_tup AS live_rows,
@@ -200,7 +202,8 @@ WHERE n_live_tup > 100
 ORDER BY dead_row_pct DESC, n_dead_tup DESC;
 
 -- Bloat alert view (tables exceeding threshold)
-CREATE OR REPLACE VIEW system.v_bloat_alerts AS
+DROP VIEW IF EXISTS system.v_bloat_alerts CASCADE;
+CREATE VIEW system.v_bloat_alerts AS
 SELECT
   table_name,
   dead_rows,

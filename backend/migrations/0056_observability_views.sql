@@ -13,7 +13,8 @@ BEGIN;
 -- Ensure extension is available
 CREATE EXTENSION IF NOT EXISTS pg_stat_statements;
 
-CREATE OR REPLACE VIEW system.v_slow_queries AS
+DROP VIEW IF EXISTS system.v_slow_queries CASCADE;
+CREATE VIEW system.v_slow_queries AS
 SELECT
   queryid,
   left(query, 200) AS query_preview,
@@ -38,7 +39,8 @@ LIMIT 50;
 -- 2. TABLE BLOAT DETECTION
 -- ════════════════════════════════════════════════════════
 
-CREATE OR REPLACE VIEW system.v_table_bloat AS
+DROP VIEW IF EXISTS system.v_table_bloat CASCADE;
+CREATE VIEW system.v_table_bloat AS
 SELECT
   schemaname,
   relname AS table_name,
@@ -66,7 +68,8 @@ ORDER BY n_dead_tup DESC;
 -- 3. LOCK CONFLICT MONITORING
 -- ════════════════════════════════════════════════════════
 
-CREATE OR REPLACE VIEW system.v_lock_conflicts AS
+DROP VIEW IF EXISTS system.v_lock_conflicts CASCADE;
+CREATE VIEW system.v_lock_conflicts AS
 SELECT
   blocked.pid AS blocked_pid,
   blocked.usename AS blocked_user,
@@ -99,7 +102,8 @@ ORDER BY blocked_duration DESC;
 -- 4. INDEX HEALTH & USAGE
 -- ════════════════════════════════════════════════════════
 
-CREATE OR REPLACE VIEW system.v_index_health AS
+DROP VIEW IF EXISTS system.v_index_health CASCADE;
+CREATE VIEW system.v_index_health AS
 SELECT
   schemaname,
   relname AS table_name,
@@ -121,7 +125,8 @@ ORDER BY
   pg_relation_size(indexrelid) DESC;
 
 -- Specifically highlight unused indexes (wasting space)
-CREATE OR REPLACE VIEW system.v_unused_indexes AS
+DROP VIEW IF EXISTS system.v_unused_indexes CASCADE;
+CREATE VIEW system.v_unused_indexes AS
 SELECT
   schemaname,
   relname AS table_name,
@@ -140,7 +145,8 @@ ORDER BY pg_relation_size(indexrelid) DESC;
 --    Single query for overall system health
 -- ════════════════════════════════════════════════════════
 
-CREATE OR REPLACE VIEW system.v_dashboard AS
+DROP VIEW IF EXISTS system.v_dashboard CASCADE;
+CREATE VIEW system.v_dashboard AS
 SELECT
   -- Database
   pg_size_pretty(pg_database_size(current_database())) AS db_size,
@@ -195,7 +201,8 @@ SELECT
 -- 6. REPLICATION LAG VIEW (for Neon read replicas)
 -- ════════════════════════════════════════════════════════
 
-CREATE OR REPLACE VIEW system.v_replication_status AS
+DROP VIEW IF EXISTS system.v_replication_status CASCADE;
+CREATE VIEW system.v_replication_status AS
 SELECT
   pid,
   client_addr,

@@ -13,7 +13,7 @@
     "moti": "^0.30.0",
     "react-signature-canvas": "^1.1.0-alpha.2",
     "solito": "next",
-    "xlsx": "^0.18.5"
+    "exceljs": "^4.4.0"
   },
   "sideEffects": false,
   "devDependencies": {

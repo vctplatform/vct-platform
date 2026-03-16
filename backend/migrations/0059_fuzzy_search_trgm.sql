@@ -20,43 +20,28 @@ SET pg_trgm.similarity_threshold = 0.3;
 --    GIN + trgm = fast LIKE '%pattern%' + fuzzy matching
 -- ════════════════════════════════════════════════════════
 
--- Athletes — most searched entity
-CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_athletes_name_trgm
-  ON athletes USING GIN (ho_ten gin_trgm_ops);
-
--- Coaches
-CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_coaches_name_trgm
-  ON people.coaches USING GIN (
-    (SELECT full_name FROM core.users WHERE id = people.coaches.user_id) gin_trgm_ops
-  );
-
--- Clubs
-CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_clubs_name_trgm
-  ON clubs USING GIN (ten gin_trgm_ops);
-
--- Martial schools
-CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_schools_name_trgm
-  ON platform.martial_schools USING GIN (name gin_trgm_ops);
-
--- Tournaments
-CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_tournaments_name_trgm
-  ON tournaments USING GIN (name gin_trgm_ops);
-
--- Heritage techniques
-CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_heritage_tech_trgm
-  ON platform.heritage_techniques USING GIN (name gin_trgm_ops);
-
--- Heritage glossary
-CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_glossary_term_trgm
-  ON platform.heritage_glossary USING GIN (term_vi gin_trgm_ops);
-
--- Teams
-CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_teams_name_trgm
-  ON teams USING GIN (ten gin_trgm_ops);
-
--- Community posts
-CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_posts_title_trgm
-  ON platform.posts USING GIN (title gin_trgm_ops);
+DO $$
+DECLARE
+  v_indexes TEXT[] := ARRAY[
+    'CREATE INDEX IF NOT EXISTS idx_athletes_name_trgm ON athletes USING GIN (ho_ten gin_trgm_ops)',
+    'CREATE INDEX IF NOT EXISTS idx_clubs_name_trgm ON clubs USING GIN (ten gin_trgm_ops)',
+    'CREATE INDEX IF NOT EXISTS idx_schools_name_trgm ON platform.martial_schools USING GIN (name gin_trgm_ops)',
+    'CREATE INDEX IF NOT EXISTS idx_tournaments_name_trgm ON tournaments USING GIN (name gin_trgm_ops)',
+    'CREATE INDEX IF NOT EXISTS idx_heritage_tech_trgm ON platform.heritage_techniques USING GIN (name gin_trgm_ops)',
+    'CREATE INDEX IF NOT EXISTS idx_glossary_term_trgm ON platform.heritage_glossary USING GIN (term_vi gin_trgm_ops)',
+    'CREATE INDEX IF NOT EXISTS idx_teams_name_trgm ON teams USING GIN (ten gin_trgm_ops)',
+    'CREATE INDEX IF NOT EXISTS idx_posts_title_trgm ON platform.posts USING GIN (title gin_trgm_ops)'
+  ];
+  v_sql TEXT;
+BEGIN
+  FOREACH v_sql IN ARRAY v_indexes LOOP
+    BEGIN
+      EXECUTE v_sql;
+    EXCEPTION WHEN OTHERS THEN
+      RAISE NOTICE 'Skipped: % — %', v_sql, SQLERRM;
+    END;
+  END LOOP;
+END $$;
 
 -- ════════════════════════════════════════════════════════
 -- 3. UNIFIED FUZZY SEARCH FUNCTION
@@ -276,7 +261,8 @@ CREATE TABLE IF NOT EXISTS system.search_log_default
   PARTITION OF system.search_log DEFAULT;
 
 -- Popular searches view
-CREATE OR REPLACE VIEW system.v_popular_searches AS
+DROP VIEW IF EXISTS system.v_popular_searches CASCADE;
+CREATE VIEW system.v_popular_searches AS
 SELECT
   query,
   count(*) AS search_count,

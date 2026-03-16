@@ -135,7 +135,8 @@ RETURNS TEXT AS $$
 $$ LANGUAGE sql STABLE;
 
 -- Schema drift detection view
-CREATE OR REPLACE VIEW system.v_migration_status AS
+DROP VIEW IF EXISTS system.v_migration_status CASCADE;
+CREATE VIEW system.v_migration_status AS
 SELECT
   version,
   name,

@@ -95,7 +95,8 @@ DO $$ BEGIN CREATE TYPE core.severity_level AS ENUM (
 --    Lists all custom enums with their values
 -- ════════════════════════════════════════════════════════
 
-CREATE OR REPLACE VIEW system.v_enum_types AS
+DROP VIEW IF EXISTS system.v_enum_types CASCADE;
+CREATE VIEW system.v_enum_types AS
 SELECT
   n.nspname AS schema_name,
   t.typname AS enum_name,
@@ -149,7 +150,8 @@ $$ LANGUAGE plpgsql;
 --    Shows which tables/columns reference each enum
 -- ════════════════════════════════════════════════════════
 
-CREATE OR REPLACE VIEW system.v_enum_usage AS
+DROP VIEW IF EXISTS system.v_enum_usage CASCADE;
+CREATE VIEW system.v_enum_usage AS
 SELECT
   n2.nspname || '.' || t.typname AS enum_type,
   n.nspname || '.' || c.relname AS table_name,

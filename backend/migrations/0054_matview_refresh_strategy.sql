@@ -124,7 +124,8 @@ END $$;
 --    Replaces expensive correlated subqueries
 -- ════════════════════════════════════════════════════════
 
-CREATE OR REPLACE VIEW api_v1.tournaments AS
+DROP VIEW IF EXISTS api_v1.tournaments CASCADE;
+CREATE VIEW api_v1.tournaments AS
 SELECT
   t.id, t.tenant_id, t.name,
   t.start_date, t.end_date,
@@ -233,7 +234,7 @@ BEGIN
   -- Perform refresh
   v_start := clock_timestamp();
   BEGIN
-    EXECUTE format('REFRESH MATERIALIZED VIEW CONCURRENTLY %s', p_view_name);
+    EXECUTE format('REFRESH MATERIALIZED VIEW %s', p_view_name);
     v_duration := extract(EPOCH FROM clock_timestamp() - v_start) * 1000;
 
     INSERT INTO system.matview_refresh_log (view_name, duration_ms, triggered_by, success)

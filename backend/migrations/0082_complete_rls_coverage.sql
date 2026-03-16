@@ -173,7 +173,8 @@ END $$;
 -- 5. MONITORING: View all tables with/without RLS
 -- ════════════════════════════════════════════════════════
 
-CREATE OR REPLACE VIEW system.v_rls_coverage AS
+DROP VIEW IF EXISTS system.v_rls_coverage CASCADE;
+CREATE VIEW system.v_rls_coverage AS
 SELECT
   n.nspname AS schema_name,
   c.relname AS table_name,

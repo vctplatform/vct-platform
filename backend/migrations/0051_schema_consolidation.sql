@@ -41,7 +41,7 @@ UNION ALL
 SELECT
   r.id,
   r.tournament_id,
-  COALESCE(t.ten, '') AS team_name,
+  '' AS team_name,
   '' AS province,
   r.trang_thai AS status,
   '' AS head_coach,
@@ -55,12 +55,10 @@ SELECT
   r.tenant_id,
   'v1' AS source_version
 FROM registrations r
-LEFT JOIN teams t ON r.team_id = t.id
 WHERE r.is_deleted = false
   AND NOT EXISTS (
     SELECT 1 FROM tournament_registrations tr
     WHERE tr.tournament_id = r.tournament_id
-    AND tr.team_name = COALESCE(t.ten, '')
   );
 
 -- 1b. Unified Results View
@@ -85,38 +83,7 @@ SELECT
   tr.tenant_id,
   'v2' AS source_version
 FROM tournament_results tr
-WHERE tr.is_deleted = false
-
-UNION ALL
-
-SELECT
-  m.id,
-  m.tournament_id,
-  cc.ten AS category_name,
-  '' AS content_type,
-  a_gold.ho_ten AS gold_name,
-  '' AS gold_team,
-  a_silver.ho_ten AS silver_name,
-  '' AS silver_team,
-  a_bronze.ho_ten AS bronze1_name,
-  '' AS bronze1_team,
-  '' AS bronze2_name,
-  '' AS bronze2_team,
-  true AS is_finalized,
-  m.created_at,
-  m.updated_at,
-  m.tenant_id,
-  'v1' AS source_version
-FROM medals m
-LEFT JOIN content_categories cc ON m.content_category_id = cc.id
-LEFT JOIN athletes a_gold ON m.gold_athlete_id = a_gold.id
-LEFT JOIN athletes a_silver ON m.silver_athlete_id = a_silver.id
-LEFT JOIN athletes a_bronze ON m.bronze_athlete_id = a_bronze.id
-WHERE m.is_deleted = false
-  AND NOT EXISTS (
-    SELECT 1 FROM tournament_results tr
-    WHERE tr.tournament_id = m.tournament_id
-  );
+WHERE tr.is_deleted = false;
 
 -- 1c. Unified Team Standings View
 CREATE OR REPLACE VIEW api_v1.standings_unified AS

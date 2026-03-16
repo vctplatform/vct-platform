@@ -265,7 +265,8 @@ $$ LANGUAGE plpgsql;
 -- 8. WEBHOOK STATS VIEW
 -- ════════════════════════════════════════════════════════
 
-CREATE OR REPLACE VIEW system.v_webhook_stats AS
+DROP VIEW IF EXISTS system.v_webhook_stats CASCADE;
+CREATE VIEW system.v_webhook_stats AS
 SELECT
   dw.name AS webhook_name,
   dw.source_table,

@@ -269,7 +269,8 @@ ON CONFLICT (name) DO NOTHING;
 -- 7. CDC MONITORING VIEW
 -- ════════════════════════════════════════════════════════
 
-CREATE OR REPLACE VIEW system.v_cdc_stats AS
+DROP VIEW IF EXISTS system.v_cdc_stats CASCADE;
+CREATE VIEW system.v_cdc_stats AS
 SELECT
   aggregate_type,
   status,
@@ -282,7 +283,8 @@ GROUP BY aggregate_type, status
 ORDER BY aggregate_type, status;
 
 -- CDC lag view (events awaiting processing)
-CREATE OR REPLACE VIEW system.v_cdc_lag AS
+DROP VIEW IF EXISTS system.v_cdc_lag CASCADE;
+CREATE VIEW system.v_cdc_lag AS
 SELECT
   s.name AS subscription,
   s.consumer_type,
