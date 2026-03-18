@@ -3,15 +3,16 @@
 import * as React from 'react'
 import { useState, useMemo } from 'react'
 import {
-    VCT_Badge, VCT_Button, VCT_Stack, VCT_Toast,
-    VCT_SearchInput, VCT_Select, VCT_EmptyState, VCT_Tabs,
-    VCT_PageContainer, VCT_StatRow
+    VCT_Badge, VCT_Button, VCT_Stack,
+    VCT_SearchInput, VCT_Select, VCT_Tabs,
 } from '../components/vct-ui'
 import type { StatItem } from '../components/VCT_StatRow'
 import { VCT_Icons } from '../components/vct-icons'
 import { VCT_Drawer } from '../components/VCT_Drawer'
-import { useAdminToast } from './hooks/useAdminToast'
-import { AdminSkeletonRow } from './components/AdminSkeletonRow'
+import { AdminDataTable } from './components/AdminDataTable'
+import { AdminPageShell, useShellToast } from './components/AdminPageShell'
+import { useAdminFetch } from './hooks/useAdminAPI'
+import { AdminGuard } from './components/AdminGuard'
 
 // ════════════════════════════════════════
 // TYPES & MOCK DATA
@@ -62,26 +63,67 @@ const EXAM_STATUS_BADGE: Record<string, { label: string; type: string }> = {
 // ════════════════════════════════════════
 // MAIN COMPONENT
 // ════════════════════════════════════════
-export const Page_admin_rankings = () => {
+export const Page_admin_rankings = () => (
+    <AdminGuard>
+        <Page_admin_rankings_Content />
+    </AdminGuard>
+)
+
+const Page_admin_rankings_Content = () => {
+    const { data: fetchedRankings, isLoading } = useAdminFetch<RankedAthlete[]>('/admin/rankings', { mockData: MOCK_RANKINGS })
     const [tab, setTab] = useState<'rankings' | 'exams'>('rankings')
     const [search, setSearch] = useState('')
     const [filterWeight, setFilterWeight] = useState('all')
-    const [isLoading, setIsLoading] = useState(true)
     const [selected, setSelected] = useState<RankedAthlete | null>(null)
-    const { toast, showToast, dismiss } = useAdminToast()
+    const { showToast } = useShellToast()
 
-    React.useEffect(() => {
-        const t = setTimeout(() => setIsLoading(false), 800)
-        return () => clearTimeout(t)
-    }, [])
+    const _rankings = fetchedRankings ?? MOCK_RANKINGS
 
-    const filtered = useMemo(() => {
-        return MOCK_RANKINGS.filter(a => {
+    const [sortColRankings, setSortColRankings] = useState('rank')
+    const [sortDirRankings, setSortDirRankings] = useState<'asc' | 'desc'>('asc')
+    
+    const [sortColExams, setSortColExams] = useState('date')
+    const [sortDirExams, setSortDirExams] = useState<'asc' | 'desc'>('desc')
+
+    const filteredRankings = useMemo(() => {
+        let data = _rankings.filter(a => {
             const matchSearch = a.name.toLowerCase().includes(search.toLowerCase()) || a.club.toLowerCase().includes(search.toLowerCase())
             const matchWeight = filterWeight === 'all' || a.weight_class === filterWeight
             return matchSearch && matchWeight
         })
-    }, [search, filterWeight])
+
+        data = [...data].sort((a, b) => {
+            const valA = String((a as any)[sortColRankings] || '').toLowerCase()
+            const valB = String((b as any)[sortColRankings] || '').toLowerCase()
+            if (['rank', 'elo', 'elo_change', 'wins', 'losses', 'tournaments'].includes(sortColRankings)) {
+                return sortDirRankings === 'asc' ? Number(a[sortColRankings as keyof RankedAthlete]) - Number(b[sortColRankings as keyof RankedAthlete]) : Number(b[sortColRankings as keyof RankedAthlete]) - Number(a[sortColRankings as keyof RankedAthlete])
+            }
+            return sortDirRankings === 'asc' ? valA.localeCompare(valB) : valB.localeCompare(valA)
+        })
+
+        return data
+    }, [_rankings, search, filterWeight, sortColRankings, sortDirRankings])
+
+    const filteredExams = useMemo(() => {
+        return [...MOCK_EXAMS].sort((a, b) => {
+            const valA = String((a as any)[sortColExams] || '').toLowerCase()
+            const valB = String((b as any)[sortColExams] || '').toLowerCase()
+            if (['candidates', 'passed'].includes(sortColExams)) {
+                return sortDirExams === 'asc' ? Number(a[sortColExams as keyof BeltExam]) - Number(b[sortColExams as keyof BeltExam]) : Number(b[sortColExams as keyof BeltExam]) - Number(a[sortColExams as keyof BeltExam])
+            }
+            return sortDirExams === 'asc' ? valA.localeCompare(valB) : valB.localeCompare(valA)
+        })
+    }, [sortColExams, sortDirExams])
+
+    const handleSortRankings = (key: string) => {
+        if (sortColRankings === key) setSortDirRankings(d => d === 'asc' ? 'desc' : 'asc')
+        else { setSortColRankings(key); setSortDirRankings('asc') }
+    }
+
+    const handleSortExams = (key: string) => {
+        if (sortColExams === key) setSortDirExams(d => d === 'asc' ? 'desc' : 'asc')
+        else { setSortColExams(key); setSortDirExams('asc') }
+    }
 
     const weightClasses = Array.from(new Set(MOCK_RANKINGS.map(a => a.weight_class)))
     const topElo = MOCK_RANKINGS[0]?.elo ?? 0
@@ -99,17 +141,12 @@ export const Page_admin_rankings = () => {
     ]
 
     return (
-        <VCT_PageContainer size="wide" animated>
-            <VCT_Toast isVisible={toast.show} message={toast.msg} type={toast.type} onClose={dismiss} />
-
-            <div className="mb-6">
-                <h1 className="text-2xl font-bold tracking-tight text-(--vct-text-primary) flex items-center gap-3">
-                    <VCT_Icons.Trophy size={28} className="text-[#f59e0b]" /> Xếp hạng & Thăng cấp
-                </h1>
-                <p className="text-sm text-(--vct-text-secondary) mt-1">Bảng xếp hạng ELO và quản lý kỳ thi thăng cấp đai</p>
-            </div>
-
-            <VCT_StatRow items={stats} className="mb-8" />
+        <AdminPageShell
+            title="Xếp hạng & Thăng cấp"
+            subtitle="Bảng xếp hạng ELO và quản lý kỳ thi thăng cấp đai"
+            icon={<VCT_Icons.Trophy size={28} className="text-[#f59e0b]" />}
+            stats={stats}
+        >
             <VCT_Tabs tabs={tabItems} activeTab={tab} onChange={v => setTab(v as typeof tab)} className="mb-6" />
 
             {/* ── TAB: Rankings ── */}
@@ -119,79 +156,148 @@ export const Page_admin_rankings = () => {
                         <VCT_SearchInput value={search} onChange={setSearch} placeholder="Tìm VĐV..." className="flex-1 min-w-[220px]" />
                         <VCT_Select value={filterWeight} onChange={setFilterWeight} options={[{ value: 'all', label: 'Tất cả hạng cân' }, ...weightClasses.map(w => ({ value: w, label: w }))]} />
                     </div>
-                    <div className="bg-(--vct-bg-elevated) border border-(--vct-border-strong) rounded-2xl overflow-hidden mb-6">
-                        <div className="overflow-x-auto">
-                            <table className="w-full text-sm">
-                                <thead>
-                                    <tr className="border-b border-(--vct-border-subtle)">
-                                        <th className="text-center p-4 text-(--vct-text-tertiary) font-bold text-xs uppercase tracking-wider w-16">#</th>
-                                        <th className="text-left p-4 text-(--vct-text-tertiary) font-bold text-xs uppercase tracking-wider">VĐV</th>
-                                        <th className="text-left p-4 text-(--vct-text-tertiary) font-bold text-xs uppercase tracking-wider">CLB</th>
-                                        <th className="text-center p-4 text-(--vct-text-tertiary) font-bold text-xs uppercase tracking-wider">Đai</th>
-                                        <th className="text-center p-4 text-(--vct-text-tertiary) font-bold text-xs uppercase tracking-wider">ELO</th>
-                                        <th className="text-center p-4 text-(--vct-text-tertiary) font-bold text-xs uppercase tracking-wider">+/-</th>
-                                        <th className="text-center p-4 text-(--vct-text-tertiary) font-bold text-xs uppercase tracking-wider">W-L</th>
-                                        <th className="text-center p-4 text-(--vct-text-tertiary) font-bold text-xs uppercase tracking-wider">Giải</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {isLoading ? [...Array(6)].map((_, i) => <AdminSkeletonRow key={i} cols={8} />) : filtered.length === 0 ? (
-                                        <tr><td colSpan={8}><VCT_EmptyState icon={<VCT_Icons.Trophy size={40} />} title="Không tìm thấy" /></td></tr>
-                                    ) : filtered.map(a => (
-                                        <tr key={a.id} className="border-b border-(--vct-border-subtle) hover:bg-(--vct-bg-base) cursor-pointer transition-colors" onClick={() => setSelected(a)}>
-                                            <td className="p-4 text-center">
-                                                <span className={`inline-flex items-center justify-center w-8 h-8 rounded-full font-black text-sm ${a.rank <= 3 ? 'text-white' : 'text-(--vct-text-primary) bg-(--vct-bg-base)'}`}
-                                                    style={a.rank === 1 ? { background: 'linear-gradient(135deg, #f59e0b, #d97706)' } : a.rank === 2 ? { background: 'linear-gradient(135deg, #94a3b8, #64748b)' } : a.rank === 3 ? { background: 'linear-gradient(135deg, #cd7f32, #a0522d)' } : {}}>
-                                                    {a.rank}
-                                                </span>
-                                            </td>
-                                            <td className="p-4">
-                                                <div className="font-bold text-(--vct-text-primary)">{a.name}</div>
-                                                <div className="text-xs text-(--vct-text-tertiary)">{a.province} · {a.weight_class}</div>
-                                            </td>
-                                            <td className="p-4 text-(--vct-text-secondary) text-sm">{a.club}</td>
-                                            <td className="p-4 text-center"><VCT_Badge type={BELT_BADGE[a.belt] ?? 'neutral'} text={a.belt} /></td>
-                                            <td className="p-4 text-center font-black text-(--vct-text-primary)">{a.elo}</td>
-                                            <td className="p-4 text-center">
-                                                <span className={`font-bold ${a.elo_change > 0 ? 'text-[#10b981]' : a.elo_change < 0 ? 'text-[#ef4444]' : 'text-(--vct-text-tertiary)'}`}>
-                                                    {a.elo_change > 0 ? '▲' : a.elo_change < 0 ? '▼' : '—'} {Math.abs(a.elo_change)}
-                                                </span>
-                                            </td>
-                                            <td className="p-4 text-center text-(--vct-text-secondary)">{a.wins}W - {a.losses}L</td>
-                                            <td className="p-4 text-center text-(--vct-text-tertiary)">{a.tournaments}</td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
+                    <AdminDataTable
+                        data={filteredRankings}
+                        isLoading={isLoading}
+                        sortBy={sortColRankings}
+                        sortDir={sortDirRankings}
+                        onSort={handleSortRankings}
+                        rowKey={a => a.id}
+                        emptyTitle="Không tìm thấy VĐV"
+                        emptyDescription="Thử thay đổi bộ lọc tìm kiếm"
+                        emptyIcon="🏆"
+                        columns={[
+                            {
+                                key: 'rank',
+                                label: '#',
+                                sortable: true,
+                                align: 'center',
+                                render: (a) => (
+                                    <span className={`inline-flex items-center justify-center w-8 h-8 rounded-full font-black text-sm ${a.rank <= 3 ? 'text-white' : 'text-(--vct-text-primary) bg-(--vct-bg-base)'}`}
+                                        style={a.rank === 1 ? { background: 'linear-gradient(135deg, #f59e0b, #d97706)' } : a.rank === 2 ? { background: 'linear-gradient(135deg, #94a3b8, #64748b)' } : a.rank === 3 ? { background: 'linear-gradient(135deg, #cd7f32, #a0522d)' } : {}}>
+                                        {a.rank}
+                                    </span>
+                                )
+                            },
+                            {
+                                key: 'name',
+                                label: 'VĐV',
+                                sortable: true,
+                                render: (a) => (
+                                    <div>
+                                        <div className="font-bold text-(--vct-text-primary)">{a.name}</div>
+                                        <div className="text-xs text-(--vct-text-tertiary)">{a.province} · {a.weight_class}</div>
+                                    </div>
+                                )
+                            },
+                            {
+                                key: 'club',
+                                label: 'CLB',
+                                sortable: true,
+                                hideMobile: true,
+                                render: (a) => <div className="text-(--vct-text-secondary) text-sm">{a.club}</div>
+                            },
+                            {
+                                key: 'belt',
+                                label: 'Đai',
+                                sortable: true,
+                                align: 'center',
+                                render: (a) => <VCT_Badge type={BELT_BADGE[a.belt] ?? 'neutral'} text={a.belt} />
+                            },
+                            {
+                                key: 'elo',
+                                label: 'ELO',
+                                sortable: true,
+                                align: 'center',
+                                render: (a) => <div className="font-black text-(--vct-text-primary)">{a.elo}</div>
+                            },
+                            {
+                                key: 'elo_change',
+                                label: '+/-',
+                                sortable: true,
+                                align: 'center',
+                                render: (a) => (
+                                    <span className={`font-bold ${a.elo_change > 0 ? 'text-[#10b981]' : a.elo_change < 0 ? 'text-[#ef4444]' : 'text-(--vct-text-tertiary)'}`}>
+                                        {a.elo_change > 0 ? '▲' : a.elo_change < 0 ? '▼' : '—'} {Math.abs(a.elo_change)}
+                                    </span>
+                                )
+                            },
+                            {
+                                key: 'wins',
+                                label: 'W-L',
+                                sortable: true,
+                                align: 'center',
+                                render: (a) => <div className="text-(--vct-text-secondary)">{a.wins}W - {a.losses}L</div>
+                            },
+                            {
+                                key: 'tournaments',
+                                label: 'Giải',
+                                sortable: true,
+                                align: 'center',
+                                render: (a) => <div className="text-(--vct-text-tertiary)">{a.tournaments}</div>
+                            }
+                        ]}
+                        onRowClick={setSelected}
+                    />
                 </>
             )}
 
             {/* ── TAB: Belt Exams ── */}
             {tab === 'exams' && (
                 <div className="space-y-4 mb-6">
-                    {MOCK_EXAMS.map(ex => (
-                        <div key={ex.id} className="bg-(--vct-bg-elevated) border border-(--vct-border-strong) rounded-2xl p-5">
-                            <div className="flex items-center justify-between mb-3">
-                                <div>
-                                    <div className="font-bold text-(--vct-text-primary)">{ex.name}</div>
-                                    <div className="text-xs text-(--vct-text-tertiary)">{ex.date} · {ex.location}</div>
-                                </div>
-                                <div className="flex items-center gap-3">
-                                    <VCT_Badge type={BELT_BADGE[ex.target_belt] ?? 'neutral'} text={ex.target_belt} />
-                                    <VCT_Badge type={EXAM_STATUS_BADGE[ex.status]?.type ?? 'neutral'} text={EXAM_STATUS_BADGE[ex.status]?.label ?? ex.status} />
-                                </div>
-                            </div>
-                            <div className="flex items-center gap-6 text-sm">
-                                <span className="text-(--vct-text-secondary)">👥 {ex.candidates} thí sinh</span>
-                                {ex.status === 'completed' && <span className="text-[#10b981] font-bold">✅ {ex.passed} đạt ({Math.round(ex.passed / ex.candidates * 100)}%)</span>}
-                                {ex.status === 'upcoming' && (
-                                    <VCT_Button size="sm" variant="ghost" onClick={() => showToast('Đã mở kỳ thi')} icon={<VCT_Icons.Play size={14} />}>Bắt đầu</VCT_Button>
-                                )}
-                            </div>
-                        </div>
-                    ))}
+                    <AdminDataTable
+                        data={filteredExams}
+                        isLoading={false}
+                        sortBy={sortColExams}
+                        sortDir={sortDirExams}
+                        onSort={handleSortExams}
+                        rowKey={e => e.id}
+                        emptyTitle="Không có kỳ thi"
+                        columns={[
+                            {
+                                key: 'name',
+                                label: 'Kỳ thi',
+                                sortable: true,
+                                render: (ex) => (
+                                    <div>
+                                        <div className="font-bold text-(--vct-text-primary)">{ex.name}</div>
+                                        <div className="text-xs text-(--vct-text-tertiary)">{ex.date} · {ex.location}</div>
+                                    </div>
+                                )
+                            },
+                            {
+                                key: 'target_belt',
+                                label: 'Đai mục tiêu',
+                                sortable: true,
+                                render: (ex) => <VCT_Badge type={BELT_BADGE[ex.target_belt] ?? 'neutral'} text={ex.target_belt} />
+                            },
+                            {
+                                key: 'candidates',
+                                label: 'Thí sinh',
+                                sortable: true,
+                                render: (ex) => (
+                                    <div className="flex items-center gap-6 text-sm">
+                                        <span className="text-(--vct-text-secondary)">👥 {ex.candidates} thí sinh</span>
+                                        {ex.status === 'completed' && <span className="text-[#10b981] font-bold">✅ {ex.passed} đạt ({Math.round(ex.passed / ex.candidates * 100)}%)</span>}
+                                    </div>
+                                )
+                            },
+                            {
+                                key: 'status',
+                                label: 'Trạng thái',
+                                sortable: true,
+                                align: 'right',
+                                render: (ex) => (
+                                    <div className="flex items-center justify-end gap-3">
+                                        <VCT_Badge type={EXAM_STATUS_BADGE[ex.status]?.type ?? 'neutral'} text={EXAM_STATUS_BADGE[ex.status]?.label ?? ex.status} />
+                                        {ex.status === 'upcoming' && (
+                                            <VCT_Button size="sm" variant="ghost" onClick={() => showToast('Đã mở kỳ thi')} icon={<VCT_Icons.Play size={14} />}>Bắt đầu</VCT_Button>
+                                        )}
+                                    </div>
+                                )
+                            }
+                        ]}
+                    />
                 </div>
             )}
 
@@ -229,6 +335,6 @@ export const Page_admin_rankings = () => {
                     </VCT_Stack>
                 )}
             </VCT_Drawer>
-        </VCT_PageContainer>
+        </AdminPageShell>
     )
 }

@@ -1,20 +1,23 @@
-﻿'use client'
+'use client'
 
 import * as React from 'react'
 import { useState, useMemo } from 'react'
 import {
-    VCT_Badge, VCT_Button, VCT_Stack, VCT_Toast,
-    VCT_SearchInput, VCT_Select, VCT_EmptyState,
-    VCT_PageContainer, VCT_StatRow
+    VCT_Badge, VCT_Button, VCT_Stack,
+    VCT_SearchInput, VCT_Select,
 } from '../components/vct-ui'
 import type { StatItem } from '../components/VCT_StatRow'
 import { VCT_Icons } from '../components/vct-icons'
 import { VCT_Drawer } from '../components/VCT_Drawer'
-import { AdminSkeletonRow } from './components/AdminSkeletonRow'
-import { AdminPaginationBar } from './components/AdminPaginationBar'
-import { useAdminToast } from './hooks/useAdminToast'
+import { AdminDataTable } from './components/AdminDataTable'
+import { AdminPageShell, useShellToast } from './components/AdminPageShell'
+import { useAdminFetch } from './hooks/useAdminAPI'
+import { useAdminMutation } from './hooks/useAdminMutation'
+import { useDebounce } from '../hooks/useDebounce'
 import { exportToCSV } from './utils/adminExport'
 import { usePagination } from '../hooks/usePagination'
+import { AdminGuard } from './components/AdminGuard'
+import { useI18n as _useI18n } from '../i18n'
 
 // ════════════════════════════════════════
 // TYPES & MOCK DATA
@@ -46,26 +49,44 @@ const MOCK_CLUBS: Club[] = [
 // ════════════════════════════════════════
 // MAIN COMPONENT
 // ════════════════════════════════════════
-export const Page_admin_clubs = () => {
-    const [clubs, setClubs] = useState(MOCK_CLUBS)
-    const [search, setSearch] = useState('')
-    const [filterStatus, setFilterStatus] = useState('all')
-    const [isLoading, setIsLoading] = useState(true)
-    const [selected, setSelected] = useState<Club | null>(null)
-    const { toast, showToast, dismiss } = useAdminToast()
+export const Page_admin_clubs = () => (
+    <AdminGuard>
+        <Page_admin_clubs_Content />
+    </AdminGuard>
+)
 
-    React.useEffect(() => {
-        const t = setTimeout(() => setIsLoading(false), 800)
-        return () => clearTimeout(t)
-    }, [])
+const Page_admin_clubs_Content = () => {
+    const { data: fetchedClubs, isLoading } = useAdminFetch<Club[]>('/admin/clubs', { mockData: MOCK_CLUBS })
+    const [clubs, setClubs] = useState<Club[]>([])
+    const [search, setSearch] = useState('')
+    const debouncedSearch = useDebounce(search, 300)
+    const [filterStatus, setFilterStatus] = useState('all')
+    const [selected, setSelected] = useState<Club | null>(null)
+    const { showToast } = useShellToast()
+
+    const [sortCol, setSortCol] = useState<string>('name')
+    const [sortDir, setSortDir] = useState<'asc' | 'desc'>('asc')
+
+    const { mutate: mutateApprove } = useAdminMutation('/admin/clubs/approve', { onSuccess: () => showToast('Đã duyệt CLB') })
+    const { mutate: mutateSuspend } = useAdminMutation('/admin/clubs/suspend', { onSuccess: () => showToast('Đã tạm ngưng CLB', 'info') })
+
+    React.useEffect(() => { if (fetchedClubs) setClubs(fetchedClubs) }, [fetchedClubs])
 
     const filtered = useMemo(() => {
-        return clubs.filter(c => {
-            const matchSearch = c.name.toLowerCase().includes(search.toLowerCase()) || c.province.toLowerCase().includes(search.toLowerCase()) || c.head_coach.toLowerCase().includes(search.toLowerCase())
+        let data = clubs.filter(c => {
+            const matchSearch = c.name.toLowerCase().includes(debouncedSearch.toLowerCase()) || c.province.toLowerCase().includes(debouncedSearch.toLowerCase()) || c.head_coach.toLowerCase().includes(debouncedSearch.toLowerCase())
             const matchStatus = filterStatus === 'all' || c.status === filterStatus
             return matchSearch && matchStatus
         })
-    }, [clubs, search, filterStatus])
+
+        data = [...data].sort((a, b) => {
+            const valA = String((a as any)[sortCol] || '').toLowerCase()
+            const valB = String((b as any)[sortCol] || '').toLowerCase()
+            return sortDir === 'asc' ? valA.localeCompare(valB) : valB.localeCompare(valA)
+        })
+
+        return data
+    }, [clubs, debouncedSearch, filterStatus, sortCol, sortDir])
 
     const pagination = usePagination(filtered, { pageSize: 10 })
 
@@ -79,15 +100,24 @@ export const Page_admin_clubs = () => {
         { icon: <VCT_Icons.Clock size={20} />, label: 'Chờ duyệt', value: clubs.filter(c => c.status === 'pending').length, color: '#f59e0b' },
     ]
 
-    const handleApprove = (id: string) => {
+    const handleSort = (key: string) => {
+        if (sortCol === key) {
+            setSortDir(d => d === 'asc' ? 'desc' : 'asc')
+        } else {
+            setSortCol(key)
+            setSortDir('asc')
+        }
+    }
+
+    const handleApprove = async (id: string) => {
+        await mutateApprove({ id })
         setClubs(prev => prev.map(c => c.id === id ? { ...c, status: 'active' as const } : c))
-        showToast('Đã duyệt CLB')
         setSelected(null)
     }
 
-    const handleSuspend = (id: string) => {
+    const handleSuspend = async (id: string) => {
+        await mutateSuspend({ id })
         setClubs(prev => prev.map(c => c.id === id ? { ...c, status: 'suspended' as const } : c))
-        showToast('Đã tạm ngưng CLB', 'info')
     }
 
     const handleExportCSV = () => {
@@ -100,70 +130,39 @@ export const Page_admin_clubs = () => {
     }
 
     return (
-        <VCT_PageContainer size="wide" animated>
-            <VCT_Toast isVisible={toast.show} message={toast.msg} type={toast.type} onClose={dismiss} />
-
-            <div className="mb-6">
-                <h1 className="text-2xl font-bold tracking-tight text-(--vct-text-primary) flex items-center gap-3">
-                    <VCT_Icons.Home size={28} className="text-[#10b981]" /> Quản lý Câu lạc bộ
-                </h1>
-                <p className="text-sm text-(--vct-text-secondary) mt-1">CLB, thành viên, cơ sở vật chất, và thiết bị</p>
-            </div>
-
-            <VCT_StatRow items={stats} className="mb-6" />
-
+        <AdminPageShell
+            title="Quản lý Câu lạc bộ"
+            subtitle="CLB, thành viên, cơ sở vật chất, và thiết bị"
+            icon={<VCT_Icons.Home size={28} className="text-[#10b981]" />}
+            stats={stats}
+            actions={<VCT_Button variant="outline" icon={<VCT_Icons.Download size={16} />} onClick={handleExportCSV}>Xuất CSV</VCT_Button>}
+        >
             <div className="flex flex-wrap items-center gap-3 mb-6">
                 <VCT_SearchInput value={search} onChange={setSearch} placeholder="Tìm CLB..." className="flex-1 min-w-[220px]" />
                 <VCT_Select value={filterStatus} onChange={setFilterStatus} options={[{ value: 'all', label: 'Tất cả' }, ...Object.entries(STATUS_BADGE).map(([k, v]) => ({ value: k, label: v.label }))]} />
-                <VCT_Button variant="outline" icon={<VCT_Icons.Download size={16} />} onClick={handleExportCSV}>Xuất CSV</VCT_Button>
             </div>
 
             {/* ── Table ── */}
-            <div className="bg-(--vct-bg-elevated) border border-(--vct-border-strong) rounded-2xl overflow-hidden mb-6">
-                <div className="overflow-x-auto">
-                    <table className="w-full text-sm">
-                        <thead>
-                            <tr className="border-b border-(--vct-border-subtle)">
-                                <th className="text-left p-4 text-(--vct-text-tertiary) font-bold text-xs uppercase tracking-wider">CLB</th>
-                                <th className="text-left p-4 text-(--vct-text-tertiary) font-bold text-xs uppercase tracking-wider">Tỉnh/TP</th>
-                                <th className="text-left p-4 text-(--vct-text-tertiary) font-bold text-xs uppercase tracking-wider">HLV trưởng</th>
-                                <th className="text-center p-4 text-(--vct-text-tertiary) font-bold text-xs uppercase tracking-wider">Thành viên</th>
-                                <th className="text-center p-4 text-(--vct-text-tertiary) font-bold text-xs uppercase tracking-wider">VĐV</th>
-                                <th className="text-center p-4 text-(--vct-text-tertiary) font-bold text-xs uppercase tracking-wider">Thiết bị</th>
-                                <th className="text-center p-4 text-(--vct-text-tertiary) font-bold text-xs uppercase tracking-wider">Trạng thái</th>
-                                <th className="text-center p-4 text-(--vct-text-tertiary) font-bold text-xs uppercase tracking-wider">Thao tác</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {isLoading ? [...Array(5)].map((_, i) => <AdminSkeletonRow key={i} cols={8} />) : pagination.paginatedItems.length === 0 ? (
-                                <tr><td colSpan={8}><VCT_EmptyState icon={<VCT_Icons.Home size={40} />} title="Không tìm thấy CLB" /></td></tr>
-                            ) : pagination.paginatedItems.map(c => {
-                                return (
-                                    <tr key={c.id} className="border-b border-(--vct-border-subtle) hover:bg-(--vct-bg-base) cursor-pointer transition-colors" onClick={() => setSelected(c)}>
-                                        <td className="p-4">
-                                            <div className="font-bold text-(--vct-text-primary)">{c.name}</div>
-                                            <div className="text-xs text-(--vct-text-tertiary)">{c.id}</div>
-                                        </td>
-                                        <td className="p-4 text-(--vct-text-secondary)">{c.province}</td>
-                                        <td className="p-4 text-(--vct-text-secondary)">{c.head_coach}</td>
-                                        <td className="p-4 text-center font-bold text-(--vct-text-primary)">{c.members}</td>
-                                        <td className="p-4 text-center font-bold text-(--vct-text-primary)">{c.athletes}</td>
-                                        <td className="p-4 text-center"><VCT_Badge type={c.equipment_score >= 85 ? 'success' : c.equipment_score >= 70 ? 'warning' : 'danger'} text={`${c.equipment_score}%`} /></td>
-                                        <td className="p-4 text-center"><VCT_Badge type={STATUS_BADGE[c.status]?.type ?? 'neutral'} text={STATUS_BADGE[c.status]?.label ?? c.status} /></td>
-                                        <td className="p-4 text-center" onClick={e => e.stopPropagation()}>
-                                            {c.status === 'pending' && <VCT_Button size="sm" variant="ghost" onClick={() => handleApprove(c.id)} icon={<VCT_Icons.CheckCircle size={14} />}>Duyệt</VCT_Button>}
-                                            {c.status === 'active' && <VCT_Button size="sm" variant="ghost" onClick={() => handleSuspend(c.id)} icon={<VCT_Icons.Close size={14} />}>Ngưng</VCT_Button>}
-                                        </td>
-                                    </tr>
-                                )
-                            })}
-                        </tbody>
-                    </table>
-                </div>
-                {!isLoading && pagination.totalPages > 1 && (
-                    <AdminPaginationBar {...pagination} />
-                )}
-            </div>
+            <AdminDataTable
+                data={pagination.paginatedItems}
+                isLoading={isLoading}
+                sortBy={sortCol}
+                sortDir={sortDir}
+                onSort={handleSort}
+                rowKey={c => c.id}
+                emptyTitle="Không tìm thấy CLB"
+                emptyIcon="🏰"
+                className="mb-6"
+                columns={[
+                    { key: 'name', label: 'Tên CLB', sortable: true, render: c => <div className="font-bold text-(--vct-text-primary)">{c.name}</div> },
+                    { key: 'province', label: 'Tỉnh/TP', sortable: true, render: c => <div className="text-(--vct-text-secondary)">{c.province}</div> },
+                    { key: 'head_coach', label: 'HLV trưởng', sortable: true, render: c => <div className="text-(--vct-text-secondary)">{c.head_coach}</div> },
+                    { key: 'members', label: 'Thành viên', sortable: true, align: 'right', render: c => <div className="font-mono text-sm">{c.members}</div> },
+                    { key: 'athletes', label: 'VĐV', sortable: true, align: 'right', render: c => <div className="font-mono text-sm text-(--vct-accent-cyan)">{c.athletes}</div> },
+                    { key: 'equipment_score', label: 'Thiết bị', sortable: true, align: 'right', render: c => <div className="font-mono text-sm opacity-80">{c.equipment_score}%</div> },
+                    { key: 'status', label: 'Trạng thái', sortable: true, align: 'center', render: c => <VCT_Badge type={STATUS_BADGE[c.status]?.type ?? 'neutral'} text={STATUS_BADGE[c.status]?.label ?? c.status} /> },
+                ]}
+            />
 
             {/* ── Detail Drawer ── */}
             <VCT_Drawer isOpen={!!selected} onClose={() => setSelected(null)} title={selected?.name ?? ''} width={520}>
@@ -209,6 +208,6 @@ export const Page_admin_clubs = () => {
                     </VCT_Stack>
                 )}
             </VCT_Drawer>
-        </VCT_PageContainer>
+        </AdminPageShell>
     )
 }

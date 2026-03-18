@@ -1,19 +1,22 @@
 'use client'
 
 import * as React from 'react'
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { VCT_AvatarLetter, VCT_Badge } from '../components/vct-ui-data-display'
 import { VCT_Button } from '../components/vct-ui-layout'
-import { VCT_PageContainer } from '../components/VCT_PageContainer'
 import { VCT_SectionCard } from '../components/VCT_SectionCard'
-import { VCT_StatRow } from '../components/VCT_StatRow'
 import type { StatItem } from '../components/VCT_StatRow'
 import { VCT_Icons } from '../components/vct-icons'
 import { VCT_Timeline } from '../components/VCT_Timeline'
 import type { TimelineEvent } from '../components/VCT_Timeline'
-import { VCT_ConfirmDialog, VCT_Toast } from '../components/vct-ui'
+import { VCT_ConfirmDialog } from '../components/vct-ui'
+import { VCT_StatRow } from '../components/VCT_StatRow'
 import { MOCK_USERS, ROLE_COLORS, STATUS_MAP, getRoleLabel, type SystemUser } from './admin-users.data'
+import { AdminPageShell, useShellToast } from './components/AdminPageShell'
+import { useAdminFetch } from './hooks/useAdminAPI'
+import { AdminGuard } from './components/AdminGuard'
+import { useI18n as _useI18n } from '../i18n'
 
 interface PageAdminUserDetailProps {
     userId: string
@@ -133,22 +136,18 @@ const DetailItem = ({ icon, label, value }: DetailItemProps) => (
 // ════════════════════════════════════════
 // MAIN COMPONENT
 // ════════════════════════════════════════
-export const Page_admin_user_detail = ({ userId }: PageAdminUserDetailProps) => {
+export const Page_admin_user_detail = ({ userId }: PageAdminUserDetailProps) => (
+    <AdminGuard>
+        <Page_admin_user_detail_Content userId={userId} />
+    </AdminGuard>
+)
+
+const Page_admin_user_detail_Content = ({ userId }: PageAdminUserDetailProps) => {
     const router = useRouter()
-    const [isLoading, setIsLoading] = useState(true)
+    const { data: _fetchedUsers, isLoading } = useAdminFetch<SystemUser[]>('/admin/users', { mockData: MOCK_USERS })
     const [confirmLock, setConfirmLock] = useState(false)
     const [confirmReset, setConfirmReset] = useState(false)
-    const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' | 'warning' } | null>(null)
-
-    useEffect(() => {
-        const t = setTimeout(() => setIsLoading(false), 800)
-        return () => clearTimeout(t)
-    }, [])
-
-    const showToast = useCallback((message: string, type: 'success' | 'error' | 'warning' = 'success') => {
-        setToast({ message, type })
-        setTimeout(() => setToast(null), 3000)
-    }, [])
+    const { showToast } = useShellToast()
 
     const user = React.useMemo(
         () => MOCK_USERS.find((candidate) => candidate.id.toLowerCase() === userId.toLowerCase()),
@@ -157,7 +156,11 @@ export const Page_admin_user_detail = ({ userId }: PageAdminUserDetailProps) => 
 
     if (!user) {
         return (
-            <VCT_PageContainer size="wide" animated>
+            <AdminPageShell
+                title="Không tìm thấy tài khoản"
+                subtitle={`Mã người dùng \`${userId}\` không tồn tại`}
+                icon={<VCT_Icons.AlertCircle size={28} className="text-amber-500" />}
+            >
                 <div className="mx-auto max-w-3xl rounded-[28px] border border-vct-border bg-vct-elevated p-8 text-center shadow-(--vct-shadow-md)">
                     <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-amber-500/10 text-amber-500">
                         <VCT_Icons.AlertCircle size={28} />
@@ -172,7 +175,7 @@ export const Page_admin_user_detail = ({ userId }: PageAdminUserDetailProps) => 
                         </VCT_Button>
                     </div>
                 </div>
-            </VCT_PageContainer>
+            </AdminPageShell>
         )
     }
 
@@ -195,8 +198,17 @@ export const Page_admin_user_detail = ({ userId }: PageAdminUserDetailProps) => 
     }
 
     return (
-        <VCT_PageContainer size="wide" animated>
-            {toast && <VCT_Toast isVisible={!!toast} message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
+        <AdminPageShell
+            title={user.name}
+            subtitle={`${roleLabel} • ${user.scope}`}
+            icon={<VCT_Icons.User size={28} style={{ color: accentColor }} />}
+            stats={statItems}
+            actions={
+                <VCT_Button variant="outline" icon={<VCT_Icons.ChevronLeft size={16} />} onClick={() => router.push('/admin/users')}>
+                    Quay lại danh sách
+                </VCT_Button>
+            }
+        >
 
             {isLoading ? (
                 <>
@@ -219,10 +231,10 @@ export const Page_admin_user_detail = ({ userId }: PageAdminUserDetailProps) => 
                 <>
                     {/* ── HERO SECTION ── */}
                     <section
-                        className="relative mb-8 overflow-hidden rounded-[28px] border border-vct-border p-6 shadow-(--vct-shadow-md) tablet:p-8"
-                        style={{ background: `linear-gradient(135deg, ${accentColor}1f 0%, rgba(15, 23, 42, 0.96) 55%, rgba(15, 118, 110, 0.12) 100%)` }}
+                        className="admin-hero-card relative mb-8 overflow-hidden rounded-[28px] border border-vct-border p-6 shadow-(--vct-shadow-md) tablet:p-8"
+                        style={{ '--_hero-accent': accentColor } as React.CSSProperties}
                     >
-                        <div className="pointer-events-none absolute -right-16 -top-16 h-48 w-48 rounded-full blur-[90px]" style={{ backgroundColor: `${accentColor}55` }} />
+                        <div className="admin-hero-glow" />
                         <div className="pointer-events-none absolute -bottom-20 left-10 h-40 w-40 rounded-full bg-cyan-500/10 blur-[80px]" />
 
                         <div className="relative z-10 flex flex-col gap-6 xl:flex-row xl:items-end xl:justify-between">
@@ -363,6 +375,6 @@ export const Page_admin_user_detail = ({ userId }: PageAdminUserDetailProps) => 
                 message={`Gửi email đổi mật khẩu đến ${user.email}?`}
                 confirmLabel="Gửi email"
             />
-        </VCT_PageContainer>
+        </AdminPageShell>
     )
 }

@@ -3,17 +3,17 @@
 import * as React from 'react'
 import { useState, useMemo, useCallback } from 'react'
 import {
-    VCT_Badge, VCT_Button, VCT_Stack, VCT_Toast,
-    VCT_SearchInput, VCT_Select, VCT_EmptyState, VCT_Tabs,
-    VCT_PageContainer, VCT_PageHero, VCT_StatRow,
+    VCT_Badge, VCT_Button, VCT_Stack,
+    VCT_SearchInput, VCT_Select, VCT_Tabs, VCT_EmptyState,
     VCT_Modal, VCT_Input, VCT_Field
 } from '../components/vct-ui'
 import type { StatItem } from '../components/VCT_StatRow'
 import { VCT_Icons } from '../components/vct-icons'
 import { VCT_Drawer } from '../components/VCT_Drawer'
 import { VCT_Timeline } from '../components/VCT_Timeline'
-import { useAdminToast } from './hooks/useAdminToast'
-import { AdminSkeletonRow } from './components/AdminSkeletonRow'
+import { AdminDataTable } from './components/AdminDataTable'
+import { AdminPageShell, useShellToast } from './components/AdminPageShell'
+import { AdminGuard } from './components/AdminGuard'
 
 // ════════════════════════════════════════
 // TYPES & MAPS
@@ -67,7 +67,13 @@ const daysUntil = (dateStr: string) => {
 // ════════════════════════════════════════
 // MAIN COMPONENT
 // ════════════════════════════════════════
-export const Page_admin_subscriptions = () => {
+export const Page_admin_subscriptions = () => (
+    <AdminGuard>
+        <Page_admin_subscriptions_Content />
+    </AdminGuard>
+)
+
+const Page_admin_subscriptions_Content = () => {
     const [tab, setTab] = useState<'subscriptions' | 'plans' | 'history'>('subscriptions')
     const [subs, setSubs] = useState<Subscription[]>([])
     const [plans, setPlans] = useState<SubPlan[]>([])
@@ -87,14 +93,12 @@ export const Page_admin_subscriptions = () => {
     const [isSubscribeModalOpen, setIsSubscribeModalOpen] = useState(false)
     const [subscribeForm, setSubscribeForm] = useState({ entity_id: '', entity_type: 'organization', entity_name: '', plan_id: '', billing_cycle_type: 'yearly', trial_days: 0 })
 
-    const { toast, showToast, dismiss } = useAdminToast()
+    const { showToast } = useShellToast()
 
     const fetchPlans = async () => {
         setIsLoading(true)
         try {
-            const token = localStorage.getItem('vct_access_token')
-            const headers: Record<string, string> = token ? { Authorization: `Bearer ${token}` } : {}
-            const res = await fetch('/api/v1/finance/plans', { headers })
+            const res = await fetch('/api/v1/finance/plans', { credentials: 'include' })
             if (res.ok) {
                 const j = await res.json()
                 setPlans(j.data || [])
@@ -111,9 +115,7 @@ export const Page_admin_subscriptions = () => {
     const fetchSubs = async () => {
         setIsLoading(true)
         try {
-            const token = localStorage.getItem('vct_access_token')
-            const headers: Record<string, string> = token ? { Authorization: `Bearer ${token}` } : {}
-            const res = await fetch('/api/v1/finance/subscriptions', { headers })
+            const res = await fetch('/api/v1/finance/subscriptions', { credentials: 'include' })
             if (res.ok) {
                 const j = await res.json()
                 setSubs(j.data || [])
@@ -129,9 +131,7 @@ export const Page_admin_subscriptions = () => {
 
     const fetchBilling = async (subId: string) => {
         try {
-            const token = localStorage.getItem('vct_access_token')
-            const headers: Record<string, string> = token ? { Authorization: `Bearer ${token}` } : {}
-            const res = await fetch(`/api/v1/finance/billing-cycles?subscription_id=${subId}`, { headers })
+            const res = await fetch(`/api/v1/finance/billing-cycles?subscription_id=${subId}`, { credentials: 'include' })
             if (res.ok) {
                 const j = await res.json()
                 setBillingHistory(prev => ({ ...prev, [subId]: j.data?.items || [] }))
@@ -171,10 +171,10 @@ export const Page_admin_subscriptions = () => {
     ]
 
     // ── Sort & Filter ──
-    const handleSort = useCallback((key: SortKey) => {
+    const handleSort = (key: string) => {
         if (sortKey === key) setSortDir(d => d === 'asc' ? 'desc' : 'asc')
-        else { setSortKey(key); setSortDir('asc') }
-    }, [sortKey])
+        else { setSortKey(key as SortKey); setSortDir('asc') }
+    }
 
     const filteredSubs = useMemo(() => {
         const filtered = subs.filter(s => {
@@ -190,12 +190,6 @@ export const Page_admin_subscriptions = () => {
             return sortDir === 'asc' ? cmp : -cmp
         })
     }, [subs, search, filterEntity, filterStatus, sortKey, sortDir])
-
-    const SortIcon = ({ col }: { col: SortKey }) => (
-        sortKey === col
-            ? <span className="ml-1 text-[10px]">{sortDir === 'asc' ? '▲' : '▼'}</span>
-            : <span className="ml-1 text-[10px] opacity-30">↕</span>
-    )
 
     // ── Actions ──
     const handleAction = async (id: string, action: string) => {
@@ -242,17 +236,12 @@ export const Page_admin_subscriptions = () => {
     ]
 
     return (
-        <VCT_PageContainer size="wide">
-            <VCT_PageHero
-                title="Quản lý Subscription & Billing"
-                subtitle="Quản lý gói dịch vụ, thanh toán, và gia hạn cho liên đoàn, tổ chức, giải đấu"
-                icon={<VCT_Icons.CreditCard size={28} />}
-                gradientFrom="rgba(139, 92, 246, 0.08)"
-                gradientTo="rgba(14, 165, 233, 0.06)"
-            />
-            {toast.show && <VCT_Toast isVisible={toast.show} message={toast.msg} type={toast.type} onClose={dismiss} />}
-
-            <VCT_StatRow items={stats} />
+        <AdminPageShell
+            title="Quản lý Subscription & Billing"
+            subtitle="Quản lý gói dịch vụ, thanh toán, và gia hạn cho liên đoàn, tổ chức, giải đấu"
+            icon={<VCT_Icons.CreditCard size={28} className="text-[#8b5cf6]" />}
+            stats={stats}
+        >
 
             {/* ── Expiring Alert Banner ── */}
             {expiringSoon.length > 0 && (
@@ -286,50 +275,80 @@ export const Page_admin_subscriptions = () => {
                         </div>
                         <VCT_Button variant="primary" icon={<VCT_Icons.Plus size={16} />} onClick={() => setIsSubscribeModalOpen(true)}>Cấp gói mới</VCT_Button>
                     </div>
-                    <div className="bg-(--vct-bg-elevated) border border-(--vct-border-strong) rounded-2xl overflow-hidden mb-6">
-                        <div className="overflow-x-auto">
-                            <table className="w-full text-sm">
-                                <thead>
-                                    <tr className="border-b border-(--vct-border-subtle)">
-                                        <th className="text-left p-4 text-(--vct-text-tertiary) font-bold text-xs uppercase tracking-wider cursor-pointer select-none hover:text-(--vct-text-primary)" onClick={() => handleSort('entity_name')}>Đơn vị <SortIcon col="entity_name" /></th>
-                                        <th className="text-left p-4 text-(--vct-text-tertiary) font-bold text-xs uppercase tracking-wider">Loại</th>
-                                        <th className="text-left p-4 text-(--vct-text-tertiary) font-bold text-xs uppercase tracking-wider cursor-pointer select-none hover:text-(--vct-text-primary)" onClick={() => handleSort('plan_name')}>Gói <SortIcon col="plan_name" /></th>
-                                        <th className="text-left p-4 text-(--vct-text-tertiary) font-bold text-xs uppercase tracking-wider">Chu kỳ</th>
-                                        <th className="text-center p-4 text-(--vct-text-tertiary) font-bold text-xs uppercase tracking-wider cursor-pointer select-none hover:text-(--vct-text-primary)" onClick={() => handleSort('current_period_end')}>Hạn <SortIcon col="current_period_end" /></th>
-                                        <th className="text-center p-4 text-(--vct-text-tertiary) font-bold text-xs uppercase tracking-wider">Tự gia hạn</th>
-                                        <th className="text-center p-4 text-(--vct-text-tertiary) font-bold text-xs uppercase tracking-wider cursor-pointer select-none hover:text-(--vct-text-primary)" onClick={() => handleSort('status')}>Trạng thái <SortIcon col="status" /></th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {isLoading ? [...Array(5)].map((_, i) => <AdminSkeletonRow key={i} cols={7} />) : filteredSubs.length === 0 ? (
-                                        <tr><td colSpan={7}><VCT_EmptyState icon={<VCT_Icons.FileText size={40} />} title="Chưa có đăng ký nào" /></td></tr>
-                                    ) : filteredSubs.map(sub => {
-                                        const days = daysUntil(sub.current_period_end)
-                                        const isExpiring = sub.status === 'active' && days <= 30 && days > 0
-                                        return (
-                                            <tr key={sub.id} className={`border-b border-(--vct-border-subtle) hover:bg-(--vct-bg-base) cursor-pointer transition-colors ${isExpiring ? 'bg-[#f59e0b08]' : ''}`} onClick={() => { setSelected(sub); setDrawerTab('info') }}>
-                                                <td className="p-4">
-                                                    <div className="font-bold text-(--vct-text-primary)">{sub.entity_name}</div>
-                                                    <div className="text-[11px] text-(--vct-text-tertiary) font-mono">{sub.id}</div>
-                                                </td>
-                                                <td className="p-4"><VCT_Badge type={ENTITY_MAP[sub.entity_type]?.type || 'info'} text={ENTITY_MAP[sub.entity_type]?.label || sub.entity_type} /></td>
-                                                <td className="p-4 font-bold text-(--vct-text-primary)">{sub.plan_name}</td>
-                                                <td className="p-4 text-(--vct-text-secondary) text-xs">{sub.billing_cycle_type === 'yearly' ? 'Năm' : 'Tháng'}</td>
-                                                <td className="p-4 text-center">
-                                                    <span className={`text-xs font-semibold ${isExpiring ? 'text-[#f59e0b]' : 'text-(--vct-text-tertiary)'}`}>
-                                                        {sub.current_period_end}
-                                                        {isExpiring && <span className="block text-[10px]">({days} ngày)</span>}
-                                                    </span>
-                                                </td>
-                                                <td className="p-4 text-center">{sub.auto_renew ? <VCT_Icons.CheckCircle size={16} className="text-[#10b981] inline" /> : <VCT_Icons.X size={16} className="text-[#94a3b8] inline" />}</td>
-                                                <td className="p-4 text-center"><VCT_Badge type={STATUS_MAP[sub.status]?.type || 'neutral'} text={STATUS_MAP[sub.status]?.label || sub.status} /></td>
-                                            </tr>
-                                        )
-                                    })}
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
+                    <AdminDataTable
+                        data={filteredSubs}
+                        isLoading={isLoading}
+                        sortBy={sortKey}
+                        sortDir={sortDir}
+                        onSort={handleSort}
+                        rowKey={s => s.id}
+                        emptyTitle="Chưa có đăng ký nào"
+                        emptyDescription="Thử thay đổi bộ lọc tìm kiếm"
+                        emptyIcon="📄"
+                        columns={[
+                            {
+                                key: 'entity_name',
+                                label: 'Đơn vị',
+                                sortable: true,
+                                render: (sub) => (
+                                    <div>
+                                        <div className="font-bold text-(--vct-text-primary)">{sub.entity_name}</div>
+                                        <div className="text-[11px] text-(--vct-text-tertiary) font-mono">{sub.id}</div>
+                                    </div>
+                                )
+                            },
+                            {
+                                key: 'entity_type',
+                                label: 'Loại',
+                                sortable: false,
+                                hideMobile: true,
+                                render: (sub) => <VCT_Badge type={ENTITY_MAP[sub.entity_type]?.type || 'info'} text={ENTITY_MAP[sub.entity_type]?.label || sub.entity_type} />
+                            },
+                            {
+                                key: 'plan_name',
+                                label: 'Gói',
+                                sortable: true,
+                                render: (sub) => <div className="font-bold text-(--vct-text-primary)">{sub.plan_name}</div>
+                            },
+                            {
+                                key: 'billing_cycle_type',
+                                label: 'Chu kỳ',
+                                sortable: false,
+                                render: (sub) => <div className="text-(--vct-text-secondary) text-xs">{sub.billing_cycle_type === 'yearly' ? 'Năm' : 'Tháng'}</div>
+                            },
+                            {
+                                key: 'current_period_end',
+                                label: 'Hạn',
+                                sortable: true,
+                                align: 'center',
+                                render: (sub) => {
+                                    const days = daysUntil(sub.current_period_end)
+                                    const isExpiring = sub.status === 'active' && days <= 30 && days > 0
+                                    return (
+                                        <span className={`text-xs font-semibold ${isExpiring ? 'text-[#f59e0b]' : 'text-(--vct-text-tertiary)'}`}>
+                                            {sub.current_period_end}
+                                            {isExpiring && <span className="block text-[10px]">({days} ngày)</span>}
+                                        </span>
+                                    )
+                                }
+                            },
+                            {
+                                key: 'auto_renew',
+                                label: 'Tự gia hạn',
+                                sortable: false,
+                                align: 'center',
+                                render: (sub) => sub.auto_renew ? <VCT_Icons.CheckCircle size={16} className="text-[#10b981] inline" /> : <VCT_Icons.X size={16} className="text-[#94a3b8] inline" />
+                            },
+                            {
+                                key: 'status',
+                                label: 'Trạng thái',
+                                sortable: true,
+                                align: 'center',
+                                render: (sub) => <VCT_Badge type={STATUS_MAP[sub.status]?.type || 'neutral'} text={STATUS_MAP[sub.status]?.label || sub.status} />
+                            }
+                        ]}
+                        onRowClick={(sub) => { setSelected(sub); setDrawerTab('info') }}
+                    />
                 </>
             )}
 
@@ -416,7 +435,7 @@ export const Page_admin_subscriptions = () => {
                                             <span className="text-(--vct-text-tertiary)">{Math.max(0, daysUntil(selected.current_period_end))} / {Math.ceil((new Date(selected.current_period_end).getTime() - new Date(selected.current_period_start).getTime()) / (1000 * 60 * 60 * 24))} ngày</span>
                                         </div>
                                         <div className="w-full h-2 bg-[#8b5cf620] rounded-full overflow-hidden">
-                                            <div className="h-full bg-gradient-to-r from-[#8b5cf6] to-[#a855f7] rounded-full transition-all"
+                                            <div className="h-full bg-linear-to-r from-[#8b5cf6] to-[#a855f7] rounded-full transition-all"
                                                 style={{ width: `${Math.min(100, Math.max(0, 100 - (daysUntil(selected.current_period_end) / Math.max(1, Math.ceil((new Date(selected.current_period_end).getTime() - new Date(selected.current_period_start).getTime()) / (1000 * 60 * 60 * 24))) * 100)))}%` }}
                                             />
                                         </div>
@@ -591,6 +610,6 @@ export const Page_admin_subscriptions = () => {
                     </div>
                 </div>
             </VCT_Modal>
-        </VCT_PageContainer>
+        </AdminPageShell>
     )
 }

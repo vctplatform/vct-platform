@@ -5,16 +5,21 @@ import { useState, useMemo, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { AnimatePresence } from 'framer-motion'
 import { usePagination } from '../hooks/usePagination'
+import { useDebounce } from '../hooks/useDebounce'
+import { useAdminFetch } from './hooks/useAdminAPI'
+import { useAdminMutation } from './hooks/useAdminMutation'
+import { useFormValidation } from './hooks/useFormValidation'
+import { AdminDataTable, type AdminColumn } from './components/AdminDataTable'
 import {
-    VCT_Badge, VCT_Button, VCT_Stack, VCT_Toast,
+    VCT_Badge, VCT_Button, VCT_Stack,
     VCT_SearchInput, VCT_Modal, VCT_Input, VCT_Field, VCT_Select,
-    VCT_ConfirmDialog, VCT_AvatarLetter, VCT_EmptyState, VCT_Tabs,
-    VCT_BulkActionsBar, VCT_PageContainer, VCT_StatRow
+    VCT_ConfirmDialog, VCT_AvatarLetter, VCT_Tabs,
+    VCT_BulkActionsBar,
 } from '../components/vct-ui'
 import type { StatItem } from '../components/VCT_StatRow'
 import { VCT_Icons } from '../components/vct-icons'
 import { VCT_Drawer } from '../components/VCT_Drawer'
-import { AdminSkeletonRow } from './components/AdminSkeletonRow'
+import { AdminPaginationBar } from './components/AdminPaginationBar'
 import { VCT_Timeline } from '../components/VCT_Timeline'
 import type { TimelineEvent } from '../components/VCT_Timeline'
 import {
@@ -25,11 +30,16 @@ import {
     getRoleLabel,
     type SystemUser,
 } from './admin-users.data'
+import type { UserFormData } from './admin.types'
+import { AdminPageShell, useShellToast } from './components/AdminPageShell'
+import { exportToCSV } from './utils/adminExport'
+import { useI18n } from '../i18n'
+import { AdminGuard } from './components/AdminGuard'
 
 // ════════════════════════════════════════
 // TYPES & MOCK DATA
 // ════════════════════════════════════════
-const BLANK_FORM = { name: '', email: '', phone: '', role: 'VIEWER', scope: '' }
+const BLANK_FORM: UserFormData = { name: '', email: '', phone: '', role: 'VIEWER', scope: '', status: 'active' }
 
 
 
@@ -44,39 +54,61 @@ const MOCK_LOGIN_HISTORY: TimelineEvent[] = [
     { time: '3 ngày trước', title: 'Đăng nhập thất bại', description: 'IP: 45.67.89.12 · Sai mật khẩu 2 lần', color: '#ef4444' },
 ]
 
-export const Page_admin_users = () => {
+export const Page_admin_users = () => (
+    <AdminGuard>
+        <Page_admin_users_Content />
+    </AdminGuard>
+)
+
+const Page_admin_users_Content = () => {
     const router = useRouter()
-    const [users, setUsers] = useState<SystemUser[]>(MOCK_USERS)
+    const { t: _t } = useI18n()
+    const { data: fetchedUsers, isLoading } = useAdminFetch<SystemUser[]>('/admin/users', { mockData: MOCK_USERS })
+    const [users, setUsers] = useState<SystemUser[]>([])
     const [search, setSearch] = useState('')
+    const debouncedSearch = useDebounce(search, 300)
     const [roleFilter, setRoleFilter] = useState('all')
     const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
-    const [toast, setToast] = useState({ show: false, msg: '', type: 'success' })
+    const { showToast } = useShellToast()
     const [showModal, setShowModal] = useState(false)
     const [editingUser, setEditingUser] = useState<SystemUser | null>(null)
     const [deleteTarget, setDeleteTarget] = useState<SystemUser | null>(null)
-    const [form, setForm] = useState<any>({ ...BLANK_FORM })
-    const [isLoading, setIsLoading] = useState(true)
+    const [form, setForm] = useState<UserFormData>({ ...BLANK_FORM })
     const [drawerUser, setDrawerUser] = useState<SystemUser | null>(null)
+    const [sortCol, setSortCol] = useState<string>('name')
+    const [sortDir, setSortDir] = useState<'asc' | 'desc'>('asc')
 
-    React.useEffect(() => {
-        const t = setTimeout(() => setIsLoading(false), 800)
-        return () => clearTimeout(t)
-    }, [])
+    const { mutate: mutateSave } = useAdminMutation('/admin/users', { 
+        onSuccess: () => showToast('Đã lưu tài khoản!')
+    })
+    const { mutate: mutateDelete } = useAdminMutation('/admin/users/delete', {
+        onSuccess: () => showToast('Đã vô hiệu hóa tài khoản!')
+    })
 
-    const showToast = useCallback((msg: string, type = 'success') => {
-        setToast({ show: true, msg, type })
-        setTimeout(() => setToast(prev => ({ ...prev, show: false })), 3500)
-    }, [])
+    const { validate, getFieldError, clearErrors } = useFormValidation({
+        name: { rules: [{ type: 'required', message: 'Họ tên là bắt buộc' }, { type: 'maxLength', value: 100 }] },
+        email: { rules: [{ type: 'required', message: 'Email là bắt buộc' }, { type: 'pattern', value: /^\S+@\S+\.\S+$/, message: 'Email không hợp lệ' }] },
+    })
+
+    React.useEffect(() => { if (fetchedUsers) setUsers(fetchedUsers) }, [fetchedUsers])
 
     const filtered = useMemo(() => {
         let data = users
         if (roleFilter !== 'all') data = data.filter(u => u.role === roleFilter)
-        if (search) {
-            const q = search.toLowerCase()
+        if (debouncedSearch) {
+            const q = debouncedSearch.toLowerCase()
             data = data.filter(u => u.name.toLowerCase().includes(q) || u.email.toLowerCase().includes(q) || u.id.toLowerCase().includes(q))
         }
+        
+        // Sorting
+        data = [...data].sort((a, b) => {
+            const valA = String((a as any)[sortCol] || '').toLowerCase()
+            const valB = String((b as any)[sortCol] || '').toLowerCase()
+            return sortDir === 'asc' ? valA.localeCompare(valB) : valB.localeCompare(valA)
+        })
+
         return data
-    }, [users, roleFilter, search])
+    }, [users, roleFilter, debouncedSearch, sortCol, sortDir])
 
     const pagination = usePagination(filtered, { pageSize: 5 })
 
@@ -88,16 +120,29 @@ export const Page_admin_users = () => {
 
     const openEditModal = useCallback((user: SystemUser) => {
         setEditingUser(user)
-        setForm({ name: user.name, email: user.email, phone: user.phone, role: user.role, scope: user.scope })
+        setForm({ name: user.name, email: user.email, phone: user.phone, role: user.role, scope: user.scope, status: user.status })
+        clearErrors()
         setShowModal(true)
-    }, [])
+    }, [clearErrors])
 
     const openUserDetail = useCallback((user: SystemUser) => {
         setDrawerUser(user)
     }, [])
 
-    const handleSave = () => {
-        if (!form.name || !form.email) { showToast('Vui lòng nhập họ tên và email', 'error'); return }
+    const handleSort = (key: string) => {
+        if (sortCol === key) {
+            setSortDir(d => d === 'asc' ? 'desc' : 'asc')
+        } else {
+            setSortCol(key)
+            setSortDir('asc')
+        }
+    }
+
+    const handleSave = async () => {
+        if (!validate({ name: form.name, email: form.email })) return
+        
+        await mutateSave({ ...form, id: editingUser?.id })
+
         if (editingUser) {
             setUsers(prev => prev.map(u => u.id === editingUser.id ? { ...u, ...form } : u))
             showToast(`Đã cập nhật "${form.name}"`)
@@ -113,8 +158,11 @@ export const Page_admin_users = () => {
         setShowModal(false)
     }
 
-    const handleDelete = () => {
+    const handleDelete = async () => {
         if (!deleteTarget) return
+        
+        await mutateDelete({ id: deleteTarget.id })
+
         setUsers(prev => prev.filter(u => u.id !== deleteTarget.id))
         setSelectedIds(prev => { const n = new Set(prev); n.delete(deleteTarget.id); return n })
         showToast(`Đã vô hiệu hóa tài khoản "${deleteTarget.name}"`)
@@ -122,7 +170,6 @@ export const Page_admin_users = () => {
     }
 
     const toggleSelect = (id: string) => setSelectedIds(prev => { const n = new Set(prev); n.has(id) ? n.delete(id) : n.add(id); return n })
-    const toggleSelectAll = () => setSelectedIds(prev => prev.size === filtered.length ? new Set() : new Set(filtered.map(u => u.id)))
 
     const bulkActions = useMemo(() => [
         {
@@ -147,36 +194,33 @@ export const Page_admin_users = () => {
         }
     ], [selectedIds, showToast])
 
-    return (
-        <VCT_PageContainer size="wide" animated>
-            <VCT_Toast isVisible={toast.show} message={toast.msg} type={toast.type} onClose={() => setToast(prev => ({ ...prev, show: false }))} />
+    const kpiStats: StatItem[] = [
+        { label: 'Tổng TK', value: users.length, icon: <VCT_Icons.Users size={18} />, color: '#0ea5e9' },
+        { label: 'Hoạt động', value: users.filter(u => u.status === 'active').length, icon: <VCT_Icons.CheckCircle size={18} />, color: '#10b981' },
+        { label: 'Bị khóa', value: users.filter(u => u.status === 'locked').length, icon: <VCT_Icons.Shield size={18} />, color: '#ef4444' },
+        { label: 'Online', value: 128, icon: <VCT_Icons.Activity size={18} />, color: '#f59e0b' },
+    ]
 
-            <div className="mb-6 flex flex-wrap items-start justify-between gap-4">
-                <div>
-                    <h1 className="text-2xl font-bold tracking-tight text-(--vct-text-primary)">Quản Lý Tài Khoản</h1>
-                    <p className="text-sm text-(--vct-text-secondary) mt-1">Quản lý người dùng, phân quyền và trạng thái tài khoản trong hệ thống.</p>
-                </div>
+    return (
+        <AdminPageShell
+            title="Quản Lý Tài Khoản"
+            subtitle="Quản lý người dùng, phân quyền và trạng thái tài khoản trong hệ thống."
+            icon={<VCT_Icons.Users size={28} className="text-[#0ea5e9]" />}
+            stats={kpiStats}
+            actions={
                 <VCT_Stack direction="row" gap={12}>
                     <VCT_Button variant="outline" icon={<VCT_Icons.Download size={16} />} onClick={() => {
-                        const header = 'ID,Tên,Email,SĐT,Vai trò,Phạm vi,Trạng thái,Đăng nhập cuối'
-                        const csv = [header, ...filtered.map(u => `${u.id},${u.name},${u.email},${u.phone},${getRoleLabel(u.role)},${u.scope},${u.status},${u.last_login}`)].join('\n')
-                        const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' })
-                        const url = URL.createObjectURL(blob)
-                        const a = document.createElement('a'); a.href = url; a.download = `vct_users_${new Date().toISOString().slice(0, 10)}.csv`; a.click()
-                        URL.revokeObjectURL(url)
+                        exportToCSV({
+                            headers: ['ID', 'Tên', 'Email', 'SĐT', 'Vai trò', 'Phạm vi', 'Trạng thái', 'Đăng nhập cuối'],
+                            rows: filtered.map(u => [u.id, u.name, u.email, u.phone, getRoleLabel(u.role), u.scope, u.status, u.last_login]),
+                            filename: `vct_users_${new Date().toISOString().slice(0, 10)}.csv`,
+                        })
                         showToast('Đã xuất file Excel thành công!')
                     }}>Xuất Excel</VCT_Button>
                     <VCT_Button icon={<VCT_Icons.Plus size={16} />} onClick={openAddModal}>Thêm Tài Khoản</VCT_Button>
                 </VCT_Stack>
-            </div>
-
-            {/* ── KPI ── */}
-            <VCT_StatRow items={[
-                { label: 'Tổng TK', value: users.length, icon: <VCT_Icons.Users size={18} />, color: '#0ea5e9' },
-                { label: 'Hoạt động', value: users.filter(u => u.status === 'active').length, icon: <VCT_Icons.CheckCircle size={18} />, color: '#10b981' },
-                { label: 'Bị khóa', value: users.filter(u => u.status === 'locked').length, icon: <VCT_Icons.Shield size={18} />, color: '#ef4444' },
-                { label: 'Online', value: 128, icon: <VCT_Icons.Activity size={18} />, color: '#f59e0b' },
-            ] as StatItem[]} className="mb-8" />
+            }
+        >
 
             {/* ── TABS & SEARCH ── */}
             <div className="mb-6 flex flex-wrap items-center justify-between gap-4 border-b border-(--vct-border-subtle) pb-4">
@@ -194,93 +238,104 @@ export const Page_admin_users = () => {
             </div>
 
             {/* ── TABLE ── */}
-            {isLoading ? (
-                <div className="overflow-hidden rounded-2xl border border-(--vct-border-subtle) bg-(--vct-bg-glass)">
-                    <table className="w-full border-collapse">
-                        <thead>
-                            <tr className="border-b border-(--vct-border-strong) bg-(--vct-bg-card)">
-                                <th style={{ padding: '14px 16px', width: 40 }} />
-                                {['Người dùng', 'Vai trò', 'Phạm vi', 'Trạng thái', 'Đăng nhập cuối', ''].map((h, i) => (
-                                    <th key={i} style={{ padding: '14px 16px', fontSize: 11, fontWeight: 700, textTransform: 'uppercase', opacity: 0.5, textAlign: i === 3 ? 'center' : 'left' }}>{h}</th>
-                                ))}
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {[...Array(5)].map((_, i) => <AdminSkeletonRow key={i} cols={7} />)}
-                        </tbody>
-                    </table>
-                </div>
-            ) : filtered.length === 0 ? (
-                <VCT_EmptyState title="Không tìm thấy tài khoản" description="Thử thay đổi bộ lọc hoặc từ khóa." actionLabel="Thêm tài khoản" onAction={openAddModal} icon="👤" />
-            ) : (
-                <div className="overflow-hidden rounded-2xl border border-(--vct-border-subtle) bg-(--vct-bg-glass)">
-                    <table className="w-full border-collapse">
-                        <thead>
-                            <tr className="border-b border-(--vct-border-strong) bg-(--vct-bg-card)">
-                                <th style={{ padding: '14px 16px', width: 40, textAlign: 'center' }}>
-                                    <input type="checkbox" aria-label="Chọn tất cả" checked={selectedIds.size === filtered.length && filtered.length > 0} onChange={toggleSelectAll} style={{ width: 16, height: 16, accentColor: '#22d3ee' }} />
-                                </th>
-                                {['Người dùng', 'Vai trò', 'Phạm vi', 'Trạng thái', 'Đăng nhập cuối', ''].map((h, i) => (
-                                    <th key={i} style={{ padding: '14px 16px', fontSize: 11, fontWeight: 700, textTransform: 'uppercase', opacity: 0.5, textAlign: i === 3 ? 'center' : 'left' }}>{h}</th>
-                                ))}
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {pagination.paginatedItems.map((user, idx) => (
-                                <tr key={user.id} className="group" style={{ borderBottom: '1px solid var(--vct-border-subtle)', background: selectedIds.has(user.id) ? 'rgba(34, 211, 238, 0.05)' : idx % 2 === 0 ? 'transparent' : 'rgba(128,128,128,0.02)' }}>
-                                    <td style={{ padding: '14px 16px', textAlign: 'center' }}>
-                                        <input type="checkbox" aria-label="Chọn người dùng" checked={selectedIds.has(user.id)} onChange={() => toggleSelect(user.id)} style={{ width: 16, height: 16, accentColor: '#22d3ee' }} />
-                                    </td>
-                                    <td style={{ padding: '14px 16px' }}>
-                                        <VCT_Stack direction="row" gap={10} align="center">
-                                            <VCT_AvatarLetter name={user.name} size={36} />
-                                            <div>
-                                                <button
-                                                    type="button"
-                                                    onClick={() => openUserDetail(user)}
-                                                    className="text-left text-[13px] font-bold text-(--vct-text-primary) transition-colors hover:text-(--vct-accent-cyan)"
-                                                >
-                                                    {user.name}
-                                                </button>
-                                                <div style={{ fontSize: 11, opacity: 0.6 }}>{user.email} • {user.phone}</div>
-                                            </div>
-                                        </VCT_Stack>
-                                    </td>
-                                    <td style={{ padding: '14px 16px' }}>
-                                        <span style={{ fontSize: 11, fontWeight: 700, padding: '3px 8px', borderRadius: 6, color: ROLE_COLORS[user.role] || '#94a3b8', background: `${ROLE_COLORS[user.role] || '#94a3b8'}15` }}>
-                                            {getRoleLabel(user.role)}
-                                        </span>
-                                    </td>
-                                    <td style={{ padding: '14px 16px', fontSize: 13, color: 'var(--vct-text-secondary)' }}>{user.scope}</td>
-                                    <td style={{ padding: '14px 16px', textAlign: 'center' }}>
-                                        <VCT_Badge text={STATUS_MAP[user.status]?.label || 'Không rõ'} type={STATUS_MAP[user.status]?.type || 'neutral'} />
-                                    </td>
-                                    <td style={{ padding: '14px 16px', fontSize: 12, color: 'var(--vct-text-tertiary)' }}>
-                                        <div className="flex items-center gap-1"><VCT_Icons.Clock size={12} /> {user.last_login}</div>
-                                    </td>
-                                    <td style={{ padding: '14px 16px', textAlign: 'right' }}>
-                                        <VCT_Stack direction="row" gap={4} justify="flex-end">
-                                            <button type="button" aria-label="Xem chi tiết" onClick={() => openUserDetail(user)} className="p-1.5 text-(--vct-text-tertiary) hover:text-white opacity-0 group-hover:opacity-100 transition-all rounded-md hover:bg-white/10"><VCT_Icons.Eye size={16} /></button>
-                                            <button type="button" aria-label="Chỉnh sửa" onClick={() => openEditModal(user)} className="p-1.5 text-(--vct-text-tertiary) hover:text-white opacity-0 group-hover:opacity-100 transition-all rounded-md hover:bg-white/10"><VCT_Icons.Edit size={16} /></button>
-                                            <button type="button" aria-label="Xóa" onClick={() => setDeleteTarget(user)} className="p-1.5 text-[#ef4444] opacity-0 group-hover:opacity-100 transition-all rounded-md hover:bg-[#ef444420]"><VCT_Icons.Trash size={16} /></button>
-                                        </VCT_Stack>
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                    {pagination.totalPages > 1 && (
-                        <div className="flex items-center justify-between px-4 py-3 border-t border-(--vct-border-subtle)">
-                            <span className="text-xs text-(--vct-text-tertiary)">
-                                Hiển thị {(pagination.currentPage - 1) * pagination.pageSize + 1}–{Math.min(pagination.currentPage * pagination.pageSize, pagination.totalItems)} / {pagination.totalItems}
+            <AdminDataTable
+                data={pagination.paginatedItems}
+                isLoading={isLoading}
+                sortBy={sortCol}
+                sortDir={sortDir}
+                onSort={handleSort}
+                rowKey={u => u.id}
+                emptyTitle="Không tìm thấy tài khoản"
+                emptyDescription="Thử thay đổi bộ lọc hoặc từ khóa."
+                emptyIcon="👤"
+                columns={[
+                    {
+                        key: '_select',
+                        label: '',
+                        width: '48px',
+                        align: 'center',
+                        sortable: false,
+                        render: (u) => (
+                            <input 
+                                type="checkbox" 
+                                aria-label="Chọn người dùng" 
+                                checked={selectedIds.has(u.id)} 
+                                onChange={() => toggleSelect(u.id)} 
+                                className="w-4 h-4 accent-[#22d3ee] rounded border-(--vct-border-strong) bg-transparent"
+                                onClick={e => e.stopPropagation()}
+                            />
+                        )
+                    },
+                    {
+                        key: 'name',
+                        label: 'Người dùng',
+                        sortable: true,
+                        render: (u) => (
+                            <VCT_Stack direction="row" gap={10} align="center">
+                                <VCT_AvatarLetter name={u.name} size={36} />
+                                <div>
+                                    <button
+                                        type="button"
+                                        onClick={(e) => { e.stopPropagation(); openUserDetail(u) }}
+                                        className="text-left text-[13px] font-bold text-(--vct-text-primary) transition-colors hover:text-(--vct-accent-cyan)"
+                                    >
+                                        {u.name}
+                                    </button>
+                                    <div className="text-[11px] opacity-60">{u.email} • {u.phone}</div>
+                                </div>
+                            </VCT_Stack>
+                        )
+                    },
+                    {
+                        key: 'role',
+                        label: 'Vai trò',
+                        sortable: true,
+                        render: (u) => (
+                            <span className="text-[11px] font-bold px-2 py-[3px] rounded-md" style={{ color: ROLE_COLORS[u.role] || '#94a3b8', background: `${ROLE_COLORS[u.role] || '#94a3b8'}20` }}>
+                                {getRoleLabel(u.role)}
                             </span>
-                            <div className="flex gap-2">
-                                <button onClick={pagination.prev} disabled={!pagination.hasPrev} className="px-3 py-1 text-xs rounded-lg bg-(--vct-bg-elevated) text-(--vct-text-secondary) disabled:opacity-30 hover:bg-(--vct-bg-base) transition-colors">← Trước</button>
-                                <span className="px-3 py-1 text-xs text-(--vct-text-tertiary)">{pagination.currentPage}/{pagination.totalPages}</span>
-                                <button onClick={pagination.next} disabled={!pagination.hasNext} className="px-3 py-1 text-xs rounded-lg bg-(--vct-bg-elevated) text-(--vct-text-secondary) disabled:opacity-30 hover:bg-(--vct-bg-base) transition-colors">Sau →</button>
-                            </div>
-                        </div>
-                    )}
+                        )
+                    },
+                    {
+                        key: 'scope',
+                        label: 'Phạm vi',
+                        sortable: true,
+                        hideMobile: true,
+                        render: (u) => <span className="text-[13px] text-(--vct-text-secondary)">{u.scope}</span>
+                    },
+                    {
+                        key: 'status',
+                        label: 'Trạng thái',
+                        sortable: true,
+                        align: 'center',
+                        render: (u) => <VCT_Badge text={STATUS_MAP[u.status]?.label || 'Không rõ'} type={STATUS_MAP[u.status]?.type || 'neutral'} />
+                    },
+                    {
+                        key: 'last_login',
+                        label: 'Đăng nhập cuối',
+                        sortable: true,
+                        hideMobile: true,
+                        render: (u) => <div className="flex items-center gap-1 text-[12px] text-(--vct-text-tertiary)"><VCT_Icons.Clock size={12} /> {u.last_login}</div>
+                    },
+                    {
+                        key: '_actions',
+                        label: '',
+                        align: 'right',
+                        sortable: false,
+                        render: (u) => (
+                            <VCT_Stack direction="row" gap={4} justify="flex-end">
+                                <button type="button" aria-label="Xem chi tiết" onClick={(e) => { e.stopPropagation(); openUserDetail(u) }} className="p-1.5 text-(--vct-text-tertiary) hover:text-white opacity-0 group-hover:opacity-100 transition-all rounded-md hover:bg-white/10"><VCT_Icons.Eye size={16} /></button>
+                                <button type="button" aria-label="Chỉnh sửa" onClick={(e) => { e.stopPropagation(); openEditModal(u) }} className="p-1.5 text-(--vct-text-tertiary) hover:text-white opacity-0 group-hover:opacity-100 transition-all rounded-md hover:bg-white/10"><VCT_Icons.Edit size={16} /></button>
+                                <button type="button" aria-label="Xóa" onClick={(e) => { e.stopPropagation(); setDeleteTarget(u) }} className="p-1.5 text-[#ef4444] opacity-0 group-hover:opacity-100 transition-all rounded-md hover:bg-[#ef444420]"><VCT_Icons.Trash size={16} /></button>
+                            </VCT_Stack>
+                        )
+                    }
+                ]}
+                onRowClick={openUserDetail}
+            />
+            {!isLoading && pagination.totalPages > 1 && (
+                <div className="mt-4">
+                    <AdminPaginationBar {...pagination} />
                 </div>
             )}
 
@@ -290,21 +345,21 @@ export const Page_admin_users = () => {
             </AnimatePresence>
 
             {/* ── ADD/EDIT MODAL ── */}
-            <VCT_Modal isOpen={showModal} onClose={() => setShowModal(false)} title={editingUser ? 'Chỉnh sửa tài khoản' : 'Thêm tài khoản mới'} width="600px" footer={
+            <VCT_Modal isOpen={showModal} onClose={() => { setShowModal(false); clearErrors() }} title={editingUser ? 'Chỉnh sửa tài khoản' : 'Thêm tài khoản mới'} width="600px" footer={
                 <>
-                    <VCT_Button variant="secondary" onClick={() => setShowModal(false)}>Hủy</VCT_Button>
+                    <VCT_Button variant="secondary" onClick={() => { setShowModal(false); clearErrors() }}>Hủy</VCT_Button>
                     <VCT_Button onClick={handleSave}>{editingUser ? 'Cập nhật' : 'Tạo tài khoản'}</VCT_Button>
                 </>
             }>
                 <VCT_Stack gap={16}>
-                    <VCT_Field label="Họ tên *"><VCT_Input value={form.name} onChange={(e: any) => setForm({ ...form, name: e.target.value })} placeholder="Nguyễn Văn A" /></VCT_Field>
+                    <VCT_Field label="Họ tên *" error={getFieldError('name')}><VCT_Input value={form.name} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setForm({ ...form, name: e.target.value })} placeholder="Nguyễn Văn A" /></VCT_Field>
                     <VCT_Stack direction="row" gap={16}>
-                        <VCT_Field label="Email *" className="flex-1"><VCT_Input type="email" value={form.email} onChange={(e: any) => setForm({ ...form, email: e.target.value })} placeholder="email@vct.vn" /></VCT_Field>
-                        <VCT_Field label="Số điện thoại" className="flex-1"><VCT_Input value={form.phone} onChange={(e: any) => setForm({ ...form, phone: e.target.value })} placeholder="0901234567" /></VCT_Field>
+                        <VCT_Field label="Email *" className="flex-1" error={getFieldError('email')}><VCT_Input type="email" value={form.email} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setForm({ ...form, email: e.target.value })} placeholder="email@vct.vn" /></VCT_Field>
+                        <VCT_Field label="Số điện thoại" className="flex-1"><VCT_Input value={form.phone} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setForm({ ...form, phone: e.target.value })} placeholder="0901234567" /></VCT_Field>
                     </VCT_Stack>
                     <VCT_Stack direction="row" gap={16}>
-                        <VCT_Field label="Vai trò" className="flex-1"><VCT_Select options={ROLE_OPTIONS} value={form.role} onChange={(v: any) => setForm({ ...form, role: v })} /></VCT_Field>
-                        <VCT_Field label="Phạm vi" className="flex-1"><VCT_Input value={form.scope} onChange={(e: any) => setForm({ ...form, scope: e.target.value })} placeholder="VD: CLB Sơn Long" /></VCT_Field>
+                        <VCT_Field label="Vai trò" className="flex-1"><VCT_Select options={ROLE_OPTIONS} value={form.role} onChange={(v: string) => setForm({ ...form, role: v })} /></VCT_Field>
+                        <VCT_Field label="Phạm vi" className="flex-1"><VCT_Input value={form.scope} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setForm({ ...form, scope: e.target.value })} placeholder="VD: CLB Sơn Long" /></VCT_Field>
                     </VCT_Stack>
                 </VCT_Stack>
             </VCT_Modal>
@@ -349,6 +404,6 @@ export const Page_admin_users = () => {
                     </div>
                 )}
             </VCT_Drawer>
-        </VCT_PageContainer>
+        </AdminPageShell>
     )
 }

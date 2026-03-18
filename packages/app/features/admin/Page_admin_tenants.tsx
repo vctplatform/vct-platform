@@ -3,18 +3,19 @@
 import * as React from 'react'
 import { useState, useMemo, useCallback } from 'react'
 import {
-    VCT_Button, VCT_Stack, VCT_SearchInput, VCT_Badge, VCT_Select,
-    VCT_Toast, VCT_PageContainer, VCT_StatRow
+    VCT_Button, VCT_SearchInput, VCT_Badge, VCT_Select,
 } from '../components/vct-ui'
 import type { StatItem } from '../components/VCT_StatRow'
 import { VCT_Icons } from '../components/vct-icons'
 import { VCT_Drawer } from '../components/VCT_Drawer'
 import { VCT_ConfirmDialog } from '../components/vct-ui-overlay'
-import { usePagination } from '../hooks/usePagination'
-import { AdminPaginationBar } from './components/AdminPaginationBar'
-import { AdminSkeletonRow } from './components/AdminSkeletonRow'
-import { useAdminToast } from './hooks/useAdminToast'
+import { AdminDataTable } from './components/AdminDataTable'
+import { AdminPageShell, useShellToast } from './components/AdminPageShell'
+import { useAdminFetch } from './hooks/useAdminAPI'
+import { useDebounce } from '../hooks/useDebounce'
 import { exportToCSV } from './utils/adminExport'
+import { AdminGuard } from './components/AdminGuard'
+import { useI18n as _useI18n } from '../i18n'
 
 // ════════════════════════════════════════
 // MOCK DATA — Tenants / Organizations
@@ -78,37 +79,55 @@ const STATUS_OPTIONS = [
 // ════════════════════════════════════════
 // MAIN COMPONENT
 // ════════════════════════════════════════
-export const Page_admin_tenants = () => {
-    const [tenants, setTenants] = useState(MOCK_TENANTS)
+export const Page_admin_tenants = () => (
+    <AdminGuard>
+        <Page_admin_tenants_Content />
+    </AdminGuard>
+)
+
+const Page_admin_tenants_Content = () => {
+    const { data: fetchedTenants, isLoading } = useAdminFetch<Tenant[]>('/admin/tenants', { mockData: MOCK_TENANTS })
+    const [tenants, setTenants] = useState<Tenant[]>([])
     const [search, setSearch] = useState('')
+    const debouncedSearch = useDebounce(search, 300)
     const [typeFilter, setTypeFilter] = useState('all')
     const [statusFilter, setStatusFilter] = useState('all')
-    const [isLoading, setIsLoading] = useState(true)
     const [drawer, setDrawer] = useState<Tenant | null>(null)
     const [confirmAction, setConfirmAction] = useState<{ tenant: Tenant; action: 'suspend' | 'activate' | 'approve' } | null>(null)
     const [bulkConfirm, setBulkConfirm] = useState<{ action: 'approve' | 'suspend' } | null>(null)
-    const [selected, setSelected] = useState<Set<string>>(new Set())
-    const { toast, showToast, dismiss } = useAdminToast()
+    const [selected, setSelected] = useState<string[]>([])
+    
+    const [sortCol, setSortCol] = useState('name')
+    const [sortDir, setSortDir] = useState<'asc' | 'desc'>('asc')
+    const { showToast } = useShellToast()
 
-    React.useEffect(() => {
-        const t = setTimeout(() => setIsLoading(false), 700)
-        return () => clearTimeout(t)
-    }, [])
+    React.useEffect(() => { if (fetchedTenants) setTenants(fetchedTenants) }, [fetchedTenants])
 
     const filtered = useMemo(() => {
         let v = tenants
         if (typeFilter !== 'all') v = v.filter(t => t.type === typeFilter)
         if (statusFilter !== 'all') v = v.filter(t => t.status === statusFilter)
-        if (search) {
-            const q = search.toLowerCase()
+        if (debouncedSearch) {
+            const q = debouncedSearch.toLowerCase()
             v = v.filter(t => t.name.toLowerCase().includes(q) || t.contact_email.toLowerCase().includes(q) || t.region.toLowerCase().includes(q))
         }
+        
+        v = [...v].sort((a, b) => {
+            const valA = String((a as any)[sortCol] || '').toLowerCase()
+            const valB = String((b as any)[sortCol] || '').toLowerCase()
+            if (['members', 'admins'].includes(sortCol)) {
+                return sortDir === 'asc' ? Number(a[sortCol as keyof Tenant]) - Number(b[sortCol as keyof Tenant]) : Number(b[sortCol as keyof Tenant]) - Number(a[sortCol as keyof Tenant])
+            }
+            return sortDir === 'asc' ? valA.localeCompare(valB) : valB.localeCompare(valA)
+        })
+
         return v
-    }, [search, typeFilter, statusFilter, tenants])
+    }, [debouncedSearch, typeFilter, statusFilter, tenants, sortCol, sortDir])
 
-    const pagination = usePagination(filtered, { pageSize: 10 })
-
-
+    const handleSort = (key: string) => {
+        if (sortCol === key) setSortDir(d => d === 'asc' ? 'desc' : 'asc')
+        else { setSortCol(key); setSortDir('asc') }
+    }
 
     const handleConfirm = useCallback(() => {
         if (!confirmAction) return
@@ -128,29 +147,27 @@ export const Page_admin_tenants = () => {
         }
     }, [confirmAction, drawer, showToast])
 
-    const toggleSelect = useCallback((id: string) => {
+    const toggleSelect = (id: string) => {
         setSelected(prev => {
-            const next = new Set(prev)
-            next.has(id) ? next.delete(id) : next.add(id)
-            return next
+            const next = Array.from(prev)
+            if (next.includes(id)) return next.filter(i => i !== id)
+            return [...next, id]
         })
-    }, [])
+    }
 
-    const toggleSelectAll = useCallback(() => {
-        if (selected.size === pagination.paginatedItems.length) {
-            setSelected(new Set())
-        } else {
-            setSelected(new Set(pagination.paginatedItems.map(t => t.id)))
-        }
-    }, [pagination.paginatedItems, selected.size])
+    const toggleSelectAll = () => {
+        if (selected.length === filtered.length) setSelected([])
+        else setSelected(filtered.map(t => t.id))
+    }
 
     const handleBulkConfirm = useCallback(() => {
-        if (!bulkConfirm || selected.size === 0) return
+        if (!bulkConfirm || selected.length === 0) return
         const newStatus = bulkConfirm.action === 'suspend' ? 'suspended' as const : 'active' as const
-        setTenants(prev => prev.map(t => selected.has(t.id) ? { ...t, status: newStatus } : t))
+        const selectedSet = new Set(selected)
+        setTenants(prev => prev.map(t => selectedSet.has(t.id) ? { ...t, status: newStatus } : t))
         const label = bulkConfirm.action === 'suspend' ? 'đình chỉ' : 'phê duyệt'
-        showToast(`Đã ${label} ${selected.size} tổ chức`)
-        setSelected(new Set())
+        showToast(`Đã ${label} ${selected.length} tổ chức`)
+        setSelected([])
         setBulkConfirm(null)
     }, [bulkConfirm, selected, showToast])
 
@@ -174,28 +191,23 @@ export const Page_admin_tenants = () => {
         pending: tenants.filter(t => t.status === 'pending' || t.status === 'trial').length,
     }), [tenants])
 
+    const kpiStats: StatItem[] = [
+        { label: 'Tổng TC', value: stats.total, icon: <VCT_Icons.Building size={18} />, color: '#3b82f6' },
+        { label: 'Hoạt động', value: stats.active, icon: <VCT_Icons.CheckCircle size={18} />, color: '#10b981' },
+        { label: 'Thành viên', value: stats.totalMembers.toLocaleString(), icon: <VCT_Icons.Users size={18} />, color: '#0ea5e9' },
+        { label: 'Chờ xử lý', value: stats.pending, icon: <VCT_Icons.Clock size={18} />, color: '#f59e0b' },
+    ]
+
     return (
-        <VCT_PageContainer size="wide" animated>
-            <VCT_Toast isVisible={toast.show} message={toast.msg} type={toast.type} onClose={dismiss} />
-
-            <div className="mb-6 flex flex-col sm:flex-row sm:flex-wrap items-start justify-between gap-4">
-                <div>
-                    <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-(--vct-text-primary)">Quản Lý Tổ Chức (Tenants)</h1>
-                    <p className="text-sm text-(--vct-text-secondary) mt-1">Phê duyệt, quản lý và giám sát các tổ chức sử dụng nền tảng VCT PLATFORM.</p>
-                </div>
-                <VCT_Stack direction="row" gap={8}>
-                    <VCT_Button variant="outline" icon={<VCT_Icons.Download size={16} />} onClick={handleExport}>Xuất CSV</VCT_Button>
-                </VCT_Stack>
-            </div>
-
-            {/* ── KPI ── */}
-            <VCT_StatRow items={[
-                { label: 'Tổng TC', value: stats.total, icon: <VCT_Icons.Building size={18} />, color: '#3b82f6' },
-                { label: 'Hoạt động', value: stats.active, icon: <VCT_Icons.CheckCircle size={18} />, color: '#10b981' },
-                { label: 'Thành viên', value: stats.totalMembers.toLocaleString(), icon: <VCT_Icons.Users size={18} />, color: '#0ea5e9' },
-                { label: 'Chờ xử lý', value: stats.pending, icon: <VCT_Icons.Clock size={18} />, color: '#f59e0b' },
-            ] as StatItem[]} className="mb-8" />
-
+        <AdminPageShell
+            title="Quản Lý Tổ Chức (Tenants)"
+            subtitle="Phê duyệt, quản lý và giám sát các tổ chức sử dụng nền tảng VCT PLATFORM."
+            icon={<VCT_Icons.Building size={28} className="text-[#3b82f6]" />}
+            stats={kpiStats}
+            actions={
+                <VCT_Button variant="outline" icon={<VCT_Icons.Download size={16} />} onClick={handleExport}>Xuất CSV</VCT_Button>
+            }
+        >
             {/* ── FILTERS ── */}
             <div className="flex flex-wrap gap-4 mb-6">
                 <div className="flex-1 min-w-[200px]">
@@ -206,10 +218,10 @@ export const Page_admin_tenants = () => {
             </div>
 
             {/* ── BULK ACTION BAR ── */}
-            {selected.size > 0 && (
+            {selected.length > 0 && (
                 <div className="mb-4 flex flex-wrap items-center justify-between gap-3 p-3 bg-(--vct-bg-elevated) rounded-xl border border-(--vct-accent-cyan,#0ea5e940) animate-in">
                     <span className="text-sm font-semibold text-(--vct-accent-cyan)">
-                        ✓ Đã chọn {selected.size} tổ chức
+                        ✓ Đã chọn {selected.length} tổ chức
                     </span>
                     <div className="flex gap-2">
                         <VCT_Button variant="primary" size="sm" icon={<VCT_Icons.CheckCircle size={14} />}
@@ -218,64 +230,84 @@ export const Page_admin_tenants = () => {
                         <VCT_Button variant="danger" size="sm" icon={<VCT_Icons.AlertTriangle size={14} />}
                             onClick={() => setBulkConfirm({ action: 'suspend' })}
                         >Đình chỉ tất cả</VCT_Button>
-                        <button onClick={() => setSelected(new Set())} className="px-3 py-1.5 text-xs rounded-lg text-(--vct-text-tertiary) hover:text-(--vct-text-primary) transition-colors">Bỏ chọn</button>
+                        <button onClick={() => setSelected([])} className="px-3 py-1.5 text-xs rounded-lg text-(--vct-text-tertiary) hover:text-(--vct-text-primary) transition-colors">Bỏ chọn</button>
                     </div>
                 </div>
             )}
 
             {/* ── TABLE ── */}
-            <div className="bg-(--vct-bg-card) border border-(--vct-border-strong) rounded-2xl overflow-x-auto">
-                <table className="w-full text-left border-collapse min-w-[700px]">
-                    <thead>
-                        <tr className="bg-(--vct-bg-elevated) border-b border-(--vct-border-strong) text-[11px] uppercase tracking-wider text-(--vct-text-tertiary) font-bold">
-                            <th className="p-4 w-12">
-                                <input
-                                    type="checkbox"
-                                    aria-label="Chọn tất cả"
-                                    checked={!isLoading && pagination.paginatedItems.length > 0 && selected.size === pagination.paginatedItems.length}
-                                    onChange={toggleSelectAll}
-                                    className="w-4 h-4 accent-(--vct-accent-blue,#3b82f6) cursor-pointer"
-                                />
-                            </th>
-                            <th className="p-4 w-20">T.Thái</th>
-                            <th className="p-4">Tên tổ chức</th>
-                            <th className="p-4 w-28">Loại</th>
-                            <th className="p-4 w-28">Gói</th>
-                            <th className="p-4 w-28 text-right">Thành viên</th>
-                            <th className="p-4 w-28">Khu vực</th>
-                            <th className="p-4 w-28">Ngày tạo</th>
-                        </tr>
-                    </thead>
-                    <tbody className="divide-y divide-(--vct-border-subtle)">
-                        {isLoading ? (
-                            [...Array(5)].map((_, i) => <AdminSkeletonRow key={i} cols={8} />)
-                        ) : pagination.paginatedItems.length === 0 ? (
-                            <tr><td colSpan={8} className="p-12 text-center text-(--vct-text-tertiary)">Không tìm thấy tổ chức nào</td></tr>
-                        ) : (
-                            pagination.paginatedItems.map(t => (
-                                <tr key={t.id} className={`hover:bg-white/5 transition-colors text-sm cursor-pointer ${selected.has(t.id) ? 'bg-white/5' : ''}`} onClick={() => setDrawer(t)}>
-                                    <td className="p-4" onClick={e => { e.stopPropagation(); toggleSelect(t.id) }}>
-                                        <input type="checkbox" aria-label={`Chọn ${t.name}`} checked={selected.has(t.id)} onChange={() => toggleSelect(t.id)} className="w-4 h-4 accent-(--vct-accent-blue,#3b82f6) cursor-pointer" />
-                                    </td>
-                                    <td className="p-4"><VCT_Badge type={STATUS_BADGE[t.status]?.type ?? 'neutral'} text={STATUS_BADGE[t.status]?.label ?? t.status} /></td>
-                                    <td className="p-4">
-                                        <div className="font-semibold text-(--vct-text-primary)">{t.name}</div>
-                                        <div className="text-[11px] text-(--vct-text-tertiary) font-mono">{t.contact_email}</div>
-                                    </td>
-                                    <td className="p-4 text-xs text-(--vct-text-secondary) capitalize">{t.type === 'federation' ? '🏛️ Liên đoàn' : t.type === 'club' ? '🏠 CLB' : '🤝 Hiệp hội'}</td>
-                                    <td className="p-4"><VCT_Badge type={PLAN_BADGE[t.plan]?.type ?? 'neutral'} text={PLAN_BADGE[t.plan]?.label ?? t.plan} /></td>
-                                    <td className="p-4 text-right font-mono text-[12px] text-(--vct-accent-cyan)">{t.members.toLocaleString()}</td>
-                                    <td className="p-4 text-xs text-(--vct-text-secondary)">{t.region}</td>
-                                    <td className="p-4 font-mono text-[11px] text-(--vct-text-tertiary)">{t.created_at}</td>
-                                </tr>
-                            ))
-                        )}
-                    </tbody>
-                </table>
-                {!isLoading && pagination.totalPages > 1 && (
-                    <AdminPaginationBar {...pagination} />
-                )}
-            </div>
+            <AdminDataTable
+                data={filtered}
+                isLoading={isLoading}
+                sortBy={sortCol}
+                sortDir={sortDir}
+                onSort={handleSort}
+                rowKey={t => t.id}
+                emptyTitle="Không tìm thấy tổ chức nào"
+                emptyDescription="Thử thay đổi bộ lọc tìm kiếm"
+                emptyIcon="🏢"
+                columns={[
+                    {
+                        key: 'select',
+                        label: 'Chọn',
+                        sortable: false,
+                        render: (t) => (
+                            <div onClick={e => { e.stopPropagation(); toggleSelect(t.id) }}>
+                                <input type="checkbox" aria-label={`Chọn ${t.name}`} checked={selected.includes(t.id)} onChange={() => toggleSelect(t.id)} className="w-4 h-4 accent-(--vct-accent-blue) cursor-pointer" />
+                            </div>
+                        )
+                    },
+                    {
+                        key: 'status',
+                        label: 'T.Thái',
+                        sortable: true,
+                        render: (t) => <VCT_Badge type={STATUS_BADGE[t.status]?.type ?? 'neutral'} text={STATUS_BADGE[t.status]?.label ?? t.status} />
+                    },
+                    {
+                        key: 'name',
+                        label: 'Tên tổ chức',
+                        sortable: true,
+                        render: (t) => (
+                            <div>
+                                <div className="font-semibold text-(--vct-text-primary)">{t.name}</div>
+                                <div className="text-[11px] text-(--vct-text-tertiary) font-mono">{t.contact_email}</div>
+                            </div>
+                        )
+                    },
+                    {
+                        key: 'type',
+                        label: 'Loại',
+                        sortable: true,
+                        render: (t) => <div className="text-xs text-(--vct-text-secondary) capitalize">{t.type === 'federation' ? '🏛️ Liên đoàn' : t.type === 'club' ? '🏠 CLB' : '🤝 Hiệp hội'}</div>
+                    },
+                    {
+                        key: 'plan',
+                        label: 'Gói',
+                        sortable: true,
+                        render: (t) => <VCT_Badge type={PLAN_BADGE[t.plan]?.type ?? 'neutral'} text={PLAN_BADGE[t.plan]?.label ?? t.plan} />
+                    },
+                    {
+                        key: 'members',
+                        label: 'Thành viên',
+                        sortable: true,
+                        align: 'right',
+                        render: (t) => <div className="font-mono text-[12px] text-(--vct-accent-cyan)">{t.members.toLocaleString()}</div>
+                    },
+                    {
+                        key: 'region',
+                        label: 'Khu vực',
+                        sortable: true,
+                        render: (t) => <div className="text-xs text-(--vct-text-secondary)">{t.region}</div>
+                    },
+                    {
+                        key: 'created_at',
+                        label: 'Ngày tạo',
+                        sortable: true,
+                        render: (t) => <div className="font-mono text-[11px] text-(--vct-text-tertiary)">{t.created_at}</div>
+                    }
+                ]}
+                onRowClick={setDrawer}
+            />
 
             {/* ── TENANT DETAIL DRAWER ── */}
             <VCT_Drawer isOpen={!!drawer} onClose={() => setDrawer(null)} title="Chi tiết Tổ chức" width={520}>
@@ -305,7 +337,7 @@ export const Page_admin_tenants = () => {
                             </div>
                         </div>
 
-                        <div className="grid grid-cols-2 gap-4 text-sm">
+                        <div className="grid grid-cols-2 gap-4 text-sm mt-5">
                             <div><div className="text-[10px] uppercase text-(--vct-text-tertiary) mb-1">Email liên hệ</div><div className="font-mono text-(--vct-text-primary)">{drawer.contact_email}</div></div>
                             <div><div className="text-[10px] uppercase text-(--vct-text-tertiary) mb-1">Ngày tạo</div><div className="font-mono text-(--vct-text-primary)">{drawer.created_at}</div></div>
                             <div><div className="text-[10px] uppercase text-(--vct-text-tertiary) mb-1">Khu vực</div><div className="text-(--vct-text-primary)">{drawer.region}</div></div>
@@ -332,24 +364,28 @@ export const Page_admin_tenants = () => {
             </VCT_Drawer>
 
             {/* ── CONFIRM DIALOG ── */}
-            <VCT_ConfirmDialog
-                isOpen={!!confirmAction}
-                onClose={() => setConfirmAction(null)}
-                onConfirm={handleConfirm}
-                title={confirmAction?.action === 'suspend' ? 'Đình chỉ tổ chức' : confirmAction?.action === 'approve' ? 'Phê duyệt tổ chức' : 'Kích hoạt tổ chức'}
-                message={`Bạn có chắc chắn muốn ${confirmAction?.action === 'suspend' ? 'đình chỉ' : confirmAction?.action === 'approve' ? 'phê duyệt' : 'kích hoạt lại'} tổ chức "${confirmAction?.tenant.name}"?`}
-                confirmLabel={confirmAction?.action === 'suspend' ? 'Đình chỉ' : 'Xác nhận'}
-            />
+            {confirmAction && (
+                <VCT_ConfirmDialog
+                    isOpen={!!confirmAction}
+                    onClose={() => setConfirmAction(null)}
+                    onConfirm={handleConfirm}
+                    title={confirmAction.action === 'suspend' ? 'Đình chỉ tổ chức' : confirmAction.action === 'approve' ? 'Phê duyệt tổ chức' : 'Kích hoạt tổ chức'}
+                    message={`Bạn có chắc chắn muốn ${confirmAction.action === 'suspend' ? 'đình chỉ' : confirmAction.action === 'approve' ? 'phê duyệt' : 'kích hoạt lại'} tổ chức "${confirmAction.tenant.name}"?`}
+                    confirmLabel={confirmAction.action === 'suspend' ? 'Đình chỉ' : 'Xác nhận'}
+                />
+            )}
 
             {/* ── BULK CONFIRM DIALOG ── */}
-            <VCT_ConfirmDialog
-                isOpen={!!bulkConfirm}
-                onClose={() => setBulkConfirm(null)}
-                onConfirm={handleBulkConfirm}
-                title={bulkConfirm?.action === 'suspend' ? 'Đình chỉ hàng loạt' : 'Phê duyệt hàng loạt'}
-                message={`Bạn có chắc chắn muốn ${bulkConfirm?.action === 'suspend' ? 'đình chỉ' : 'phê duyệt'} ${selected.size} tổ chức đã chọn?`}
-                confirmLabel={bulkConfirm?.action === 'suspend' ? 'Đình chỉ tất cả' : 'Phê duyệt tất cả'}
-            />
-        </VCT_PageContainer>
+            {bulkConfirm && (
+                <VCT_ConfirmDialog
+                    isOpen={!!bulkConfirm}
+                    onClose={() => setBulkConfirm(null)}
+                    onConfirm={handleBulkConfirm}
+                    title={bulkConfirm.action === 'suspend' ? 'Đình chỉ hàng loạt' : 'Phê duyệt hàng loạt'}
+                    message={`Bạn có chắc chắn muốn ${bulkConfirm.action === 'suspend' ? 'đình chỉ' : 'phê duyệt'} ${selected.length} tổ chức đã chọn?`}
+                    confirmLabel={bulkConfirm.action === 'suspend' ? 'Đình chỉ tất cả' : 'Phê duyệt tất cả'}
+                />
+            )}
+        </AdminPageShell>
     )
 }

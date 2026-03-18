@@ -3,13 +3,16 @@
 import * as React from 'react'
 import { useState, useCallback } from 'react'
 import {
-    VCT_Badge, VCT_Button, VCT_Stack, VCT_Toast,
-    VCT_EmptyState, VCT_PageContainer, VCT_StatRow
+    VCT_Badge, VCT_Button, VCT_Stack,
+    VCT_EmptyState,
 } from '../components/vct-ui'
 import type { StatItem } from '../components/VCT_StatRow'
 import { VCT_Icons } from '../components/vct-icons'
 import { VCT_Drawer } from '../components/VCT_Drawer'
-import { useAdminToast } from './hooks/useAdminToast'
+import { AdminPageShell, useShellToast } from './components/AdminPageShell'
+import { useAdminFetch } from './hooks/useAdminAPI'
+import { AdminGuard } from './components/AdminGuard'
+import { useI18n as _useI18n } from '../i18n'
 
 // ════════════════════════════════════════
 // TYPES & MOCK DATA
@@ -121,15 +124,18 @@ const LiveMatchCard = ({ match, onClick }: { match: LiveMatch; onClick: () => vo
 // ════════════════════════════════════════
 // MAIN COMPONENT
 // ════════════════════════════════════════
-export const Page_admin_scoring = () => {
-    const [selected, setSelected] = useState<LiveMatch | null>(null)
-    const [isLoading, setIsLoading] = useState(true)
-    const { toast, showToast, dismiss } = useAdminToast()
+export const Page_admin_scoring = () => (
+    <AdminGuard>
+        <Page_admin_scoring_Content />
+    </AdminGuard>
+)
 
-    React.useEffect(() => {
-        const t = setTimeout(() => setIsLoading(false), 800)
-        return () => clearTimeout(t)
-    }, [])
+const Page_admin_scoring_Content = () => {
+    const { data: fetchedMatches, isLoading } = useAdminFetch<LiveMatch[]>('/admin/scoring/matches', { mockData: MOCK_MATCHES })
+    const [selected, setSelected] = useState<LiveMatch | null>(null)
+    const { showToast } = useShellToast()
+
+    const _matches = fetchedMatches ?? MOCK_MATCHES
 
     const liveCount = MOCK_MATCHES.filter(m => m.status === 'live').length
     const finishedCount = MOCK_MATCHES.filter(m => m.status === 'finished').length
@@ -143,17 +149,12 @@ export const Page_admin_scoring = () => {
     ]
 
     return (
-        <VCT_PageContainer size="wide" animated>
-            <VCT_Toast isVisible={toast.show} message={toast.msg} type={toast.type} onClose={dismiss} />
-
-            <div className="mb-6">
-                <h1 className="text-2xl font-bold tracking-tight text-(--vct-text-primary) flex items-center gap-3">
-                    <VCT_Icons.Activity size={28} className="text-[#ef4444]" /> Chấm điểm & Giám sát Live
-                </h1>
-                <p className="text-sm text-(--vct-text-secondary) mt-1">Theo dõi real-time các trận đấu đang diễn ra</p>
-            </div>
-
-            <VCT_StatRow items={stats} className="mb-8" />
+        <AdminPageShell
+            title="Chấm điểm & Giám sát Live"
+            subtitle="Theo dõi real-time các trận đấu đang diễn ra"
+            icon={<VCT_Icons.Activity size={28} className="text-[#ef4444]" />}
+            stats={stats}
+        >
 
             {/* ── Live Matches Grid ── */}
             {isLoading ? (
@@ -240,6 +241,6 @@ export const Page_admin_scoring = () => {
                     </VCT_Stack>
                 )}
             </VCT_Drawer>
-        </VCT_PageContainer>
+        </AdminPageShell>
     )
 }

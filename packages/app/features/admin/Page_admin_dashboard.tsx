@@ -3,11 +3,18 @@
 import * as React from 'react'
 import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
-import { VCT_PageContainer, VCT_StatRow, VCT_Badge, VCT_Button, VCT_Stack } from '../components/vct-ui'
+import { VCT_Badge, VCT_Button, VCT_Stack } from '../components/vct-ui'
 import type { StatItem } from '../components/VCT_StatRow'
 import { VCT_Icons } from '../components/vct-icons'
 import { VCT_Timeline } from '../components/VCT_Timeline'
 import type { TimelineEvent } from '../components/VCT_Timeline'
+import { AdminPageShell } from './components/AdminPageShell'
+import { AdminGuard } from './components/AdminGuard'
+import {
+  LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer,
+  BarChart, Bar, Legend
+} from 'recharts'
+import { useI18n as _useI18n } from '../i18n'
 
 // ════════════════════════════════════════
 // MOCK DATA
@@ -52,6 +59,26 @@ const QUICK_NAV = [
     { label: 'Feature Flags', desc: 'Bật/tắt tính năng, rollout', icon: VCT_Icons.Flag, color: '#ef4444', href: '/admin/feature-flags' },
     { label: 'Hỗ trợ KH', desc: 'Ticket hỗ trợ, FAQ, kỹ thuật', icon: VCT_Icons.Shield, color: '#ec4899', href: '/admin/support' },
     { label: 'Subscription', desc: 'Gói dịch vụ, thanh toán & gia hạn', icon: VCT_Icons.CreditCard, color: '#a855f7', href: '/admin/subscriptions' },
+]
+
+const CHART_DATA_API = [
+    { time: '00:00', requests: 1200, errors: 12 },
+    { time: '04:00', requests: 800, errors: 5 },
+    { time: '08:00', requests: 3500, errors: 45 },
+    { time: '12:00', requests: 5200, errors: 80 },
+    { time: '16:00', requests: 4800, errors: 50 },
+    { time: '20:00', requests: 6100, errors: 110 },
+    { time: '24:00', requests: 2100, errors: 20 },
+]
+
+const CHART_DATA_USERS = [
+    { day: 'T2', athletes: 120, clubs: 5 },
+    { day: 'T3', athletes: 150, clubs: 8 },
+    { day: 'T4', athletes: 180, clubs: 12 },
+    { day: 'T5', athletes: 220, clubs: 15 },
+    { day: 'T6', athletes: 280, clubs: 20 },
+    { day: 'T7', athletes: 400, clubs: 35 },
+    { day: 'CN', athletes: 350, clubs: 28 },
 ]
 
 // ════════════════════════════════════════
@@ -106,7 +133,13 @@ const ALERT_SEVERITY: Record<string, { icon: React.ReactNode; bg: string; border
 // ════════════════════════════════════════
 // MAIN COMPONENT
 // ════════════════════════════════════════
-export const Page_admin_dashboard = () => {
+export const Page_admin_dashboard = () => (
+    <AdminGuard>
+        <Page_admin_dashboard_Content />
+    </AdminGuard>
+)
+
+const Page_admin_dashboard_Content = () => {
     const router = useRouter()
     const [isLoading, setIsLoading] = useState(true)
     const [autoRefresh, setAutoRefresh] = useState(true)
@@ -146,13 +179,20 @@ export const Page_admin_dashboard = () => {
 
     const health = getHealthScore(SERVICE_STATUS)
 
+    const dashStats: StatItem[] = [
+        { label: 'Uptime TB', value: '99.9%', icon: <VCT_Icons.Activity size={18} />, color: '#10b981' },
+        { label: 'Online', value: onlineCount, icon: <VCT_Icons.Users size={18} />, color: '#0ea5e9' },
+        { label: 'Req/phút', value: '2.4k', icon: <VCT_Icons.TrendingUp size={18} />, color: '#f59e0b' },
+        { label: 'Cảnh báo', value: ACTIVE_ALERTS.length, icon: <VCT_Icons.Alert size={18} />, color: '#ef4444' },
+    ]
+
     return (
-        <VCT_PageContainer size="wide" animated>
-            <div className="mb-6 flex flex-wrap items-start justify-between gap-4">
-                <div>
-                    <h1 className="text-2xl font-bold tracking-tight text-(--vct-text-primary)">VCT Platform Analytics</h1>
-                    <p className="text-sm text-(--vct-text-secondary) mt-1">Giám sát toàn bộ nền tảng VCT — hiệu suất, bảo mật và tải hệ thống.</p>
-                </div>
+        <AdminPageShell
+            title="VCT Platform Analytics"
+            subtitle="Giám sát toàn bộ nền tảng VCT — hiệu suất, bảo mật và tải hệ thống."
+            icon={<VCT_Icons.Activity size={28} className="text-[#10b981]" />}
+            stats={dashStats}
+            actions={
                 <VCT_Stack direction="row" gap={8} align="center">
                     <span className="text-[10px] text-(--vct-text-tertiary)">
                         Cập nhật: {lastRefreshed.toLocaleTimeString('vi-VN')}
@@ -167,15 +207,8 @@ export const Page_admin_dashboard = () => {
                         Refresh
                     </VCT_Button>
                 </VCT_Stack>
-            </div>
-
-            {/* ── KPI ── */}
-            <VCT_StatRow items={[
-                { label: 'Uptime TB', value: '99.9%', icon: <VCT_Icons.Activity size={18} />, color: '#10b981' },
-                { label: 'Online', value: onlineCount, icon: <VCT_Icons.Users size={18} />, color: '#0ea5e9' },
-                { label: 'Req/phút', value: '2.4k', icon: <VCT_Icons.TrendingUp size={18} />, color: '#f59e0b' },
-                { label: 'Cảnh báo', value: ACTIVE_ALERTS.length, icon: <VCT_Icons.Alert size={18} />, color: '#ef4444' },
-            ] as StatItem[]} className="mb-8" />
+            }
+        >
 
             {/* ── HEALTH SCORE + ACTIVE ALERTS ── */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
@@ -232,6 +265,54 @@ export const Page_admin_dashboard = () => {
                             })}
                         </div>
                     )}
+                </div>
+            </div>
+
+            {/* ── CHARTS SECTION ── */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                <div className="bg-(--vct-bg-elevated) border border-(--vct-border-strong) rounded-2xl p-6">
+                    <h2 className="font-bold text-lg text-(--vct-text-primary) mb-4 flex items-center gap-2">
+                        <VCT_Icons.Activity size={20} className="text-[#0ea5e9]" /> Biểu đồ API Requests (24h)
+                    </h2>
+                    <div className="h-[300px] w-full mt-4">
+                        <ResponsiveContainer width="100%" height="100%">
+                            <LineChart data={CHART_DATA_API} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+                                <CartesianGrid strokeDasharray="3 3" stroke="var(--vct-border-subtle)" vertical={false} />
+                                <XAxis dataKey="time" stroke="var(--vct-text-tertiary)" fontSize={12} tickLine={false} axisLine={false} />
+                                <YAxis stroke="var(--vct-text-tertiary)" fontSize={12} tickLine={false} axisLine={false} />
+                                <RechartsTooltip 
+                                    contentStyle={{ backgroundColor: 'var(--vct-bg-elevated)', borderRadius: '8px', border: '1px solid var(--vct-border-strong)', boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)' }}
+                                    itemStyle={{ color: 'var(--vct-text-primary)' }}
+                                />
+                                <Legend wrapperStyle={{ paddingTop: '20px', fontSize: '12px', color: 'var(--vct-text-secondary)' }} />
+                                <Line type="monotone" name="Requests" dataKey="requests" stroke="#0ea5e9" strokeWidth={3} dot={{ r: 4, strokeWidth: 2 }} activeDot={{ r: 6 }} />
+                                <Line type="monotone" name="Errors" dataKey="errors" stroke="#ef4444" strokeWidth={2} dot={{ r: 3 }} />
+                            </LineChart>
+                        </ResponsiveContainer>
+                    </div>
+                </div>
+                
+                <div className="bg-(--vct-bg-elevated) border border-(--vct-border-strong) rounded-2xl p-6">
+                    <h2 className="font-bold text-lg text-(--vct-text-primary) mb-4 flex items-center gap-2">
+                        <VCT_Icons.Users size={20} className="text-[#10b981]" /> Người dùng đăng ký (7 ngày)
+                    </h2>
+                    <div className="h-[300px] w-full mt-4">
+                        <ResponsiveContainer width="100%" height="100%">
+                            <BarChart data={CHART_DATA_USERS} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+                                <CartesianGrid strokeDasharray="3 3" stroke="var(--vct-border-subtle)" vertical={false} />
+                                <XAxis dataKey="day" stroke="var(--vct-text-tertiary)" fontSize={12} tickLine={false} axisLine={false} />
+                                <YAxis stroke="var(--vct-text-tertiary)" fontSize={12} tickLine={false} axisLine={false} />
+                                <RechartsTooltip 
+                                    contentStyle={{ backgroundColor: 'var(--vct-bg-elevated)', borderRadius: '8px', border: '1px solid var(--vct-border-strong)', boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)' }}
+                                    itemStyle={{ color: 'var(--vct-text-primary)' }}
+                                    cursor={{ fill: 'var(--vct-bg-base)', opacity: 0.5 }}
+                                />
+                                <Legend wrapperStyle={{ paddingTop: '20px', fontSize: '12px', color: 'var(--vct-text-secondary)' }} />
+                                <Bar name="Vận động viên" dataKey="athletes" fill="#10b981" radius={[4, 4, 0, 0]} />
+                                <Bar name="Câu lạc bộ" dataKey="clubs" fill="#f59e0b" radius={[4, 4, 0, 0]} />
+                            </BarChart>
+                        </ResponsiveContainer>
+                    </div>
                 </div>
             </div>
 
@@ -304,6 +385,6 @@ export const Page_admin_dashboard = () => {
                     </button>
                 ))}
             </div>
-        </VCT_PageContainer>
+        </AdminPageShell>
     )
 }

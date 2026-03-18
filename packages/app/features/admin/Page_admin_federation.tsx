@@ -3,15 +3,19 @@
 import * as React from 'react'
 import { useState, useMemo } from 'react'
 import {
-    VCT_Badge, VCT_Button, VCT_Stack, VCT_Toast,
+    VCT_Badge, VCT_Button, VCT_Stack,
     VCT_SearchInput, VCT_Select, VCT_EmptyState, VCT_Tabs,
-    VCT_PageContainer, VCT_StatRow
 } from '../components/vct-ui'
 import type { StatItem } from '../components/VCT_StatRow'
 import { VCT_Icons } from '../components/vct-icons'
 import { VCT_Drawer } from '../components/VCT_Drawer'
-import { AdminSkeletonRow } from './components/AdminSkeletonRow'
-import { useAdminToast } from './hooks/useAdminToast'
+import { AdminDataTable } from './components/AdminDataTable'
+import { AdminPageShell, useShellToast } from './components/AdminPageShell'
+import { useAdminFetch } from './hooks/useAdminAPI'
+import { useAdminMutation } from './hooks/useAdminMutation'
+import { useDebounce } from '../hooks/useDebounce'
+import { AdminGuard } from './components/AdminGuard'
+import { useI18n as _useI18n } from '../i18n'
 
 // ════════════════════════════════════════
 // TYPES & MOCK DATA
@@ -64,27 +68,67 @@ const MOCK_PERSONNEL: Personnel[] = [
 // ════════════════════════════════════════
 // MAIN COMPONENT
 // ════════════════════════════════════════
-export const Page_admin_federation = () => {
-    const [tab, setTab] = useState<'units' | 'personnel'>('units')
-    const [units, setUnits] = useState(MOCK_UNITS)
-    const [search, setSearch] = useState('')
-    const [filterType, setFilterType] = useState('all')
-    const [isLoading, setIsLoading] = useState(true)
-    const [selected, setSelected] = useState<FederationUnit | null>(null)
-    const { toast, showToast, dismiss } = useAdminToast()
+export const Page_admin_federation = () => (
+    <AdminGuard>
+        <Page_admin_federation_Content />
+    </AdminGuard>
+)
 
-    React.useEffect(() => {
-        const t = setTimeout(() => setIsLoading(false), 800)
-        return () => clearTimeout(t)
-    }, [])
+const Page_admin_federation_Content = () => {
+    const { data: fetchedUnits, isLoading } = useAdminFetch<FederationUnit[]>('/admin/federation/units', { mockData: MOCK_UNITS })
+    const [tab, setTab] = useState<'units' | 'personnel'>('units')
+    const [units, setUnits] = useState<FederationUnit[]>([])
+    const [search, setSearch] = useState('')
+    const debouncedSearch = useDebounce(search, 300)
+    const [filterType, setFilterType] = useState('all')
+    const [selected, setSelected] = useState<FederationUnit | null>(null)
+    const [sortColUnits, setSortColUnits] = useState('name')
+    const [sortDirUnits, setSortDirUnits] = useState<'asc' | 'desc'>('asc')
+    
+    const [sortColPersonnel, setSortColPersonnel] = useState('name')
+    const [sortDirPersonnel, setSortDirPersonnel] = useState<'asc' | 'desc'>('asc')
+
+    const { showToast } = useShellToast()
+    const { mutate: mutateApprove } = useAdminMutation('/admin/federation/approve', { onSuccess: () => showToast('Đã duyệt tổ chức') })
+
+    React.useEffect(() => { if (fetchedUnits) setUnits(fetchedUnits) }, [fetchedUnits])
 
     const filtered = useMemo(() => {
-        return units.filter(u => {
-            const matchSearch = u.name.toLowerCase().includes(search.toLowerCase()) || u.president.toLowerCase().includes(search.toLowerCase())
+        let data = units.filter(u => {
+            const matchSearch = u.name.toLowerCase().includes(debouncedSearch.toLowerCase()) || u.president.toLowerCase().includes(debouncedSearch.toLowerCase())
             const matchType = filterType === 'all' || u.type === filterType
             return matchSearch && matchType
         })
-    }, [units, search, filterType])
+
+        data = [...data].sort((a, b) => {
+            const valA = String((a as any)[sortColUnits] || '').toLowerCase()
+            const valB = String((b as any)[sortColUnits] || '').toLowerCase()
+            if (sortColUnits === 'athletes' || sortColUnits === 'clubs') {
+                return sortDirUnits === 'asc' ? Number(a[sortColUnits]) - Number(b[sortColUnits]) : Number(b[sortColUnits]) - Number(a[sortColUnits])
+            }
+            return sortDirUnits === 'asc' ? valA.localeCompare(valB) : valB.localeCompare(valA)
+        })
+
+        return data
+    }, [units, debouncedSearch, filterType, sortColUnits, sortDirUnits])
+
+    const filteredPersonnel = useMemo(() => {
+        return [...MOCK_PERSONNEL].sort((a, b) => {
+            const valA = String((a as any)[sortColPersonnel] || '').toLowerCase()
+            const valB = String((b as any)[sortColPersonnel] || '').toLowerCase()
+            return sortDirPersonnel === 'asc' ? valA.localeCompare(valB) : valB.localeCompare(valA)
+        })
+    }, [sortColPersonnel, sortDirPersonnel])
+
+    const handleSortUnits = (key: string) => {
+        if (sortColUnits === key) setSortDirUnits(d => d === 'asc' ? 'desc' : 'asc')
+        else { setSortColUnits(key); setSortDirUnits('asc') }
+    }
+
+    const handleSortPersonnel = (key: string) => {
+        if (sortColPersonnel === key) setSortDirPersonnel(d => d === 'asc' ? 'desc' : 'asc')
+        else { setSortColPersonnel(key); setSortDirPersonnel('asc') }
+    }
 
     const totalAthletes = units.reduce((a, u) => a + u.athletes, 0)
     const totalClubs = units.reduce((a, u) => a + u.clubs, 0)
@@ -96,9 +140,9 @@ export const Page_admin_federation = () => {
         { icon: <VCT_Icons.Home size={20} />, label: 'Tổng CLB', value: totalClubs, color: '#f59e0b' },
     ]
 
-    const handleApprove = (id: string) => {
+    const handleApprove = async (id: string) => {
+        await mutateApprove({ id })
         setUnits(prev => prev.map(u => u.id === id ? { ...u, status: 'active' as const } : u))
-        showToast('Đã duyệt tổ chức')
         setSelected(null)
     }
 
@@ -108,17 +152,12 @@ export const Page_admin_federation = () => {
     ]
 
     return (
-        <VCT_PageContainer size="wide" animated>
-            <VCT_Toast isVisible={toast.show} message={toast.msg} type={toast.type} onClose={dismiss} />
-
-            <div className="mb-6">
-                <h1 className="text-2xl font-bold tracking-tight text-(--vct-text-primary) flex items-center gap-3">
-                    <VCT_Icons.Building size={28} className="text-[#8b5cf6]" /> Quản lý Liên đoàn
-                </h1>
-                <p className="text-sm text-(--vct-text-secondary) mt-1">Tổ chức, nhân sự, và cơ cấu Liên đoàn VCT các cấp</p>
-            </div>
-
-            <VCT_StatRow items={stats} className="mb-6" />
+        <AdminPageShell
+            title="Quản lý Liên đoàn"
+            subtitle="Tổ chức, nhân sự, và cơ cấu Liên đoàn VCT các cấp"
+            icon={<VCT_Icons.Building size={28} className="text-[#8b5cf6]" />}
+            stats={stats}
+        >
             <VCT_Tabs tabs={tabItems} activeTab={tab} onChange={v => setTab(v as typeof tab)} className="mb-6" />
 
             {tab === 'units' && (
@@ -127,73 +166,125 @@ export const Page_admin_federation = () => {
                         <VCT_SearchInput value={search} onChange={setSearch} placeholder="Tìm tổ chức..." className="flex-1 min-w-[220px]" />
                         <VCT_Select value={filterType} onChange={setFilterType} options={[{ value: 'all', label: 'Tất cả cấp' }, ...Object.entries(TYPE_BADGE).map(([k, v]) => ({ value: k, label: v.label }))]} />
                     </div>
-                    <div className="bg-(--vct-bg-elevated) border border-(--vct-border-strong) rounded-2xl overflow-hidden mb-6">
-                        <div className="overflow-x-auto">
-                            <table className="w-full text-sm">
-                                <thead>
-                                    <tr className="border-b border-(--vct-border-subtle)">
-                                        <th className="text-left p-4 text-(--vct-text-tertiary) font-bold text-xs uppercase tracking-wider">Tên</th>
-                                        <th className="text-left p-4 text-(--vct-text-tertiary) font-bold text-xs uppercase tracking-wider">Cấp</th>
-                                        <th className="text-left p-4 text-(--vct-text-tertiary) font-bold text-xs uppercase tracking-wider">Chủ tịch</th>
-                                        <th className="text-center p-4 text-(--vct-text-tertiary) font-bold text-xs uppercase tracking-wider">CLB</th>
-                                        <th className="text-center p-4 text-(--vct-text-tertiary) font-bold text-xs uppercase tracking-wider">VĐV</th>
-                                        <th className="text-center p-4 text-(--vct-text-tertiary) font-bold text-xs uppercase tracking-wider">Trạng thái</th>
-                                        <th className="text-center p-4 text-(--vct-text-tertiary) font-bold text-xs uppercase tracking-wider">Thao tác</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {isLoading ? [...Array(5)].map((_, i) => <AdminSkeletonRow key={i} cols={7} />) : filtered.length === 0 ? (
-                                        <tr><td colSpan={7}><VCT_EmptyState icon={<VCT_Icons.Building size={40} />} title="Không tìm thấy" /></td></tr>
-                                    ) : filtered.map(u => (
-                                        <tr key={u.id} className="border-b border-(--vct-border-subtle) hover:bg-(--vct-bg-base) cursor-pointer transition-colors" onClick={() => setSelected(u)}>
-                                            <td className="p-4">
-                                                <div className="font-bold text-(--vct-text-primary)">{u.name}</div>
-                                                {u.province && <div className="text-xs text-(--vct-text-tertiary)">{u.province}</div>}
-                                            </td>
-                                            <td className="p-4"><VCT_Badge type={TYPE_BADGE[u.type]?.type} text={TYPE_BADGE[u.type]?.label} /></td>
-                                            <td className="p-4 text-(--vct-text-secondary)">{u.president}</td>
-                                            <td className="p-4 text-center font-bold text-(--vct-text-primary)">{u.clubs}</td>
-                                            <td className="p-4 text-center font-bold text-(--vct-text-primary)">{u.athletes.toLocaleString()}</td>
-                                            <td className="p-4 text-center"><VCT_Badge type={STATUS_BADGE[u.status]?.type} text={STATUS_BADGE[u.status]?.label} /></td>
-                                            <td className="p-4 text-center" onClick={e => e.stopPropagation()}>
-                                                {u.status === 'pending' && <VCT_Button size="sm" variant="ghost" onClick={() => handleApprove(u.id)} icon={<VCT_Icons.CheckCircle size={14} />}>Duyệt</VCT_Button>}
-                                            </td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
+                    <AdminDataTable
+                        data={filtered}
+                        isLoading={isLoading}
+                        sortBy={sortColUnits}
+                        sortDir={sortDirUnits}
+                        onSort={handleSortUnits}
+                        rowKey={u => u.id}
+                        emptyTitle="Không tìm thấy tổ chức"
+                        emptyDescription="Thử thay đổi bộ lọc tìm kiếm"
+                        emptyIcon="🏛️"
+                        columns={[
+                            {
+                                key: 'name',
+                                label: 'Tên',
+                                sortable: true,
+                                render: (u) => (
+                                    <div>
+                                        <div className="font-bold text-(--vct-text-primary)">{u.name}</div>
+                                        {u.province && <div className="text-xs text-(--vct-text-tertiary)">{u.province}</div>}
+                                    </div>
+                                )
+                            },
+                            {
+                                key: 'type',
+                                label: 'Cấp',
+                                sortable: true,
+                                hideMobile: true,
+                                render: (u) => <VCT_Badge type={TYPE_BADGE[u.type]?.type ?? 'neutral'} text={TYPE_BADGE[u.type]?.label ?? u.type} />
+                            },
+                            {
+                                key: 'president',
+                                label: 'Chủ tịch',
+                                sortable: true,
+                                hideMobile: true,
+                                render: (u) => <div className="text-(--vct-text-secondary)">{u.president}</div>
+                            },
+                            {
+                                key: 'clubs',
+                                label: 'CLB',
+                                sortable: true,
+                                align: 'center',
+                                render: (u) => <div className="font-bold text-(--vct-text-primary)">{u.clubs}</div>
+                            },
+                            {
+                                key: 'athletes',
+                                label: 'VĐV',
+                                sortable: true,
+                                align: 'center',
+                                render: (u) => <div className="font-bold text-(--vct-text-primary)">{u.athletes.toLocaleString()}</div>
+                            },
+                            {
+                                key: 'status',
+                                label: 'Trạng thái',
+                                sortable: true,
+                                align: 'center',
+                                render: (u) => <VCT_Badge type={STATUS_BADGE[u.status]?.type ?? 'neutral'} text={STATUS_BADGE[u.status]?.label ?? u.status} />
+                            },
+                            {
+                                key: '_actions',
+                                label: 'Thao tác',
+                                align: 'center',
+                                sortable: false,
+                                render: (u) => (
+                                    <div onClick={e => e.stopPropagation()}>
+                                        {u.status === 'pending' && <VCT_Button size="sm" variant="ghost" onClick={() => handleApprove(u.id)} icon={<VCT_Icons.CheckCircle size={14} />}>Duyệt</VCT_Button>}
+                                    </div>
+                                )
+                            }
+                        ]}
+                        onRowClick={setSelected}
+                    />
                 </>
             )}
 
             {tab === 'personnel' && (
-                <div className="bg-(--vct-bg-elevated) border border-(--vct-border-strong) rounded-2xl overflow-hidden mb-6">
-                    <div className="overflow-x-auto">
-                        <table className="w-full text-sm">
-                            <thead>
-                                <tr className="border-b border-(--vct-border-subtle)">
-                                    <th className="text-left p-4 text-(--vct-text-tertiary) font-bold text-xs uppercase tracking-wider">Họ tên</th>
-                                    <th className="text-left p-4 text-(--vct-text-tertiary) font-bold text-xs uppercase tracking-wider">Chức vụ</th>
-                                    <th className="text-left p-4 text-(--vct-text-tertiary) font-bold text-xs uppercase tracking-wider">Ban</th>
-                                    <th className="text-left p-4 text-(--vct-text-tertiary) font-bold text-xs uppercase tracking-wider">SĐT</th>
-                                    <th className="text-center p-4 text-(--vct-text-tertiary) font-bold text-xs uppercase tracking-wider">Trạng thái</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {MOCK_PERSONNEL.map(p => (
-                                    <tr key={p.id} className="border-b border-(--vct-border-subtle) hover:bg-(--vct-bg-base) transition-colors">
-                                        <td className="p-4 font-bold text-(--vct-text-primary)">{p.name}</td>
-                                        <td className="p-4 text-(--vct-text-secondary)">{p.role}</td>
-                                        <td className="p-4 text-(--vct-text-secondary)">{p.department}</td>
-                                        <td className="p-4 text-(--vct-text-tertiary)">{p.phone}</td>
-                                        <td className="p-4 text-center"><VCT_Badge type={STATUS_BADGE[p.status]?.type} text={STATUS_BADGE[p.status]?.label} /></td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
+                <AdminDataTable
+                    data={filteredPersonnel}
+                    isLoading={false}
+                    sortBy={sortColPersonnel}
+                    sortDir={sortDirPersonnel}
+                    onSort={handleSortPersonnel}
+                    rowKey={p => p.id}
+                    emptyTitle="Không có nhân sự"
+                    columns={[
+                        {
+                            key: 'name',
+                            label: 'Họ tên',
+                            sortable: true,
+                            render: (p) => <div className="font-bold text-(--vct-text-primary)">{p.name}</div>
+                        },
+                        {
+                            key: 'role',
+                            label: 'Chức vụ',
+                            sortable: true,
+                            render: (p) => <div className="text-(--vct-text-secondary)">{p.role}</div>
+                        },
+                        {
+                            key: 'department',
+                            label: 'Ban',
+                            sortable: true,
+                            hideMobile: true,
+                            render: (p) => <div className="text-(--vct-text-secondary)">{p.department}</div>
+                        },
+                        {
+                            key: 'phone',
+                            label: 'SĐT',
+                            sortable: true,
+                            hideMobile: true,
+                            render: (p) => <div className="text-(--vct-text-tertiary)">{p.phone}</div>
+                        },
+                        {
+                            key: 'status',
+                            label: 'Trạng thái',
+                            sortable: true,
+                            align: 'center',
+                            render: (p) => <VCT_Badge type={STATUS_BADGE[p.status]?.type ?? 'neutral'} text={STATUS_BADGE[p.status]?.label ?? p.status} />
+                        }
+                    ]}
+                />
             )}
 
             {/* ── Detail Drawer ── */}
@@ -225,6 +316,6 @@ export const Page_admin_federation = () => {
                     </VCT_Stack>
                 )}
             </VCT_Drawer>
-        </VCT_PageContainer>
+        </AdminPageShell>
     )
 }

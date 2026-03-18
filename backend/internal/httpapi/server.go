@@ -518,6 +518,8 @@ func (s *Server) Handler() http.Handler {
 	divisions.NewHandler().RegisterRoutes(mux)
 	// ── Customer Support ─────────────────────────────────────
 	s.handleSupportRoutes(mux)
+	// ── Admin Module (System Health, Config, Users, Roles, Flags) ──
+	s.handleAdminRoutes(mux)
 	// ── Domain Events ────────────────────────────────────────
 	mux.HandleFunc("/api/v1/events/recent", s.withAuth(s.handleRecentEvents))
 	// Generic entity CRUD (catch-all for unmigrated entities)

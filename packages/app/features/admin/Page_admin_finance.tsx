@@ -3,17 +3,20 @@
 import * as React from 'react'
 import { useState, useMemo } from 'react'
 import {
-    VCT_Badge, VCT_Button, VCT_Stack, VCT_Toast,
-    VCT_SearchInput, VCT_Select, VCT_EmptyState, VCT_Tabs,
-    VCT_PageContainer, VCT_StatRow
+    VCT_Badge, VCT_Button, VCT_Stack,
+    VCT_SearchInput, VCT_Select, VCT_Tabs,
 } from '../components/vct-ui'
 import type { StatItem } from '../components/VCT_StatRow'
 import { VCT_Icons } from '../components/vct-icons'
 import { VCT_Drawer } from '../components/VCT_Drawer'
 import { VCT_Timeline } from '../components/VCT_Timeline'
 import type { TimelineEvent } from '../components/VCT_Timeline'
-import { AdminSkeletonRow } from './components/AdminSkeletonRow'
-import { useAdminToast } from './hooks/useAdminToast'
+import { AdminDataTable } from './components/AdminDataTable'
+import { AdminPageShell, useShellToast } from './components/AdminPageShell'
+import { useAdminFetch } from './hooks/useAdminAPI'
+import { useAdminMutation } from './hooks/useAdminMutation'
+import { AdminGuard } from './components/AdminGuard'
+import { useI18n as _useI18n } from '../i18n'
 
 // ════════════════════════════════════════
 // TYPES & MOCK DATA
@@ -87,19 +90,30 @@ const FINANCE_TIMELINE: TimelineEvent[] = [
 // ════════════════════════════════════════
 // MAIN COMPONENT
 // ════════════════════════════════════════
-export const Page_admin_finance = () => {
+export const Page_admin_finance = () => (
+    <AdminGuard>
+        <Page_admin_finance_Content />
+    </AdminGuard>
+)
+
+const Page_admin_finance_Content = () => {
+    const { data: fetchedInvoices, isLoading } = useAdminFetch<Invoice[]>('/admin/finance/invoices', { mockData: MOCK_INVOICES })
     const [tab, setTab] = useState<'invoices' | 'budgets' | 'sponsors'>('invoices')
-    const [invoices, setInvoices] = useState(MOCK_INVOICES)
+    const [invoices, setInvoices] = useState<Invoice[]>([])
     const [search, setSearch] = useState('')
     const [filterStatus, setFilterStatus] = useState('all')
-    const [isLoading, setIsLoading] = useState(true)
-    const [selected, setSelected] = useState<Invoice | null>(null)
-    const { toast, showToast, dismiss } = useAdminToast()
+    const [sortColInvoices, setSortColInvoices] = useState('due_date')
+    const [sortDirInvoices, setSortDirInvoices] = useState<'asc' | 'desc'>('desc')
+    
+    const [sortColSponsors, setSortColSponsors] = useState('sponsor')
+    const [sortDirSponsors, setSortDirSponsors] = useState<'asc' | 'desc'>('asc')
 
-    React.useEffect(() => {
-        const t = setTimeout(() => setIsLoading(false), 800)
-        return () => clearTimeout(t)
-    }, [])
+    const [selected, setSelected] = useState<Invoice | null>(null)
+
+    const { showToast } = useShellToast()
+    const { mutate: mutateMarkPaid } = useAdminMutation('/admin/finance/mark-paid', { onSuccess: () => showToast('Đã xác nhận thanh toán') })
+
+    React.useEffect(() => { if (fetchedInvoices) setInvoices(fetchedInvoices) }, [fetchedInvoices])
 
     const totalRevenue = invoices.filter(i => i.status === 'paid').reduce((a, i) => a + i.amount, 0)
     const totalPending = invoices.filter(i => i.status === 'pending').reduce((a, i) => a + i.amount, 0)
@@ -114,16 +128,49 @@ export const Page_admin_finance = () => {
     ]
 
     const filteredInvoices = useMemo(() => {
-        return invoices.filter(i => {
+        let data = invoices.filter(i => {
             const matchSearch = i.id.toLowerCase().includes(search.toLowerCase()) || i.payer.toLowerCase().includes(search.toLowerCase()) || i.tournament.toLowerCase().includes(search.toLowerCase())
             const matchStatus = filterStatus === 'all' || i.status === filterStatus
             return matchSearch && matchStatus
         })
-    }, [invoices, search, filterStatus])
 
-    const handleMarkPaid = (id: string) => {
+        // Sorting Invoices
+        data = [...data].sort((a, b) => {
+            const valA = String((a as any)[sortColInvoices] || '').toLowerCase()
+            const valB = String((b as any)[sortColInvoices] || '').toLowerCase()
+            if (sortColInvoices === 'amount') {
+                return sortDirInvoices === 'asc' ? Number(a[sortColInvoices]) - Number(b[sortColInvoices]) : Number(b[sortColInvoices]) - Number(a[sortColInvoices])
+            }
+            return sortDirInvoices === 'asc' ? valA.localeCompare(valB) : valB.localeCompare(valA)
+        })
+
+        return data
+    }, [invoices, search, filterStatus, sortColInvoices, sortDirInvoices])
+
+    const filteredSponsors = useMemo(() => {
+        return [...MOCK_SPONSORS].sort((a, b) => {
+            const valA = String((a as any)[sortColSponsors] || '').toLowerCase()
+            const valB = String((b as any)[sortColSponsors] || '').toLowerCase()
+            if (sortColSponsors === 'amount') {
+                return sortDirSponsors === 'asc' ? Number(a[sortColSponsors]) - Number(b[sortColSponsors]) : Number(b[sortColSponsors]) - Number(a[sortColSponsors])
+            }
+            return sortDirSponsors === 'asc' ? valA.localeCompare(valB) : valB.localeCompare(valA)
+        })
+    }, [sortColSponsors, sortDirSponsors])
+
+    const handleSortInvoices = (key: string) => {
+        if (sortColInvoices === key) setSortDirInvoices(d => d === 'asc' ? 'desc' : 'asc')
+        else { setSortColInvoices(key); setSortDirInvoices('asc') }
+    }
+
+    const handleSortSponsors = (key: string) => {
+        if (sortColSponsors === key) setSortDirSponsors(d => d === 'asc' ? 'desc' : 'asc')
+        else { setSortColSponsors(key); setSortDirSponsors('asc') }
+    }
+
+    const handleMarkPaid = async (id: string) => {
+        await mutateMarkPaid({ id })
         setInvoices(prev => prev.map(i => i.id === id ? { ...i, status: 'paid' as const, paid_date: new Date().toISOString().split('T')[0] } : i))
-        showToast('Đã xác nhận thanh toán')
         setSelected(null)
     }
 
@@ -134,17 +181,12 @@ export const Page_admin_finance = () => {
     ]
 
     return (
-        <VCT_PageContainer size="wide" animated>
-            <VCT_Toast isVisible={toast.show} message={toast.msg} type={toast.type} onClose={dismiss} />
-
-            <div className="mb-6">
-                <h1 className="text-2xl font-bold tracking-tight text-(--vct-text-primary) flex items-center gap-3">
-                    <VCT_Icons.DollarSign size={28} className="text-[#10b981]" /> Quản lý Tài chính
-                </h1>
-                <p className="text-sm text-(--vct-text-secondary) mt-1">Hóa đơn, ngân sách, và tài trợ cho toàn hệ thống VCT</p>
-            </div>
-
-            <VCT_StatRow items={stats} className="mb-6" />
+        <AdminPageShell
+            title="Quản lý Tài chính"
+            subtitle="Hóa đơn, ngân sách, và tài trợ cho toàn hệ thống VCT"
+            icon={<VCT_Icons.DollarSign size={28} className="text-[#10b981]" />}
+            stats={stats}
+        >
             <VCT_Tabs tabs={tabItems} activeTab={tab} onChange={v => setTab(v as typeof tab)} className="mb-6" />
 
             {/* ── TAB: Invoices ── */}
@@ -154,38 +196,67 @@ export const Page_admin_finance = () => {
                         <VCT_SearchInput value={search} onChange={setSearch} placeholder="Tìm hóa đơn..." className="flex-1 min-w-[220px]" />
                         <VCT_Select value={filterStatus} onChange={setFilterStatus} options={[{ value: 'all', label: 'Tất cả' }, ...Object.entries(STATUS_BADGE).filter(([k]) => ['pending', 'paid', 'overdue', 'cancelled'].includes(k)).map(([k, v]) => ({ value: k, label: v.label }))]} />
                     </div>
-                    <div className="bg-(--vct-bg-elevated) border border-(--vct-border-strong) rounded-2xl overflow-hidden mb-6">
-                        <div className="overflow-x-auto">
-                            <table className="w-full text-sm">
-                                <thead>
-                                    <tr className="border-b border-(--vct-border-subtle)">
-                                        <th className="text-left p-4 text-(--vct-text-tertiary) font-bold text-xs uppercase tracking-wider">Mã</th>
-                                        <th className="text-left p-4 text-(--vct-text-tertiary) font-bold text-xs uppercase tracking-wider">Giải đấu</th>
-                                        <th className="text-left p-4 text-(--vct-text-tertiary) font-bold text-xs uppercase tracking-wider">Người nộp</th>
-                                        <th className="text-left p-4 text-(--vct-text-tertiary) font-bold text-xs uppercase tracking-wider">Loại</th>
-                                        <th className="text-right p-4 text-(--vct-text-tertiary) font-bold text-xs uppercase tracking-wider">Số tiền</th>
-                                        <th className="text-center p-4 text-(--vct-text-tertiary) font-bold text-xs uppercase tracking-wider">Hạn</th>
-                                        <th className="text-center p-4 text-(--vct-text-tertiary) font-bold text-xs uppercase tracking-wider">Trạng thái</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {isLoading ? [...Array(5)].map((_, i) => <AdminSkeletonRow key={i} cols={7} />) : filteredInvoices.length === 0 ? (
-                                        <tr><td colSpan={7}><VCT_EmptyState icon={<VCT_Icons.FileText size={40} />} title="Chưa có hóa đơn" /></td></tr>
-                                    ) : filteredInvoices.map(inv => (
-                                        <tr key={inv.id} className="border-b border-(--vct-border-subtle) hover:bg-(--vct-bg-base) cursor-pointer transition-colors" onClick={() => setSelected(inv)}>
-                                            <td className="p-4 font-mono text-xs text-(--vct-text-tertiary)">{inv.id}</td>
-                                            <td className="p-4 text-(--vct-text-primary) font-bold">{inv.tournament}</td>
-                                            <td className="p-4 text-(--vct-text-secondary)">{inv.payer}</td>
-                                            <td className="p-4"><VCT_Badge type={TYPE_BADGE[inv.type]?.type} text={TYPE_BADGE[inv.type]?.label} /></td>
-                                            <td className="p-4 text-right font-bold text-(--vct-text-primary)">{fmt(inv.amount)}</td>
-                                            <td className="p-4 text-center text-xs text-(--vct-text-tertiary)">{inv.due_date}</td>
-                                            <td className="p-4 text-center"><VCT_Badge type={STATUS_BADGE[inv.status]?.type} text={STATUS_BADGE[inv.status]?.label} /></td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
+                    <AdminDataTable
+                        data={filteredInvoices}
+                        isLoading={isLoading}
+                        sortBy={sortColInvoices}
+                        sortDir={sortDirInvoices}
+                        onSort={handleSortInvoices}
+                        rowKey={inv => inv.id}
+                        emptyTitle="Không tìm thấy hóa đơn"
+                        emptyDescription="Thử thay đổi bộ lọc tìm kiếm"
+                        emptyIcon="📄"
+                        columns={[
+                            {
+                                key: 'id',
+                                label: 'Mã',
+                                sortable: true,
+                                render: (inv) => <div className="font-mono text-xs text-(--vct-text-tertiary)">{inv.id}</div>
+                            },
+                            {
+                                key: 'tournament',
+                                label: 'Giải đấu',
+                                sortable: true,
+                                render: (inv) => <div className="text-(--vct-text-primary) font-bold">{inv.tournament}</div>
+                            },
+                            {
+                                key: 'payer',
+                                label: 'Người nộp',
+                                sortable: true,
+                                hideMobile: true,
+                                render: (inv) => <div className="text-(--vct-text-secondary)">{inv.payer}</div>
+                            },
+                            {
+                                key: 'type',
+                                label: 'Loại',
+                                sortable: true,
+                                hideMobile: true,
+                                render: (inv) => <VCT_Badge type={TYPE_BADGE[inv.type]?.type ?? 'neutral'} text={TYPE_BADGE[inv.type]?.label ?? inv.type} />
+                            },
+                            {
+                                key: 'amount',
+                                label: 'Số tiền',
+                                sortable: true,
+                                align: 'right',
+                                render: (inv) => <div className="font-bold text-(--vct-text-primary)">{fmt(inv.amount)}</div>
+                            },
+                            {
+                                key: 'due_date',
+                                label: 'Hạn',
+                                sortable: true,
+                                align: 'center',
+                                render: (inv) => <div className="text-xs text-(--vct-text-tertiary)">{inv.due_date}</div>
+                            },
+                            {
+                                key: 'status',
+                                label: 'Trạng thái',
+                                sortable: true,
+                                align: 'center',
+                                render: (inv) => <VCT_Badge type={STATUS_BADGE[inv.status]?.type ?? 'neutral'} text={STATUS_BADGE[inv.status]?.label ?? inv.status} />
+                            }
+                        ]}
+                        onRowClick={setSelected}
+                    />
                 </>
             )}
 
@@ -217,26 +288,55 @@ export const Page_admin_finance = () => {
                 </div>
             )}
 
-            {/* ── TAB: Sponsors ── */}
             {tab === 'sponsors' && (
                 <div className="space-y-3 mb-6">
-                    {MOCK_SPONSORS.map(s => (
-                        <div key={s.id} className="flex items-center justify-between p-4 bg-(--vct-bg-elevated) border border-(--vct-border-strong) rounded-2xl">
-                            <div className="flex items-center gap-4">
-                                <div className="w-12 h-12 rounded-xl bg-(--vct-bg-base) border border-(--vct-border-subtle) flex items-center justify-center">
-                                    <VCT_Icons.Award size={24} className="text-[#8b5cf6]" />
-                                </div>
-                                <div>
-                                    <div className="font-bold text-(--vct-text-primary)">{s.sponsor}</div>
-                                    <div className="text-xs text-(--vct-text-tertiary)">{s.tournament} · {s.start_date} → {s.end_date}</div>
-                                </div>
-                            </div>
-                            <div className="flex items-center gap-4">
-                                <span className="font-black text-(--vct-text-primary)">{fmt(s.amount)}</span>
-                                <VCT_Badge type={STATUS_BADGE[s.status]?.type} text={STATUS_BADGE[s.status]?.label} />
-                            </div>
-                        </div>
-                    ))}
+                    <AdminDataTable
+                        data={filteredSponsors}
+                        isLoading={false}
+                        sortBy={sortColSponsors}
+                        sortDir={sortDirSponsors}
+                        onSort={handleSortSponsors}
+                        rowKey={s => s.id}
+                        emptyTitle="Không có nhà tài trợ"
+                        columns={[
+                            {
+                                key: 'sponsor',
+                                label: 'Nhà tài trợ',
+                                sortable: true,
+                                render: (s) => (
+                                    <div className="flex items-center gap-4">
+                                        <div className="w-10 h-10 rounded-xl bg-(--vct-bg-base) border border-(--vct-border-subtle) flex items-center justify-center shrink-0">
+                                            <VCT_Icons.Award size={20} className="text-[#8b5cf6]" />
+                                        </div>
+                                        <div>
+                                            <div className="font-bold text-(--vct-text-primary)">{s.sponsor}</div>
+                                            <div className="text-xs text-(--vct-text-tertiary)">{s.tournament}</div>
+                                        </div>
+                                    </div>
+                                )
+                            },
+                            {
+                                key: 'amount',
+                                label: 'Gói tài trợ',
+                                sortable: true,
+                                render: (s) => <div className="font-black text-(--vct-text-primary)">{fmt(s.amount)}</div>
+                            },
+                            {
+                                key: 'duration',
+                                label: 'Thời hạn',
+                                sortable: false,
+                                hideMobile: true,
+                                render: (s) => <div className="text-xs text-(--vct-text-tertiary)">{s.start_date} → {s.end_date}</div>
+                            },
+                            {
+                                key: 'status',
+                                label: 'Trạng thái',
+                                sortable: true,
+                                align: 'right',
+                                render: (s) => <VCT_Badge type={STATUS_BADGE[s.status]?.type ?? 'neutral'} text={STATUS_BADGE[s.status]?.label ?? s.status} />
+                            }
+                        ]}
+                    />
                 </div>
             )}
 
@@ -278,6 +378,6 @@ export const Page_admin_finance = () => {
                     </VCT_Stack>
                 )}
             </VCT_Drawer>
-        </VCT_PageContainer>
+        </AdminPageShell>
     )
 }

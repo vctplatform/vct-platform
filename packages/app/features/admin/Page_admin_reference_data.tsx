@@ -1,15 +1,21 @@
 'use client'
 
 import * as React from 'react'
-import { useState, useMemo, useCallback } from 'react'
+import { useState, useMemo } from 'react'
 import {
-    VCT_Badge, VCT_Button, VCT_Stack, VCT_Toast,
+    VCT_Badge, VCT_Button, VCT_Stack,
     VCT_SearchInput, VCT_Modal, VCT_Input, VCT_Field, VCT_Tabs,
-    VCT_ConfirmDialog, VCT_PageContainer, VCT_StatRow, VCT_EmptyState
+    VCT_ConfirmDialog, VCT_EmptyState
 } from '../components/vct-ui'
 import type { StatItem } from '../components/VCT_StatRow'
 import { VCT_Icons } from '../components/vct-icons'
 import { usePagination } from '../hooks/usePagination'
+import { AdminPageShell, useShellToast } from './components/AdminPageShell'
+import { useAdminFetch } from './hooks/useAdminAPI'
+import { useAdminMutation } from './hooks/useAdminMutation'
+import { useFormValidation } from './hooks/useFormValidation'
+import { AdminGuard } from './components/AdminGuard'
+import { useI18n as _useI18n } from '../i18n'
 
 interface RefItem {
     id: string; code: string; name_vi: string; name_en: string
@@ -60,22 +66,24 @@ const MOCK_REF_TABLES: RefTable[] = [
 
 const SkeletonRow = () => (<tr className="animate-pulse"><td className="p-4"><div className="h-4 w-6 bg-(--vct-bg-card) rounded mx-auto" /></td><td className="p-4"><div className="h-5 w-16 bg-(--vct-bg-card) rounded" /></td><td className="p-4"><div className="h-4 w-28 bg-(--vct-bg-card) rounded" /></td><td className="p-4"><div className="h-4 w-24 bg-(--vct-bg-card) rounded" /></td><td className="p-4"><div className="h-5 w-16 bg-(--vct-bg-card) rounded mx-auto" /></td><td className="p-4"><div className="h-4 w-12 bg-(--vct-bg-card) rounded mx-auto" /></td></tr>)
 
-export const Page_admin_reference_data = () => {
-    const [tables, setTables] = useState<RefTable[]>(MOCK_REF_TABLES)
+export const Page_admin_reference_data = () => (
+    <AdminGuard>
+        <Page_admin_reference_data_Content />
+    </AdminGuard>
+)
+
+const Page_admin_reference_data_Content = () => {
+    const { data: fetchedTables, isLoading } = useAdminFetch<RefTable[]>('/admin/reference-data', { mockData: MOCK_REF_TABLES })
+    const [tables, setTables] = useState<RefTable[]>([])
     const [activeTable, setActiveTable] = useState(MOCK_REF_TABLES[0]?.key || '')
     const [search, setSearch] = useState('')
     const [showModal, setShowModal] = useState(false)
     const [editingItem, setEditingItem] = useState<RefItem | null>(null)
     const [deleteTarget, setDeleteTarget] = useState<RefItem | null>(null)
-    const [toast, setToast] = useState({ show: false, msg: '', type: 'success' })
     const [form, setForm] = useState({ code: '', name_vi: '', name_en: '', sort_order: 0, metadata: '{}' })
-    const [isLoading, setIsLoading] = useState(true)
+    const { showToast } = useShellToast()
 
-    React.useEffect(() => { const t = setTimeout(() => setIsLoading(false), 800); return () => clearTimeout(t) }, [])
-
-    const showToast = useCallback((msg: string, type = 'success') => {
-        setToast({ show: true, msg, type }); setTimeout(() => setToast(p => ({ ...p, show: false })), 3500)
-    }, [])
+    React.useEffect(() => { if (fetchedTables) setTables(fetchedTables) }, [fetchedTables])
 
     const currentTable = useMemo(() => tables.find(t => t.key === activeTable), [tables, activeTable])
 
@@ -95,8 +103,31 @@ export const Page_admin_reference_data = () => {
     const openAdd = () => { setEditingItem(null); setForm({ code: '', name_vi: '', name_en: '', sort_order: (currentTable?.items.length || 0) + 1, metadata: '{}' }); setShowModal(true) }
     const openEdit = (item: RefItem) => { setEditingItem(item); setForm({ code: item.code, name_vi: item.name_vi, name_en: item.name_en, sort_order: item.sort_order, metadata: item.metadata }); setShowModal(true) }
 
-    const handleSave = () => {
-        if (!form.code || !form.name_vi) { showToast('Vui lòng nhập mã và tên', 'error'); return }
+    const { mutate: mutateSave, isSubmitting: _isSaving } = useAdminMutation<RefItem, Partial<RefItem>>(
+        `/admin/reference-data/${activeTable}`,
+        {
+            method: editingItem ? 'PUT' : 'POST',
+            onError: () => showToast('Lỗi khi lưu, đã cập nhật cục bộ', 'warning'),
+        }
+    )
+    const { mutate: mutateDelete, isSubmitting: _isDeleting } = useAdminMutation<void, { id: string }>(
+        `/admin/reference-data/${activeTable}`,
+        {
+            method: 'DELETE',
+            onError: () => showToast('Lỗi khi xóa, đã cập nhật cục bộ', 'warning'),
+        }
+    )
+
+    const { validate, getFieldError, clearErrors } = useFormValidation({
+        code: { rules: [{ type: 'required', message: 'Mã là bắt buộc' }, { type: 'maxLength', value: 30 }] },
+        name_vi: { rules: [{ type: 'required', message: 'Tên tiếng Việt là bắt buộc' }, { type: 'maxLength', value: 100 }] },
+    })
+
+    const handleSave = async () => {
+        if (!validate({ code: form.code, name_vi: form.name_vi })) return
+        // Attempt API call (will fail gracefully with mock backend)
+        await mutateSave({ ...form, id: editingItem?.id } as Partial<RefItem>)
+        // Always update local state for immediate UX
         setTables(prev => prev.map(t => {
             if (t.key !== activeTable) return t
             if (editingItem) return { ...t, items: t.items.map(it => it.id === editingItem.id ? { ...it, ...form, is_active: true } : it) }
@@ -105,29 +136,30 @@ export const Page_admin_reference_data = () => {
         showToast(editingItem ? `Đã cập nhật "${form.name_vi}"` : `Đã thêm "${form.name_vi}"`); setShowModal(false)
     }
 
-    const handleDelete = () => {
+    const handleDelete = async () => {
         if (!deleteTarget) return
+        await mutateDelete({ id: deleteTarget.id })
         setTables(prev => prev.map(t => { if (t.key !== activeTable) return t; return { ...t, items: t.items.map(it => it.id === deleteTarget.id ? { ...it, is_active: false } : it) } }))
         showToast(`Đã ẩn "${deleteTarget.name_vi}"`); setDeleteTarget(null)
     }
 
-    return (
-        <VCT_PageContainer size="wide" animated>
-            <VCT_Toast isVisible={toast.show} message={toast.msg} type={toast.type} onClose={() => setToast(p => ({ ...p, show: false }))} />
-            <div className="mb-6 flex flex-wrap items-start justify-between gap-4">
-                <div>
-                    <h1 className="text-2xl font-bold tracking-tight text-(--vct-text-primary)">Dữ Liệu Tham Chiếu</h1>
-                    <p className="text-sm text-(--vct-text-secondary) mt-1">Quản lý bảng lookup: cấp đai, hạng cân, tiêu chí, lứa tuổi...</p>
-                </div>
-                <VCT_Button icon={<VCT_Icons.Plus size={16} />} onClick={openAdd}>Thêm mục mới</VCT_Button>
-            </div>
+    const stats: StatItem[] = [
+        { label: 'Bảng TC', value: tables.length, icon: <VCT_Icons.Layers size={18} />, color: '#8b5cf6' },
+        { label: 'Tổng mục', value: totalItems, icon: <VCT_Icons.List size={18} />, color: '#0ea5e9' },
+        { label: 'Hoạt động', value: tables.reduce((s,t) => s + t.items.filter(i => i.is_active).length, 0), icon: <VCT_Icons.CheckCircle size={18} />, color: '#10b981' },
+        { label: 'Đã ẩn', value: tables.reduce((s,t) => s + t.items.filter(i => !i.is_active).length, 0), icon: <VCT_Icons.Eye size={18} />, color: '#f59e0b' },
+    ]
 
-            <VCT_StatRow items={[
-                { label: 'Bảng TC', value: tables.length, icon: <VCT_Icons.Layers size={18} />, color: '#8b5cf6' },
-                { label: 'Tổng mục', value: totalItems, icon: <VCT_Icons.List size={18} />, color: '#0ea5e9' },
-                { label: 'Hoạt động', value: tables.reduce((s,t) => s + t.items.filter(i => i.is_active).length, 0), icon: <VCT_Icons.CheckCircle size={18} />, color: '#10b981' },
-                { label: 'Đã ẩn', value: tables.reduce((s,t) => s + t.items.filter(i => !i.is_active).length, 0), icon: <VCT_Icons.Eye size={18} />, color: '#f59e0b' },
-            ] as StatItem[]} className="mb-8" />
+    return (
+        <AdminPageShell
+            title="Dữ Liệu Tham Chiếu"
+            subtitle="Quản lý bảng lookup: cấp đai, hạng cân, tiêu chí, lứa tuổi..."
+            icon={<VCT_Icons.Layers size={28} className="text-[#8b5cf6]" />}
+            stats={stats}
+            actions={
+                <VCT_Button icon={<VCT_Icons.Plus size={16} />} onClick={openAdd}>Thêm mục mới</VCT_Button>
+            }
+        >
 
             <div className="mb-6 border-b border-(--vct-border-subtle) pb-4 flex flex-wrap items-center justify-between gap-4">
                 <VCT_Tabs tabs={tables.map(t => ({ key: t.key, label: `${t.label} (${t.items.length})` }))} activeTab={activeTable} onChange={setActiveTable} />
@@ -152,8 +184,8 @@ export const Page_admin_reference_data = () => {
                                 <td className="p-4 text-sm text-(--vct-text-secondary)">{item.name_en}</td>
                                 <td className="p-4 text-center"><VCT_Badge text={item.is_active ? 'Hoạt động' : 'Đã ẩn'} type={item.is_active ? 'success' : 'neutral'} /></td>
                                 <td className="p-4 text-center"><VCT_Stack direction="row" gap={4} justify="center">
-                                    <button onClick={() => openEdit(item)} className="p-1.5 text-(--vct-text-tertiary) hover:text-white opacity-0 group-hover:opacity-100 transition-all rounded-md hover:bg-white/10"><VCT_Icons.Edit size={14} /></button>
-                                    <button onClick={() => setDeleteTarget(item)} className="p-1.5 text-[#ef4444] opacity-0 group-hover:opacity-100 transition-all rounded-md hover:bg-[#ef444420]"><VCT_Icons.Trash size={14} /></button>
+                                    <button onClick={() => openEdit(item)} aria-label={`Sửa ${item.name_vi}`} className="p-1.5 text-(--vct-text-tertiary) hover:text-white opacity-0 group-hover:opacity-100 transition-all rounded-md hover:bg-white/10"><VCT_Icons.Edit size={14} /></button>
+                                    <button onClick={() => setDeleteTarget(item)} aria-label={`Xóa ${item.name_vi}`} className="p-1.5 text-[#ef4444] opacity-0 group-hover:opacity-100 transition-all rounded-md hover:bg-[#ef444420]"><VCT_Icons.Trash size={14} /></button>
                                 </VCT_Stack></td>
                             </tr>
                         ))}
@@ -173,11 +205,11 @@ export const Page_admin_reference_data = () => {
                 </div>
             )}
 
-            <VCT_Modal isOpen={showModal} onClose={() => setShowModal(false)} title={editingItem ? 'Chỉnh sửa' : 'Thêm mục mới'} width="550px" footer={<><VCT_Button variant="secondary" onClick={() => setShowModal(false)}>Hủy</VCT_Button><VCT_Button onClick={handleSave}>{editingItem ? 'Cập nhật' : 'Thêm'}</VCT_Button></>}>
+            <VCT_Modal isOpen={showModal} onClose={() => { setShowModal(false); clearErrors() }} title={editingItem ? 'Chỉnh sửa' : 'Thêm mục mới'} width="550px" footer={<><VCT_Button variant="secondary" onClick={() => { setShowModal(false); clearErrors() }}>Hủy</VCT_Button><VCT_Button onClick={handleSave}>{editingItem ? 'Cập nhật' : 'Thêm'}</VCT_Button></>}>
                 <VCT_Stack gap={16}>
-                    <VCT_Field label="Mã (code) *"><VCT_Input value={form.code} onChange={(e:any) => setForm({...form, code: e.target.value.toUpperCase()})} placeholder="VD: BLACK_1" /></VCT_Field>
+                    <VCT_Field label="Mã (code) *" error={getFieldError('code')}><VCT_Input value={form.code} onChange={(e:any) => setForm({...form, code: e.target.value.toUpperCase()})} placeholder="VD: BLACK_1" /></VCT_Field>
                     <VCT_Stack direction="row" gap={16}>
-                        <VCT_Field label="Tên Tiếng Việt *" className="flex-1"><VCT_Input value={form.name_vi} onChange={(e:any) => setForm({...form, name_vi: e.target.value})} placeholder="VD: Đai Đen 1 Đẳng" /></VCT_Field>
+                        <VCT_Field label="Tên Tiếng Việt *" className="flex-1" error={getFieldError('name_vi')}><VCT_Input value={form.name_vi} onChange={(e:any) => setForm({...form, name_vi: e.target.value})} placeholder="VD: Đai Đen 1 Đẳng" /></VCT_Field>
                         <VCT_Field label="Tên English" className="flex-1"><VCT_Input value={form.name_en} onChange={(e:any) => setForm({...form, name_en: e.target.value})} placeholder="VD: Black Belt 1st Dan" /></VCT_Field>
                     </VCT_Stack>
                     <VCT_Field label="Thứ tự"><VCT_Input type="number" value={form.sort_order} onChange={(e:any) => setForm({...form, sort_order: parseInt(e.target.value)||0})} /></VCT_Field>
@@ -185,6 +217,6 @@ export const Page_admin_reference_data = () => {
             </VCT_Modal>
 
             <VCT_ConfirmDialog isOpen={!!deleteTarget} onClose={() => setDeleteTarget(null)} onConfirm={handleDelete} title="Ẩn mục tham chiếu" message={`Ẩn "${deleteTarget?.name_vi}"? Mục sẽ không bị xóa, chỉ ẩn khỏi danh sách.`} confirmLabel="Ẩn mục này" />
-        </VCT_PageContainer>
+        </AdminPageShell>
     )
 }

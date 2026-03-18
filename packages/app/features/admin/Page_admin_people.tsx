@@ -3,15 +3,18 @@
 import * as React from 'react'
 import { useState, useMemo } from 'react'
 import {
-    VCT_Badge, VCT_Button, VCT_Stack, VCT_Toast,
-    VCT_SearchInput, VCT_Select, VCT_ConfirmDialog, VCT_AvatarLetter, VCT_EmptyState, VCT_Tabs,
-    VCT_PageContainer, VCT_StatRow
+    VCT_Badge, VCT_Button, VCT_Stack,
+    VCT_SearchInput, VCT_Select, VCT_ConfirmDialog, VCT_AvatarLetter, VCT_Tabs,
 } from '../components/vct-ui'
 import type { StatItem } from '../components/VCT_StatRow'
 import { VCT_Icons } from '../components/vct-icons'
 import { VCT_Drawer } from '../components/VCT_Drawer'
-import { AdminSkeletonRow } from './components/AdminSkeletonRow'
-import { useAdminToast } from './hooks/useAdminToast'
+import { AdminDataTable } from './components/AdminDataTable'
+import { AdminPageShell, useShellToast } from './components/AdminPageShell'
+import { useAdminFetch } from './hooks/useAdminAPI'
+import { useDebounce } from '../hooks/useDebounce'
+import { AdminGuard } from './components/AdminGuard'
+import { useI18n as _useI18n } from '../i18n'
 
 // ════════════════════════════════════════
 // TYPES & MOCK DATA
@@ -55,29 +58,49 @@ const MOCK_PEOPLE: Person[] = [
 // ════════════════════════════════════════
 // MAIN COMPONENT
 // ════════════════════════════════════════
-export const Page_admin_people = () => {
-    const [people, setPeople] = useState(MOCK_PEOPLE)
+export const Page_admin_people = () => (
+    <AdminGuard>
+        <Page_admin_people_Content />
+    </AdminGuard>
+)
+
+const Page_admin_people_Content = () => {
+    const { data: fetchedPeople, isLoading } = useAdminFetch<Person[]>('/admin/people', { mockData: MOCK_PEOPLE })
+    const [people, setPeople] = useState<Person[]>([])
     const [tab, setTab] = useState<'athlete' | 'coach' | 'referee'>('athlete')
     const [search, setSearch] = useState('')
+    const debouncedSearch = useDebounce(search, 300)
     const [filterStatus, setFilterStatus] = useState('all')
-    const [isLoading, setIsLoading] = useState(true)
     const [selected, setSelected] = useState<Person | null>(null)
     const [showApproveConfirm, setShowApproveConfirm] = useState<string | null>(null)
-    const { toast, showToast, dismiss } = useAdminToast()
+    const { showToast } = useShellToast()
 
-    React.useEffect(() => {
-        const t = setTimeout(() => setIsLoading(false), 800)
-        return () => clearTimeout(t)
-    }, [])
+    const [sortCol, setSortCol] = useState('name')
+    const [sortDir, setSortDir] = useState<'asc' | 'desc'>('asc')
+
+    React.useEffect(() => { if (fetchedPeople) setPeople(fetchedPeople) }, [fetchedPeople])
 
     const filtered = useMemo(() => {
-        return people.filter(p => {
+        let v = people.filter(p => {
             const matchType = p.type === tab
-            const matchSearch = p.name.toLowerCase().includes(search.toLowerCase()) || p.id.toLowerCase().includes(search.toLowerCase()) || p.club.toLowerCase().includes(search.toLowerCase())
+            const matchSearch = p.name.toLowerCase().includes(debouncedSearch.toLowerCase()) || p.id.toLowerCase().includes(debouncedSearch.toLowerCase()) || p.club.toLowerCase().includes(debouncedSearch.toLowerCase())
             const matchStatus = filterStatus === 'all' || p.status === filterStatus
             return matchType && matchSearch && matchStatus
         })
-    }, [people, tab, search, filterStatus])
+        
+        v = [...v].sort((a, b) => {
+            const valA = String((a as any)[sortCol] || '').toLowerCase()
+            const valB = String((b as any)[sortCol] || '').toLowerCase()
+            return sortDir === 'asc' ? valA.localeCompare(valB) : valB.localeCompare(valA)
+        })
+
+        return v
+    }, [people, tab, debouncedSearch, filterStatus, sortCol, sortDir])
+
+    const handleSort = (key: string) => {
+        if (sortCol === key) setSortDir(d => d === 'asc' ? 'desc' : 'asc')
+        else { setSortCol(key); setSortDir('asc') }
+    }
 
     const countByType = (type: string) => people.filter(p => p.type === type).length
     const countPending = people.filter(p => p.status === 'pending').length
@@ -112,18 +135,12 @@ export const Page_admin_people = () => {
     ]
 
     return (
-        <VCT_PageContainer size="wide" animated>
-            <VCT_Toast isVisible={toast.show} message={toast.msg} type={toast.type} onClose={dismiss} />
-
-            <div className="mb-6">
-                <h1 className="text-2xl font-bold tracking-tight text-(--vct-text-primary) flex items-center gap-3">
-                    <VCT_Icons.Users size={28} className="text-[#0ea5e9]" /> Quản lý Nhân sự
-                </h1>
-                <p className="text-sm text-(--vct-text-secondary) mt-1">VĐV, Huấn luyện viên, và Trọng tài toàn hệ thống</p>
-            </div>
-
-            <VCT_StatRow items={stats} className="mb-6" />
-
+        <AdminPageShell
+            title="Quản lý Nhân sự"
+            subtitle="VĐV, Huấn luyện viên, và Trọng tài toàn hệ thống"
+            icon={<VCT_Icons.Users size={28} className="text-[#0ea5e9]" />}
+            stats={stats}
+        >
             {/* ── Tabs ── */}
             <VCT_Tabs tabs={tabItems} activeTab={tab} onChange={v => setTab(v as typeof tab)} className="mb-6" />
 
@@ -134,58 +151,86 @@ export const Page_admin_people = () => {
             </div>
 
             {/* ── Table ── */}
-            <div className="bg-(--vct-bg-elevated) border border-(--vct-border-strong) rounded-2xl overflow-hidden mb-6">
-                <div className="overflow-x-auto">
-                    <table className="w-full text-sm">
-                        <thead>
-                            <tr className="border-b border-(--vct-border-subtle)">
-                                <th className="text-left p-4 text-(--vct-text-tertiary) font-bold text-xs uppercase tracking-wider">Họ tên</th>
-                                <th className="text-left p-4 text-(--vct-text-tertiary) font-bold text-xs uppercase tracking-wider">Mã</th>
-                                <th className="text-left p-4 text-(--vct-text-tertiary) font-bold text-xs uppercase tracking-wider">{tab === 'athlete' ? 'CLB' : 'Chuyên môn'}</th>
-                                <th className="text-left p-4 text-(--vct-text-tertiary) font-bold text-xs uppercase tracking-wider">Tỉnh/TP</th>
-                                <th className="text-left p-4 text-(--vct-text-tertiary) font-bold text-xs uppercase tracking-wider">{tab === 'athlete' ? 'Đai' : 'Cấp chứng nhận'}</th>
-                                <th className="text-center p-4 text-(--vct-text-tertiary) font-bold text-xs uppercase tracking-wider">Trạng thái</th>
-                                <th className="text-center p-4 text-(--vct-text-tertiary) font-bold text-xs uppercase tracking-wider">Thao tác</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {isLoading ? [...Array(5)].map((_, i) => <AdminSkeletonRow key={i} cols={7} />) : filtered.length === 0 ? (
-                                <tr><td colSpan={7}><VCT_EmptyState icon={<VCT_Icons.Users size={40} />} title="Không tìm thấy" description="Thử thay đổi bộ lọc" /></td></tr>
-                            ) : filtered.map(p => (
-                                <tr key={p.id} className="border-b border-(--vct-border-subtle) hover:bg-(--vct-bg-base) cursor-pointer transition-colors" onClick={() => setSelected(p)}>
-                                    <td className="p-4">
-                                        <div className="flex items-center gap-3">
-                                            <VCT_AvatarLetter name={p.name} size={36} />
-                                            <div>
-                                                <div className="font-bold text-(--vct-text-primary)">{p.name}</div>
-                                                <div className="text-xs text-(--vct-text-tertiary)">{p.gender} · {p.dob}</div>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td className="p-4 font-mono text-xs text-(--vct-text-tertiary)">{p.id}</td>
-                                    <td className="p-4 text-(--vct-text-secondary)">{p.type === 'athlete' ? p.club : p.specialization}</td>
-                                    <td className="p-4 text-(--vct-text-secondary)">{p.province}</td>
-                                    <td className="p-4">
-                                        {p.type === 'athlete' && p.belt ? (
-                                            <VCT_Badge type={BELT_BADGE[p.belt] ?? 'neutral'} text={`${p.belt} · ${p.weight_class}`} />
-                                        ) : (
-                                            <span className="text-(--vct-text-secondary)">{p.cert_level ?? '-'}</span>
-                                        )}
-                                    </td>
-                                    <td className="p-4 text-center"><VCT_Badge type={STATUS_BADGE[p.status]?.type ?? 'neutral'} text={STATUS_BADGE[p.status]?.label ?? p.status} /></td>
-                                    <td className="p-4 text-center" onClick={e => e.stopPropagation()}>
-                                        <VCT_Stack direction="row" gap={4} justify="center">
-                                            {p.status === 'pending' && <VCT_Button size="sm" variant="ghost" onClick={() => setShowApproveConfirm(p.id)} icon={<VCT_Icons.CheckCircle size={14} />}>Duyệt</VCT_Button>}
-                                            {p.status === 'active' && <VCT_Button size="sm" variant="ghost" onClick={() => handleSuspend(p.id)} icon={<VCT_Icons.Close size={14} />}>Ngưng</VCT_Button>}
-                                            {p.status === 'suspended' && <VCT_Button size="sm" variant="ghost" onClick={() => handleReactivate(p.id)} icon={<VCT_Icons.Refresh size={14} />}>Kích hoạt</VCT_Button>}
-                                        </VCT_Stack>
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+            <AdminDataTable
+                data={filtered}
+                isLoading={isLoading}
+                sortBy={sortCol}
+                sortDir={sortDir}
+                onSort={handleSort}
+                rowKey={p => p.id}
+                emptyTitle="Không tìm thấy"
+                emptyDescription="Thử thay đổi bộ lọc"
+                emptyIcon="👥"
+                columns={[
+                    {
+                        key: 'name',
+                        label: 'Họ tên',
+                        sortable: true,
+                        render: (p) => (
+                            <div className="flex items-center gap-3">
+                                <VCT_AvatarLetter name={p.name} size={36} />
+                                <div>
+                                    <div className="font-bold text-(--vct-text-primary)">{p.name}</div>
+                                    <div className="text-xs text-(--vct-text-tertiary)">{p.gender} · {p.dob}</div>
+                                </div>
+                            </div>
+                        )
+                    },
+                    {
+                        key: 'id',
+                        label: 'Mã',
+                        sortable: true,
+                        render: (p) => <div className="font-mono text-xs text-(--vct-text-tertiary)">{p.id}</div>
+                    },
+                    {
+                        key: 'type',
+                        label: tab === 'athlete' ? 'CLB' : 'Chuyên môn',
+                        sortable: true,
+                        render: (p) => <div className="text-(--vct-text-secondary)">{p.type === 'athlete' ? p.club : p.specialization}</div>
+                    },
+                    {
+                        key: 'province',
+                        label: 'Tỉnh/TP',
+                        sortable: true,
+                        render: (p) => <div className="text-(--vct-text-secondary)">{p.province}</div>
+                    },
+                    {
+                        key: 'belt',
+                        label: tab === 'athlete' ? 'Đai' : 'Cấp chứng nhận',
+                        sortable: true,
+                        render: (p) => (
+                            p.type === 'athlete' && p.belt ? (
+                                <VCT_Badge type={BELT_BADGE[p.belt] ?? 'neutral'} text={`${p.belt} · ${p.weight_class}`} />
+                            ) : (
+                                <span className="text-(--vct-text-secondary)">{p.cert_level ?? '-'}</span>
+                            )
+                        )
+                    },
+                    {
+                        key: 'status',
+                        label: 'Trạng thái',
+                        sortable: true,
+                        align: 'center',
+                        render: (p) => <VCT_Badge type={STATUS_BADGE[p.status]?.type ?? 'neutral'} text={STATUS_BADGE[p.status]?.label ?? p.status} />
+                    },
+                    {
+                        key: 'actions',
+                        label: 'Thao tác',
+                        sortable: false,
+                        align: 'center',
+                        render: (p) => (
+                            <div onClick={e => e.stopPropagation()}>
+                                <VCT_Stack direction="row" gap={4} justify="center">
+                                    {p.status === 'pending' && <VCT_Button size="sm" variant="ghost" onClick={() => setShowApproveConfirm(p.id)} icon={<VCT_Icons.CheckCircle size={14} />}>Duyệt</VCT_Button>}
+                                    {p.status === 'active' && <VCT_Button size="sm" variant="ghost" onClick={() => handleSuspend(p.id)} icon={<VCT_Icons.Close size={14} />}>Ngưng</VCT_Button>}
+                                    {p.status === 'suspended' && <VCT_Button size="sm" variant="ghost" onClick={() => handleReactivate(p.id)} icon={<VCT_Icons.Refresh size={14} />}>Kích hoạt</VCT_Button>}
+                                </VCT_Stack>
+                            </div>
+                        )
+                    }
+                ]}
+                onRowClick={setSelected}
+            />
 
             {/* ── Detail Drawer ── */}
             <VCT_Drawer isOpen={!!selected} onClose={() => setSelected(null)} title={selected?.name ?? ''} width={520}>
@@ -236,6 +281,6 @@ export const Page_admin_people = () => {
                 message="Xác nhận duyệt hồ sơ này? Người dùng sẽ được kích hoạt trong hệ thống."
                 confirmLabel="Duyệt"
             />
-        </VCT_PageContainer>
+        </AdminPageShell>
     )
 }

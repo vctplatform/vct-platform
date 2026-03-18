@@ -1,14 +1,19 @@
 'use client'
 
 import * as React from 'react'
-import { useState, useMemo, useCallback } from 'react'
+import { useState, useMemo } from 'react'
 import {
-    VCT_Badge, VCT_Button, VCT_Stack, VCT_Toast,
+    VCT_Badge, VCT_Button, VCT_Stack,
     VCT_SearchInput, VCT_Modal, VCT_Input, VCT_Field,
-    VCT_PageContainer, VCT_StatRow, VCT_ConfirmDialog
+    VCT_ConfirmDialog
 } from '../components/vct-ui'
 import type { StatItem } from '../components/VCT_StatRow'
 import { VCT_Icons } from '../components/vct-icons'
+import { AdminPageShell, useShellToast } from './components/AdminPageShell'
+import { useAdminFetch } from './hooks/useAdminAPI'
+import { useAdminMutation } from './hooks/useAdminMutation'
+import { exportToCSV } from './utils/adminExport'
+import { AdminGuard } from './components/AdminGuard'
 
 interface Role {
     id: string; name: string; code: string; description: string
@@ -47,21 +52,26 @@ const SCOPE_LABELS: Record<string, string> = { SYSTEM: 'Hệ thống', FEDERATIO
 const SkeletonRoleItem = () => (<div className="p-4 rounded-xl border border-(--vct-border-subtle) bg-(--vct-bg-elevated) animate-pulse"><div className="h-4 w-28 bg-(--vct-bg-card) rounded mb-2" /><div className="h-3 w-20 bg-(--vct-bg-card) rounded mb-2" /><div className="h-3 w-full bg-(--vct-bg-card) rounded" /></div>)
 const SkeletonPermGrid = () => (<div className="bg-(--vct-bg-elevated) border border-(--vct-border-strong) rounded-2xl p-6 animate-pulse"><div className="h-6 w-48 bg-(--vct-bg-card) rounded mb-6" />{[...Array(3)].map((_,i)=>(<div key={i} className="mb-6"><div className="h-3 w-20 bg-(--vct-bg-card) rounded mb-3" /><div className="grid grid-cols-2 gap-2">{[...Array(4)].map((_,j)=>(<div key={j} className="h-12 bg-(--vct-bg-base) rounded-xl border border-(--vct-border-subtle)" />))}</div></div>))}</div>)
 
-export const Page_admin_roles = () => {
-    const [roles, setRoles] = useState<Role[]>(MOCK_ROLES)
+export const Page_admin_roles = () => (
+    <AdminGuard>
+        <Page_admin_roles_Content />
+    </AdminGuard>
+)
+
+const Page_admin_roles_Content = () => {
+    const { data: fetchedRoles, isLoading } = useAdminFetch<Role[]>('/admin/roles', { mockData: MOCK_ROLES })
+    const [roles, setRoles] = useState<Role[]>([])
     const [search, setSearch] = useState('')
-    const [selectedRole, setSelectedRole] = useState<Role | null>(MOCK_ROLES[0]!)
+    const [selectedRole, setSelectedRole] = useState<Role | null>(null)
     const [showModal, setShowModal] = useState(false)
-    const [toast, setToast] = useState({ show: false, msg: '', type: 'success' })
+    const { showToast } = useShellToast()
     const [form, setForm] = useState({ name: '', code: '', description: '', scope_type: 'CLUB' })
-    const [isLoading, setIsLoading] = useState(true)
     const [confirmPerm, setConfirmPerm] = useState<{ roleId: string; permKey: string; roleName: string } | null>(null)
 
-    React.useEffect(() => { const t = setTimeout(() => setIsLoading(false), 800); return () => clearTimeout(t) }, [])
+    const { mutate: mutatePerm } = useAdminMutation('/admin/roles/permissions', { onSuccess: () => {} })
+    const { mutate: mutateCreate } = useAdminMutation('/admin/roles/create', { onSuccess: () => {} })
 
-    const showToast = useCallback((msg: string, type = 'success') => {
-        setToast({ show: true, msg, type }); setTimeout(() => setToast(p => ({ ...p, show: false })), 3500)
-    }, [])
+    React.useEffect(() => { if (fetchedRoles) { setRoles(fetchedRoles); if (!selectedRole) setSelectedRole(fetchedRoles[0] ?? null) } }, [fetchedRoles, selectedRole])
 
     const filtered = useMemo(() => {
         if (!search) return roles
@@ -75,8 +85,12 @@ export const Page_admin_roles = () => {
         return m
     }, [])
 
-    const doTogglePerm = (roleId: string, permKey: string) => {
+    const doTogglePerm = async (roleId: string, permKey: string) => {
         const perm = PERMISSIONS.find(p => p.key === permKey)
+        const isAdding = !roles.find(r => r.id === roleId)?.permissions.includes(permKey)
+        
+        await mutatePerm({ roleId, permissions: [permKey], action: isAdding ? 'add' : 'remove' })
+
         setRoles(prev => prev.map(r => {
             if (r.id !== roleId) return r
             const perms = r.permissions.includes(permKey) ? r.permissions.filter(p => p !== permKey) : [...r.permissions, permKey]
@@ -85,8 +99,7 @@ export const Page_admin_roles = () => {
         if (selectedRole?.id === roleId) {
             setSelectedRole(prev => prev ? { ...prev, permissions: prev.permissions.includes(permKey) ? prev.permissions.filter(p => p !== permKey) : [...prev.permissions, permKey] } : prev)
         }
-        const wasAdded = !roles.find(r => r.id === roleId)?.permissions.includes(permKey)
-        showToast(`${wasAdded ? 'Đã thêm' : 'Đã gỡ'} quyền "${perm?.label}"`, wasAdded ? 'success' : 'warning')
+        showToast(`${isAdding ? 'Đã thêm' : 'Đã gỡ'} quyền "${perm?.label}"`, isAdding ? 'success' : 'warning')
     }
 
     const togglePerm = (roleId: string, permKey: string) => {
@@ -95,40 +108,49 @@ export const Page_admin_roles = () => {
         doTogglePerm(roleId, permKey)
     }
 
-    const handleCreate = () => {
+    const handleCreate = async () => {
         if (!form.name || !form.code) { showToast('Vui lòng nhập tên và mã', 'error'); return }
-        setRoles(prev => [...prev, { id: `R-${Math.floor(Math.random()*1000).toString().padStart(3,'0')}`, name: form.name, code: form.code, description: form.description, scope_type: form.scope_type, user_count: 0, permissions: [], is_system: false }])
-        showToast(`Đã tạo vai trò "${form.name}"`); setShowModal(false)
+        const newRole = { id: `R-${Math.floor(Math.random()*1000).toString().padStart(3,'0')}`, name: form.name, code: form.code, description: form.description, scope_type: form.scope_type, user_count: 0, permissions: [], is_system: false }
+        
+        await mutateCreate(newRole)
+        
+        setRoles(prev => [...prev, newRole as Role])
+        showToast(`Đã tạo vai trò "${form.name}"`)
+        setShowModal(false)
     }
 
     const handleExport = () => {
-        const h = 'Vai trò,Mã,Phạm vi,SL,' + PERMISSIONS.map(p => p.key).join(',')
-        const csv = [h, ...roles.map(r => `"${r.name}",${r.code},${SCOPE_LABELS[r.scope_type]},${r.user_count},${PERMISSIONS.map(p => r.permissions.includes(p.key)?'✓':'').join(',')}`)].join('\n')
-        const b = new Blob(['\uFEFF'+csv], { type: 'text/csv;charset=utf-8;' }); const u = URL.createObjectURL(b)
-        const a = document.createElement('a'); a.href = u; a.download = `vct_roles_${new Date().toISOString().slice(0,10)}.csv`; a.click(); URL.revokeObjectURL(u)
+        exportToCSV({
+            headers: ['Vai trò', 'Mã', 'Phạm vi', 'SL', ...PERMISSIONS.map(p => p.key)],
+            rows: roles.map(r => [
+                r.name, r.code, SCOPE_LABELS[r.scope_type] ?? '', String(r.user_count),
+                ...PERMISSIONS.map(p => r.permissions.includes(p.key) ? '✓' : '')
+            ]),
+            filename: `vct_roles_${new Date().toISOString().slice(0, 10)}.csv`,
+        })
         showToast('Đã xuất ma trận phân quyền!')
     }
 
+    const stats: StatItem[] = [
+        { label: 'Vai trò', value: roles.length, icon: <VCT_Icons.Shield size={18} />, color: '#8b5cf6' },
+        { label: 'Người dùng', value: roles.reduce((s,r)=>s+r.user_count,0).toLocaleString(), icon: <VCT_Icons.Users size={18} />, color: '#0ea5e9' },
+        { label: 'Quyền HT', value: PERMISSIONS.length, icon: <VCT_Icons.ShieldCheck size={18} />, color: '#10b981' },
+        { label: 'Tùy chỉnh', value: roles.filter(r => !r.is_system).length, icon: <VCT_Icons.Settings size={18} />, color: '#f59e0b' },
+    ]
+
     return (
-        <VCT_PageContainer size="wide" animated>
-            <VCT_Toast isVisible={toast.show} message={toast.msg} type={toast.type} onClose={() => setToast(p => ({ ...p, show: false }))} />
-            <div className="mb-6 flex flex-wrap items-start justify-between gap-4">
-                <div>
-                    <h1 className="text-2xl font-bold tracking-tight text-(--vct-text-primary)">Phân Quyền & Vai Trò</h1>
-                    <p className="text-sm text-(--vct-text-secondary) mt-1">Quản lý vai trò, phân quyền RBAC trong hệ thống.</p>
-                </div>
+        <AdminPageShell
+            title="Phân Quyền & Vai Trò"
+            subtitle="Quản lý vai trò, phân quyền RBAC trong hệ thống."
+            icon={<VCT_Icons.Shield size={28} className="text-[#8b5cf6]" />}
+            stats={stats}
+            actions={
                 <VCT_Stack direction="row" gap={12}>
                     <VCT_Button variant="outline" icon={<VCT_Icons.Download size={16} />} onClick={handleExport}>Xuất ma trận</VCT_Button>
                     <VCT_Button icon={<VCT_Icons.Plus size={16} />} onClick={() => { setForm({ name:'', code:'', description:'', scope_type:'CLUB' }); setShowModal(true) }}>Tạo Vai Trò</VCT_Button>
                 </VCT_Stack>
-            </div>
-
-            <VCT_StatRow items={[
-                { label: 'Vai trò', value: roles.length, icon: <VCT_Icons.Shield size={18} />, color: '#8b5cf6' },
-                { label: 'Người dùng', value: roles.reduce((s,r)=>s+r.user_count,0).toLocaleString(), icon: <VCT_Icons.Users size={18} />, color: '#0ea5e9' },
-                { label: 'Quyền HT', value: PERMISSIONS.length, icon: <VCT_Icons.ShieldCheck size={18} />, color: '#10b981' },
-                { label: 'Tùy chỉnh', value: roles.filter(r => !r.is_system).length, icon: <VCT_Icons.Settings size={18} />, color: '#f59e0b' },
-            ] as StatItem[]} className="mb-8" />
+            }
+        >
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <div className="lg:col-span-1">
@@ -145,7 +167,7 @@ export const Page_admin_roles = () => {
                                 <div className="flex items-center gap-3 mt-2 text-[10px] text-(--vct-text-tertiary)">
                                     <span className="flex items-center gap-1"><VCT_Icons.Users size={10} /> {role.user_count}</span>
                                     <span className="flex items-center gap-1"><VCT_Icons.Shield size={10} /> {role.permissions.length} quyền</span>
-                                    <span className="flex items-center gap-1"><VCT_Icons.Layers size={10} /> {SCOPE_LABELS[role.scope_type]}</span>
+                                    <span className="flex items-center gap-1"><VCT_Icons.Layers size={10} /> {SCOPE_LABELS[role.scope_type] ?? 'Khác'}</span>
                                 </div>
                             </div>
                         ))}
@@ -174,13 +196,13 @@ export const Page_admin_roles = () => {
 
             <VCT_Modal isOpen={showModal} onClose={() => setShowModal(false)} title="Tạo vai trò mới" width="500px" footer={<><VCT_Button variant="secondary" onClick={() => setShowModal(false)}>Hủy</VCT_Button><VCT_Button onClick={handleCreate}>Tạo</VCT_Button></>}>
                 <VCT_Stack gap={16}>
-                    <VCT_Field label="Tên *"><VCT_Input value={form.name} onChange={(e:any) => setForm({...form, name: e.target.value})} placeholder="VD: Giám sát KT" /></VCT_Field>
-                    <VCT_Field label="Mã *"><VCT_Input value={form.code} onChange={(e:any) => setForm({...form, code: e.target.value.toUpperCase()})} placeholder="VD: TECH_SUPERVISOR" /></VCT_Field>
-                    <VCT_Field label="Mô tả"><VCT_Input value={form.description} onChange={(e:any) => setForm({...form, description: e.target.value})} /></VCT_Field>
+                    <VCT_Field label="Tên *"><VCT_Input value={form.name} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setForm({...form, name: e.target.value})} placeholder="VD: Giám sát KT" /></VCT_Field>
+                    <VCT_Field label="Mã *"><VCT_Input value={form.code} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setForm({...form, code: e.target.value.toUpperCase()})} placeholder="VD: TECH_SUPERVISOR" /></VCT_Field>
+                    <VCT_Field label="Mô tả"><VCT_Input value={form.description} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setForm({...form, description: e.target.value})} /></VCT_Field>
                 </VCT_Stack>
             </VCT_Modal>
 
             <VCT_ConfirmDialog isOpen={!!confirmPerm} onClose={() => setConfirmPerm(null)} onConfirm={() => { if (confirmPerm) doTogglePerm(confirmPerm.roleId, confirmPerm.permKey); setConfirmPerm(null) }} title="Thay đổi quyền admin" message={`Thay đổi quyền admin cho "${confirmPerm?.roleName}". Ảnh hưởng bảo mật. Tiếp tục?`} confirmLabel="Xác nhận" />
-        </VCT_PageContainer>
+        </AdminPageShell>
     )
 }

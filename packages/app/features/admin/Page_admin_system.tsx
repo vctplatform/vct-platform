@@ -2,17 +2,22 @@
 
 import * as React from 'react'
 import { useState, useMemo } from 'react'
-import { useAdminToast } from './hooks/useAdminToast'
-import { exportToCSV } from './utils/adminExport'
 import {
-    VCT_Badge, VCT_Button, VCT_Stack, VCT_Toast,
-    VCT_PageContainer, VCT_StatRow, VCT_Modal, VCT_Input, VCT_Field,
+    VCT_Badge, VCT_Button, VCT_Stack,
+    VCT_Modal, VCT_Input, VCT_Field,
     VCT_ConfirmDialog
 } from '../components/vct-ui'
 import type { StatItem } from '../components/VCT_StatRow'
 import { VCT_Icons } from '../components/vct-icons'
 import { VCT_Drawer } from '../components/VCT_Drawer'
 import { VCT_Timeline } from '../components/VCT_Timeline'
+import { AdminPageShell, useShellToast } from './components/AdminPageShell'
+import { useAdminFetch } from './hooks/useAdminAPI'
+import { useAdminMutation } from './hooks/useAdminMutation'
+import { exportToCSV } from './utils/adminExport'
+import { AdminDataTable } from './components/AdminDataTable'
+import { AdminGuard } from './components/AdminGuard'
+import './admin.module.css'
 import type { TimelineEvent } from '../components/VCT_Timeline'
 
 // ════════════════════════════════════════
@@ -97,14 +102,6 @@ const SkeletonMetricGrid = ({ title, color }: { title: string; color: string }) 
     </div>
 )
 
-const SkeletonConfigRow = () => (
-    <tr>
-        <td className="p-3"><div className="h-4 w-28 bg-(--vct-bg-elevated) rounded animate-pulse" /></td>
-        <td className="p-3"><div className="h-4 w-16 bg-(--vct-bg-elevated) rounded animate-pulse" /></td>
-        <td className="p-3"><div className="h-4 w-40 bg-(--vct-bg-elevated) rounded animate-pulse" /></td>
-        <td className="p-3"><div className="h-4 w-6 bg-(--vct-bg-elevated) rounded animate-pulse" /></td>
-    </tr>
-)
 
 const SkeletonBackupItem = () => (
     <div className="flex items-center justify-between p-3 bg-(--vct-bg-base) rounded-xl border border-(--vct-border-subtle)">
@@ -147,10 +144,31 @@ const MetricGrid = ({ title, icon, metrics, color }: { title: string; icon: Reac
 // ════════════════════════════════════════
 // MAIN COMPONENT
 // ════════════════════════════════════════
-export const Page_admin_system = () => {
+// Add GlobalStyle helper to style the table hover states when using AdminDataTable
+const GlobalStyle = () => (
+    <React.Fragment>
+        <style dangerouslySetInnerHTML={{ __html: `
+            .admin-table-row:hover .admin-row-action {
+                opacity: 1 !important;
+            }
+            .admin-row-action {
+                opacity: 0;
+                transition: opacity 0.2s ease;
+            }
+        `}} />
+    </React.Fragment>
+)
+
+export const Page_admin_system = () => (
+    <AdminGuard>
+        <Page_admin_system_Content />
+    </AdminGuard>
+)
+
+const Page_admin_system_Content = () => {
     const [configParams, setConfigParams] = useState(INITIAL_CONFIG_PARAMS)
     const [backups, setBackups] = useState(INITIAL_BACKUP_HISTORY)
-    const { toast, showToast, dismiss } = useAdminToast()
+    const { showToast } = useShellToast()
     const [showEditModal, setShowEditModal] = useState(false)
     const [editingParam, setEditingParam] = useState<ConfigParam | null>(null)
     const [editValue, setEditValue] = useState('')
@@ -158,17 +176,37 @@ export const Page_admin_system = () => {
     const [confirmBackup, setConfirmBackup] = useState(false)
     const [confirmClearCache, setConfirmClearCache] = useState(false)
     const [confirmReset, setConfirmReset] = useState<ConfigParam | null>(null)
-    const [isLoading, setIsLoading] = useState(true)
+    const { isLoading } = useAdminFetch<null>('/admin/system/config', { mockData: null })
     const [drawerParam, setDrawerParam] = useState<ConfigParam | null>(null)
-    const [configSearch, setConfigSearch] = useState('')
+    const [search, setSearch] = useState('')
+    const [sortCol, setSortCol] = useState<string>('key')
+    const [sortDir, setSortDir] = useState<'asc' | 'desc'>('asc')
     const currentEnv = 'development' as 'development' | 'staging' | 'production'
 
-    const modifiedCount = useMemo(() => configParams.filter(p => p.value !== p.defaultValue).length, [configParams])
+    const filteredParams = useMemo(() => {
+        let filtered = configParams
+        if (search) {
+            const q = search.toLowerCase()
+            filtered = filtered.filter(p => p.key.toLowerCase().includes(q) || p.description.toLowerCase().includes(q))
+        }
 
-    React.useEffect(() => {
-        const t = setTimeout(() => setIsLoading(false), 800)
-        return () => clearTimeout(t)
-    }, [])
+        return [...filtered].sort((a, b) => {
+            const valA = String((a as any)[sortCol] || '').toLowerCase()
+            const valB = String((b as any)[sortCol] || '').toLowerCase()
+            return sortDir === 'asc' ? valA.localeCompare(valB) : valB.localeCompare(valA)
+        })
+    }, [configParams, search, sortCol, sortDir])
+
+    const handleSort = (key: string) => {
+        if (sortCol === key) {
+            setSortDir(d => d === 'asc' ? 'desc' : 'asc')
+        } else {
+            setSortCol(key)
+            setSortDir('asc')
+        }
+    }
+
+    const modifiedCount = useMemo(() => configParams.filter(p => p.value !== p.defaultValue).length, [configParams])
 
     const validateValue = (param: ConfigParam, val: string): string => {
         if (param.type === 'boolean') return ''
@@ -189,16 +227,31 @@ export const Page_admin_system = () => {
         setShowEditModal(true)
     }
 
-    const handleSaveParam = () => {
+    const { mutate: mutateConfig } = useAdminMutation<ConfigParam, { key: string; value: string }>(
+        '/admin/system/config',
+        { method: 'PATCH', onError: () => showToast('Lỗi API, đã cập nhật cục bộ', 'warning') }
+    )
+    const { mutate: mutateBackup } = useAdminMutation<void>(
+        '/admin/system/backup',
+        { method: 'POST', onError: () => showToast('Lỗi API, backup giả lập', 'warning') }
+    )
+    const { mutate: mutateClearCache } = useAdminMutation<void>(
+        '/admin/system/cache/clear',
+        { method: 'POST', onError: () => showToast('Lỗi API, đã xóa cache cục bộ', 'warning') }
+    )
+
+    const handleSaveParam = async () => {
         if (!editingParam) return
         const err = validateValue(editingParam, editValue)
         if (err) { setEditError(err); return }
+        await mutateConfig({ key: editingParam.key, value: editValue })
         setConfigParams(prev => prev.map(p => p.key === editingParam.key ? { ...p, value: editValue } : p))
         showToast(`Đã cập nhật "${editingParam.key}" = ${editValue}`)
         setShowEditModal(false)
     }
 
-    const handleResetParam = (param: ConfigParam) => {
+    const handleResetParam = async (param: ConfigParam) => {
+        await mutateConfig({ key: param.key, value: param.defaultValue })
         setConfigParams(prev => prev.map(p => p.key === param.key ? { ...p, value: p.defaultValue } : p))
         showToast(`Đã khôi phục "${param.key}" về mặc định: ${param.defaultValue}`)
         setConfirmReset(null)
@@ -207,7 +260,8 @@ export const Page_admin_system = () => {
         }
     }
 
-    const handleBackup = () => {
+    const handleBackup = async () => {
+        await mutateBackup()
         const newBackup = {
             id: `BK-${Math.floor(Math.random() * 1000).toString().padStart(3, '0')}`,
             time: new Date().toLocaleString('vi-VN'),
@@ -220,7 +274,8 @@ export const Page_admin_system = () => {
         setConfirmBackup(false)
     }
 
-    const handleClearCache = () => {
+    const handleClearCache = async () => {
+        await mutateClearCache()
         showToast('Đã xóa cache Redis thành công!', 'warning')
         setConfirmClearCache(false)
     }
@@ -229,15 +284,20 @@ export const Page_admin_system = () => {
         showToast(`Đang tải backup ${backup.id} (${backup.size})...`)
     }
 
-    return (
-        <VCT_PageContainer size="wide" animated>
-            <VCT_Toast isVisible={toast.show} message={toast.msg} type={toast.type} onClose={dismiss} />
+    const sysStats: StatItem[] = [
+        { label: 'Uptime', value: '99.98%', icon: <VCT_Icons.Activity size={18} />, color: '#10b981' },
+        { label: 'CPU', value: '23%', icon: <VCT_Icons.Laptop size={18} />, color: '#0ea5e9' },
+        { label: 'Memory', value: '4.2/8 GB', icon: <VCT_Icons.Layers size={18} />, color: '#f59e0b' },
+        { label: 'Disk', value: '22/100 GB', icon: <VCT_Icons.Settings size={18} />, color: '#8b5cf6' },
+    ]
 
-            <div className="mb-6 flex flex-col sm:flex-row sm:flex-wrap items-start justify-between gap-4">
-                <div>
-                    <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-(--vct-text-primary)">Cấu Hình & Giám Sát Hệ Thống</h1>
-                    <p className="text-sm text-(--vct-text-secondary) mt-1">Giám sát cơ sở hạ tầng, tham số cấu hình và quản lý backup.</p>
-                </div>
+    return (
+        <AdminPageShell
+            title="Cấu Hình & Giám Sát Hệ Thống"
+            subtitle="Giám sát cơ sở hạ tầng, tham số cấu hình và quản lý backup."
+            icon={<VCT_Icons.Settings size={28} className="text-[#8b5cf6]" />}
+            stats={sysStats}
+            actions={
                 <VCT_Stack direction="row" gap={12} className="flex-wrap">
                     <VCT_Button variant="outline" icon={<VCT_Icons.Download size={16} />} onClick={() => setConfirmBackup(true)}>Tạo Backup</VCT_Button>
                     <VCT_Button variant="outline" icon={<VCT_Icons.RotateCcw size={16} />} onClick={() => setConfirmClearCache(true)}>Xóa Cache</VCT_Button>
@@ -250,7 +310,8 @@ export const Page_admin_system = () => {
                         showToast('Đã xuất cấu hình!')
                     }}>Xuất CSV</VCT_Button>
                 </VCT_Stack>
-            </div>
+            }
+        >
 
             {/* ── ENVIRONMENT BADGE ── */}
             <div className="mb-4 flex items-center gap-2">
@@ -261,13 +322,7 @@ export const Page_admin_system = () => {
                 />
             </div>
 
-            {/* ── KPI ── */}
-            <VCT_StatRow items={[
-                { label: 'Uptime', value: '99.98%', icon: <VCT_Icons.Activity size={18} />, color: '#10b981' },
-                { label: 'CPU', value: '23%', icon: <VCT_Icons.Laptop size={18} />, color: '#0ea5e9' },
-                { label: 'Memory', value: '4.2/8 GB', icon: <VCT_Icons.Layers size={18} />, color: '#f59e0b' },
-                { label: 'Disk', value: '22/100 GB', icon: <VCT_Icons.Settings size={18} />, color: '#8b5cf6' },
-            ] as StatItem[]} className="mb-8" />
+
 
             {/* ── INFRASTRUCTURE METRICS ── */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
@@ -304,57 +359,63 @@ export const Page_admin_system = () => {
                     <input
                         type="text"
                         placeholder="Tìm theo key hoặc mô tả..."
-                        value={configSearch}
-                        onChange={e => setConfigSearch(e.target.value)}
+                        value={search}
+                        onChange={e => setSearch(e.target.value)}
                         className="w-full px-3 py-2 bg-(--vct-bg-base) border border-(--vct-border-subtle) rounded-lg text-sm text-(--vct-text-primary) placeholder:text-(--vct-text-tertiary) focus:outline-none focus:border-(--vct-accent-cyan)"
                     />
                 </div>
 
-                <div className="overflow-hidden rounded-xl border border-(--vct-border-subtle)">
-                    <table className="w-full border-collapse">
-                        <thead>
-                            <tr className="bg-(--vct-bg-card) text-[11px] uppercase tracking-wider text-(--vct-text-tertiary) font-bold">
-                                <th className="p-3 text-left">Key</th>
-                                <th className="p-3 text-left">Giá trị</th>
-                                <th className="p-3 text-left">Mô tả</th>
-                                <th className="p-3 w-12"></th>
-                            </tr>
-                        </thead>
-                        <tbody className="divide-y divide-(--vct-border-subtle)">
-                            {isLoading ? (
-                                [...Array(5)].map((_, i) => <SkeletonConfigRow key={i} />)
-                            ) : (
-                                configParams
-                                    .filter(p => {
-                                        if (!configSearch) return true
-                                        const q = configSearch.toLowerCase()
-                                        return p.key.toLowerCase().includes(q) || p.description.toLowerCase().includes(q)
-                                    })
-                                    .map(param => (
-                                    <tr key={param.key} className="hover:bg-white/5 transition-colors group cursor-pointer" onClick={() => setDrawerParam(param)}>
-                                        <td className="p-3 font-mono text-xs font-bold text-(--vct-accent-cyan)">{param.key}</td>
-                                        <td className="p-3">
-                                            <span className={`font-bold text-sm ${param.value !== param.defaultValue ? 'text-[#f59e0b]' : 'text-(--vct-text-primary)'}`}>{param.value}</span>
-                                            {param.unit && <span className="text-[10px] text-(--vct-text-tertiary) ml-1">{param.unit}</span>}
-                                            {param.value !== param.defaultValue && <span className="text-[9px] text-(--vct-text-tertiary) ml-2">(mặc định: {param.defaultValue})</span>}
-                                        </td>
-                                        <td className="p-3 text-sm text-(--vct-text-secondary)">{param.description}</td>
-                                        <td className="p-3">
-                                            <button
-                                                title="Chỉnh sửa tham số"
-                                                type="button"
-                                                onClick={(e) => { e.stopPropagation(); handleEditParam(param) }}
-                                                className="p-1 text-(--vct-text-tertiary) hover:text-white opacity-0 group-hover:opacity-100 transition-all rounded hover:bg-white/10"
-                                            >
-                                                <VCT_Icons.Edit size={14} />
-                                            </button>
-                                        </td>
-                                    </tr>
-                                ))
-                            )}
-                        </tbody>
-                    </table>
-                </div>
+                <GlobalStyle />
+                <AdminDataTable
+                    data={filteredParams}
+                    isLoading={isLoading}
+                    sortBy={sortCol}
+                    sortDir={sortDir}
+                    onSort={handleSort}
+                    rowKey={p => p.key}
+                    emptyTitle="Không tìm thấy tham số"
+                    emptyDescription="Thử từ khóa khác"
+                    emptyIcon="⚙️"
+                    columns={[
+                        {
+                            key: 'key',
+                            label: 'Key',
+                            sortable: true,
+                            render: (p) => <div className="font-mono text-xs font-bold text-(--vct-accent-cyan)">{p.key}</div>
+                        },
+                        {
+                            key: 'value',
+                            label: 'Giá trị',
+                            sortable: true,
+                            render: (p) => (
+                                <div>
+                                    <span className={`font-bold text-sm ${p.value !== p.defaultValue ? 'text-[#f59e0b]' : 'text-(--vct-text-primary)'}`}>{p.value}</span>
+                                    {p.unit && <span className="text-[10px] text-(--vct-text-tertiary) ml-1">{p.unit}</span>}
+                                    {p.value !== p.defaultValue && <span className="text-[9px] text-(--vct-text-tertiary) block mt-0.5">(mặc định: {p.defaultValue})</span>}
+                                </div>
+                            )
+                        },
+                        {
+                            key: 'description',
+                            label: 'Mô tả',
+                            sortable: true,
+                            hideMobile: true,
+                            render: (p) => <div className="text-sm text-(--vct-text-secondary)">{p.description}</div>
+                        },
+                        {
+                            key: '_actions',
+                            label: '',
+                            align: 'right',
+                            sortable: false,
+                            render: (p) => (
+                                <div onClick={(e) => { e.stopPropagation(); handleEditParam(p) }} className="hover:bg-white/10 p-1 rounded inline-flex cursor-pointer text-(--vct-text-tertiary) hover:text-white transition-colors">
+                                    <VCT_Icons.Edit size={14} />
+                                </div>
+                            )
+                        }
+                    ]}
+                    onRowClick={setDrawerParam}
+                />
             </div>
 
             {/* ── BACKUP HISTORY ── */}
@@ -536,6 +597,6 @@ export const Page_admin_system = () => {
                 message={`Bạn có chắc muốn khôi phục "${confirmReset?.key}" về giá trị mặc định (${confirmReset?.defaultValue})?`}
                 confirmLabel="Khôi phục"
             />
-        </VCT_PageContainer>
+        </AdminPageShell>
     )
 }

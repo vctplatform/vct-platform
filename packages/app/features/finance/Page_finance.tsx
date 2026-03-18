@@ -95,56 +95,56 @@ export const Page_finance = () => {
             <VCT_StatRow items={kpis} className="mb-8" />
 
             {isLoading && (
-                <div className="text-center py-6 text-[var(--vct-text-tertiary)] text-sm animate-pulse">
+                <div className="text-center py-6 text-(--vct-text-tertiary) text-sm animate-pulse">
                     Đang tải dữ liệu tài chính...
                 </div>
             )}
 
             {/* ── QUICK ACTIONS ── */}
             <div className="mb-8 grid grid-cols-1 md:grid-cols-4 gap-4">
-                <div className="bg-gradient-to-br from-[#10b98120] to-transparent border border-[#10b98140] rounded-xl p-6 flex items-center gap-4 cursor-pointer hover:border-[#10b981] transition-colors">
+                <div className="bg-linear-to-br from-[#10b98120] to-transparent border border-[#10b98140] rounded-xl p-6 flex items-center gap-4 cursor-pointer hover:border-[#10b981] transition-colors">
                     <div className="w-12 h-12 rounded-full bg-[#10b981] flex items-center justify-center text-white shrink-0 shadow-lg shadow-[#10b98140]">
                         <VCT_Icons.ArrowDownLeft size={24} />
                     </div>
                     <div>
-                        <div className="font-bold text-[var(--vct-text-primary)] text-lg">Tạo Phiếu Thu</div>
-                        <div className="text-sm text-[var(--vct-text-secondary)]">Ghi nhận khoản thu mới</div>
+                        <div className="font-bold text-(--vct-text-primary) text-lg">Tạo Phiếu Thu</div>
+                        <div className="text-sm text-(--vct-text-secondary)">Ghi nhận khoản thu mới</div>
                     </div>
                 </div>
 
-                <div className="bg-gradient-to-br from-[#ef444420] to-transparent border border-[#ef444440] rounded-xl p-6 flex items-center gap-4 cursor-pointer hover:border-[#ef4444] transition-colors">
+                <div className="bg-linear-to-br from-[#ef444420] to-transparent border border-[#ef444440] rounded-xl p-6 flex items-center gap-4 cursor-pointer hover:border-[#ef4444] transition-colors">
                     <div className="w-12 h-12 rounded-full bg-[#ef4444] flex items-center justify-center text-white shrink-0 shadow-lg shadow-[#ef444440]">
                         <VCT_Icons.ArrowUpRight size={24} />
                     </div>
                     <div>
-                        <div className="font-bold text-[var(--vct-text-primary)] text-lg">Tạo Phiếu Chi</div>
-                        <div className="text-sm text-[var(--vct-text-secondary)]">Ghi nhận khoản chi mới</div>
+                        <div className="font-bold text-(--vct-text-primary) text-lg">Tạo Phiếu Chi</div>
+                        <div className="text-sm text-(--vct-text-secondary)">Ghi nhận khoản chi mới</div>
                     </div>
                 </div>
 
-                <div className="bg-gradient-to-br from-[#8b5cf620] to-transparent border border-[#8b5cf640] rounded-xl p-6 flex items-center gap-4 cursor-pointer hover:border-[#8b5cf6] transition-colors">
+                <div className="bg-linear-to-br from-[#8b5cf620] to-transparent border border-[#8b5cf640] rounded-xl p-6 flex items-center gap-4 cursor-pointer hover:border-[#8b5cf6] transition-colors">
                     <div className="w-12 h-12 rounded-full bg-[#8b5cf6] flex items-center justify-center text-white shrink-0 shadow-lg shadow-[#8b5cf640]">
                         <VCT_Icons.FileText size={24} />
                     </div>
                     <div>
-                        <div className="font-bold text-[var(--vct-text-primary)] text-lg">Hội Phí & Phí Thi</div>
-                        <div className="text-sm text-[var(--vct-text-secondary)]">Quản lý các đợt thu phí</div>
+                        <div className="font-bold text-(--vct-text-primary) text-lg">Hội Phí & Phí Thi</div>
+                        <div className="text-sm text-(--vct-text-secondary)">Quản lý các đợt thu phí</div>
                     </div>
                 </div>
 
-                <a href="/finance/subscriptions" className="bg-gradient-to-br from-[#a855f720] to-transparent border border-[#a855f740] rounded-xl p-6 flex items-center gap-4 cursor-pointer hover:border-[#a855f7] transition-colors no-underline">
+                <a href="/finance/subscriptions" className="bg-linear-to-br from-[#a855f720] to-transparent border border-[#a855f740] rounded-xl p-6 flex items-center gap-4 cursor-pointer hover:border-[#a855f7] transition-colors no-underline">
                     <div className="w-12 h-12 rounded-full bg-[#a855f7] flex items-center justify-center text-white shrink-0 shadow-lg shadow-[#a855f740]">
                         <VCT_Icons.CreditCard size={24} />
                     </div>
                     <div>
-                        <div className="font-bold text-[var(--vct-text-primary)] text-lg">Subscription</div>
-                        <div className="text-sm text-[var(--vct-text-secondary)]">Gói dịch vụ & gia hạn</div>
+                        <div className="font-bold text-(--vct-text-primary) text-lg">Subscription</div>
+                        <div className="text-sm text-(--vct-text-secondary)">Gói dịch vụ & gia hạn</div>
                     </div>
                 </a>
             </div>
 
             {/* ── TOOLBAR ── */}
-            <div className="mb-6 flex flex-wrap items-center justify-between gap-4 border-b border-[var(--vct-border-subtle)] pb-4">
+            <div className="mb-6 flex flex-wrap items-center justify-between gap-4 border-b border-(--vct-border-subtle) pb-4">
                 <VCT_Tabs
                     tabs={[
                         { key: 'all', label: 'Tất cả giao dịch' },
@@ -173,22 +173,22 @@ export const Page_finance = () => {
                             <th className="p-4 w-12 text-center"></th>
                         </tr>
                     </thead>
-                    <tbody className="divide-y divide-[var(--vct-border-subtle)]">
+                    <tbody className="divide-y divide-(--vct-border-subtle)">
                         {filtered.map(trx => (
                             <tr key={trx.id} className="hover:bg-white/5 transition-colors cursor-pointer group">
-                                <td className="p-4 font-mono text-sm text-[var(--vct-accent-cyan)] font-bold">
+                                <td className="p-4 font-mono text-sm text-(--vct-accent-cyan) font-bold">
                                     {trx.id}
                                 </td>
-                                <td className="p-4 text-sm text-[var(--vct-text-secondary)]">
+                                <td className="p-4 text-sm text-(--vct-text-secondary)">
                                     <div className="flex items-center gap-2">
                                         <VCT_Icons.Calendar size={14} />
                                         {trx.date}
                                     </div>
                                 </td>
                                 <td className="p-4">
-                                    <div className="font-semibold text-sm text-[var(--vct-text-primary)] line-clamp-1">{trx.desc}</div>
+                                    <div className="font-semibold text-sm text-(--vct-text-primary) line-clamp-1">{trx.desc}</div>
                                 </td>
-                                <td className="p-4 text-sm text-[var(--vct-text-secondary)]">
+                                <td className="p-4 text-sm text-(--vct-text-secondary)">
                                     {trx.source}
                                 </td>
                                 <td className="p-4 text-right">

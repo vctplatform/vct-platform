@@ -7,15 +7,19 @@
     "packages/*"
   ],
   "devDependencies": {
+    "@eslint/eslintrc": "^3.3.1",
     "@playwright/test": "^1.52.0",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.2",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
-    "eslint": "^10.0.3",
-    "@eslint/eslintrc": "^3.3.1",
     "@typescript-eslint/eslint-plugin": "^8.33.0",
     "@typescript-eslint/parser": "^8.33.0",
+    "eslint": "^10.0.3",
+    "jsdom": "^29.0.0",
     "turbo": "^2.8.17",
-    "typescript": "^5.9.3"
+    "typescript": "^5.9.3",
+    "vitest": "^4.1.0"
   },
   "scripts": {
     "dev": "npm run dev --workspace next-app",
@@ -39,8 +43,6 @@
     "web": "npm run dev:web",
     "backend": "go -C backend run ./cmd/server"
   },
-
-
   "prettier": {
     "semi": false,
     "useTabs": false,

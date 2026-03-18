@@ -1,14 +1,21 @@
 'use client'
 
 import * as React from 'react'
-import { useState, useMemo, useCallback } from 'react'
+import { useState, useMemo } from 'react'
 import {
-    VCT_Badge, VCT_Button, VCT_Stack, VCT_Toast,
-    VCT_SearchInput, VCT_Tabs, VCT_PageContainer, VCT_StatRow,
+    VCT_Badge, VCT_Button,
+    VCT_SearchInput, VCT_Tabs,
     VCT_ConfirmDialog, VCT_EmptyState
 } from '../components/vct-ui'
 import type { StatItem } from '../components/VCT_StatRow'
 import { VCT_Icons } from '../components/vct-icons'
+import { AdminPageShell, useShellToast } from './components/AdminPageShell'
+import { useAdminFetch } from './hooks/useAdminAPI'
+import { useAdminMutation } from './hooks/useAdminMutation'
+import { exportToCSV } from './utils/adminExport'
+import { useI18n } from '../i18n'
+import { AdminGuard } from './components/AdminGuard'
+import './admin.module.css'
 
 // ════════════════════════════════════════
 // TYPES & MOCK DATA
@@ -77,23 +84,22 @@ const SkeletonFlagCard = () => (
 // ════════════════════════════════════════
 // MAIN COMPONENT
 // ════════════════════════════════════════
-export const Page_admin_feature_flags = () => {
-    const [flags, setFlags] = useState<FeatureFlag[]>(MOCK_FLAGS)
+export const Page_admin_feature_flags = () => (
+    <AdminGuard>
+        <Page_admin_feature_flags_Content />
+    </AdminGuard>
+)
+
+const Page_admin_feature_flags_Content = () => {
+    const { t: _t } = useI18n()
+    const { data: fetchedFlags, isLoading } = useAdminFetch<FeatureFlag[]>('/admin/feature-flags', { mockData: MOCK_FLAGS })
+    const [flags, setFlags] = useState<FeatureFlag[]>([])
     const [search, setSearch] = useState('')
     const [moduleFilter, setModuleFilter] = useState('Tất cả')
-    const [toast, setToast] = useState({ show: false, msg: '', type: 'success' })
-    const [isLoading, setIsLoading] = useState(true)
+    const { showToast } = useShellToast()
     const [confirmToggle, setConfirmToggle] = useState<FeatureFlag | null>(null)
 
-    React.useEffect(() => {
-        const t = setTimeout(() => setIsLoading(false), 800)
-        return () => clearTimeout(t)
-    }, [])
-
-    const showToast = useCallback((msg: string, type = 'success') => {
-        setToast({ show: true, msg, type })
-        setTimeout(() => setToast(prev => ({ ...prev, show: false })), 3500)
-    }, [])
+    React.useEffect(() => { if (fetchedFlags) setFlags(fetchedFlags) }, [fetchedFlags])
 
     const filtered = useMemo(() => {
         let data = flags
@@ -105,11 +111,18 @@ export const Page_admin_feature_flags = () => {
         return data
     }, [flags, moduleFilter, search])
 
-    const doToggle = (flag: FeatureFlag) => {
+    const { mutate: mutateToggle } = useAdminMutation<FeatureFlag, { id: string; status: string; rollout_pct: number }>(
+        '/admin/feature-flags',
+        { method: 'PATCH', onError: () => showToast('Lỗi API, đã cập nhật cục bộ', 'warning') }
+    )
+
+    const doToggle = async (flag: FeatureFlag) => {
+        const newStatus = flag.status === 'enabled' ? 'disabled' : 'enabled'
+        const newPct = newStatus === 'enabled' ? 100 : 0
+        await mutateToggle({ id: flag.id, status: newStatus, rollout_pct: newPct })
         setFlags(prev => prev.map(f => {
             if (f.id !== flag.id) return f
-            const newStatus = f.status === 'enabled' ? 'disabled' : 'enabled'
-            return { ...f, status: newStatus, rollout_pct: newStatus === 'enabled' ? 100 : 0, updated_at: new Date().toLocaleString('vi-VN'), updated_by: 'admin@vct.vn' }
+            return { ...f, status: newStatus, rollout_pct: newPct, updated_at: new Date().toLocaleString('vi-VN'), updated_by: 'admin@vct.vn' }
         }))
         showToast(`${flag.name}: ${flag.status === 'enabled' ? 'Đã tắt' : 'Đã bật'}`, flag.status === 'enabled' ? 'warning' : 'success')
     }
@@ -123,7 +136,8 @@ export const Page_admin_feature_flags = () => {
         doToggle(flag)
     }
 
-    const updateRollout = (id: string, pct: number) => {
+    const updateRollout = async (id: string, pct: number) => {
+        await mutateToggle({ id, status: pct === 0 ? 'disabled' : pct === 100 ? 'enabled' : 'partial', rollout_pct: pct })
         setFlags(prev => prev.map(f => {
             if (f.id !== id) return f
             const status: FeatureFlag['status'] = pct === 0 ? 'disabled' : pct === 100 ? 'enabled' : 'partial'
@@ -132,34 +146,31 @@ export const Page_admin_feature_flags = () => {
     }
 
     const handleExportCSV = () => {
-        const header = 'ID,Key,Tên,Module,Trạng thái,Rollout %,Scope,Cập nhật,Bởi'
-        const csv = [header, ...flags.map(f => `${f.id},${f.key},"${f.name}",${f.module},${STATUS_STYLES[f.status]?.label},${f.rollout_pct}%,${f.scope},${f.updated_at},${f.updated_by}`)].join('\n')
-        const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' })
-        const url = URL.createObjectURL(blob)
-        const a = document.createElement('a'); a.href = url; a.download = `vct_feature_flags_${new Date().toISOString().slice(0, 10)}.csv`; a.click()
-        URL.revokeObjectURL(url)
+        exportToCSV({
+            headers: ['ID', 'Key', 'Tên', 'Module', 'Trạng thái', 'Rollout %', 'Scope', 'Cập nhật', 'Bởi'],
+            rows: flags.map(f => [f.id, f.key, f.name, f.module, STATUS_STYLES[f.status]?.label ?? '', `${f.rollout_pct}%`, f.scope, f.updated_at, f.updated_by]),
+            filename: `vct_feature_flags_${new Date().toISOString().slice(0, 10)}.csv`,
+        })
         showToast('Đã xuất danh sách feature flags!')
     }
 
+    const stats: StatItem[] = [
+        { label: 'Features', value: flags.length, icon: <VCT_Icons.Flag size={18} />, color: '#8b5cf6' },
+        { label: 'Đang bật', value: flags.filter(f => f.status === 'enabled').length, icon: <VCT_Icons.CheckCircle size={18} />, color: '#10b981' },
+        { label: 'Rollout', value: flags.filter(f => f.status === 'partial').length, icon: <VCT_Icons.Activity size={18} />, color: '#f59e0b' },
+        { label: 'Đang tắt', value: flags.filter(f => f.status === 'disabled').length, icon: <VCT_Icons.x size={18} />, color: '#ef4444' },
+    ]
+
     return (
-        <VCT_PageContainer size="wide" animated>
-            <VCT_Toast isVisible={toast.show} message={toast.msg} type={toast.type} onClose={() => setToast(prev => ({ ...prev, show: false }))} />
-
-            <div className="mb-6 flex flex-wrap items-start justify-between gap-4">
-                <div>
-                    <h1 className="text-2xl font-bold tracking-tight text-(--vct-text-primary)">Feature Flags</h1>
-                    <p className="text-sm text-(--vct-text-secondary) mt-1">Bật/tắt tính năng, kiểm soát rollout theo phần trăm hoặc phạm vi.</p>
-                </div>
+        <AdminPageShell
+            title="Feature Flags"
+            subtitle="Bật/tắt tính năng, kiểm soát rollout theo phần trăm hoặc phạm vi."
+            icon={<VCT_Icons.Flag size={28} className="text-[#8b5cf6]" />}
+            stats={stats}
+            actions={
                 <VCT_Button variant="outline" icon={<VCT_Icons.Download size={16} />} onClick={handleExportCSV}>Xuất CSV</VCT_Button>
-            </div>
-
-            {/* ── KPI ── */}
-            <VCT_StatRow items={[
-                { label: 'Features', value: flags.length, icon: <VCT_Icons.Flag size={18} />, color: '#8b5cf6' },
-                { label: 'Đang bật', value: flags.filter(f => f.status === 'enabled').length, icon: <VCT_Icons.CheckCircle size={18} />, color: '#10b981' },
-                { label: 'Rollout', value: flags.filter(f => f.status === 'partial').length, icon: <VCT_Icons.Activity size={18} />, color: '#f59e0b' },
-                { label: 'Đang tắt', value: flags.filter(f => f.status === 'disabled').length, icon: <VCT_Icons.x size={18} />, color: '#ef4444' },
-            ] as StatItem[]} className="mb-8" />
+            }
+        >
 
             {/* ── FILTER ── */}
             <div className="mb-6 flex flex-wrap items-center justify-between gap-4 border-b border-(--vct-border-subtle) pb-4">
@@ -202,19 +213,24 @@ export const Page_admin_feature_flags = () => {
                                     <div className="flex items-center gap-4 shrink-0">
                                         {/* Rollout slider */}
                                         <div className="flex flex-col items-center gap-1 w-[120px]">
-                                            <div className="text-[11px] font-bold" style={{ color: st.color }}>{flag.rollout_pct}%</div>
+                                            <div className="admin-colored-label" style={{ '--_label-color': st.color } as React.CSSProperties}>{flag.rollout_pct}%</div>
                                             <input
                                                 type="range" min="0" max="100" step="5"
                                                 value={flag.rollout_pct}
                                                 onChange={(e) => updateRollout(flag.id, parseInt(e.target.value))}
-                                                className="w-full h-1.5 rounded-full appearance-none cursor-pointer"
-                                                style={{ accentColor: st.color, background: `linear-gradient(to right, ${st.color} ${flag.rollout_pct}%, var(--vct-border-strong) ${flag.rollout_pct}%)` }}
+                                                aria-label={`Rollout ${flag.name}`}
+                                                className="admin-rollout-slider"
+                                                style={{ '--_slider-color': st.color, '--_slider-pct': `${flag.rollout_pct}%` } as React.CSSProperties}
                                             />
                                         </div>
 
                                         {/* Toggle */}
-                                        <button onClick={() => toggleFlag(flag)}
-                                            className={`relative w-14 h-7 rounded-full transition-all duration-300 ${flag.status !== 'disabled' ? 'bg-[#10b981] shadow-[0_0_12px_#10b98140]' : 'bg-(--vct-border-strong)'
+                                        <button
+                                            onClick={() => toggleFlag(flag)}
+                                            aria-label={`${flag.status !== 'disabled' ? 'Tắt' : 'Bật'} ${flag.name}`}
+                                            role="switch"
+                                            aria-checked={flag.status !== 'disabled' ? 'true' : 'false'}
+                                            className={`relative w-14 h-7 rounded-full transition-all duration-300 cursor-pointer ${flag.status !== 'disabled' ? 'bg-[#10b981] shadow-[0_0_12px_#10b98140]' : 'bg-(--vct-border-strong)'
                                                 }`}>
                                             <div className={`absolute top-1 w-5 h-5 rounded-full bg-white shadow-md transition-all duration-300 ${flag.status !== 'disabled' ? 'left-8' : 'left-1'
                                                 }`}></div>
@@ -224,7 +240,7 @@ export const Page_admin_feature_flags = () => {
 
                                 {/* Progress bar */}
                                 <div className="mt-3 h-1 rounded-full bg-(--vct-border-strong) overflow-hidden">
-                                    <div className="h-full rounded-full transition-all duration-500" style={{ width: `${flag.rollout_pct}%`, background: st.color }}></div>
+                                    <div className="admin-progress-bar__fill" style={{ '--_fill-color': st.color, '--_fill-width': `${flag.rollout_pct}%` } as React.CSSProperties}></div>
                                 </div>
                             </div>
                         )
@@ -241,6 +257,6 @@ export const Page_admin_feature_flags = () => {
                 message={`Bạn có chắc muốn tắt "${confirmToggle?.name}"? Tính năng này đang hoạt động trên toàn hệ thống (scope: global).`}
                 confirmLabel="Tắt tính năng"
             />
-        </VCT_PageContainer>
+        </AdminPageShell>
     )
 }

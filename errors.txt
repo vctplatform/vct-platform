@@ -1,0 +1,2 @@
+../../packages/app/features/admin/Page_admin_subscriptions.tsx(288,25): error TS2322: Type '{ data: Subscription[]; isLoading: boolean; sortBy: SortKey; sortDir: SortDir; onSort: (key: string) => void; rowKey: (s: Subscription) => string; ... 5 more ...; onRowClick: (sub: Subscription) => void; }' is not assignable to type 'IntrinsicAttributes & AdminDataTableProps<Subscription>'.
+  Property 'rowClassName' does not exist on type 'IntrinsicAttributes & AdminDataTableProps<Subscription>'. Did you mean 'className'?

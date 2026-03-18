@@ -3,321 +3,332 @@
 import * as React from 'react'
 import { useState, useMemo } from 'react'
 import {
-    VCT_Button, VCT_Stack, VCT_SearchInput, VCT_Badge, VCT_Select,
-    VCT_Toast, VCT_PageContainer, VCT_StatRow
+    VCT_Badge, VCT_SearchInput, VCT_Select, VCT_Button
 } from '../components/vct-ui'
-import type { StatItem } from '../components/VCT_StatRow'
 import { VCT_Icons } from '../components/vct-icons'
 import { VCT_Drawer } from '../components/VCT_Drawer'
-import { usePagination } from '../hooks/usePagination'
-import { AdminPaginationBar } from './components/AdminPaginationBar'
-import { AdminSkeletonRow } from './components/AdminSkeletonRow'
-import { AdminErrorState } from './components/AdminErrorState'
-import { useAdminToast } from './hooks/useAdminToast'
+import { AdminDataTable } from './components/AdminDataTable'
+import { AdminPageShell, useShellToast } from './components/AdminPageShell'
+import { useAdminFetch } from './hooks/useAdminAPI'
+import { useDebounce } from '../hooks/useDebounce'
+import { AdminGuard } from './components/AdminGuard'
 import { exportToCSV } from './utils/adminExport'
 
 // ════════════════════════════════════════
-// MOCK DATA — Expanded with more entries for date range demo
+// TYPES & MOCK DATA
 // ════════════════════════════════════════
-const MOCK_LOGS = [
-    { id: 'LOG-001', timestamp: '2024-03-09 00:32:15', user: 'admin@vct.vn', role: 'admin', action: 'UPDATE', resource: 'Tournament Config', detail: 'Cập nhật thông tin giải: Giải Vô địch QG 2024', ip: '192.168.1.100', severity: 'info' },
-    { id: 'LOG-002', timestamp: '2024-03-09 00:28:40', user: 'btc@vct.vn', role: 'btc', action: 'APPROVE', resource: 'Athlete', detail: 'Phê duyệt hồ sơ VĐV #ATH-156 Nguyễn Văn A', ip: '10.0.0.55', severity: 'info' },
-    { id: 'LOG-003', timestamp: '2024-03-09 00:25:12', user: 'system', role: 'system', action: 'BACKUP', resource: 'Database', detail: 'Backup tự động PostgreSQL - 2.3GB', ip: 'internal', severity: 'info' },
-    { id: 'LOG-004', timestamp: '2024-03-09 00:20:05', user: 'referee@vct.vn', role: 'referee', action: 'LOGIN', resource: 'Auth', detail: 'Đăng nhập từ thiết bị mới', ip: '172.16.0.22', severity: 'warning' },
-    { id: 'LOG-005', timestamp: '2024-03-09 00:15:30', user: 'admin@vct.vn', role: 'admin', action: 'CREATE', resource: 'Belt Exam', detail: 'Tạo kỳ thi thăng cấp đai Q2/2024', ip: '192.168.1.100', severity: 'info' },
-    { id: 'LOG-006', timestamp: '2024-03-08 23:58:45', user: 'unknown', role: 'anonymous', action: 'LOGIN_FAILED', resource: 'Auth', detail: 'Đăng nhập thất bại 5 lần liên tiếp', ip: '45.67.89.12', severity: 'error' },
-    { id: 'LOG-007', timestamp: '2024-03-08 23:45:10', user: 'admin@vct.vn', role: 'admin', action: 'DELETE', resource: 'User', detail: 'Xóa tài khoản test_user_01', ip: '192.168.1.100', severity: 'warning' },
-    { id: 'LOG-008', timestamp: '2024-03-08 18:12:33', user: 'btc@vct.vn', role: 'btc', action: 'UPDATE', resource: 'Schedule', detail: 'Thay đổi lịch thi đấu vòng tứ kết', ip: '10.0.0.55', severity: 'info' },
-    { id: 'LOG-009', timestamp: '2024-03-07 14:05:22', user: 'admin@vct.vn', role: 'admin', action: 'CREATE', resource: 'Tournament', detail: 'Tạo giải đấu: Cúp Vovinam Đông Nam Á 2024', ip: '192.168.1.100', severity: 'info' },
-    { id: 'LOG-010', timestamp: '2024-03-07 09:30:11', user: 'system', role: 'system', action: 'MAINTENANCE', resource: 'Database', detail: 'Chạy VACUUM ANALYZE tự động', ip: 'internal', severity: 'info' },
-    { id: 'LOG-011', timestamp: '2024-03-06 16:42:08', user: 'unknown', role: 'anonymous', action: 'LOGIN_FAILED', resource: 'Auth', detail: 'Brute force detected - IP blocked', ip: '103.56.78.90', severity: 'error' },
-    { id: 'LOG-012', timestamp: '2024-03-05 11:15:44', user: 'coach@vct.vn', role: 'coach', action: 'UPDATE', resource: 'Athlete', detail: 'Cập nhật hồ sơ 12 VĐV đội tuyển TP.HCM', ip: '10.0.0.88', severity: 'info' },
-]
-
-const ACTION_OPTIONS = [
-    { value: 'all', label: 'Tất cả hành động' },
-    { value: 'CREATE', label: '➕ CREATE' },
-    { value: 'UPDATE', label: '✏️ UPDATE' },
-    { value: 'DELETE', label: '🗑️ DELETE' },
-    { value: 'APPROVE', label: '✅ APPROVE' },
-    { value: 'LOGIN', label: '🔑 LOGIN' },
-    { value: 'LOGIN_FAILED', label: '🚫 LOGIN_FAILED' },
-    { value: 'BACKUP', label: '💾 BACKUP' },
-    { value: 'MAINTENANCE', label: '🔧 MAINTENANCE' },
-]
-
-const SEVERITY_MAP: Record<string, { badge: React.ReactNode }> = {
-    info: { badge: <VCT_Badge type="info" text="INFO" /> },
-    warning: { badge: <VCT_Badge type="warning" text="WARNING" /> },
-    error: { badge: <VCT_Badge type="danger" text="ERROR" /> },
+interface AuditLog {
+    id: string
+    timestamp: string
+    actor: { id: string; name: string; email: string }
+    action: string
+    resource: string
+    resource_id?: string
+    status: 'success' | 'failure' | 'warning'
+    ip_address: string
+    details: string
+    user_agent?: string
+    payload?: string
 }
 
-// Date range presets
-const DATE_PRESETS = [
-    { label: 'Hôm nay', days: 0 },
-    { label: '24h', days: 1 },
-    { label: '7 ngày', days: 7 },
-    { label: '30 ngày', days: 30 },
-    { label: 'Tất cả', days: -1 },
+const MOCK_LOGS: AuditLog[] = [
+    {
+        id: 'LOG-1024',
+        timestamp: '2023-11-20T14:30:22Z',
+        actor: { id: 'USR-001', name: 'Nguyễn Văn A', email: 'admin@vct.vn' },
+        action: 'UPDATE',
+        resource: 'Tennant',
+        resource_id: 'ORG-XYZ',
+        status: 'success',
+        ip_address: '192.168.1.10',
+        details: 'Thay đổi trạng thái từ Pending sang Active',
+        user_agent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/120.0.0.0',
+        payload: '{"status": "Active"}'
+    },
+    {
+        id: 'LOG-1025',
+        timestamp: '2023-11-20T15:15:00Z',
+        actor: { id: 'USR-042', name: 'Trần Thị B', email: 'staff@vct.vn' },
+        action: 'LOGIN',
+        resource: 'System',
+        status: 'failure',
+        ip_address: '10.0.0.5',
+        details: 'Sai mật khẩu quá 3 lần',
+        user_agent: 'Mozilla/5.0 (iPhone; CPU iPhone OS 16_5 like Mac OS X) AppleWebKit/605.1.15'
+    },
+    {
+        id: 'LOG-1026',
+        timestamp: '2023-11-20T16:05:10Z',
+        actor: { id: 'USR-001', name: 'Nguyễn Văn A', email: 'admin@vct.vn' },
+        action: 'DELETE',
+        resource: 'User',
+        resource_id: 'USR-099',
+        status: 'success',
+        ip_address: '192.168.1.10',
+        details: 'Xóa tài khoản không hoạt động',
+        payload: '{"reason": "Inactivity"}'
+    },
+    {
+        id: 'LOG-1027',
+        timestamp: '2023-11-21T09:20:00Z',
+        actor: { id: 'SYSTEM', name: 'System Auto', email: 'system@vct.vn' },
+        action: 'BACKUP',
+        resource: 'Database',
+        status: 'success',
+        ip_address: '127.0.0.1',
+        details: 'Hoàn thành sao lưu định kỳ'
+    },
+    {
+        id: 'LOG-1028',
+        timestamp: '2023-11-21T10:45:30Z',
+        actor: { id: 'USR-002', name: 'Lê Văn C', email: 'manager@vct.vn' },
+        action: 'CREATE',
+        resource: 'Tournament',
+        resource_id: 'TRN-2024',
+        status: 'success',
+        ip_address: '172.16.0.2',
+        details: 'Tạo giải đấu mới: Giải Vô địch Quốc gia 2024',
+        payload: '{"name": "Giải Vô địch Quốc gia 2024", "type": "National"}'
+    },
+    {
+        id: 'LOG-1029',
+        timestamp: '2023-11-21T11:10:15Z',
+        actor: { id: 'USR-001', name: 'Nguyễn Văn A', email: 'admin@vct.vn' },
+        action: 'UPDATE',
+        resource: 'Settings',
+        status: 'warning',
+        ip_address: '192.168.1.10',
+        details: 'Thay đổi cấu hình hệ thống quan trọng (Mức cước hội phí)',
+        payload: '{"membership_fee": 500000}'
+    }
 ]
+
+const STATUS_BADGE: Record<string, { label: string; type: string }> = {
+    success: { label: 'Thành công', type: 'success' },
+    failure: { label: 'Thất bại', type: 'danger' },
+    warning: { label: 'Cảnh báo', type: 'warning' },
+}
+
+const ACTION_COLORS: Record<string, string> = {
+    CREATE: 'var(--vct-status-success)',
+    UPDATE: 'var(--vct-accent-blue)',
+    DELETE: 'var(--vct-status-danger)',
+    LOGIN: 'var(--vct-text-secondary)',
+    BACKUP: 'var(--vct-status-warning)'
+}
+
 
 // ════════════════════════════════════════
 // MAIN COMPONENT
 // ════════════════════════════════════════
-export const Page_audit_logs = () => {
+export const Page_audit_logs = () => (
+    <AdminGuard>
+        <Page_audit_logs_Content />
+    </AdminGuard>
+)
+
+const Page_audit_logs_Content = () => {
+    const { data: fetchedLogs, isLoading } = useAdminFetch<AuditLog[]>('/admin/audit-logs', { mockData: MOCK_LOGS })
+    const [logs, setLogs] = useState<AuditLog[]>([])
     const [search, setSearch] = useState('')
-    const [severityFilter, setSeverityFilter] = useState('all')
-    const [actionFilter, setActionFilter] = useState('all')
-    const [dateRange, setDateRange] = useState<{ from: string; to: string }>({ from: '', to: '' })
-    const [activePreset, setActivePreset] = useState('Tất cả')
-    const [isLoading, setIsLoading] = useState(true)
-    const [hasError, setHasError] = useState(false)
-    const [drawerLog, setDrawerLog] = useState<typeof MOCK_LOGS[0] | null>(null)
-    const { toast, showToast, dismiss } = useAdminToast()
+    const debouncedSearch = useDebounce(search, 300)
+    const [filterStatus, setFilterStatus] = useState('all')
+    const [filterAction, setFilterAction] = useState('all')
+    const [drawerLog, setDrawerLog] = useState<AuditLog | null>(null)
+    const { showToast } = useShellToast()
+    
+    // AdminDataTable properties
+    const [sortCol, setSortCol] = useState('timestamp')
+    const [sortDir, setSortDir] = useState<'asc' | 'desc'>('desc')
 
-    // Simulate initial loading
-    React.useEffect(() => {
-        const t = setTimeout(() => setIsLoading(false), 800)
-        return () => clearTimeout(t)
-    }, [])
-
-    const handleDatePreset = (label: string, days: number) => {
-        setActivePreset(label)
-        if (days === -1) {
-            setDateRange({ from: '', to: '' })
-            return
-        }
-        const to = new Date()
-        const from = new Date()
-        from.setDate(from.getDate() - days)
-        setDateRange({
-            from: from.toISOString().slice(0, 10),
-            to: to.toISOString().slice(0, 10),
-        })
-    }
-
-    const handleRetry = () => {
-        setHasError(false)
-        setIsLoading(true)
-        setTimeout(() => setIsLoading(false), 800)
-    }
+    React.useEffect(() => { if (fetchedLogs) setLogs(fetchedLogs) }, [fetchedLogs])
 
     const filtered = useMemo(() => {
-        let v = MOCK_LOGS
-        if (severityFilter !== 'all') v = v.filter(l => l.severity === severityFilter)
-        if (actionFilter !== 'all') v = v.filter(l => l.action === actionFilter)
-        if (dateRange.from) {
-            v = v.filter(l => l.timestamp.slice(0, 10) >= dateRange.from)
-        }
-        if (dateRange.to) {
-            v = v.filter(l => l.timestamp.slice(0, 10) <= dateRange.to)
-        }
-        if (search) {
-            const q = search.toLowerCase()
-            v = v.filter(l => l.user.toLowerCase().includes(q) || l.detail.toLowerCase().includes(q) || l.resource.toLowerCase().includes(q))
-        }
+        let v = logs.filter(log => {
+            const matchSearch = log.actor.name.toLowerCase().includes(debouncedSearch.toLowerCase()) || 
+                                log.action.toLowerCase().includes(debouncedSearch.toLowerCase()) || 
+                                log.details.toLowerCase().includes(debouncedSearch.toLowerCase()) ||
+                                log.id.toLowerCase().includes(debouncedSearch.toLowerCase())
+            const matchStatus = filterStatus === 'all' || log.status === filterStatus
+            const matchAction = filterAction === 'all' || log.action === filterAction
+            return matchSearch && matchStatus && matchAction
+        })
+        
+        v = [...v].sort((a, b) => {
+            const valA = String((a as any)[sortCol] || '').toLowerCase()
+            const valB = String((b as any)[sortCol] || '').toLowerCase()
+            return sortDir === 'asc' ? valA.localeCompare(valB) : valB.localeCompare(valA)
+        })
+
         return v
-    }, [search, severityFilter, actionFilter, dateRange])
+    }, [logs, debouncedSearch, filterStatus, filterAction, sortCol, sortDir])
 
-    const pagination = usePagination(filtered, { pageSize: 8 })
-
-    const logStats = useMemo(() => ({
-        total: filtered.length,
-        info: filtered.filter(l => l.severity === 'info').length,
-        warning: filtered.filter(l => l.severity === 'warning').length,
-        error: filtered.filter(l => l.severity === 'error').length,
-    }), [filtered])
-
-    const clearAllFilters = () => {
-        setSearch('')
-        setSeverityFilter('all')
-        setActionFilter('all')
-        setDateRange({ from: '', to: '' })
-        setActivePreset('Tất cả')
+    const handleSort = (key: string) => {
+        if (sortCol === key) setSortDir(d => d === 'asc' ? 'desc' : 'asc')
+        else { setSortCol(key); setSortDir(key === 'timestamp' ? 'desc' : 'asc') }
     }
 
-    const hasActiveFilters = search || severityFilter !== 'all' || actionFilter !== 'all' || dateRange.from || dateRange.to
+    const handleExport = () => {
+        exportToCSV({
+            headers: ['ID', 'Thời gian', 'Tài khoản', 'Thao tác', 'Tài nguyên', 'Trạng thái', 'Chi tiết', 'IP'],
+            rows: filtered.map(l => [l.id, l.timestamp, l.actor.name, l.action, l.resource, l.status, l.details, l.ip_address]),
+            filename: `vct_audit_logs_${new Date().toISOString().slice(0, 10)}.csv`,
+        })
+        showToast(`Đã xuất ${filtered.length} nhật ký!`)
+    }
+
+    // Extract unique actions for filter
+    const uniqueActions = useMemo(() => Array.from(new Set(logs.map(l => l.action))), [logs])
 
     return (
-        <VCT_PageContainer size="wide" animated>
-            <VCT_Toast isVisible={toast.show} message={toast.msg} type={toast.type} onClose={dismiss} />
-
-            <div className="mb-6 flex flex-col sm:flex-row sm:flex-wrap items-start justify-between gap-4">
-                <div>
-                    <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-(--vct-text-primary)">Nhật Ký Hệ Thống</h1>
-                    <p className="text-sm text-(--vct-text-secondary) mt-1">Theo dõi mọi hành động và thay đổi trong hệ thống.</p>
-                </div>
-                <VCT_Stack direction="row" gap={8} className="flex-wrap">
-                    <VCT_Button variant="outline" icon={<VCT_Icons.Download size={16} />} onClick={() => {
-                        exportToCSV({
-                            headers: ['Mức độ', 'Thời gian', 'Người dùng', 'Role', 'Hành động', 'Tài nguyên', 'Chi tiết', 'IP'],
-                            rows: filtered.map(l => [l.severity, l.timestamp, l.user, l.role, l.action, l.resource, l.detail, l.ip]),
-                            filename: `vct_audit_logs_${new Date().toISOString().slice(0, 10)}.csv`,
-                        })
-                        showToast(`Đã xuất ${filtered.length} nhật ký!`)
-                    }}>Xuất CSV</VCT_Button>
-                </VCT_Stack>
-            </div>
-
-            {/* ── KPI — reflects filtered data ── */}
-            <VCT_StatRow items={[
-                { label: 'Tổng logs', value: logStats.total, icon: <VCT_Icons.List size={18} />, color: '#8b5cf6' },
-                { label: 'Info', value: logStats.info, icon: <VCT_Icons.Info size={18} />, color: '#0ea5e9' },
-                { label: 'Warning', value: logStats.warning, icon: <VCT_Icons.AlertTriangle size={18} />, color: '#f59e0b' },
-                { label: 'Error', value: logStats.error, icon: <VCT_Icons.Alert size={18} />, color: '#ef4444' },
-            ] as StatItem[]} className="mb-6" />
-
-            {/* ── DATE RANGE FILTER ── */}
-            <div className="mb-4 p-4 bg-(--vct-bg-elevated) border border-(--vct-border-subtle) rounded-xl">
-                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
-                    <div className="flex items-center gap-2 text-xs text-(--vct-text-tertiary) shrink-0">
-                        <VCT_Icons.Calendar size={14} />
-                        <span className="font-semibold uppercase tracking-wider">Khoảng thời gian</span>
-                    </div>
-                    <div className="flex flex-wrap gap-2">
-                        {DATE_PRESETS.map(p => (
-                            <button
-                                key={p.label}
-                                onClick={() => handleDatePreset(p.label, p.days)}
-                                className={`px-3 py-1.5 text-xs rounded-lg font-semibold transition-all ${
-                                    activePreset === p.label
-                                        ? 'bg-(--vct-accent-blue,#3b82f6) text-white shadow-md'
-                                        : 'bg-(--vct-bg-base) text-(--vct-text-secondary) hover:text-(--vct-text-primary) border border-(--vct-border-subtle)'
-                                }`}
-                            >{p.label}</button>
-                        ))}
-                    </div>
-                    <div className="flex items-center gap-2 ml-auto">
-                        <input
-                            type="date"
-                            aria-label="Từ ngày"
-                            value={dateRange.from}
-                            onChange={e => { setDateRange(d => ({ ...d, from: e.target.value })); setActivePreset('') }}
-                            className="px-2 py-1.5 text-xs rounded-lg bg-(--vct-bg-base) border border-(--vct-border-subtle) text-(--vct-text-primary)"
-                        />
-                        <span className="text-xs text-(--vct-text-tertiary)">→</span>
-                        <input
-                            type="date"
-                            aria-label="Đến ngày"
-                            value={dateRange.to}
-                            onChange={e => { setDateRange(d => ({ ...d, to: e.target.value })); setActivePreset('') }}
-                            className="px-2 py-1.5 text-xs rounded-lg bg-(--vct-bg-base) border border-(--vct-border-subtle) text-(--vct-text-primary)"
-                        />
-                    </div>
-                </div>
-            </div>
-
+        <AdminPageShell
+            title="Nhật Ký Hệ Thống (Audit Logs)"
+            subtitle="Theo dõi và giám sát mọi hoạt động trên hệ thống VCT PLATFORM."
+            icon={<VCT_Icons.Shield size={28} className="text-[#8b5cf6]" />}
+            actions={
+                <VCT_Button variant="outline" icon={<VCT_Icons.Download size={16} />} onClick={handleExport}>Xuất CSV</VCT_Button>
+            }
+        >
             {/* ── FILTERS ── */}
-            <div className="flex flex-wrap gap-3 mb-6 items-center">
-                <div className="flex-1 min-w-[200px]">
-                    <VCT_SearchInput placeholder="Tìm theo user, hành động, tài nguyên..." value={search} onChange={setSearch} onClear={() => setSearch('')} />
+            <div className="flex flex-wrap gap-4 mb-6">
+                <div className="flex-1 min-w-[250px]">
+                    <VCT_SearchInput 
+                        value={search} 
+                        onChange={setSearch} 
+                        placeholder="Tìm theo mã log, tài khoản, thao tác, chi tiết..." 
+                    />
                 </div>
-                <VCT_Select
-                    value={severityFilter}
-                    onChange={setSeverityFilter}
-                    options={[
-                        { value: 'all', label: 'Tất cả mức độ' },
-                        { value: 'info', label: 'ℹ️ Info' },
-                        { value: 'warning', label: '⚠️ Warning' },
-                        { value: 'error', label: '🔴 Error' },
-                    ]}
-                />
-                <VCT_Select
-                    value={actionFilter}
-                    onChange={setActionFilter}
-                    options={ACTION_OPTIONS}
-                />
-                {hasActiveFilters && (
-                    <button
-                        onClick={clearAllFilters}
-                        className="px-3 py-1.5 text-xs rounded-lg bg-(--vct-bg-base) text-(--vct-accent-red,#ef4444) border border-(--vct-accent-red,#ef444430) hover:bg-[#ef444410] transition-colors font-semibold"
-                    >✕ Xóa bộ lọc</button>
-                )}
+                <div className="w-[180px]">
+                    <VCT_Select 
+                        value={filterStatus} 
+                        onChange={setFilterStatus} 
+                        options={[
+                            { value: 'all', label: 'Tất cả trạng thái' },
+                            { value: 'success', label: 'Thành công' },
+                            { value: 'failure', label: 'Thất bại' },
+                            { value: 'warning', label: 'Cảnh báo' }
+                        ]} 
+                    />
+                </div>
+                <div className="w-[180px]">
+                    <VCT_Select 
+                        value={filterAction} 
+                        onChange={setFilterAction} 
+                        options={[
+                            { value: 'all', label: 'Tất cả thao tác' },
+                            ...uniqueActions.map(a => ({ value: a, label: a }))
+                        ]} 
+                    />
+                </div>
             </div>
 
-            {/* ── TABLE ── */}
-            {hasError ? (
-                <AdminErrorState
-                    message="Không thể tải nhật ký hệ thống"
-                    detail="Vui lòng kiểm tra kết nối mạng và thử lại."
-                    onRetry={handleRetry}
-                />
-            ) : (
-                <div className="bg-(--vct-bg-card) border border-(--vct-border-strong) rounded-2xl overflow-x-auto">
-                    <table className="w-full text-left border-collapse min-w-[700px]">
-                        <thead>
-                            <tr className="bg-(--vct-bg-elevated) border-b border-(--vct-border-strong) text-[11px] uppercase tracking-wider text-(--vct-text-tertiary) font-bold">
-                                <th className="p-4 w-20">Mức độ</th>
-                                <th className="p-4 w-44">Thời gian</th>
-                                <th className="p-4 w-36">Người dùng</th>
-                                <th className="p-4 w-28">Hành động</th>
-                                <th className="p-4">Chi tiết</th>
-                                <th className="p-4 w-32">IP</th>
-                            </tr>
-                        </thead>
-                        <tbody className="divide-y divide-(--vct-border-subtle)">
-                            {isLoading ? (
-                                [...Array(5)].map((_, i) => <AdminSkeletonRow key={i} cols={6} />)
-                            ) : pagination.paginatedItems.length === 0 ? (
-                                <tr><td colSpan={6} className="p-12 text-center text-(--vct-text-tertiary)">
-                                    <div className="space-y-2">
-                                        <VCT_Icons.Search size={32} className="mx-auto opacity-30" />
-                                        <div>Không tìm thấy nhật ký nào</div>
-                                        {hasActiveFilters && (
-                                            <button onClick={clearAllFilters} className="text-xs text-(--vct-accent-cyan) hover:underline">
-                                                Xóa bộ lọc để xem tất cả
-                                            </button>
-                                        )}
-                                    </div>
-                                </td></tr>
-                            ) : (
-                                pagination.paginatedItems.map(log => (
-                                    <tr key={log.id} className="hover:bg-white/5 transition-colors text-sm cursor-pointer" onClick={() => setDrawerLog(log)}>
-                                        <td className="p-4">{SEVERITY_MAP[log.severity]?.badge}</td>
-                                        <td className="p-4 font-mono text-[12px] text-(--vct-text-secondary)">{log.timestamp}</td>
-                                        <td className="p-4">
-                                            <span className="font-semibold text-(--vct-accent-cyan)">{log.user}</span>
-                                            <div className="text-[10px] text-(--vct-text-tertiary)">{log.role}</div>
-                                        </td>
-                                        <td className="p-4">
-                                            <span className="bg-(--vct-bg-base) border border-(--vct-border-subtle) px-2 py-0.5 rounded text-[10px] font-bold text-(--vct-text-primary) uppercase">{log.action}</span>
-                                        </td>
-                                        <td className="p-4 text-(--vct-text-secondary)">
-                                            <div className="line-clamp-1">{log.detail}</div>
-                                            <div className="text-[10px] text-(--vct-text-tertiary) mt-0.5">Resource: {log.resource}</div>
-                                        </td>
-                                        <td className="p-4 font-mono text-[11px] text-(--vct-text-tertiary)">{log.ip}</td>
-                                    </tr>
-                                ))
-                            )}
-                        </tbody>
-                    </table>
-                    {!isLoading && <AdminPaginationBar {...pagination} />}
-                </div>
-            )}
+            {/* ── DATA TABLE ── */}
+            <AdminDataTable
+                data={filtered}
+                isLoading={isLoading}
+                sortBy={sortCol}
+                sortDir={sortDir}
+                onSort={handleSort}
+                rowKey={log => log.id}
+                emptyTitle="Không tìm thấy nhật ký"
+                emptyDescription="Thử thay đổi bộ lọc tìm kiếm"
+                emptyIcon="📝"
+                columns={[
+                    {
+                        key: 'timestamp',
+                        label: 'Thời gian',
+                        sortable: true,
+                        render: (log) => {
+                            const date = new Date(log.timestamp)
+                            return (
+                                <div>
+                                    <div className="font-mono text-sm text-(--vct-text-primary)">{date.toLocaleDateString('vi-VN')}</div>
+                                    <div className="font-mono text-xs text-(--vct-text-tertiary)">{date.toLocaleTimeString('vi-VN')}</div>
+                                </div>
+                            )
+                        }
+                    },
+                    {
+                        key: 'actor',
+                        label: 'Tài khoản (Actor)',
+                        sortable: false,
+                        render: (log) => (
+                            <div>
+                                <div className="font-bold text-sm text-(--vct-text-primary)">{log.actor.name}</div>
+                                <div className="text-xs text-(--vct-text-secondary)">{log.actor.email}</div>
+                                <div className="font-mono text-[10px] text-(--vct-text-tertiary) mt-0.5">{log.ip_address}</div>
+                            </div>
+                        )
+                    },
+                    {
+                        key: 'action',
+                        label: 'Thao tác',
+                        sortable: true,
+                        render: (log) => (
+                            <span 
+                                className="font-mono font-bold text-xs uppercase"
+                                style={{ color: ACTION_COLORS[log.action] || 'var(--vct-text-primary)' }}
+                            >
+                                {log.action}
+                            </span>
+                        )
+                    },
+                    {
+                        key: 'resource',
+                        label: 'Tài nguyên',
+                        sortable: true,
+                        render: (log) => (
+                            <div>
+                                <div className="text-sm font-medium text-(--vct-text-primary)">{log.resource}</div>
+                                {log.resource_id && (
+                                    <div className="font-mono text-xs text-(--vct-text-tertiary)">{log.resource_id}</div>
+                                )}
+                            </div>
+                        )
+                    },
+                    {
+                        key: 'status',
+                        label: 'Trạng thái',
+                        sortable: true,
+                        align: 'center',
+                        render: (log) => <VCT_Badge type={STATUS_BADGE[log.status]?.type ?? 'neutral'} text={STATUS_BADGE[log.status]?.label ?? log.status} />
+                    },
+                    {
+                        key: 'details',
+                        label: 'Chi tiết',
+                        sortable: false,
+                        render: (log) => <div className="text-sm text-(--vct-text-secondary) max-w-[300px] truncate" title={log.details}>{log.details}</div>
+                    }
+                ]}
+                onRowClick={setDrawerLog}
+            />
 
             {/* ── LOG DETAIL DRAWER ── */}
             <VCT_Drawer isOpen={!!drawerLog} onClose={() => setDrawerLog(null)} title="Chi tiết Nhật ký" width={520}>
                 {drawerLog && (
                     <div className="space-y-5">
                         <div className="flex items-center gap-3 pb-4 border-b border-(--vct-border-subtle)">
-                            {SEVERITY_MAP[drawerLog.severity]?.badge}
-                            <span className="font-bold text-lg text-(--vct-text-primary) uppercase">{drawerLog.action}</span>
+                            <VCT_Badge type={STATUS_BADGE[drawerLog.status]?.type ?? 'neutral'} text={STATUS_BADGE[drawerLog.status]?.label ?? drawerLog.status} />
+                            <span className="font-bold text-lg text-(--vct-text-primary) uppercase" style={{ color: ACTION_COLORS[drawerLog.action] }}>{drawerLog.action}</span>
                             <span className="ml-auto font-mono text-xs text-(--vct-text-tertiary)">{drawerLog.id}</span>
                         </div>
-                        <div className="grid grid-cols-2 gap-4 text-sm">
-                            <div><div className="text-[10px] uppercase text-(--vct-text-tertiary) mb-1">Thời gian</div><div className="font-mono text-(--vct-text-primary)">{drawerLog.timestamp}</div></div>
-                            <div><div className="text-[10px] uppercase text-(--vct-text-tertiary) mb-1">Người dùng</div><div className="font-semibold text-(--vct-accent-cyan)">{drawerLog.user}</div></div>
-                            <div><div className="text-[10px] uppercase text-(--vct-text-tertiary) mb-1">Role</div><div className="text-(--vct-text-primary)">{drawerLog.role}</div></div>
-                            <div><div className="text-[10px] uppercase text-(--vct-text-tertiary) mb-1">Tài nguyên</div><div className="text-(--vct-text-primary)">{drawerLog.resource}</div></div>
-                            <div className="col-span-2"><div className="text-[10px] uppercase text-(--vct-text-tertiary) mb-1">Địa chỉ IP</div><div className="font-mono text-(--vct-text-primary)">{drawerLog.ip}</div></div>
+                        <div className="grid grid-cols-2 gap-4 text-sm mt-5">
+                            <div><div className="text-[10px] uppercase text-(--vct-text-tertiary) mb-1">Thời gian</div><div className="font-mono text-(--vct-text-primary)">{new Date(drawerLog.timestamp).toLocaleString('vi-VN')}</div></div>
+                            <div><div className="text-[10px] uppercase text-(--vct-text-tertiary) mb-1">Người dùng</div><div className="font-semibold text-(--vct-accent-cyan)">{drawerLog.actor.name}</div></div>
+                            <div><div className="text-[10px] uppercase text-(--vct-text-tertiary) mb-1">Tài nguyên</div><div className="text-(--vct-text-primary)">{drawerLog.resource}{drawerLog.resource_id ? ` (${drawerLog.resource_id})` : ''}</div></div>
+                            <div className="col-span-2"><div className="text-[10px] uppercase text-(--vct-text-tertiary) mb-1">Địa chỉ IP</div><div className="font-mono text-(--vct-text-primary)">{drawerLog.ip_address}</div></div>
                         </div>
-                        <div><div className="text-[10px] uppercase text-(--vct-text-tertiary) mb-1">Chi tiết</div><div className="text-sm text-(--vct-text-primary) p-3 bg-(--vct-bg-base) rounded-xl border border-(--vct-border-subtle)">{drawerLog.detail}</div></div>
-                        <div><div className="text-[10px] uppercase text-(--vct-text-tertiary) mb-2">User Agent</div><div className="text-xs font-mono text-(--vct-text-secondary) p-3 bg-(--vct-bg-base) rounded-xl border border-(--vct-border-subtle)">Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/120.0.0.0</div></div>
-                        <div><div className="text-[10px] uppercase text-(--vct-text-tertiary) mb-2">Request Payload</div><pre className="text-xs font-mono text-(--vct-text-secondary) p-3 bg-(--vct-bg-base) rounded-xl border border-(--vct-border-subtle) overflow-x-auto">{JSON.stringify({ action: drawerLog.action, resource: drawerLog.resource, timestamp: drawerLog.timestamp }, null, 2)}</pre></div>
+                        <div><div className="text-[10px] uppercase text-(--vct-text-tertiary) mb-1">Chi tiết</div><div className="text-sm text-(--vct-text-primary) p-3 bg-(--vct-bg-base) rounded-xl border border-(--vct-border-subtle)">{drawerLog.details}</div></div>
+                        {drawerLog.user_agent && (
+                            <div><div className="text-[10px] uppercase text-(--vct-text-tertiary) mb-2">User Agent</div><div className="text-xs font-mono text-(--vct-text-secondary) p-3 bg-(--vct-bg-base) rounded-xl border border-(--vct-border-subtle)">{drawerLog.user_agent}</div></div>
+                        )}
+                        {drawerLog.payload && (
+                            <div><div className="text-[10px] uppercase text-(--vct-text-tertiary) mb-2">Request Payload</div><pre className="text-xs font-mono text-(--vct-text-secondary) p-3 bg-(--vct-bg-base) rounded-xl border border-(--vct-border-subtle) overflow-x-auto">{drawerLog.payload}</pre></div>
+                        )}
                     </div>
                 )}
             </VCT_Drawer>
-        </VCT_PageContainer>
+        </AdminPageShell>
     )
 }
+
