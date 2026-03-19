@@ -44,21 +44,28 @@ const TIMELINE_EVENTS: TimelineEvent[] = [
     { time: '23:45:10', title: 'Xóa tài khoản test_user_01', description: 'admin@vct.vn · Dọn dẹp tài khoản thử nghiệm', icon: <VCT_Icons.Trash size={14} />, color: '#ef4444' },
 ]
 
+// ── System Admin Navigation (primary) ──
 const QUICK_NAV = [
-    { label: 'Quản lý Tài khoản', desc: 'Người dùng, vai trò & phân quyền', icon: VCT_Icons.Users, color: '#0ea5e9', href: '/admin/users' },
-    { label: 'Giải đấu', desc: 'Tạo, điều hành & theo dõi giải', icon: VCT_Icons.Trophy, color: '#f59e0b', href: '/admin/tournaments' },
-    { label: 'Nhân sự', desc: 'VĐV, HLV & Trọng tài', icon: VCT_Icons.Users, color: '#06b6d4', href: '/admin/people' },
-    { label: 'Tài chính', desc: 'Hóa đơn, ngân sách & tài trợ', icon: VCT_Icons.DollarSign, color: '#10b981', href: '/admin/finance' },
-    { label: 'Chấm điểm Live', desc: 'Giám sát trận đấu real-time', icon: VCT_Icons.Activity, color: '#ef4444', href: '/admin/scoring' },
-    { label: 'Xếp hạng', desc: 'ELO rating & thăng cấp đai', icon: VCT_Icons.Trophy, color: '#d97706', href: '/admin/rankings' },
-    { label: 'Liên đoàn', desc: 'Tổ chức & nhân sự các cấp', icon: VCT_Icons.Building, color: '#8b5cf6', href: '/admin/federation' },
-    { label: 'Câu lạc bộ', desc: 'CLB, cơ sở & thiết bị', icon: VCT_Icons.Home, color: '#059669', href: '/admin/clubs' },
-    { label: 'Bảo mật', desc: 'Audit logs, giám sát liêm chính', icon: VCT_Icons.Shield, color: '#8b5cf6', href: '/admin/audit-logs' },
-    { label: 'Cấu hình', desc: 'Feature flags & tham số hệ thống', icon: VCT_Icons.Settings, color: '#f59e0b', href: '/admin/system' },
-    { label: 'Dữ liệu tham chiếu', desc: 'Cấp đai, hạng cân, tiêu chí', icon: VCT_Icons.Layers, color: '#10b981', href: '/admin/reference-data' },
+    { label: 'Quản lý Tài khoản', desc: 'Người dùng & phân quyền', icon: VCT_Icons.Users, color: '#0ea5e9', href: '/admin/users' },
+    { label: 'Vai trò & Quyền', desc: 'RBAC, phân quyền chi tiết', icon: VCT_Icons.Shield, color: '#6366f1', href: '/admin/roles' },
+    { label: 'Tổ chức (Tenants)', desc: 'Quản lý multi-tenant', icon: VCT_Icons.Building, color: '#8b5cf6', href: '/admin/tenants' },
     { label: 'Feature Flags', desc: 'Bật/tắt tính năng, rollout', icon: VCT_Icons.Flag, color: '#ef4444', href: '/admin/feature-flags' },
-    { label: 'Hỗ trợ KH', desc: 'Ticket hỗ trợ, FAQ, kỹ thuật', icon: VCT_Icons.Shield, color: '#ec4899', href: '/admin/support' },
-    { label: 'Subscription', desc: 'Gói dịch vụ, thanh toán & gia hạn', icon: VCT_Icons.CreditCard, color: '#a855f7', href: '/admin/subscriptions' },
+    { label: 'Cấu hình Hệ thống', desc: 'Tham số, health & cài đặt', icon: VCT_Icons.Settings, color: '#f59e0b', href: '/admin/system' },
+    { label: 'Nhật ký Audit', desc: 'Lịch sử thao tác & bảo mật', icon: VCT_Icons.FileText, color: '#0ea5e9', href: '/admin/audit-logs' },
+    { label: 'Toàn vẹn Dữ liệu', desc: 'Giám sát liêm chính hệ thống', icon: VCT_Icons.ShieldCheck, color: '#10b981', href: '/admin/integrity' },
+    { label: 'Chất lượng Dữ liệu', desc: 'Kiểm tra & xác thực dữ liệu', icon: VCT_Icons.Activity, color: '#06b6d4', href: '/admin/data-quality' },
+    { label: 'Thông báo Hệ thống', desc: 'Quản lý thông báo platform', icon: VCT_Icons.Bell, color: '#f97316', href: '/admin/notifications' },
+    { label: 'Gói Dịch vụ', desc: 'Subscription, thanh toán & gia hạn', icon: VCT_Icons.CreditCard, color: '#a855f7', href: '/admin/subscriptions' },
+]
+
+// ── Business Workspace Cross-Navigation (secondary) ──
+const BUSINESS_WORKSPACE_NAV = [
+    { label: 'Giải đấu', desc: 'Tạo & điều hành giải', icon: VCT_Icons.Trophy, color: '#f59e0b', href: '/giai-dau' },
+    { label: 'Nhân sự', desc: 'VĐV, HLV & Trọng tài', icon: VCT_Icons.Users, color: '#06b6d4', href: '/people' },
+    { label: 'Liên đoàn', desc: 'Tổ chức các cấp', icon: VCT_Icons.Building, color: '#8b5cf6', href: '/organizations' },
+    { label: 'Câu lạc bộ', desc: 'CLB & cơ sở', icon: VCT_Icons.Home, color: '#059669', href: '/clubs' },
+    { label: 'Tài chính', desc: 'Ngân sách & tài trợ', icon: VCT_Icons.DollarSign, color: '#10b981', href: '/finance' },
+    { label: 'Xếp hạng', desc: 'ELO & thăng cấp đai', icon: VCT_Icons.BarChart2, color: '#d97706', href: '/rankings' },
 ]
 
 const CHART_DATA_API = [
@@ -360,30 +367,65 @@ const Page_admin_dashboard_Content = () => {
                 </div>
             </div>
 
-            {/* ── QUICK NAV CARDS ── */}
-            <div className="mt-6 grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
-                {QUICK_NAV.map(nav => (
-                    <button
-                        key={nav.href}
-                        type="button"
-                        onClick={() => router.push(nav.href)}
-                        className="rounded-xl p-5 flex items-center gap-4 cursor-pointer transition-all text-left hover:scale-[1.02] hover:shadow-lg"
-                        style={{
-                            background: `linear-gradient(135deg, ${nav.color}15, transparent)`,
-                            border: `1px solid ${nav.color}30`,
-                        }}
-                        onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.borderColor = nav.color }}
-                        onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.borderColor = `${nav.color}30` }}
-                    >
-                        <div className="w-11 h-11 rounded-full flex items-center justify-center text-white shrink-0 shadow-lg" style={{ backgroundColor: nav.color, boxShadow: `0 8px 16px -4px ${nav.color}40` }}>
-                            <nav.icon size={22} />
-                        </div>
-                        <div>
-                            <div className="font-bold text-(--vct-text-primary) text-sm">{nav.label}</div>
-                            <div className="text-xs text-(--vct-text-secondary)">{nav.desc}</div>
-                        </div>
-                    </button>
-                ))}
+            {/* ── SYSTEM ADMIN QUICK NAV ── */}
+            <div className="mt-6">
+                <h2 className="font-bold text-lg text-(--vct-text-primary) mb-4 flex items-center gap-2">
+                    <VCT_Icons.Settings size={20} className="text-[#0ea5e9]" /> Quản trị Hệ thống
+                </h2>
+                <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
+                    {QUICK_NAV.map(nav => (
+                        <button
+                            key={nav.href}
+                            type="button"
+                            onClick={() => router.push(nav.href)}
+                            className="rounded-xl p-5 flex items-center gap-4 cursor-pointer transition-all text-left hover:scale-[1.02] hover:shadow-lg"
+                            style={{
+                                background: `linear-gradient(135deg, ${nav.color}15, transparent)`,
+                                border: `1px solid ${nav.color}30`,
+                            }}
+                            onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.borderColor = nav.color }}
+                            onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.borderColor = `${nav.color}30` }}
+                        >
+                            <div className="w-11 h-11 rounded-full flex items-center justify-center text-white shrink-0 shadow-lg" style={{ backgroundColor: nav.color, boxShadow: `0 8px 16px -4px ${nav.color}40` }}>
+                                <nav.icon size={22} />
+                            </div>
+                            <div>
+                                <div className="font-bold text-(--vct-text-primary) text-sm">{nav.label}</div>
+                                <div className="text-xs text-(--vct-text-secondary)">{nav.desc}</div>
+                            </div>
+                        </button>
+                    ))}
+                </div>
+            </div>
+
+            {/* ── BUSINESS WORKSPACE CROSS-NAVIGATION (secondary) ── */}
+            <div className="mt-8 pt-6 border-t border-(--vct-border-subtle)">
+                <div className="flex items-center gap-2 mb-3">
+                    <VCT_Icons.ArrowUpRight size={16} className="text-(--vct-text-tertiary)" />
+                    <h3 className="text-sm font-semibold text-(--vct-text-tertiary) uppercase tracking-wider">Truy cập nhanh Nghiệp vụ</h3>
+                </div>
+                <p className="text-xs text-(--vct-text-tertiary) mb-4">Chuyển đến các workspace nghiệp vụ để quản lý giải đấu, nhân sự và tổ chức.</p>
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+                    {BUSINESS_WORKSPACE_NAV.map(nav => (
+                        <button
+                            key={nav.href}
+                            type="button"
+                            onClick={() => router.push(nav.href)}
+                            className="rounded-lg p-3 flex items-center gap-3 cursor-pointer transition-all text-left hover:bg-(--vct-bg-elevated) group"
+                            style={{
+                                border: '1px solid var(--vct-border-subtle)',
+                            }}
+                        >
+                            <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0 transition-colors" style={{ backgroundColor: `${nav.color}15`, color: nav.color }}>
+                                <nav.icon size={16} />
+                            </div>
+                            <div className="min-w-0">
+                                <div className="font-semibold text-(--vct-text-secondary) text-xs group-hover:text-(--vct-text-primary) transition-colors">{nav.label}</div>
+                                <div className="text-[10px] text-(--vct-text-tertiary) truncate">{nav.desc}</div>
+                            </div>
+                        </button>
+                    ))}
+                </div>
             </div>
         </AdminPageShell>
     )

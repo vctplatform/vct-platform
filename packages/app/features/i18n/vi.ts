@@ -64,7 +64,7 @@ export const vi: Record<string, string> = {
     'auth.errEmpty': 'Vui lòng nhập đủ tài khoản và mật khẩu.',
     'auth.ok': 'Đăng nhập thành công!',
     'auth.errServer': 'Không thể kết nối máy chủ',
-    'auth.stat1v': '63',
+    'auth.stat1v': '34',
     'auth.stat1l': 'Tỉnh thành',
     'auth.stat2v': '1.200+',
     'auth.stat2l': 'CLB',

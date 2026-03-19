@@ -66,7 +66,7 @@ export const en: Record<string, string> = {
 
     'auth.ok': 'Login successful!',
     'auth.errServer': 'Cannot connect to authentication server',
-    'auth.stat1v': '63',
+    'auth.stat1v': '34',
     'auth.stat1l': 'Provinces',
     'auth.stat2v': '1,200+',
     'auth.stat2l': 'Clubs',

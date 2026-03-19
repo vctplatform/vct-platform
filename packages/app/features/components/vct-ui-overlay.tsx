@@ -184,7 +184,7 @@ export const VCT_Modal = ({
               {children}
             </div>
             {footer ? (
-              <footer className="border-t border-vct-border px-4 py-3">{footer}</footer>
+              <footer className="flex justify-end gap-3 border-t border-vct-border px-4 py-3">{footer}</footer>
             ) : null}
           </motion.div>
         </>
