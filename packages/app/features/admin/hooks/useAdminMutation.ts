@@ -1,4 +1,5 @@
 import { useState, useCallback } from 'react'
+import { apiFetch } from './useAdminAPI'
 
 interface MutationOptions<TData> {
     /** Called on successful mutation */
@@ -22,22 +23,7 @@ interface MutationResult<TData, TPayload> {
 
 /**
  * Admin CRUD mutation hook.
- * Provides a simple wrapper around fetch for create/update/delete operations
- * with automatic loading, error handling, and success/error callbacks.
- *
- * @example
- * ```tsx
- * const { mutate, isSubmitting } = useAdminMutation<User, CreateUserPayload>(
- *     '/admin/users',
- *     {
- *         onSuccess: (user) => showToast({ type: 'success', message: `Tạo ${user.name} thành công` }),
- *         onError: (err) => showToast({ type: 'error', message: err.message }),
- *     }
- * )
- *
- * // In handler:
- * await mutate({ name: 'John', email: 'john@example.com' })
- * ```
+ * Uses centralized apiFetch for consistent auth headers and API_BASE.
  */
 export function useAdminMutation<TData = unknown, TPayload = unknown>(
     endpoint: string,
@@ -53,22 +39,12 @@ export function useAdminMutation<TData = unknown, TPayload = unknown>(
         setError(null)
 
         try {
-            const res = await fetch(endpoint, {
+            const result = await apiFetch<TData>(endpoint, {
                 method,
-                credentials: 'include',
-                headers: { 'Content-Type': 'application/json' },
                 ...(payload !== undefined && { body: JSON.stringify(payload) }),
             })
-
-            if (!res.ok) {
-                const errorBody = await res.json().catch(() => ({}))
-                const message = errorBody?.message || errorBody?.error || `Request failed (${res.status})`
-                throw new Error(message)
-            }
-
-            const data = await res.json() as TData
-            onSuccess?.(data)
-            return data
+            onSuccess?.(result)
+            return result
         } catch (err) {
             const e = err instanceof Error ? err : new Error(String(err))
             setError(e)

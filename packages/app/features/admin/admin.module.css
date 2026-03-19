@@ -257,3 +257,98 @@
     color: white;
     background: linear-gradient(135deg, #f59e0b, #d97706);
 }
+
+/* ── Health Ring (dashboard conic gradient) ── */
+.admin-health-ring {
+    width: 96px;
+    height: 96px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    background: conic-gradient(
+        var(--_ring-color, var(--vct-accent-cyan)) var(--_ring-deg, 0deg),
+        transparent 0deg
+    );
+}
+.admin-health-ring__inner {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background-color: var(--vct-bg-elevated);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.admin-health-grade {
+    font-size: 1.875rem;
+    font-weight: 900;
+    color: var(--_grade-color, var(--vct-text-primary));
+}
+
+/* ── System Skeleton Metric ── */
+.admin-skeleton-title {
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--_skeleton-color, var(--vct-text-primary));
+}
+
+/* ── CMS Category Tab (active state) ── */
+.admin-cms-tab--active {
+    background: linear-gradient(
+        135deg,
+        color-mix(in srgb, var(--_tab-color, #0ea5e9) 12%, transparent),
+        color-mix(in srgb, var(--_tab-color, #0ea5e9) 5%, transparent)
+    );
+    border-color: color-mix(in srgb, var(--_tab-color, #0ea5e9) 40%, transparent);
+    color: var(--_tab-color, #0ea5e9);
+}
+
+/* ── CMS Category Icon (active category header) ── */
+.admin-cms-cat-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    background-color: var(--_cat-color, var(--vct-accent-cyan));
+}
+
+/* ── Color Swatch (CMS color picker & preview) ── */
+.admin-color-swatch {
+    border-radius: 12px;
+    border: 2px solid var(--vct-border-strong);
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    background-color: var(--_swatch-color, #000);
+}
+.admin-color-swatch--sm {
+    width: 48px;
+    height: 48px;
+    border: 1px solid var(--vct-border-subtle);
+    margin-bottom: 4px;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+.admin-color-swatch--picker {
+    width: 40px;
+    height: 40px;
+}
+
+/* ── Announcement Banner (dynamic bg) ── */
+.admin-announcement-banner {
+    border-radius: 8px;
+    padding: 8px 12px;
+    font-size: 12px;
+    color: white;
+    font-weight: 600;
+    margin-bottom: 8px;
+    background-color: var(--_banner-color, #f59e0b);
+}

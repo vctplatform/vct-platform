@@ -5,7 +5,7 @@ description: Workflow review chất lượng code cho VCT Platform (CTO role)
 # /code-review — Review Chất Lượng Code
 
 > Sử dụng khi cần review code quality theo tiêu chuẩn CTO.
-> Đọc skill **vct-cto** (`/.agent/skills/vct-cto/SKILL.md`) trước khi bắt đầu.
+> Đọc skill **vct-cto** (`/.agents/skills/vct-cto/SKILL.md`) trước khi bắt đầu.
 
 // turbo-all
 
@@ -21,8 +21,8 @@ description: Workflow review chất lượng code cho VCT Platform (CTO role)
 - [ ] Không có circular dependencies
 
 ### Frontend
-- [ ] Feature code ở `packages/app/features/`, KHÔNG ở `apps/next/pages/`
-- [ ] Pages trong `apps/next/pages/` chỉ là thin wrappers
+- [ ] Feature code ở `packages/app/features/`, KHÔNG ở `apps/next/app/`
+- [ ] Pages trong `apps/next/app/` chỉ là thin import wrappers (App Router)
 - [ ] Components tái sử dụng ở `packages/ui/`
 - [ ] Shared types ở `packages/shared-types/`
 

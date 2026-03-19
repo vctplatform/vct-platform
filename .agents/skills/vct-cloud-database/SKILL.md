@@ -142,7 +142,7 @@ postgres://postgres:pass@db.[ref].supabase.co:5432/postgres
 
 ### Auto-Migration
 ```env
-VCT_DB_AUTO_MIGRATE=true  # Runs all 36 migrations on startup
+VCT_DB_AUTO_MIGRATE=true  # Runs all 85 migrations on startup
 ```
 
 ### Manual Migration

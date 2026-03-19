@@ -14,18 +14,23 @@ import type { TimelineEvent } from '../components/VCT_Timeline'
 import { usePagination } from '../hooks/usePagination'
 import { AdminSkeletonRow } from './components/AdminSkeletonRow'
 import { AdminPaginationBar } from './components/AdminPaginationBar'
+import { useAdminFetch } from './hooks/useAdminAPI'
 
 // ════════════════════════════════════════
-// MOCK DATA — Integrity Monitoring
+// TYPES
 // ════════════════════════════════════════
-const MOCK_ALERTS = [
-    { id: 'IA-001', type: 'UNUSUAL_SCORING_PATTERN', severity: 'HIGH', source: 'SYSTEM_AUTO', tournament: 'Giải VĐQG 2024', match: 'QK-M012', status: 'INVESTIGATING', assigned_to: 'Nguyễn Minh Tuấn', reported_at: '2024-03-09 10:15', detail: '5 trọng tài cho 8.5-9.0, 1 trọng tài cho 5.0. Deviation = 3.2σ' },
-    { id: 'IA-002', type: 'REFEREE_CONFLICT_OF_INTEREST', severity: 'MEDIUM', source: 'SYSTEM_AUTO', tournament: 'Giải VĐQG 2024', match: 'DK-M045', status: 'UNDER_REVIEW', assigned_to: 'Trần Văn Bình', reported_at: '2024-03-09 09:30', detail: 'Trọng tài Nguyễn A chấm VĐV từ CLB cũ (Bình Dương)' },
-    { id: 'IA-003', type: 'SUSPICIOUS_WITHDRAWAL', severity: 'LOW', source: 'MANUAL_REPORT', tournament: 'Cúp CLB 2024', match: 'DK-M078', status: 'NEW', assigned_to: '', reported_at: '2024-03-08 16:45', detail: 'VĐV rút lui khi đối thủ là VĐV cùng CLB ở vòng bán kết' },
-    { id: 'IA-004', type: 'WEIGHT_MANIPULATION', severity: 'CRITICAL', source: 'SYSTEM_AUTO', tournament: 'Giải VĐQG 2024', match: '', status: 'SUBSTANTIATED', assigned_to: 'Lê Thị Hương', reported_at: '2024-03-08 08:00', detail: 'VĐV cân 3 lần: 60.2kg → 59.8kg → 59.5kg trong 2 giờ. Pattern bất thường.' },
-    { id: 'IA-005', type: 'REPEATED_PAIRING_ANOMALY', severity: 'MEDIUM', source: 'AI_DETECTION', tournament: 'Giải Trẻ QG 2024', match: '', status: 'UNSUBSTANTIATED', assigned_to: 'Phạm Đức Minh', reported_at: '2024-03-07 14:20', detail: '2 VĐV cùng CLB gặp nhau 4/5 giải gần nhất ở vòng tứ kết' },
-    { id: 'IA-006', type: 'IDENTITY_FRAUD', severity: 'CRITICAL', source: 'REFEREE_REPORT', tournament: 'Giải Trẻ QG 2024', match: 'QK-M003', status: 'INVESTIGATING', assigned_to: 'Nguyễn Minh Tuấn', reported_at: '2024-03-07 11:00', detail: 'Nghi ngờ VĐV thi bằng CCCD của người khác. Ảnh không khớp.' },
-]
+interface IntegrityAlert {
+    id: string
+    type: string
+    severity: string
+    source: string
+    tournament: string
+    match: string
+    status: string
+    assigned_to: string
+    reported_at: string
+    detail: string
+}
 
 const SEVERITY_MAP: Record<string, { type: 'info' | 'warning' | 'danger' | 'neutral' }> = {
     LOW: { type: 'info' },
@@ -61,19 +66,16 @@ const TYPE_LABELS: Record<string, string> = {
 // MAIN COMPONENT
 // ════════════════════════════════════════
 export const Page_integrity = () => {
+    const { data: alerts, isLoading } = useAdminFetch<IntegrityAlert[]>('/admin/integrity/alerts')
     const [search, setSearch] = useState('')
     const [severityFilter, setSeverityFilter] = useState('all')
     const [statusFilter, setStatusFilter] = useState('all')
-    const [isLoading, setIsLoading] = useState(true)
-    const [drawerAlert, setDrawerAlert] = useState<typeof MOCK_ALERTS[0] | null>(null)
+    const [drawerAlert, setDrawerAlert] = useState<IntegrityAlert | null>(null)
 
-    React.useEffect(() => {
-        const t = setTimeout(() => setIsLoading(false), 800)
-        return () => clearTimeout(t)
-    }, [])
+    const allAlerts = useMemo(() => alerts ?? [], [alerts])
 
     const filtered = useMemo(() => {
-        let v = MOCK_ALERTS
+        let v = allAlerts
         if (severityFilter !== 'all') v = v.filter(a => a.severity === severityFilter)
         if (statusFilter !== 'all') v = v.filter(a => a.status === statusFilter)
         if (search) {
@@ -81,16 +83,16 @@ export const Page_integrity = () => {
             v = v.filter(a => a.detail.toLowerCase().includes(q) || a.tournament.toLowerCase().includes(q) || TYPE_LABELS[a.type]?.toLowerCase().includes(q))
         }
         return v
-    }, [search, severityFilter, statusFilter])
+    }, [allAlerts, search, severityFilter, statusFilter])
 
     const pagination = usePagination(filtered, { pageSize: 5 })
 
     const stats = useMemo(() => ({
-        total: MOCK_ALERTS.length,
-        critical: MOCK_ALERTS.filter(a => a.severity === 'CRITICAL').length,
-        investigating: MOCK_ALERTS.filter(a => a.status === 'INVESTIGATING').length,
-        newAlerts: MOCK_ALERTS.filter(a => a.status === 'NEW').length,
-    }), [])
+        total: allAlerts.length,
+        critical: allAlerts.filter(a => a.severity === 'CRITICAL').length,
+        investigating: allAlerts.filter(a => a.status === 'INVESTIGATING').length,
+        newAlerts: allAlerts.filter(a => a.status === 'NEW').length,
+    }), [allAlerts])
 
     return (
         <div className="mx-auto max-w-[1400px] p-4 pb-24">

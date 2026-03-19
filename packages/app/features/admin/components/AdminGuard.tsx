@@ -7,14 +7,14 @@ import { useI18n } from '../../i18n'
 import { AdminErrorBoundary } from './AdminErrorBoundary'
 import { AdminCommandPalette } from './AdminCommandPalette'
 import { useAdminShortcuts } from '../hooks/useAdminShortcuts'
+import { useAuth } from '../../auth/AuthProvider'
 
 // ════════════════════════════════════════
 // AdminGuard — Route protection + RBAC for admin pages
 // ════════════════════════════════════════
 
-/** Roles that can access admin pages */
-const ADMIN_ROLES = ['SYSTEM_ADMIN', 'FEDERATION_ADMIN'] as const
-type _AdminRole = (typeof ADMIN_ROLES)[number]
+/** Roles that can access admin pages (mapped to UserRole values from auth/types) */
+const ADMIN_ROLES = ['admin', 'federation_president', 'federation_secretary', 'provincial_admin'] as const
 
 interface AdminGuardProps {
     /** Required roles (any match grants access). If empty, any admin role is accepted. */
@@ -23,21 +23,6 @@ interface AdminGuardProps {
     children?: React.ReactNode
     /** Fallback content when unauthorized (default: built-in permission denied UI) */
     fallback?: React.ReactNode
-}
-
-// ── Simulated auth context (replace with real auth when backend is ready) ──
-function useAuth() {
-    // TODO: Replace with real auth context/hook when backend auth is implemented.
-    // For now, simulate an authenticated SYSTEM_ADMIN to allow development.
-    return {
-        isAuthenticated: true,
-        isLoading: false,
-        user: {
-            id: 'USR-001',
-            name: 'Admin VCT',
-            role: 'SYSTEM_ADMIN' as string,
-        },
-    }
 }
 
 /**
@@ -55,7 +40,7 @@ export const AdminGuard: React.FC<AdminGuardProps> = ({
     children,
     fallback,
 }) => {
-    const { isAuthenticated, isLoading, user } = useAuth()
+    const { isAuthenticated, isHydrating, currentUser } = useAuth()
     const { t } = useI18n()
     const [showPalette, setShowPalette] = React.useState(false)
 
@@ -64,7 +49,7 @@ export const AdminGuard: React.FC<AdminGuardProps> = ({
     })
 
     // ── Loading state ──
-    if (isLoading) {
+    if (isHydrating) {
         return (
             <div className="flex items-center justify-center h-[60vh]" role="status" aria-label={t('common.loading')}>
                 <div className="flex flex-col items-center gap-4">
@@ -76,7 +61,7 @@ export const AdminGuard: React.FC<AdminGuardProps> = ({
     }
 
     // ── Not authenticated ──
-    if (!isAuthenticated || !user) {
+    if (!isAuthenticated || !currentUser || currentUser.id === 'guest') {
         return fallback ?? (
             <PermissionDenied
                 title={t('shell.accessDeniedTitle')}
@@ -91,13 +76,13 @@ export const AdminGuard: React.FC<AdminGuardProps> = ({
         ? requiredRoles
         : ADMIN_ROLES as unknown as string[]
 
-    if (!allowedRoles.includes(user.role)) {
+    if (!allowedRoles.includes(currentUser.role)) {
         return fallback ?? (
             <PermissionDenied
                 title={t('shell.accessDeniedTitle')}
                 description={t('shell.accessDeniedDesc')}
                 icon={<VCT_Icons.Shield size={48} />}
-                currentRole={user.role}
+                currentRole={currentUser.role}
             />
         )
     }

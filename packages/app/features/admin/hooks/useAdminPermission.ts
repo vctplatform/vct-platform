@@ -1,59 +1,52 @@
 import { useCallback, useMemo } from 'react'
+import { useAuth } from '../../auth/AuthProvider'
 
 // ════════════════════════════════════════
 // useAdminPermission — Role-based UI visibility
 // ════════════════════════════════════════
 
-type AdminRole = 'SYSTEM_ADMIN' | 'FEDERATION_ADMIN' | 'CLUB_ADMIN' | 'JUDGE' | 'VIEWER'
+type AdminRole = 'admin' | 'federation_president' | 'federation_secretary' | 'provincial_admin' | 'technical_director' | 'btc' | 'referee_manager'
 
 /** Permission definitions mapping action to allowed roles */
 const PERMISSION_MAP: Record<string, AdminRole[]> = {
     // System-level
-    'system.config.edit': ['SYSTEM_ADMIN'],
-    'system.backup': ['SYSTEM_ADMIN'],
-    'system.cache.clear': ['SYSTEM_ADMIN'],
+    'system.config.edit': ['admin'],
+    'system.backup': ['admin'],
+    'system.cache.clear': ['admin'],
     // User management
-    'users.create': ['SYSTEM_ADMIN', 'FEDERATION_ADMIN'],
-    'users.edit': ['SYSTEM_ADMIN', 'FEDERATION_ADMIN'],
-    'users.delete': ['SYSTEM_ADMIN'],
-    'users.role.assign': ['SYSTEM_ADMIN'],
+    'users.create': ['admin', 'federation_president'],
+    'users.edit': ['admin', 'federation_president'],
+    'users.delete': ['admin'],
+    'users.role.assign': ['admin'],
     // Feature flags
-    'feature_flags.toggle': ['SYSTEM_ADMIN'],
-    'feature_flags.rollout': ['SYSTEM_ADMIN'],
+    'feature_flags.toggle': ['admin'],
+    'feature_flags.rollout': ['admin'],
     // Support
-    'support.assign': ['SYSTEM_ADMIN', 'FEDERATION_ADMIN'],
-    'support.resolve': ['SYSTEM_ADMIN', 'FEDERATION_ADMIN'],
-    'support.delete': ['SYSTEM_ADMIN'],
-    'support.create': ['SYSTEM_ADMIN', 'FEDERATION_ADMIN', 'CLUB_ADMIN'],
+    'support.assign': ['admin', 'federation_president'],
+    'support.resolve': ['admin', 'federation_president'],
+    'support.delete': ['admin'],
+    'support.create': ['admin', 'federation_president', 'btc'],
     // Reference data
-    'reference_data.create': ['SYSTEM_ADMIN'],
-    'reference_data.edit': ['SYSTEM_ADMIN'],
-    'reference_data.delete': ['SYSTEM_ADMIN'],
+    'reference_data.create': ['admin'],
+    'reference_data.edit': ['admin'],
+    'reference_data.delete': ['admin'],
     // Tournaments
-    'tournaments.create': ['SYSTEM_ADMIN', 'FEDERATION_ADMIN'],
-    'tournaments.edit': ['SYSTEM_ADMIN', 'FEDERATION_ADMIN'],
-    'tournaments.approve': ['SYSTEM_ADMIN', 'FEDERATION_ADMIN'],
-    'tournaments.delete': ['SYSTEM_ADMIN'],
+    'tournaments.create': ['admin', 'federation_president'],
+    'tournaments.edit': ['admin', 'federation_president'],
+    'tournaments.approve': ['admin', 'federation_president'],
+    'tournaments.delete': ['admin'],
     // Finance
-    'finance.approve': ['SYSTEM_ADMIN', 'FEDERATION_ADMIN'],
-    'finance.export': ['SYSTEM_ADMIN', 'FEDERATION_ADMIN', 'CLUB_ADMIN'],
+    'finance.approve': ['admin', 'federation_president'],
+    'finance.export': ['admin', 'federation_president', 'btc'],
 }
 
 /**
  * Hook for checking admin permissions based on user role.
- * Simulates SYSTEM_ADMIN role by default.
- *
- * @example
- * ```tsx
- * const { can, canAny } = useAdminPermission()
- *
- * {can('users.delete') && <DeleteButton />}
- * {canAny(['support.assign', 'support.resolve']) && <ActionPanel />}
- * ```
+ * Reads role from real AuthContext.
  */
 export function useAdminPermission() {
-    // In production: get from auth context
-    const currentRole: AdminRole = 'SYSTEM_ADMIN'
+    const { currentUser } = useAuth()
+    const currentRole = (currentUser?.role ?? 'athlete') as AdminRole
 
     const can = useCallback((permission: string): boolean => {
         const allowedRoles = PERMISSION_MAP[permission]

@@ -42,8 +42,8 @@ export class AdminErrorBoundary extends React.Component<Props, State> {
 
             return (
                 <div className="flex flex-col items-center justify-center min-h-[400px] px-8 text-center">
-                    <div className="w-16 h-16 rounded-full bg-red-500/10 flex items-center justify-center mb-4">
-                        <VCT_Icons.AlertTriangle size={32} className="text-red-400" />
+                    <div className="w-16 h-16 rounded-full bg-(--vct-accent-red)/10 flex items-center justify-center mb-4">
+                        <VCT_Icons.AlertTriangle size={32} className="text-(--vct-accent-red)" />
                     </div>
                     <h2 className="text-xl font-bold text-(--vct-text-primary) mb-2">
                         Đã xảy ra lỗi
@@ -52,7 +52,7 @@ export class AdminErrorBoundary extends React.Component<Props, State> {
                         Trang admin gặp sự cố. Vui lòng thử lại hoặc liên hệ bộ phận kỹ thuật.
                     </p>
                     {process.env.NODE_ENV === 'development' && this.state.error && (
-                        <pre className="mt-2 p-3 bg-(--vct-bg-base) rounded-lg text-xs text-red-400 max-w-lg overflow-auto text-left border border-(--vct-border-subtle)">
+                        <pre className="mt-2 p-3 bg-(--vct-bg-base) rounded-lg text-xs text-(--vct-accent-red) max-w-lg overflow-auto text-left border border-(--vct-border-subtle)">
                             {this.state.error.message}
                         </pre>
                     )}

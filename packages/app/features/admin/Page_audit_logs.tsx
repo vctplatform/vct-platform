@@ -15,7 +15,7 @@ import { AdminGuard } from './components/AdminGuard'
 import { exportToCSV } from './utils/adminExport'
 
 // ════════════════════════════════════════
-// TYPES & MOCK DATA
+// TYPES
 // ════════════════════════════════════════
 interface AuditLog {
     id: string
@@ -30,78 +30,6 @@ interface AuditLog {
     user_agent?: string
     payload?: string
 }
-
-const MOCK_LOGS: AuditLog[] = [
-    {
-        id: 'LOG-1024',
-        timestamp: '2023-11-20T14:30:22Z',
-        actor: { id: 'USR-001', name: 'Nguyễn Văn A', email: 'admin@vct.vn' },
-        action: 'UPDATE',
-        resource: 'Tennant',
-        resource_id: 'ORG-XYZ',
-        status: 'success',
-        ip_address: '192.168.1.10',
-        details: 'Thay đổi trạng thái từ Pending sang Active',
-        user_agent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/120.0.0.0',
-        payload: '{"status": "Active"}'
-    },
-    {
-        id: 'LOG-1025',
-        timestamp: '2023-11-20T15:15:00Z',
-        actor: { id: 'USR-042', name: 'Trần Thị B', email: 'staff@vct.vn' },
-        action: 'LOGIN',
-        resource: 'System',
-        status: 'failure',
-        ip_address: '10.0.0.5',
-        details: 'Sai mật khẩu quá 3 lần',
-        user_agent: 'Mozilla/5.0 (iPhone; CPU iPhone OS 16_5 like Mac OS X) AppleWebKit/605.1.15'
-    },
-    {
-        id: 'LOG-1026',
-        timestamp: '2023-11-20T16:05:10Z',
-        actor: { id: 'USR-001', name: 'Nguyễn Văn A', email: 'admin@vct.vn' },
-        action: 'DELETE',
-        resource: 'User',
-        resource_id: 'USR-099',
-        status: 'success',
-        ip_address: '192.168.1.10',
-        details: 'Xóa tài khoản không hoạt động',
-        payload: '{"reason": "Inactivity"}'
-    },
-    {
-        id: 'LOG-1027',
-        timestamp: '2023-11-21T09:20:00Z',
-        actor: { id: 'SYSTEM', name: 'System Auto', email: 'system@vct.vn' },
-        action: 'BACKUP',
-        resource: 'Database',
-        status: 'success',
-        ip_address: '127.0.0.1',
-        details: 'Hoàn thành sao lưu định kỳ'
-    },
-    {
-        id: 'LOG-1028',
-        timestamp: '2023-11-21T10:45:30Z',
-        actor: { id: 'USR-002', name: 'Lê Văn C', email: 'manager@vct.vn' },
-        action: 'CREATE',
-        resource: 'Tournament',
-        resource_id: 'TRN-2024',
-        status: 'success',
-        ip_address: '172.16.0.2',
-        details: 'Tạo giải đấu mới: Giải Vô địch Quốc gia 2024',
-        payload: '{"name": "Giải Vô địch Quốc gia 2024", "type": "National"}'
-    },
-    {
-        id: 'LOG-1029',
-        timestamp: '2023-11-21T11:10:15Z',
-        actor: { id: 'USR-001', name: 'Nguyễn Văn A', email: 'admin@vct.vn' },
-        action: 'UPDATE',
-        resource: 'Settings',
-        status: 'warning',
-        ip_address: '192.168.1.10',
-        details: 'Thay đổi cấu hình hệ thống quan trọng (Mức cước hội phí)',
-        payload: '{"membership_fee": 500000}'
-    }
-]
 
 const STATUS_BADGE: Record<string, { label: string; type: string }> = {
     success: { label: 'Thành công', type: 'success' },
@@ -128,7 +56,7 @@ export const Page_audit_logs = () => (
 )
 
 const Page_audit_logs_Content = () => {
-    const { data: fetchedLogs, isLoading } = useAdminFetch<AuditLog[]>('/admin/audit-logs', { mockData: MOCK_LOGS })
+    const { data: fetchedLogs, isLoading } = useAdminFetch<AuditLog[]>('/admin/audit-logs')
     const [logs, setLogs] = useState<AuditLog[]>([])
     const [search, setSearch] = useState('')
     const debouncedSearch = useDebounce(search, 300)

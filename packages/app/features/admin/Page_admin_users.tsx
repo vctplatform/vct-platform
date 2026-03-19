@@ -9,7 +9,7 @@ import { useDebounce } from '../hooks/useDebounce'
 import { useAdminFetch } from './hooks/useAdminAPI'
 import { useAdminMutation } from './hooks/useAdminMutation'
 import { useFormValidation } from './hooks/useFormValidation'
-import { AdminDataTable, type AdminColumn } from './components/AdminDataTable'
+import { AdminDataTable } from './components/AdminDataTable'
 import {
     VCT_Badge, VCT_Button, VCT_Stack,
     VCT_SearchInput, VCT_Modal, VCT_Input, VCT_Field, VCT_Select,
@@ -20,21 +20,20 @@ import type { StatItem } from '../components/VCT_StatRow'
 import { VCT_Icons } from '../components/vct-icons'
 import { VCT_Drawer } from '../components/VCT_Drawer'
 import { AdminPaginationBar } from './components/AdminPaginationBar'
-import { VCT_Timeline } from '../components/VCT_Timeline'
-import type { TimelineEvent } from '../components/VCT_Timeline'
+
 import {
     ROLE_OPTIONS,
     ROLE_COLORS,
     STATUS_MAP,
-    MOCK_USERS,
     getRoleLabel,
     type SystemUser,
 } from './admin-users.data'
 import type { UserFormData } from './admin.types'
 import { AdminPageShell, useShellToast } from './components/AdminPageShell'
 import { exportToCSV } from './utils/adminExport'
-import { useI18n } from '../i18n'
+
 import { AdminGuard } from './components/AdminGuard'
+import { useI18n } from '../i18n'
 
 // ════════════════════════════════════════
 // TYPES & MOCK DATA
@@ -46,13 +45,7 @@ const BLANK_FORM: UserFormData = { name: '', email: '', phone: '', role: 'VIEWER
 // ════════════════════════════════════════
 // MAIN COMPONENT
 // ════════════════════════════════════════
-const MOCK_LOGIN_HISTORY: TimelineEvent[] = [
-    { time: '2 phút trước', title: 'Đăng nhập thành công', description: 'IP: 192.168.1.100 · Chrome 120 · Windows', color: '#10b981' },
-    { time: '3 giờ trước', title: 'Đăng xuất', description: 'Phiên kết thúc bình thường', color: '#94a3b8' },
-    { time: 'Hôm qua 14:30', title: 'Đăng nhập thành công', description: 'IP: 10.0.0.55 · Safari · macOS', color: '#10b981' },
-    { time: 'Hôm qua 09:15', title: 'Đổi mật khẩu', description: 'Mật khẩu được cập nhật thành công', color: '#f59e0b' },
-    { time: '3 ngày trước', title: 'Đăng nhập thất bại', description: 'IP: 45.67.89.12 · Sai mật khẩu 2 lần', color: '#ef4444' },
-]
+
 
 export const Page_admin_users = () => (
     <AdminGuard>
@@ -62,8 +55,8 @@ export const Page_admin_users = () => (
 
 const Page_admin_users_Content = () => {
     const router = useRouter()
-    const { t: _t } = useI18n()
-    const { data: fetchedUsers, isLoading } = useAdminFetch<SystemUser[]>('/admin/users', { mockData: MOCK_USERS })
+    const { t } = useI18n()
+    const { data: fetchedUsers, isLoading } = useAdminFetch<SystemUser[]>('/admin/users')
     const [users, setUsers] = useState<SystemUser[]>([])
     const [search, setSearch] = useState('')
     const debouncedSearch = useDebounce(search, 300)
@@ -203,9 +196,13 @@ const Page_admin_users_Content = () => {
 
     return (
         <AdminPageShell
-            title="Quản Lý Tài Khoản"
-            subtitle="Quản lý người dùng, phân quyền và trạng thái tài khoản trong hệ thống."
+            title={t('admin.users.title')}
+            subtitle={t('admin.users.subtitle')}
             icon={<VCT_Icons.Users size={28} className="text-[#0ea5e9]" />}
+            breadcrumbs={[
+                { label: 'Admin', href: '/admin', icon: <VCT_Icons.Home size={14} /> },
+                { label: 'Tài khoản' },
+            ]}
             stats={kpiStats}
             actions={
                 <VCT_Stack direction="row" gap={12}>
@@ -399,7 +396,9 @@ const Page_admin_users_Content = () => {
                         {/* Login History */}
                         <div>
                             <h3 className="font-bold text-sm text-(--vct-text-primary) mb-3 flex items-center gap-2"><VCT_Icons.Clock size={14} /> Lịch sử hoạt động</h3>
-                            <VCT_Timeline events={MOCK_LOGIN_HISTORY} maxHeight={280} />
+                            <div className="text-center text-(--vct-text-tertiary) py-4 text-xs">
+                                Lịch sử đăng nhập sẽ hiển thị từ audit log thực tế.
+                            </div>
                         </div>
                     </div>
                 )}

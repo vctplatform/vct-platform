@@ -11,6 +11,7 @@ import { VCT_Drawer } from '../components/VCT_Drawer'
 import { usePagination } from '../hooks/usePagination'
 import { AdminSkeletonRow } from './components/AdminSkeletonRow'
 import { AdminPaginationBar } from './components/AdminPaginationBar'
+import { useAdminFetch } from './hooks/useAdminAPI'
 
 // ════════════════════════════════════════
 // MOCK DATA — Document Templates
@@ -25,13 +26,15 @@ const INITIAL_TEMPLATES = [
     { id: 'DT-007', type: 'MEDICAL_CLEARANCE', name: 'Giấy chứng nhận Sức khỏe', version: 1, is_active: true, fields: ['athlete_name', 'doctor_name', 'hospital', 'exam_date', 'valid_until'], federation: null, issued_count: 450 },
 ]
 
-const MOCK_ISSUED = [
-    { id: 'ID-001', doc_number: 'VCT-2024-MC-001234', type: 'MEDAL_CERTIFICATE', recipient: 'Nguyễn Văn A', issued_at: '2024-03-09', status: 'valid', verification_code: 'VCT24MC1234' },
-    { id: 'ID-002', doc_number: 'VCT-2024-PC-005678', type: 'PARTICIPATION_CERT', recipient: 'Trần Thị B', issued_at: '2024-03-09', status: 'valid', verification_code: 'VCT24PC5678' },
-    { id: 'ID-003', doc_number: 'VCT-2024-BP-000089', type: 'BELT_PROMOTION_CERT', recipient: 'Lê Minh C', issued_at: '2024-03-08', status: 'valid', verification_code: 'VCT24BP0089' },
-    { id: 'ID-004', doc_number: 'VCT-2024-AC-002100', type: 'ATHLETE_CARD', recipient: 'Phạm Đức D', issued_at: '2024-03-07', status: 'revoked', verification_code: 'VCT24AC2100' },
-    { id: 'ID-005', doc_number: 'VCT-2024-RL-000056', type: 'REFEREE_LICENSE', recipient: 'Hoàng Văn E', issued_at: '2024-03-06', status: 'valid', verification_code: 'VCT24RL0056' },
-]
+interface IssuedDoc {
+    id: string
+    doc_number: string
+    type: string
+    recipient: string
+    issued_at: string
+    status: string
+    verification_code: string
+}
 
 const TYPE_OPTIONS = [
     { value: 'MEDAL_CERTIFICATE', label: '🥇 Huy chương' },
@@ -59,6 +62,8 @@ const BLANK_TEMPLATE = { name: '', type: 'MEDAL_CERTIFICATE', fieldsText: '', is
 // ════════════════════════════════════════
 export const Page_documents = () => {
     const [templates, setTemplates] = useState(INITIAL_TEMPLATES)
+    const { data: fetchedIssued } = useAdminFetch<IssuedDoc[]>('/admin/documents/issued')
+    const issuedDocs = useMemo(() => fetchedIssued ?? [], [fetchedIssued])
     const [search, setSearch] = useState('')
     const [typeFilter, setTypeFilter] = useState('all')
     const [tab, setTab] = useState<'templates' | 'issued'>('templates')
@@ -67,7 +72,7 @@ export const Page_documents = () => {
     const [form, setForm] = useState(BLANK_TEMPLATE)
     const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null)
     const [drawerTemplate, setDrawerTemplate] = useState<typeof INITIAL_TEMPLATES[0] | null>(null)
-    const [drawerDoc, setDrawerDoc] = useState<typeof MOCK_ISSUED[0] | null>(null)
+    const [drawerDoc, setDrawerDoc] = useState<IssuedDoc | null>(null)
 
     // Simulate initial loading
     React.useEffect(() => {
@@ -86,10 +91,10 @@ export const Page_documents = () => {
     }, [search, typeFilter, templates])
 
     const filteredIssued = useMemo(() => {
-        if (!search) return MOCK_ISSUED
+        if (!search) return issuedDocs
         const q = search.toLowerCase()
-        return MOCK_ISSUED.filter(d => d.recipient.toLowerCase().includes(q) || d.doc_number.toLowerCase().includes(q))
-    }, [search])
+        return issuedDocs.filter(d => d.recipient.toLowerCase().includes(q) || d.doc_number.toLowerCase().includes(q))
+    }, [search, issuedDocs])
 
     const tplPagination = usePagination(filteredTemplates, { pageSize: 5 })
     const issuedPagination = usePagination(filteredIssued, { pageSize: 5 })
@@ -171,7 +176,7 @@ export const Page_documents = () => {
                 <button
                     onClick={() => setTab('issued')}
                     className={`px-4 py-2 rounded-lg text-sm font-semibold transition-colors ${tab === 'issued' ? 'bg-(--vct-accent-blue,#3b82f6) text-white' : 'bg-(--vct-bg-elevated) text-(--vct-text-secondary) hover:text-(--vct-text-primary)'}`}
-                >Đã cấp ({MOCK_ISSUED.length})</button>
+                >Đã cấp ({issuedDocs.length})</button>
             </div>
 
             {/* ── FILTERS ── */}

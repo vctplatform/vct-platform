@@ -175,7 +175,7 @@ npm run typecheck
 ```
 vct-platform/
 ├── apps/
-│   ├── next/          → Next.js web app (Pages Router)
+│   ├── next/          → Next.js 16 web app (App Router)
 │   └── expo/          → Expo mobile app
 ├── packages/
 │   ├── app/features/  → Shared feature code (pages, components)
@@ -192,7 +192,7 @@ vct-platform/
 │   │   └── config/    → Configuration loading
 │   └── migrations/    → SQL migration files
 ├── docs/              → Documentation, regulations
-├── .agent/
+├── .agents/
 │   ├── skills/        → AI agent skills (BA, SA, CTO, PM, etc.)
 │   └── workflows/     → Development workflows (this file!)
 └── docker-compose.yml → Infrastructure services

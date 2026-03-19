@@ -15,6 +15,7 @@ import { AdminPaginationBar } from './components/AdminPaginationBar'
 import { AdminSkeletonRow } from './components/AdminSkeletonRow'
 import { useAdminToast } from './hooks/useAdminToast'
 import { exportToCSV, exportToJSON } from './utils/adminExport'
+import { useAdminFetch } from './hooks/useAdminAPI'
 
 // ════════════════════════════════════════
 // MOCK DATA — Notification Management
@@ -28,13 +29,14 @@ const INITIAL_TEMPLATES = [
     { id: 'TPL-006', category: 'SYSTEM_ALERT', channel: 'push', locale: 'vi-VN', title: 'Cảnh báo hệ thống: {{alert_type}}', variables: ['alert_type', 'details'], version: 1, is_active: true },
 ]
 
-const MOCK_STATS = [
-    { category: 'MATCH_CALL', total: 1250, delivered: 1230, failed: 20, read: 980, rate: 98.4 },
-    { category: 'RESULT_ANNOUNCEMENT', total: 340, delivered: 335, failed: 5, read: 280, rate: 98.5 },
-    { category: 'SCHEDULE_CHANGE', total: 45, delivered: 44, failed: 1, read: 38, rate: 97.8 },
-    { category: 'REGISTRATION_UPDATE', total: 890, delivered: 870, failed: 20, read: 650, rate: 97.8 },
-    { category: 'SYSTEM_ALERT', total: 15, delivered: 15, failed: 0, read: 12, rate: 100 },
-]
+interface NotifStat {
+    category: string
+    total: number
+    delivered: number
+    failed: number
+    read: number
+    rate: number
+}
 
 const CATEGORY_OPTIONS = [
     { value: 'MATCH_CALL', label: 'Gọi thi đấu' },
@@ -71,6 +73,8 @@ const BLANK_NOTIF = { category: 'MATCH_CALL', channel: 'push', locale: 'vi-VN', 
 // ════════════════════════════════════════
 export const Page_notifications_admin = () => {
     const [templates, setTemplates] = useState(INITIAL_TEMPLATES)
+    const { data: fetchedStats } = useAdminFetch<NotifStat[]>('/admin/notifications/stats')
+    const stats = useMemo(() => fetchedStats ?? [], [fetchedStats])
     const [search, setSearch] = useState('')
     const [channelFilter, setChannelFilter] = useState('all')
     const [tab, setTab] = useState<'templates' | 'stats'>('templates')
@@ -122,9 +126,9 @@ export const Page_notifications_admin = () => {
     const notifStats = useMemo(() => ({
         totalTemplates: templates.length,
         activeTemplates: templates.filter(t => t.is_active).length,
-        totalSent: MOCK_STATS.reduce((s, st) => s + st.total, 0),
-        avgDelivery: (MOCK_STATS.reduce((s, st) => s + st.rate, 0) / MOCK_STATS.length).toFixed(1),
-    }), [templates])
+        totalSent: stats.reduce((s, st) => s + st.total, 0),
+        avgDelivery: stats.length > 0 ? (stats.reduce((s, st) => s + st.rate, 0) / stats.length).toFixed(1) : '0.0',
+    }), [templates, stats])
 
     return (
         <VCT_PageContainer size="wide" animated>
@@ -150,13 +154,13 @@ export const Page_notifications_admin = () => {
             {tab === 'stats' && (
                 <div className="flex flex-wrap items-center justify-between gap-3 mb-4 p-3 bg-(--vct-bg-elevated) rounded-xl border border-(--vct-border-subtle)">
                     <span className="text-xs text-(--vct-text-tertiary)">
-                        📊 {MOCK_STATS.length} categories • {MOCK_STATS.reduce((s, st) => s + st.total, 0).toLocaleString()} thông báo
+                        📊 {stats.length} categories • {stats.reduce((s, st) => s + st.total, 0).toLocaleString()} thông báo
                     </span>
                     <div className="flex flex-wrap gap-2">
                         <VCT_Button variant="outline" size="sm" icon={<VCT_Icons.Download size={14} />} onClick={() => {
                             exportToCSV({
                                 headers: ['Category', 'Tổng gửi', 'Đã giao', 'Thất bại', 'Đã đọc', 'Tỷ lệ giao'],
-                                rows: MOCK_STATS.map(s => [CATEGORY_LABELS[s.category] || s.category, String(s.total), String(s.delivered), String(s.failed), String(s.read), `${s.rate}%`]),
+                                rows: stats.map(s => [CATEGORY_LABELS[s.category] || s.category, String(s.total), String(s.delivered), String(s.failed), String(s.read), `${s.rate}%`]),
                                 filename: `vct_notification_stats_${new Date().toISOString().slice(0, 10)}.csv`,
                             })
                             showToast('Đã xuất file CSV thống kê delivery!')
@@ -166,13 +170,13 @@ export const Page_notifications_admin = () => {
                                 data: {
                                     exported_at: new Date().toISOString(),
                                     summary: {
-                                        total_categories: MOCK_STATS.length,
-                                        total_sent: MOCK_STATS.reduce((s, st) => s + st.total, 0),
-                                        total_delivered: MOCK_STATS.reduce((s, st) => s + st.delivered, 0),
-                                        total_failed: MOCK_STATS.reduce((s, st) => s + st.failed, 0),
-                                        avg_delivery_rate: (MOCK_STATS.reduce((s, st) => s + st.rate, 0) / MOCK_STATS.length).toFixed(1) + '%',
+                                        total_categories: stats.length,
+                                        total_sent: stats.reduce((s, st) => s + st.total, 0),
+                                        total_delivered: stats.reduce((s, st) => s + st.delivered, 0),
+                                        total_failed: stats.reduce((s, st) => s + st.failed, 0),
+                                        avg_delivery_rate: stats.length > 0 ? (stats.reduce((s, st) => s + st.rate, 0) / stats.length).toFixed(1) + '%' : '0%',
                                     },
-                                    categories: MOCK_STATS.map(s => ({ ...s, label: CATEGORY_LABELS[s.category] || s.category })),
+                                    categories: stats.map(s => ({ ...s, label: CATEGORY_LABELS[s.category] || s.category })),
                                     templates: templates.map(t => ({ id: t.id, category: t.category, channel: t.channel, title: t.title, is_active: t.is_active, version: t.version })),
                                 },
                                 filename: `vct_notifications_export_${new Date().toISOString().slice(0, 10)}.json`,
@@ -271,7 +275,7 @@ export const Page_notifications_admin = () => {
                             {isLoading ? (
                                 [...Array(5)].map((_, i) => <AdminSkeletonRow key={i} cols={6} />)
                             ) : (
-                                MOCK_STATS.map(stat => (
+                                stats.map(stat => (
                                     <tr key={stat.category} className="hover:bg-white/5 transition-colors text-sm">
                                         <td className="p-4 font-semibold text-(--vct-text-primary)">{CATEGORY_LABELS[stat.category] || stat.category}</td>
                                         <td className="p-4 text-right font-mono text-[12px] text-(--vct-text-secondary)">{stat.total.toLocaleString()}</td>
@@ -383,7 +387,7 @@ export const Page_notifications_admin = () => {
                             </div>
                         </div>
                         {(() => {
-                            const stat = MOCK_STATS.find(s => s.category === drawerTpl.category)
+                            const stat = stats.find(s => s.category === drawerTpl.category)
                             return stat ? (
                                 <div>
                                     <div className="text-[10px] uppercase text-(--vct-text-tertiary) mb-2">Thống kê delivery</div>

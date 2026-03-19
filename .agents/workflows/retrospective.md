@@ -101,14 +101,14 @@ description: Workflow retrospective sau khi hoàn thành task — rút kinh nghi
 ### Improvements Made:
 | File | Change | Reason |
 |------|--------|--------|
-| .agent/skills/vct-{name}/SKILL.md | [mô tả] | [lý do] |
-| .agent/workflows/{name}.md | [mô tả] | [lý do] |
+| .agents/skills/vct-{name}/SKILL.md | [mô tả] | [lý do] |
+| .agents/workflows/{name}.md | [mô tả] | [lý do] |
 
 ### New Files Created:
 | File | Purpose |
 |------|---------|
-| .agent/skills/vct-{name}/SKILL.md | [mục đích] |
-| .agent/workflows/{name}.md | [mục đích] |
+| .agents/skills/vct-{name}/SKILL.md | [mục đích] |
+| .agents/workflows/{name}.md | [mục đích] |
 ```
 
 ---
@@ -118,8 +118,8 @@ description: Workflow retrospective sau khi hoàn thành task — rút kinh nghi
 1. Verify các file đã sửa:
    ```bash
    # Kiểm tra YAML frontmatter
-   head -5 .agent/skills/*/SKILL.md
-   head -5 .agent/workflows/*.md
+   head -5 .agents/skills/*/SKILL.md
+   head -5 .agents/workflows/*.md
    ```
 
 2. Tạo summary cho user:

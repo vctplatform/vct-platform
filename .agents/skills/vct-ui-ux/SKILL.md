@@ -1,6 +1,6 @@
 ---
 name: vct-ui-ux
-description: VCT Platform UI/UX master skill — design tokens, component catalog, persona maps, user research, theming, accessibility (WCAG 2.1 AA), responsive layout, animation standards, and pre-delivery visual quality checklist.
+description: VCT Platform UI/UX master skill — design tokens, component catalog (59 components), persona maps, theming, accessibility (WCAG 2.1 AA), responsive layout, animation standards, and pre-delivery visual quality checklist.
 ---
 
 # VCT Platform UI/UX Design System
@@ -65,7 +65,7 @@ var(--vct-input)               /* Input backgrounds */
 var(--vct-accent)              /* Primary accent — sky blue (#0ea5e9) */
 ```
 
-### Tailwind Utility Classes (mapped to tokens)
+### Tailwind 4 Utility Classes (mapped to tokens)
 ```
 bg-vct-bg, bg-vct-elevated, bg-vct-input, bg-vct-accent
 text-vct-text, text-vct-text-muted, text-vct-text-secondary
@@ -82,70 +82,102 @@ border-vct-border
 
 ---
 
-## 4. Component Library (`@vct/ui`)
+## 4. Component Library (59 components)
 
 All reusable components live in `packages/app/features/components/` and are exported from `packages/ui/src/index.ts`.
 
 ### Naming Convention
 - All components: `VCT_ComponentName` (e.g., `VCT_Button`, `VCT_Card`, `VCT_Modal`)
 
-### Key Components
-| Component | Usage |
-|-----------|-------|
-| `VCT_Card` | Container with elevation |
-| `VCT_Button` / `VCT_IconButton` | Primary/icon actions |
-| `VCT_Input` / `VCT_Select` / `VCT_Textarea` | Form elements |
-| `VCT_Modal` / `VCT_Drawer` / `VCT_Sheet` | Overlays/side panels |
-| `VCT_Badge` / `VCT_Tooltip` | Status indicators / hover info |
-| `VCT_Tabs` / `VCT_Dropdown` | Tab nav / context menus |
-| `VCT_DataGrid` / `VCT_ResponsiveTable` | Data display |
-| `VCT_DatePicker` / `VCT_Calendar` | Date/time selection |
-| `VCT_Wizard` / `VCT_FileUpload` | Multi-step forms / uploads |
-| `VCT_Timeline` / `VCT_StatBlock` / `VCT_InfoGrid` | Info display |
-| `VCT_PageSkeleton` | Loading skeleton |
-| `VCT_CommandPalette` | Keyboard-driven command |
-| `VCT_QRCode` / `VCT_QRScanner` | QR functionality |
+### Layout & Containers
+| Component | File | Usage |
+|-----------|------|-------|
+| `VCT_PageContainer` | `VCT_PageContainer.tsx` | Page content wrapper |
+| `VCT_PageHeader` | `VCT_PageHeader.tsx` | Page title + subtitle + actions |
+| `VCT_PageToolbar` | `VCT_PageToolbar.tsx` | Toolbar below header |
+| `VCT_PageTransition` | `VCT_PageTransition.tsx` | Animated page transitions |
+| `VCT_SectionCard` | `VCT_SectionCard.tsx` | Section grouping card |
 
-### VCT_Drawer (Admin Detail Panel)
-```tsx
-// Used extensively in admin pages for detail panels
-<VCT_Drawer
-  open={!!selectedItem}
-  onClose={() => setSelectedItem(null)}
-  title={selectedItem?.name}
-  width="480px"  // Default width for detail panels
->
-  {/* Header with avatar/icon */}
-  <VCT_InfoGrid data={infoFields} />
-  
-  {/* Activity timeline */}
-  <VCT_Timeline events={activityLog} />
-  
-  {/* Action buttons */}
-  <div className="drawer-actions">
-    <VCT_Button variant="primary">{t('actions.edit')}</VCT_Button>
-    <VCT_Button variant="danger">{t('actions.delete')}</VCT_Button>
-  </div>
-</VCT_Drawer>
-```
+### Data Display
+| Component | File | Usage |
+|-----------|------|-------|
+| `VCT_DataGrid` | `VCT_DataGrid.tsx` | Advanced data grid (18KB) |
+| `VCT_ResponsiveTable` | `VCT_ResponsiveTable.tsx` | Mobile-responsive table |
+| `VCT_InfoGrid` | `VCT_InfoGrid.tsx` | Key-value info display |
+| `VCT_Timeline` | `VCT_Timeline.tsx` | Event timeline |
+| `VCT_StatBlock` | `VCT_StatBlock.tsx` | Stat card with icon |
+| `VCT_StatRow` | `VCT_StatRow.tsx` | Inline stat display |
+| `VCT_ListItem` | `VCT_ListItem.tsx` | List item with icon |
+| `VCT_ProfileHeader` | `VCT_ProfileHeader.tsx` | Profile card header |
+| `VCT_Avatar` | `VCT_Avatar.tsx` | User avatar |
+| `VCT_Badge` | `VCT_Badge.tsx` | Status badge |
+| `VCT_EmptyState` | `VCT_EmptyState.tsx` | Empty data state |
+| `VCT_Skeleton` | `VCT_Skeleton.tsx` | Loading skeleton |
+| `VCT_Image` | `VCT_Image.tsx` | Optimized image |
+| `VCT_ImageGallery` | `VCT_ImageGallery.tsx` | Image gallery viewer |
 
-### Admin Page Design Pattern
-```
-Admin pages follow Table + Drawer pattern:
-1. Page header: title, description, search bar, action buttons
-2. Stats row: 3-4 VCT_StatBlock cards showing key metrics
-3. Data table: sortable columns, row click → opens Drawer
-4. Drawer: detail panel with InfoGrid, Timeline, action buttons
-5. Pagination: usePagination hook for client-side paging
-```
+### Charts
+| Component | File | Usage |
+|-----------|------|-------|
+| `VCT_BarChart` | `vct-charts.tsx` | Vertical bar chart |
+| `VCT_HorizontalBarChart` | `vct-charts.tsx` | Horizontal bar chart |
+| `VCT_DonutChart` | `vct-charts.tsx` | Pie/donut chart |
+| `VCT_StatCard` | `vct-charts.tsx` | Stat card with sparkline |
+| `VCT_ChartProgressBar` | `vct-charts.tsx` | Progress bar chart |
 
-### Chart Components
-| Component | Usage |
-|-----------|-------|
-| `VCT_BarChart` / `VCT_HorizontalBarChart` | Bar charts |
-| `VCT_DonutChart` | Pie/donut charts |
-| `VCT_StatCard` | Stat with sparkline |
-| `VCT_ChartProgressBar` | Progress indicators |
+### Form Elements
+| Component | File | Usage |
+|-----------|------|-------|
+| `VCT_Input` | `vct-ui-form.tsx` | Text input |
+| `VCT_NumberInput` | `VCT_NumberInput.tsx` | Number input with stepper |
+| `VCT_Select` | `vct-ui-form.tsx` | Select/dropdown |
+| `VCT_Textarea` | `VCT_Textarea.tsx` | Multi-line text |
+| `VCT_Checkbox` | `VCT_Checkbox.tsx` | Checkbox with label |
+| `VCT_RadioGroup` | `VCT_RadioGroup.tsx` | Radio button group |
+| `VCT_Slider` | `VCT_Slider.tsx` | Range slider |
+| `VCT_TagInput` | `VCT_TagInput.tsx` | Tag/chip input |
+| `VCT_DatePicker` | `VCT_DatePicker.tsx` | Date picker |
+| `VCT_AddressSelect` | `VCT_AddressSelect.tsx` | Province/District/Ward selector |
+| `VCT_FileUpload` | `VCT_FileUpload.tsx` | File upload area |
+| `VCT_RichTextEditor` | `VCT_RichTextEditor.tsx` | Rich text editor |
+| `VCT_DigitalSignature` | `VCT_DigitalSignature.tsx` | Digital signature pad |
+
+### Overlays & Panels
+| Component | File | Usage |
+|-----------|------|-------|
+| `VCT_Modal` | `vct-ui-overlay.tsx` | Modal dialog |
+| `VCT_Drawer` | `VCT_Drawer.tsx` | Side panel (admin detail) |
+| `VCT_Sheet` | `VCT_Sheet.tsx` | Bottom sheet (mobile) |
+| `VCT_Popover` | `VCT_Popover.tsx` | Popover content |
+| `VCT_Tooltip` | `VCT_Tooltip.tsx` | Hover tooltip |
+| `VCT_CommandPalette` | `VCT_CommandPalette.tsx` | Keyboard command palette |
+| `VCT_ShortcutsPanel` | `VCT_ShortcutsPanel.tsx` | Keyboard shortcuts panel |
+
+### Navigation
+| Component | File | Usage |
+|-----------|------|-------|
+| `VCT_Tabs` | `vct-ui-navigation.tsx` | Tab navigation |
+| `VCT_Dropdown` | `VCT_Dropdown.tsx` | Context menu dropdown |
+| `VCT_Accordion` | `VCT_Accordion.tsx` | Collapsible accordion |
+| `VCT_Calendar` | `VCT_Calendar.tsx` | Calendar widget |
+
+### Feedback
+| Component | File | Usage |
+|-----------|------|-------|
+| `VCT_NotificationBell` | `VCT_NotificationBell.tsx` | Notification icon + count |
+| `NotificationCenter` | `NotificationCenter.tsx` | Full notification panel |
+| `VCT_CopyToClipboard` | `VCT_CopyToClipboard.tsx` | Copy button |
+| `VCT_CommentThread` | `VCT_CommentThread.tsx` | Discussion thread |
+
+### Special
+| Component | File | Usage |
+|-----------|------|-------|
+| `VCT_Wizard` | `VCT_Wizard.tsx` | Multi-step wizard |
+| `VCT_QRCode` | `VCT_QRCode.tsx` | QR code generator |
+| `VCT_QRScanner` | `VCT_QRScanner.tsx` | QR code scanner |
+
+### Page Templates (vct-page-templates.tsx)
+Pre-built page layouts for quick scaffolding.
 
 ### Icons
 ```tsx
@@ -213,7 +245,50 @@ export function Page_feature_name() {
 
 ---
 
-## 7. Animation Standards
+## 7. Admin Page Design Pattern
+
+```
+Admin pages follow Table + Drawer pattern:
+1. Page header: title, description, search bar, action buttons
+2. Stats row: 3-4 VCT_StatBlock cards showing key metrics
+3. Data table: sortable columns, row click → opens Drawer
+4. Drawer: detail panel with InfoGrid, Timeline, action buttons
+5. Pagination: usePagination hook for client-side paging
+```
+
+### Admin Module Sub-Structure
+```
+features/admin/
+├── Page_admin_*.tsx           # 22 page components
+├── admin.module.css           # CSS Modules for admin
+├── admin.types.ts             # Shared TypeScript types
+├── admin-users.data.ts        # Data helpers
+├── components/                # Admin-specific components
+├── hooks/                     # Admin-specific hooks
+├── utils/                     # Admin-specific utilities
+└── __tests__/                 # Admin tests
+```
+
+### VCT_Drawer (Admin Detail Panel)
+```tsx
+<VCT_Drawer
+  open={!!selectedItem}
+  onClose={() => setSelectedItem(null)}
+  title={selectedItem?.name}
+  width="480px"
+>
+  <VCT_InfoGrid data={infoFields} />
+  <VCT_Timeline events={activityLog} />
+  <div className="drawer-actions">
+    <VCT_Button variant="primary">{t('actions.edit')}</VCT_Button>
+    <VCT_Button variant="danger">{t('actions.delete')}</VCT_Button>
+  </div>
+</VCT_Drawer>
+```
+
+---
+
+## 8. Animation Standards
 
 Using `framer-motion`:
 ```tsx
@@ -227,7 +302,7 @@ animate={{ opacity: 1, y: 0 }}
 
 ---
 
-## 8. Pre-Delivery Visual Quality Checklist
+## 9. Pre-Delivery Visual Quality Checklist
 
 ### Visual Quality
 - [ ] No emojis used as icons (use SVG/VCT_Icons instead)
@@ -262,7 +337,7 @@ animate={{ opacity: 1, y: 0 }}
 
 ---
 
-## 9. Anti-Patterns (NEVER Do These)
+## 10. Anti-Patterns (NEVER Do These)
 
 1. ❌ **NEVER** hardcode colors — use `var(--vct-*)` tokens
 2. ❌ **NEVER** import icons from `lucide-react` — use `VCT_Icons`
@@ -275,7 +350,7 @@ animate={{ opacity: 1, y: 0 }}
 
 ---
 
-## 10. Cross-Reference to Other Roles
+## 11. Cross-Reference to Other Roles
 
 | Situation | Consult |
 |---|---|

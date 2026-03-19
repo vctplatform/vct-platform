@@ -5,7 +5,7 @@ description: Workflow performance profiling và optimization cho VCT Platform
 # /performance — Performance Optimization
 
 > Sử dụng khi cần tối ưu hiệu suất backend, frontend, hoặc database.
-> Đọc skill **vct-cto** (`/.agent/skills/vct-cto/SKILL.md`) phần Performance Standards.
+> Đọc skill **vct-cto** (`/.agents/skills/vct-cto/SKILL.md`) phần Performance Standards.
 
 // turbo-all
 

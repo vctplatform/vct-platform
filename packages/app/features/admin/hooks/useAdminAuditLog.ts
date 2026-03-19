@@ -1,4 +1,6 @@
 import { useCallback, useRef, useState } from 'react'
+import { useAuth } from '../../auth/AuthProvider'
+import { apiFetch } from './useAdminAPI'
 
 // ════════════════════════════════════════
 // useAdminAuditLog — Track admin actions
@@ -17,29 +19,29 @@ export interface AuditEntry {
 
 /**
  * Hook to log admin actions for audit trail.
- * Stores entries in memory (would connect to API in production).
- *
- * @example
- * ```tsx
- * const { log, entries } = useAdminAuditLog()
- * log({ action: 'create', entity: 'ticket', entityId: 'TKT-100', description: 'Created new ticket' })
- * ```
+ * POSTs entries to backend API and keeps local state for immediate display.
  */
 export function useAdminAuditLog() {
     const [entries, setEntries] = useState<AuditEntry[]>([])
     const counterRef = useRef(0)
+    const { currentUser } = useAuth()
 
     const log = useCallback((entry: Omit<AuditEntry, 'id' | 'timestamp' | 'user'>) => {
         counterRef.current += 1
         const newEntry: AuditEntry = {
             ...entry,
             id: `AUDIT-${counterRef.current.toString().padStart(4, '0')}`,
-            user: 'admin@vct.vn', // Would come from auth context in production
+            user: currentUser?.email || currentUser?.name || 'unknown',
             timestamp: new Date().toISOString(),
         }
-        setEntries(prev => [newEntry, ...prev].slice(0, 100)) // Keep last 100 entries
-        // In production: also POST to /admin/audit-log
-    }, [])
+        setEntries(prev => [newEntry, ...prev].slice(0, 100))
+
+        // Fire-and-forget POST to backend
+        apiFetch('/admin/audit-logs', {
+            method: 'POST',
+            body: JSON.stringify(newEntry),
+        }).catch(() => { /* swallow — local entry already recorded */ })
+    }, [currentUser])
 
     const getByEntity = useCallback((entity: string) => {
         return entries.filter(e => e.entity === entity)

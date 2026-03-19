@@ -14,6 +14,7 @@ import { useAdminFetch } from './hooks/useAdminAPI'
 import { useAdminMutation } from './hooks/useAdminMutation'
 import { exportToCSV } from './utils/adminExport'
 import { AdminGuard } from './components/AdminGuard'
+import { useI18n } from '../i18n'
 
 interface Role {
     id: string; name: string; code: string; description: string
@@ -37,15 +38,7 @@ const PERMISSIONS = [
     { key: 'admin.audit', label: 'Xem audit log', module: 'Admin' },
 ]
 
-const MOCK_ROLES: Role[] = [
-    { id: 'R-001', name: 'Quản trị viên hệ thống', code: 'SYSTEM_ADMIN', description: 'Toàn quyền quản trị', user_count: 2, scope_type: 'SYSTEM', permissions: PERMISSIONS.map(p => p.key), is_system: true },
-    { id: 'R-002', name: 'Quản lý Liên đoàn', code: 'FEDERATION_ADMIN', description: 'Quản trị cấp liên đoàn', user_count: 8, scope_type: 'FEDERATION', permissions: ['tournament.view','tournament.create','tournament.edit','athlete.view','athlete.edit','club.manage','finance.view','finance.manage'], is_system: true },
-    { id: 'R-003', name: 'Chủ nhiệm CLB', code: 'CLUB_MANAGER', description: 'Quản lý CLB/võ đường', user_count: 45, scope_type: 'CLUB', permissions: ['tournament.view','athlete.view','athlete.edit','club.manage','finance.view'], is_system: true },
-    { id: 'R-004', name: 'Trọng tài', code: 'REFEREE', description: 'Chấm điểm trong giải đấu', user_count: 120, scope_type: 'TOURNAMENT', permissions: ['tournament.view','scoring.submit','athlete.view'], is_system: true },
-    { id: 'R-005', name: 'HLV', code: 'COACH', description: 'Quản lý đào tạo', user_count: 85, scope_type: 'CLUB', permissions: ['tournament.view','athlete.view','athlete.edit'], is_system: true },
-    { id: 'R-006', name: 'VĐV', code: 'ATHLETE', description: 'Xem thông tin, đăng ký thi đấu', user_count: 3500, scope_type: 'SELF', permissions: ['tournament.view','athlete.view'], is_system: true },
-    { id: 'R-007', name: 'Giám sát kỹ thuật', code: 'TECH_SUPERVISOR', description: 'Giám sát KT, ghi đè điểm', user_count: 12, scope_type: 'TOURNAMENT', permissions: ['tournament.view','scoring.submit','scoring.override','athlete.view'], is_system: false },
-]
+
 
 const SCOPE_LABELS: Record<string, string> = { SYSTEM: 'Hệ thống', FEDERATION: 'Liên đoàn', CLUB: 'CLB', TOURNAMENT: 'Giải đấu', SELF: 'Cá nhân' }
 
@@ -59,7 +52,8 @@ export const Page_admin_roles = () => (
 )
 
 const Page_admin_roles_Content = () => {
-    const { data: fetchedRoles, isLoading } = useAdminFetch<Role[]>('/admin/roles', { mockData: MOCK_ROLES })
+    const { t } = useI18n()
+    const { data: fetchedRoles, isLoading } = useAdminFetch<Role[]>('/admin/roles')
     const [roles, setRoles] = useState<Role[]>([])
     const [search, setSearch] = useState('')
     const [selectedRole, setSelectedRole] = useState<Role | null>(null)
@@ -140,13 +134,17 @@ const Page_admin_roles_Content = () => {
 
     return (
         <AdminPageShell
-            title="Phân Quyền & Vai Trò"
-            subtitle="Quản lý vai trò, phân quyền RBAC trong hệ thống."
+            title={t('admin.roles.title')}
+            subtitle={t('admin.roles.subtitle')}
             icon={<VCT_Icons.Shield size={28} className="text-[#8b5cf6]" />}
+            breadcrumbs={[
+                { label: 'Admin', href: '/admin', icon: <VCT_Icons.Home size={14} /> },
+                { label: 'Vai trò & Quyền' },
+            ]}
             stats={stats}
             actions={
                 <VCT_Stack direction="row" gap={12}>
-                    <VCT_Button variant="outline" icon={<VCT_Icons.Download size={16} />} onClick={handleExport}>Xuất ma trận</VCT_Button>
+                    <VCT_Button variant="outline" icon={<VCT_Icons.Download size={16} />} onClick={handleExport}>{t('admin.roles.exportMatrix')}</VCT_Button>
                     <VCT_Button icon={<VCT_Icons.Plus size={16} />} onClick={() => { setForm({ name:'', code:'', description:'', scope_type:'CLUB' }); setShowModal(true) }}>Tạo Vai Trò</VCT_Button>
                 </VCT_Stack>
             }

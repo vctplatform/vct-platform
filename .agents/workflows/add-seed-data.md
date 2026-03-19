@@ -27,7 +27,7 @@ description: Workflow thêm dữ liệu seed/reference cho VCT Platform (đai, h
 
 1. **Regulations**: Đọc từ `docs/regulations/` 
    - Kiểm tra version/amendment nào đang áp dụng
-   - Đối chiếu với BA skill (`/.agent/skills/vct-ba/SKILL.md`)
+   - Đối chiếu với BA skill (`/.agents/skills/vct-ba/SKILL.md`)
 2. **Standard lists**: Từ quy chế quốc gia
    - Hệ thống đai: 10 cấp (Trắng → Đen)
    - Hạng cân: theo quy chế thi đấu

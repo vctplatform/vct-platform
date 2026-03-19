@@ -10,46 +10,29 @@ import {
 import type { StatItem } from '../components/VCT_StatRow'
 import { VCT_Icons } from '../components/vct-icons'
 import { VCT_Drawer } from '../components/VCT_Drawer'
-import { VCT_Timeline } from '../components/VCT_Timeline'
 import { AdminPageShell, useShellToast } from './components/AdminPageShell'
 import { useAdminFetch } from './hooks/useAdminAPI'
 import { useAdminMutation } from './hooks/useAdminMutation'
 import { exportToCSV } from './utils/adminExport'
 import { AdminDataTable } from './components/AdminDataTable'
 import { AdminGuard } from './components/AdminGuard'
+import { useI18n } from '../i18n'
 import './admin.module.css'
-import type { TimelineEvent } from '../components/VCT_Timeline'
 
 // ════════════════════════════════════════
-// MOCK DATA
+// TYPES (fetched from API)
 // ════════════════════════════════════════
-const DB_METRICS = [
-    { label: 'Active Connections', value: '24 / 100', status: 'ok' },
-    { label: 'Query Latency (P95)', value: '12ms', status: 'ok' },
-    { label: 'DB Size', value: '2.4 GB', status: 'ok' },
-    { label: 'Replication Lag', value: '0ms', status: 'ok' },
-]
-
-const CACHE_METRICS = [
-    { label: 'Hit Rate', value: '94.2%', status: 'ok' },
-    { label: 'Memory Usage', value: '256 MB / 1 GB', status: 'ok' },
-    { label: 'Keys', value: '12,450', status: 'ok' },
-    { label: 'Evictions/min', value: '3', status: 'ok' },
-]
-
-const QUEUE_METRICS = [
-    { label: 'Pending Messages', value: '12', status: 'ok' },
-    { label: 'Consumers', value: '4', status: 'ok' },
-    { label: 'Msg/sec (in)', value: '85', status: 'ok' },
-    { label: 'Msg/sec (out)', value: '82', status: 'ok' },
-]
-
-const STORAGE_METRICS = [
-    { label: 'Total Files', value: '45,200', status: 'ok' },
-    { label: 'Used Space', value: '18.5 GB / 100 GB', status: 'ok' },
-    { label: 'Upload Speed', value: '12 MB/s', status: 'ok' },
-    { label: 'CDN Bandwidth', value: '2.1 TB (tháng)', status: 'ok' },
-]
+interface HealthData {
+    status: string
+    timestamp: string
+    go_version: string
+    goroutines: number
+    memory: { alloc_mb: number; sys_mb: number; gc_runs: number; heap_objects: number; heap_inuse_mb: number; stack_inuse_mb: number }
+    database: Record<string, any>
+    cache: Record<string, any>
+    realtime: { connected_clients: number }
+    storage: { driver: string; provider: string }
+}
 
 interface ConfigParam {
     key: string
@@ -63,24 +46,6 @@ interface ConfigParam {
     step?: number
 }
 
-const INITIAL_CONFIG_PARAMS: ConfigParam[] = [
-    { key: 'session.timeout', value: '3600', defaultValue: '3600', unit: 'giây', description: 'Thời gian hết hạn session', type: 'number', min: 300, max: 86400, step: 300 },
-    { key: 'scoring.max_judges', value: '7', defaultValue: '7', unit: '', description: 'Số giám khảo tối đa chấm quyền thuật', type: 'number', min: 3, max: 15, step: 2 },
-    { key: 'scoring.drop_highest', value: 'true', defaultValue: 'true', unit: '', description: 'Bỏ điểm cao nhất khi tổng hợp', type: 'boolean' },
-    { key: 'scoring.drop_lowest', value: 'true', defaultValue: 'true', unit: '', description: 'Bỏ điểm thấp nhất khi tổng hợp', type: 'boolean' },
-    { key: 'registration.deadline_hours', value: '48', defaultValue: '48', unit: 'giờ', description: 'Hạn đăng ký trước giải', type: 'number', min: 1, max: 168, step: 1 },
-    { key: 'weigh_in.tolerance_kg', value: '0.5', defaultValue: '0.5', unit: 'kg', description: 'Sai số cho phép khi cân', type: 'number', min: 0.1, max: 2.0, step: 0.1 },
-    { key: 'ranking.elo_k_factor', value: '32', defaultValue: '32', unit: '', description: 'K-Factor cho ELO rating', type: 'number', min: 10, max: 64, step: 2 },
-    { key: 'upload.max_size_mb', value: '50', defaultValue: '50', unit: 'MB', description: 'Kích thước upload tối đa', type: 'number', min: 5, max: 500, step: 5 },
-]
-
-const INITIAL_BACKUP_HISTORY = [
-    { id: 'BK-001', time: '10/03/2024 03:00', size: '2.1 GB', type: 'Tự động', status: 'success' },
-    { id: 'BK-002', time: '09/03/2024 03:00', size: '2.0 GB', type: 'Tự động', status: 'success' },
-    { id: 'BK-003', time: '08/03/2024 15:30', size: '2.0 GB', type: 'Thủ công', status: 'success' },
-    { id: 'BK-004', time: '08/03/2024 03:00', size: '1.9 GB', type: 'Tự động', status: 'success' },
-]
-
 // ════════════════════════════════════════
 // SKELETON COMPONENTS
 // ════════════════════════════════════════
@@ -93,7 +58,7 @@ const SkeletonMetricCard = () => (
 
 const SkeletonMetricGrid = ({ title, color }: { title: string; color: string }) => (
     <div className="bg-(--vct-bg-elevated) border border-(--vct-border-strong) rounded-2xl p-5">
-        <h3 className="font-bold text-(--vct-text-primary) mb-4 flex items-center gap-2" style={{ color }}>
+        <h3 className="admin-skeleton-title text-(--vct-text-primary) mb-4" style={{ '--_skeleton-color': color } as React.CSSProperties}>
             <div className="w-[18px] h-[18px] bg-(--vct-bg-card) rounded animate-pulse" /> {title}
         </h3>
         <div className="grid grid-cols-2 gap-3">
@@ -102,27 +67,27 @@ const SkeletonMetricGrid = ({ title, color }: { title: string; color: string }) 
     </div>
 )
 
-
-const SkeletonBackupItem = () => (
-    <div className="flex items-center justify-between p-3 bg-(--vct-bg-base) rounded-xl border border-(--vct-border-subtle)">
-        <div className="flex items-center gap-4">
-            <div className="w-2.5 h-2.5 rounded-full bg-(--vct-bg-elevated) animate-pulse" />
-            <div className="space-y-1">
-                <div className="h-4 w-32 bg-(--vct-bg-elevated) rounded animate-pulse" />
-                <div className="h-3 w-20 bg-(--vct-bg-elevated) rounded animate-pulse" />
-            </div>
-        </div>
-        <div className="flex items-center gap-3">
-            <div className="h-5 w-16 bg-(--vct-bg-elevated) rounded animate-pulse" />
-            <div className="h-8 w-8 bg-(--vct-bg-elevated) rounded animate-pulse" />
-        </div>
-    </div>
+// Add GlobalStyle helper to style the table hover states when using AdminDataTable
+const GlobalStyle = () => (
+    <React.Fragment>
+        <style dangerouslySetInnerHTML={{ __html: `
+            .admin-table-row:hover .admin-row-action {
+                opacity: 1 !important;
+            }
+            .admin-row-action {
+                opacity: 0;
+                transition: opacity 0.2s ease;
+            }
+        `}} />
+    </React.Fragment>
 )
 
 // ════════════════════════════════════════
 // METRIC CARD COMPONENT
 // ════════════════════════════════════════
-const MetricGrid = ({ title, icon, metrics, color }: { title: string; icon: React.ReactNode; metrics: typeof DB_METRICS; color: string }) => (
+interface MetricItem { label: string; value: string | number; status?: string }
+
+const MetricGrid = ({ title, icon, metrics, color }: { title: string; icon: React.ReactNode; metrics: MetricItem[]; color: string }) => (
     <div className="bg-(--vct-bg-elevated) border border-(--vct-border-strong) rounded-2xl p-5">
         <h3 className="font-bold text-(--vct-text-primary) mb-4 flex items-center gap-2" style={{ color }}>
             {icon} {title}
@@ -144,21 +109,6 @@ const MetricGrid = ({ title, icon, metrics, color }: { title: string; icon: Reac
 // ════════════════════════════════════════
 // MAIN COMPONENT
 // ════════════════════════════════════════
-// Add GlobalStyle helper to style the table hover states when using AdminDataTable
-const GlobalStyle = () => (
-    <React.Fragment>
-        <style dangerouslySetInnerHTML={{ __html: `
-            .admin-table-row:hover .admin-row-action {
-                opacity: 1 !important;
-            }
-            .admin-row-action {
-                opacity: 0;
-                transition: opacity 0.2s ease;
-            }
-        `}} />
-    </React.Fragment>
-)
-
 export const Page_admin_system = () => (
     <AdminGuard>
         <Page_admin_system_Content />
@@ -166,8 +116,8 @@ export const Page_admin_system = () => (
 )
 
 const Page_admin_system_Content = () => {
-    const [configParams, setConfigParams] = useState(INITIAL_CONFIG_PARAMS)
-    const [backups, setBackups] = useState(INITIAL_BACKUP_HISTORY)
+    const { t } = useI18n()
+    const [configParams, setConfigParams] = useState<ConfigParam[]>([])
     const { showToast } = useShellToast()
     const [showEditModal, setShowEditModal] = useState(false)
     const [editingParam, setEditingParam] = useState<ConfigParam | null>(null)
@@ -176,11 +126,51 @@ const Page_admin_system_Content = () => {
     const [confirmBackup, setConfirmBackup] = useState(false)
     const [confirmClearCache, setConfirmClearCache] = useState(false)
     const [confirmReset, setConfirmReset] = useState<ConfigParam | null>(null)
-    const { isLoading } = useAdminFetch<ConfigParam[]>('/admin/config', { mockData: INITIAL_CONFIG_PARAMS })
     const [drawerParam, setDrawerParam] = useState<ConfigParam | null>(null)
     const [search, setSearch] = useState('')
     const [sortCol, setSortCol] = useState<string>('key')
     const [sortDir, setSortDir] = useState<'asc' | 'desc'>('asc')
+
+    // ── Fetch real data from API ──
+    const { data: healthData, isLoading: healthLoading } = useAdminFetch<HealthData>('/admin/health')
+    const { data: configData, isLoading: configLoading } = useAdminFetch<ConfigParam[]>('/admin/config')
+
+    const isLoading = healthLoading || configLoading
+
+    // Initialize config params from API when available
+    React.useEffect(() => {
+        if (configData && Array.isArray(configData)) {
+            setConfigParams(configData)
+        }
+    }, [configData])
+
+    // Build metrics from real health data
+    const dbMetrics: MetricItem[] = healthData?.database ? [
+        { label: 'Status', value: healthData.database.status || 'N/A' },
+        { label: 'Open Connections', value: healthData.database.open_connections ?? 'N/A' },
+        { label: 'In Use', value: healthData.database.in_use ?? 'N/A' },
+        { label: 'Idle', value: healthData.database.idle ?? 'N/A' },
+    ] : []
+
+    const memoryMetrics: MetricItem[] = healthData?.memory ? [
+        { label: 'Alloc', value: `${healthData.memory.alloc_mb} MB` },
+        { label: 'System', value: `${healthData.memory.sys_mb} MB` },
+        { label: 'Heap In-Use', value: `${healthData.memory.heap_inuse_mb} MB` },
+        { label: 'GC Runs', value: healthData.memory.gc_runs },
+    ] : []
+
+    const cacheMetrics: MetricItem[] = healthData?.cache ? Object.entries(healthData.cache).map(([key, value]) => ({
+        label: key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()),
+        value: String(value),
+    })) : []
+
+    const runtimeMetrics: MetricItem[] = healthData ? [
+        { label: 'Goroutines', value: healthData.goroutines },
+        { label: 'Go Version', value: healthData.go_version },
+        { label: 'WS Clients', value: healthData.realtime.connected_clients },
+        { label: 'Storage', value: `${healthData.storage.driver} (${healthData.storage.provider})` },
+    ] : []
+
     const currentEnv = 'development' as 'development' | 'staging' | 'production'
 
     const filteredParams = useMemo(() => {
@@ -262,40 +252,32 @@ const Page_admin_system_Content = () => {
 
     const handleBackup = async () => {
         await mutateBackup()
-        const newBackup = {
-            id: `BK-${Math.floor(Math.random() * 1000).toString().padStart(3, '0')}`,
-            time: new Date().toLocaleString('vi-VN'),
-            size: '2.1 GB',
-            type: 'Thủ công',
-            status: 'success',
-        }
-        setBackups(prev => [newBackup, ...prev])
-        showToast('Đã tạo backup thành công!')
+        showToast('Đã gửi yêu cầu backup!')
         setConfirmBackup(false)
     }
 
     const handleClearCache = async () => {
         await mutateClearCache()
-        showToast('Đã xóa cache Redis thành công!', 'warning')
+        showToast('Đã gửi yêu cầu xóa cache!', 'warning')
         setConfirmClearCache(false)
     }
 
-    const handleDownloadBackup = (backup: typeof INITIAL_BACKUP_HISTORY[0]) => {
-        showToast(`Đang tải backup ${backup.id} (${backup.size})...`)
-    }
-
     const sysStats: StatItem[] = [
-        { label: 'Uptime', value: '99.98%', icon: <VCT_Icons.Activity size={18} />, color: '#10b981' },
-        { label: 'CPU', value: '23%', icon: <VCT_Icons.Laptop size={18} />, color: '#0ea5e9' },
-        { label: 'Memory', value: '4.2/8 GB', icon: <VCT_Icons.Layers size={18} />, color: '#f59e0b' },
-        { label: 'Disk', value: '22/100 GB', icon: <VCT_Icons.Settings size={18} />, color: '#8b5cf6' },
+        { label: 'Status', value: healthData?.status ?? '—', icon: <VCT_Icons.Activity size={18} />, color: '#10b981' },
+        { label: 'Goroutines', value: healthData?.goroutines ?? '—', icon: <VCT_Icons.Laptop size={18} />, color: '#0ea5e9' },
+        { label: 'Memory', value: healthData ? `${healthData.memory.alloc_mb} MB` : '—', icon: <VCT_Icons.Layers size={18} />, color: '#f59e0b' },
+        { label: 'Storage', value: healthData?.storage.driver ?? '—', icon: <VCT_Icons.Settings size={18} />, color: '#8b5cf6' },
     ]
 
     return (
         <AdminPageShell
-            title="Cấu Hình & Giám Sát Hệ Thống"
-            subtitle="Giám sát cơ sở hạ tầng, tham số cấu hình và quản lý backup."
+            title={t('admin.system.title')}
+            subtitle={t('admin.system.subtitle')}
             icon={<VCT_Icons.Settings size={28} className="text-[#8b5cf6]" />}
+            breadcrumbs={[
+                { label: 'Admin', href: '/admin', icon: <VCT_Icons.Home size={14} /> },
+                { label: 'Cấu hình Hệ thống' },
+            ]}
             stats={sysStats}
             actions={
                 <VCT_Stack direction="row" gap={12} className="flex-wrap">
@@ -320,26 +302,35 @@ const Page_admin_system_Content = () => {
                     type={currentEnv === 'production' ? 'danger' : currentEnv === 'staging' ? 'warning' : 'info'}
                     text={currentEnv === 'production' ? 'PRODUCTION' : currentEnv === 'staging' ? 'STAGING' : 'DEVELOPMENT'}
                 />
+                {healthData && (
+                    <span className="text-xs text-(--vct-text-tertiary) ml-2">
+                        · {healthData.go_version} · {healthData.storage.driver}/{healthData.storage.provider}
+                    </span>
+                )}
             </div>
-
-
 
             {/* ── INFRASTRUCTURE METRICS ── */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
                 {isLoading ? (
                     <>
-                        <SkeletonMetricGrid title="PostgreSQL Database" color="#0ea5e9" />
-                        <SkeletonMetricGrid title="Redis Cache" color="#ef4444" />
-                        <SkeletonMetricGrid title="NATS Message Queue" color="#10b981" />
-                        <SkeletonMetricGrid title="Object Storage" color="#f59e0b" />
+                        <SkeletonMetricGrid title="Database" color="#0ea5e9" />
+                        <SkeletonMetricGrid title="Memory" color="#ef4444" />
+                        <SkeletonMetricGrid title="Cache" color="#10b981" />
+                        <SkeletonMetricGrid title="Runtime" color="#f59e0b" />
+                    </>
+                ) : healthData ? (
+                    <>
+                        {dbMetrics.length > 0 && <MetricGrid title="PostgreSQL Database" icon={<VCT_Icons.Layers size={18} />} metrics={dbMetrics} color="#0ea5e9" />}
+                        {memoryMetrics.length > 0 && <MetricGrid title="Memory & GC" icon={<VCT_Icons.Activity size={18} />} metrics={memoryMetrics} color="#ef4444" />}
+                        {cacheMetrics.length > 0 && <MetricGrid title="Cache" icon={<VCT_Icons.Star size={18} />} metrics={cacheMetrics} color="#10b981" />}
+                        {runtimeMetrics.length > 0 && <MetricGrid title="Runtime" icon={<VCT_Icons.Settings size={18} />} metrics={runtimeMetrics} color="#f59e0b" />}
                     </>
                 ) : (
-                    <>
-                        <MetricGrid title="PostgreSQL Database" icon={<VCT_Icons.Layers size={18} />} metrics={DB_METRICS} color="#0ea5e9" />
-                        <MetricGrid title="Redis Cache" icon={<VCT_Icons.Activity size={18} />} metrics={CACHE_METRICS} color="#ef4444" />
-                        <MetricGrid title="NATS Message Queue" icon={<VCT_Icons.Star size={18} />} metrics={QUEUE_METRICS} color="#10b981" />
-                        <MetricGrid title="Object Storage" icon={<VCT_Icons.Image size={18} />} metrics={STORAGE_METRICS} color="#f59e0b" />
-                    </>
+                    <div className="md:col-span-2 text-center text-(--vct-text-tertiary) py-12 bg-(--vct-bg-elevated) rounded-2xl border border-(--vct-border-strong)">
+                        <VCT_Icons.Info size={32} className="mx-auto mb-3 opacity-50" />
+                        <div className="text-sm font-semibold">Không thể kết nối backend</div>
+                        <div className="text-xs mt-1">Khởi động Go backend để xem metrics thực tế.</div>
+                    </div>
                 )}
             </div>
 
@@ -366,84 +357,63 @@ const Page_admin_system_Content = () => {
                 </div>
 
                 <GlobalStyle />
-                <AdminDataTable
-                    data={filteredParams}
-                    isLoading={isLoading}
-                    sortBy={sortCol}
-                    sortDir={sortDir}
-                    onSort={handleSort}
-                    rowKey={p => p.key}
-                    emptyTitle="Không tìm thấy tham số"
-                    emptyDescription="Thử từ khóa khác"
-                    emptyIcon="⚙️"
-                    columns={[
-                        {
-                            key: 'key',
-                            label: 'Key',
-                            sortable: true,
-                            render: (p) => <div className="font-mono text-xs font-bold text-(--vct-accent-cyan)">{p.key}</div>
-                        },
-                        {
-                            key: 'value',
-                            label: 'Giá trị',
-                            sortable: true,
-                            render: (p) => (
-                                <div>
-                                    <span className={`font-bold text-sm ${p.value !== p.defaultValue ? 'text-[#f59e0b]' : 'text-(--vct-text-primary)'}`}>{p.value}</span>
-                                    {p.unit && <span className="text-[10px] text-(--vct-text-tertiary) ml-1">{p.unit}</span>}
-                                    {p.value !== p.defaultValue && <span className="text-[9px] text-(--vct-text-tertiary) block mt-0.5">(mặc định: {p.defaultValue})</span>}
-                                </div>
-                            )
-                        },
-                        {
-                            key: 'description',
-                            label: 'Mô tả',
-                            sortable: true,
-                            hideMobile: true,
-                            render: (p) => <div className="text-sm text-(--vct-text-secondary)">{p.description}</div>
-                        },
-                        {
-                            key: '_actions',
-                            label: '',
-                            align: 'right',
-                            sortable: false,
-                            render: (p) => (
-                                <div onClick={(e) => { e.stopPropagation(); handleEditParam(p) }} className="hover:bg-white/10 p-1 rounded inline-flex cursor-pointer text-(--vct-text-tertiary) hover:text-white transition-colors">
-                                    <VCT_Icons.Edit size={14} />
-                                </div>
-                            )
-                        }
-                    ]}
-                    onRowClick={(item) => setDrawerParam(item)}
-                />
-            </div>
-
-            {/* ── BACKUP HISTORY ── */}
-            <div className="bg-(--vct-bg-elevated) border border-(--vct-border-strong) rounded-2xl p-6">
-                <h2 className="font-bold text-lg text-(--vct-text-primary) mb-4 flex items-center gap-2">
-                    <VCT_Icons.Download size={20} className="text-[#10b981]" /> Lịch Sử Backup
-                </h2>
-                <div className="space-y-2">
-                    {isLoading ? (
-                        [...Array(4)].map((_, i) => <SkeletonBackupItem key={i} />)
-                    ) : (
-                        backups.map(bk => (
-                            <div key={bk.id} className="flex items-center justify-between p-3 bg-(--vct-bg-base) rounded-xl border border-(--vct-border-subtle) hover:border-(--vct-accent-cyan) transition-colors">
-                                <div className="flex items-center gap-4">
-                                    <div className="w-2.5 h-2.5 rounded-full bg-[#10b981] shadow-[0_0_6px_#10b981]"></div>
+                {configParams.length === 0 && !isLoading ? (
+                    <div className="text-center text-(--vct-text-tertiary) py-8 text-sm">
+                        <VCT_Icons.Settings size={24} className="mx-auto mb-2 opacity-50" />
+                        Chưa có cấu hình. Dữ liệu sẽ được tải từ backend.
+                    </div>
+                ) : (
+                    <AdminDataTable
+                        data={filteredParams}
+                        isLoading={isLoading}
+                        sortBy={sortCol}
+                        sortDir={sortDir}
+                        onSort={handleSort}
+                        rowKey={p => p.key}
+                        emptyTitle="Không tìm thấy tham số"
+                        emptyDescription="Thử từ khóa khác"
+                        emptyIcon="⚙️"
+                        columns={[
+                            {
+                                key: 'key',
+                                label: 'Key',
+                                sortable: true,
+                                render: (p) => <div className="font-mono text-xs font-bold text-(--vct-accent-cyan)">{p.key}</div>
+                            },
+                            {
+                                key: 'value',
+                                label: 'Giá trị',
+                                sortable: true,
+                                render: (p) => (
                                     <div>
-                                        <div className="font-semibold text-sm text-(--vct-text-primary)">{bk.time}</div>
-                                        <div className="text-[11px] text-(--vct-text-tertiary)">{bk.type} • {bk.size}</div>
+                                        <span className={`font-bold text-sm ${p.value !== p.defaultValue ? 'text-[#f59e0b]' : 'text-(--vct-text-primary)'}`}>{p.value}</span>
+                                        {p.unit && <span className="text-[10px] text-(--vct-text-tertiary) ml-1">{p.unit}</span>}
+                                        {p.value !== p.defaultValue && <span className="text-[9px] text-(--vct-text-tertiary) block mt-0.5">(mặc định: {p.defaultValue})</span>}
                                     </div>
-                                </div>
-                                <div className="flex items-center gap-3">
-                                    <VCT_Badge text="Thành công" type="success" />
-                                    <VCT_Button variant="ghost" size="sm" icon={<VCT_Icons.Download size={14} />} onClick={() => handleDownloadBackup(bk)} />
-                                </div>
-                            </div>
-                        ))
-                    )}
-                </div>
+                                )
+                            },
+                            {
+                                key: 'description',
+                                label: 'Mô tả',
+                                sortable: true,
+                                hideMobile: true,
+                                render: (p) => <div className="text-sm text-(--vct-text-secondary)">{p.description}</div>
+                            },
+                            {
+                                key: '_actions',
+                                label: '',
+                                align: 'right',
+                                sortable: false,
+                                render: (p) => (
+                                    <div onClick={(e) => { e.stopPropagation(); handleEditParam(p) }} className="hover:bg-white/10 p-1 rounded inline-flex cursor-pointer text-(--vct-text-tertiary) hover:text-white transition-colors">
+                                        <VCT_Icons.Edit size={14} />
+                                    </div>
+                                )
+                            }
+                        ]}
+                        onRowClick={(item) => setDrawerParam(item)}
+                    />
+                )}
             </div>
 
             {/* ── EDIT CONFIG MODAL ── */}
@@ -548,7 +518,7 @@ const Page_admin_system_Content = () => {
                 isOpen={confirmClearCache}
                 onClose={() => setConfirmClearCache(false)}
                 onConfirm={handleClearCache}
-                title="Xóa Redis Cache"
+                title="Xóa Cache"
                 message="Thao tác này sẽ xóa toàn bộ cache. Các request tiếp theo sẽ chậm hơn cho đến khi cache được rebuild. Tiếp tục?"
                 confirmLabel="Xóa Cache"
             />
@@ -568,15 +538,8 @@ const Page_admin_system_Content = () => {
                             </div>
                             <div className="p-4 bg-(--vct-bg-base) rounded-xl border border-(--vct-border-subtle)">
                                 <div className="text-[10px] uppercase text-(--vct-text-tertiary) mb-1">Loại</div>
-                                <div className="text-sm font-semibold text-(--vct-text-primary)">{drawerParam.value === 'true' || drawerParam.value === 'false' ? 'Boolean' : isNaN(Number(drawerParam.value)) ? 'String' : 'Number'}</div>
+                                <div className="text-sm font-semibold text-(--vct-text-primary)">{drawerParam.type}</div>
                             </div>
-                        </div>
-                        <div>
-                            <div className="text-[10px] uppercase text-(--vct-text-tertiary) mb-2">Lịch sử thay đổi</div>
-                            <VCT_Timeline events={[
-                                { time: '10/03/2024 08:00', title: `Giá trị hiện tại: ${drawerParam.value}`, description: 'admin@vct.vn cập nhật', icon: <VCT_Icons.Edit size={14} />, color: '#0ea5e9' },
-                                { time: '01/03/2024 09:30', title: 'Giá trị trước: —', description: 'Thiết lập ban đầu', icon: <VCT_Icons.Plus size={14} />, color: '#10b981' },
-                            ] as TimelineEvent[]} maxHeight={180} />
                         </div>
                         <div className="flex gap-3 pt-4 border-t border-(--vct-border-subtle)">
                             <VCT_Button variant="outline" size="sm" icon={<VCT_Icons.Edit size={14} />} onClick={() => { handleEditParam(drawerParam); setDrawerParam(null) }}>Chỉnh sửa</VCT_Button>

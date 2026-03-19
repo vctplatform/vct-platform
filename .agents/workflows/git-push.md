@@ -58,7 +58,7 @@ git add -A
 # Hoặc stage chọn lọc (nếu cần tách commits)
 git add backend/
 git add packages/
-git add .agent/
+git add .agents/
 ```
 
 ### 3.2 Commit message convention
@@ -108,7 +108,7 @@ git commit -m "feat(backend): implement belt ranking service"
 git add packages/
 git commit -m "feat(frontend): add belt ranking page"
 
-git add .agent/
+git add .agents/
 git commit -m "chore(workflows): add new development workflows"
 ```
 

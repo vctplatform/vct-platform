@@ -13,8 +13,9 @@ import { AdminPageShell, useShellToast } from './components/AdminPageShell'
 import { useAdminFetch } from './hooks/useAdminAPI'
 import { useAdminMutation } from './hooks/useAdminMutation'
 import { exportToCSV } from './utils/adminExport'
-import { useI18n } from '../i18n'
+
 import { AdminGuard } from './components/AdminGuard'
+import { useI18n } from '../i18n'
 import './admin.module.css'
 
 // ════════════════════════════════════════
@@ -33,18 +34,7 @@ interface FeatureFlag {
     updated_by: string
 }
 
-const MOCK_FLAGS: FeatureFlag[] = [
-    { id: 'FF-001', key: 'offline_scoring', name: 'Chấm điểm Offline', description: 'Cho phép chấm điểm khi mất kết nối mạng, đồng bộ khi có mạng', module: 'Chấm điểm', status: 'enabled', rollout_pct: 100, scope: 'global', updated_at: '10/03/2024 08:00', updated_by: 'admin@vct.vn' },
-    { id: 'FF-002', key: 'video_review', name: 'Video Review (VAR)', description: 'Hỗ trợ xem lại video khi có khiếu nại', module: 'Giải đấu', status: 'partial', rollout_pct: 50, scope: 'federation', updated_at: '09/03/2024 14:30', updated_by: 'admin@vct.vn' },
-    { id: 'FF-003', key: 'elearning_module', name: 'Module E-Learning', description: 'Nền tảng học trực tuyến với video courses và quiz', module: 'Đào tạo', status: 'disabled', rollout_pct: 0, scope: 'global', updated_at: '05/03/2024 10:00', updated_by: 'admin@vct.vn' },
-    { id: 'FF-004', key: 'ai_coach', name: 'AI Coach Assistant', description: 'Phân tích video bằng AI, gợi ý kế hoạch tập luyện', module: 'Đào tạo', status: 'disabled', rollout_pct: 0, scope: 'global', updated_at: '01/03/2024 09:00', updated_by: 'admin@vct.vn' },
-    { id: 'FF-005', key: 'marketplace', name: 'Marketplace', description: 'Mua bán trang phục, dụng cụ tập luyện', module: 'Cộng đồng', status: 'partial', rollout_pct: 20, scope: 'club', updated_at: '08/03/2024 16:45', updated_by: 'admin@vct.vn' },
-    { id: 'FF-006', key: 'live_streaming', name: 'Live Streaming', description: 'Phát trực tiếp giải đấu', module: 'Giải đấu', status: 'disabled', rollout_pct: 0, scope: 'federation', updated_at: '01/03/2024 12:00', updated_by: 'admin@vct.vn' },
-    { id: 'FF-007', key: 'qr_attendance', name: 'QR Code Điểm Danh', description: 'Điểm danh bằng quét mã QR', module: 'Đào tạo', status: 'enabled', rollout_pct: 100, scope: 'club', updated_at: '07/03/2024 11:00', updated_by: 'admin@vct.vn' },
-    { id: 'FF-008', key: 'heritage_lineage', name: 'Cây Gia Phả Tương Tác', description: 'Hiển thị cây phả hệ bằng D3.js, tương tác', module: 'Di sản', status: 'enabled', rollout_pct: 100, scope: 'global', updated_at: '06/03/2024 15:20', updated_by: 'admin@vct.vn' },
-    { id: 'FF-009', key: 'push_notifications', name: 'Push Notifications', description: 'Thông báo đẩy qua FCM', module: 'Hệ thống', status: 'partial', rollout_pct: 75, scope: 'user', updated_at: '09/03/2024 09:30', updated_by: 'admin@vct.vn' },
-    { id: 'FF-010', key: 'dark_mode', name: 'Chế độ tối', description: 'Giao diện dark mode cho mắt nhìn thoải mái', module: 'Hệ thống', status: 'enabled', rollout_pct: 100, scope: 'user', updated_at: '01/02/2024 10:00', updated_by: 'admin@vct.vn' },
-]
+
 
 const MODULE_FILTERS = ['Tất cả', 'Chấm điểm', 'Giải đấu', 'Đào tạo', 'Cộng đồng', 'Di sản', 'Hệ thống']
 
@@ -91,8 +81,8 @@ export const Page_admin_feature_flags = () => (
 )
 
 const Page_admin_feature_flags_Content = () => {
-    const { t: _t } = useI18n()
-    const { data: fetchedFlags, isLoading } = useAdminFetch<FeatureFlag[]>('/admin/feature-flags', { mockData: MOCK_FLAGS })
+    const { t } = useI18n()
+    const { data: fetchedFlags, isLoading } = useAdminFetch<FeatureFlag[]>('/admin/feature-flags')
     const [flags, setFlags] = useState<FeatureFlag[]>([])
     const [search, setSearch] = useState('')
     const [moduleFilter, setModuleFilter] = useState('Tất cả')
@@ -156,16 +146,20 @@ const Page_admin_feature_flags_Content = () => {
 
     const stats: StatItem[] = [
         { label: 'Features', value: flags.length, icon: <VCT_Icons.Flag size={18} />, color: '#8b5cf6' },
-        { label: 'Đang bật', value: flags.filter(f => f.status === 'enabled').length, icon: <VCT_Icons.CheckCircle size={18} />, color: '#10b981' },
-        { label: 'Rollout', value: flags.filter(f => f.status === 'partial').length, icon: <VCT_Icons.Activity size={18} />, color: '#f59e0b' },
-        { label: 'Đang tắt', value: flags.filter(f => f.status === 'disabled').length, icon: <VCT_Icons.x size={18} />, color: '#ef4444' },
+        { label: t('admin.flags.enabled'), value: flags.filter(f => f.status === 'enabled').length, icon: <VCT_Icons.CheckCircle size={18} />, color: '#10b981' },
+        { label: t('admin.flags.rollout'), value: flags.filter(f => f.status === 'partial').length, icon: <VCT_Icons.Activity size={18} />, color: '#f59e0b' },
+        { label: t('admin.flags.disabled'), value: flags.filter(f => f.status === 'disabled').length, icon: <VCT_Icons.x size={18} />, color: '#ef4444' },
     ]
 
     return (
         <AdminPageShell
-            title="Feature Flags"
-            subtitle="Bật/tắt tính năng, kiểm soát rollout theo phần trăm hoặc phạm vi."
+            title={t('admin.flags.title')}
+            subtitle={t('admin.flags.subtitle')}
             icon={<VCT_Icons.Flag size={28} className="text-[#8b5cf6]" />}
+            breadcrumbs={[
+                { label: 'Admin', href: '/admin', icon: <VCT_Icons.Home size={14} /> },
+                { label: 'Feature Flags' },
+            ]}
             stats={stats}
             actions={
                 <VCT_Button variant="outline" icon={<VCT_Icons.Download size={16} />} onClick={handleExportCSV}>Xuất CSV</VCT_Button>

@@ -62,14 +62,14 @@ backend/migrations/
 ├── 0002_add_auth_tables.sql
 ├── 0002_add_auth_tables_down.sql
 ├── ...
-├── 0036_current.sql
-└── 0036_current_down.sql
+├── 0085_subscriptions.sql
+└── 0085_subscriptions_down.sql
 ```
 
 ### Migration Rules
 ```
-□ Sequential numbering (0001, 0002, ... 0037)
-□ Descriptive names (0037_add_athlete_belt_history.sql)
+□ Sequential numbering (0001, 0002, ... 0086)
+□ Descriptive names (0086_add_athlete_belt_history.sql)
 □ ALWAYS create both up.sql and down.sql
 □ Use IF NOT EXISTS / IF EXISTS for idempotency
 □ Never modify existing migration files

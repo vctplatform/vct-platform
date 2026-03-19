@@ -52,7 +52,7 @@ description: Workflow nâng cấp workflow AI đã có dựa trên feedback và 
 ## Workflow Upgrade Plan
 
 ### Workflow: /[name]
-### File: .agent/workflows/[name].md
+### File: .agents/workflows/[name].md
 
 ### Issues Found:
 1. [Issue 1] — [mô tả vấn đề]
@@ -100,13 +100,13 @@ description: [mô tả ngắn]
 
 ```bash
 # Kiểm tra frontmatter
-head -5 .agent/workflows/{name}.md
+head -5 .agents/workflows/{name}.md
 
 # Kiểm tra cross-references tới skills
-grep -n "skill" .agent/workflows/{name}.md
+grep -n "skill" .agents/workflows/{name}.md
 
 # Kiểm tra commands đúng
-grep -n "```bash" .agent/workflows/{name}.md
+grep -n "```bash" .agents/workflows/{name}.md
 ```
 
 Checklist:

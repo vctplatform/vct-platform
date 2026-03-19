@@ -4,6 +4,8 @@ import * as React from 'react'
 import { VCT_PageContainer, VCT_StatRow, VCT_Toast } from '../../components/vct-ui'
 import type { StatItem } from '../../components/VCT_StatRow'
 import { useAdminToast } from '../hooks/useAdminToast'
+import { AdminBreadcrumb } from './AdminBreadcrumb'
+import type { BreadcrumbItem } from './AdminBreadcrumb'
 
 // ════════════════════════════════════════
 // AdminPageShell — Consistent layout wrapper for all admin pages
@@ -22,6 +24,8 @@ interface AdminPageShellProps {
     statusBar?: React.ReactNode
     /** Statistical summary items */
     stats?: StatItem[]
+    /** Breadcrumb navigation items */
+    breadcrumbs?: BreadcrumbItem[]
     /** Page content */
     children: React.ReactNode
     /** Additional class for the container */
@@ -30,6 +34,7 @@ interface AdminPageShellProps {
 
 /**
  * Shared admin page shell. Provides:
+ * - Breadcrumb navigation (optional)
  * - Consistent header (title + icon + subtitle + actions)
  * - Optional status bar (alerts, live indicators)
  * - Optional stat row
@@ -43,6 +48,7 @@ export const AdminPageShell: React.FC<AdminPageShellProps> = ({
     actions,
     statusBar,
     stats,
+    breadcrumbs,
     children,
     className = '',
 }) => {
@@ -51,6 +57,11 @@ export const AdminPageShell: React.FC<AdminPageShellProps> = ({
     return (
         <AdminPageShellContext.Provider value={{ showToast }}>
             <VCT_PageContainer size="wide" animated>
+                {/* ── Breadcrumbs ── */}
+                {breadcrumbs && breadcrumbs.length > 0 && (
+                    <AdminBreadcrumb items={breadcrumbs} />
+                )}
+
                 {/* ── Header Row ── */}
                 <div className={`mb-6 ${className}`}>
                     <div className="flex items-center justify-between flex-wrap gap-3">

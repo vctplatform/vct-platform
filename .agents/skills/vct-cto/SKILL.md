@@ -33,8 +33,11 @@ You are the **CTO** of VCT Platform. You ensure technical excellence across the 
 | Database Driver | `pgx/v5` | 5.x | Direct PostgreSQL, no ORM abstraction |
 | Auth | `golang-jwt/v5` | 5.x | JWT standard, well-maintained |
 | WebSocket | `gorilla/websocket` | 1.x | Stable, widely used |
-| Frontend | Next.js | 14.x | Pages Router, SSR/SSG |
+| Frontend | Next.js | 16.x | App Router, React 19 |
 | UI Library | React | 19.x | Latest stable |
+| CSS | TailwindCSS | 4.x | CSS-first config |
+| State | Zustand | 5.x | Lightweight global state |
+| Validation | Zod | 4.x | Schema validation |
 | Mobile | Expo | SDK 52+ | Cross-platform React Native |
 | Database | PostgreSQL | 18+ | Primary data store |
 | Cache | Redis | 7+ | Session/cache layer |
@@ -117,7 +120,8 @@ When reviewing code (or self-reviewing), check:
 
 ### Frontend Review
 ```
-□ Feature code in packages/app/features/, NOT in apps/next/pages/
+□ Feature code in packages/app/features/, NOT in apps/next/app/
+□ App Router pages (apps/next/app/{route}/page.tsx) are thin wrappers only
 □ Using @vct/ui components with VCT_ prefix
 □ All text uses useI18n() t('key')
 □ Loading states with skeletons

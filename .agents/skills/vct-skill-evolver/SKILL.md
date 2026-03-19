@@ -133,7 +133,7 @@ For each skill to update:
 | Skill | Changes | Reason | Before | After |
 |---|---|---|---|---|
 | vct-cto | Updated Go version ref | Go 1.27 released | Go 1.26 | Go 1.27 |
-| vct-frontend | Added RSC pattern | Next.js 15 adoption | CSR only | CSR + RSC |
+| vct-frontend | Added RSC pattern | Next.js 16 adoption | CSR only | CSR + RSC |
 ```
 
 ---
@@ -253,22 +253,22 @@ Run this checklist to detect what needs updating:
 
 ```bash
 # 1. Check Go version vs skills
-grep -r "Go 1\." .agent/skills/*/SKILL.md | sort -u
+grep -r "Go 1\." .agents/skills/*/SKILL.md | sort -u
 
 # 2. Check for deprecated patterns mentioned in skills
-grep -rn "deprecated\|legacy\|old pattern" .agent/skills/*/SKILL.md
+grep -rn "deprecated\|legacy\|old pattern" .agents/skills/*/SKILL.md
 
 # 3. Check for version references
-grep -rn "v[0-9]\+\.\|version\|Version" .agent/skills/*/SKILL.md
+grep -rn "v[0-9]\+\.\|version\|Version" .agents/skills/*/SKILL.md
 
 # 4. Check cross-references between skills
-grep -rn "vct-[a-z-]*" .agent/skills/*/SKILL.md | grep -v "^.*:.*name:" | sort
+grep -rn "vct-[a-z-]*" .agents/skills/*/SKILL.md | grep -v "^.*:.*name:" | sort
 
 # 5. Count total skills
-ls -d .agent/skills/vct-*/SKILL.md | wc -l
+ls -d .agents/skills/vct-*/SKILL.md | wc -l
 
 # 6. Check YAML frontmatter validity
-for f in .agent/skills/*/SKILL.md; do
+for f in .agents/skills/*/SKILL.md; do
   head -3 "$f" | grep -q "^---" && echo "OK: $f" || echo "BROKEN: $f"
 done
 ```
@@ -279,7 +279,7 @@ done
 
 ### How to Research Updates
 ```
-1. Web Search: "Go 1.27 new features" / "Next.js 15 changes"
+1. Web Search: "Go 1.27 new features" / "Next.js 16 changes"
 2. Official Docs: Read changelogs and migration guides
 3. Firebase MCP: Search Google developer documentation
 4. GitHub: Check release pages of dependencies

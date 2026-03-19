@@ -132,7 +132,7 @@ VCT_PG_POOL_MAX_IDLE_TIME=15m
 
 ### Migration System
 - Location: `backend/migrations/`
-- 36 migration pairs: `{NNNN}_{name}.sql` + `{NNNN}_{name}_down.sql`
+- 85 migration pairs: `{NNNN}_{name}.sql` + `{NNNN}_{name}_down.sql`
 - Auto-runs on backend startup when `VCT_DB_AUTO_MIGRATE=true`
 - Docker: migrations also run via `/docker-entrypoint-initdb.d` volume mount
 

@@ -12,7 +12,7 @@ description: Workflow phát triển tính năng full-stack end-to-end cho VCT Pl
 
 ## Bước 1: Phân Tích Yêu Cầu (BA)
 
-Đọc skill **vct-ba** (`/.agent/skills/vct-ba/SKILL.md`) và thực hiện:
+Đọc skill **vct-ba** (`.agents/skills/vct-ba/SKILL.md`) và thực hiện:
 
 1. Xác định rõ yêu cầu:
    - WHO — user role nào sử dụng? (admin, athlete, coach, referee, etc.)
@@ -33,7 +33,7 @@ description: Workflow phát triển tính năng full-stack end-to-end cho VCT Pl
 
 ## Bước 2: Thiết Kế Kiến Trúc (SA)
 
-Đọc skill **vct-sa** (`/.agent/skills/vct-sa/SKILL.md`) và thực hiện:
+Đọc skill **vct-sa** (`.agents/skills/vct-sa/SKILL.md`) và thực hiện:
 
 1. Xác định cần tạo/sửa những file nào
 2. Thiết kế database schema (nếu cần bảng mới):
@@ -64,6 +64,7 @@ Thực hiện theo thứ tự Clean Architecture:
 backend/migrations/{NNNN}_{description}.sql      — Up migration
 backend/migrations/{NNNN}_{description}_down.sql  — Down migration
 ```
+- **Next migration number: 0086** (currently at 0085)
 - Sử dụng `IF NOT EXISTS` / `IF EXISTS`
 - UUIDs: `gen_random_uuid()` default
 - Always `NOT NULL` trừ khi có lý do
@@ -80,11 +81,13 @@ backend/internal/domain/{module}/service.go    — Business logic
 
 ### 3.3 Adapter Layer
 ```
-backend/internal/adapter/{module}_pg_repos.go — PostgreSQL implementation
+backend/internal/adapter/{module}_mem.go       — In-memory implementation
+backend/internal/adapter/{module}_pg.go        — PostgreSQL implementation
 ```
-- Dùng `pgx/v5` trực tiếp, KHÔNG dùng ORM
+- Dùng `pgx/v5` / `database/sql` trực tiếp, KHÔNG dùng ORM
 - Parameterized queries only (chống SQL injection)
 - Wrap errors: `fmt.Errorf("context: %w", err)`
+- **Tạo cả in-memory VÀ PG adapter**
 
 ### 3.4 HTTP Handler
 ```
@@ -92,10 +95,17 @@ backend/internal/httpapi/{module}_handler.go — HTTP handlers
 ```
 - Handlers chỉ parse request → gọi service → format response
 - KHÔNG đặt business logic trong handler
-- Đăng ký routes trong `server.go`
+- Đăng ký routes trong `server.go` → `Handler()`
 - Áp dụng auth middleware cho protected routes
 
-### 3.5 Verify Backend
+### 3.5 Server Wiring
+Trong `server.go`:
+1. Thêm service field vào `Server` struct
+2. Wire in-memory adapter trong `New()` function
+3. Wire PG adapter upgrade trong `if storageDriver == "postgres"` block
+4. Đăng ký routes trong `Handler()` method
+
+### 3.6 Verify Backend
 ```bash
 cd backend && go build ./...
 cd backend && go vet ./...
@@ -118,11 +128,14 @@ packages/app/features/{module}/Page_{module}_{sub}.tsx
 - Import icons từ `VCT_Icons` only
 - Loading state: `VCT_PageSkeleton`
 - Error handling: try/catch với error state
+- Validation: Zod 4 schemas
 
-### 4.3 Route Registration
+### 4.3 Route Registration (App Router)
 - Đăng ký route trong `route-registry.ts`
 - Thêm sidebar entry trong config tương ứng
-- Tạo page file trong `apps/next/pages/` (thin wrapper)
+- Tạo page file trong `apps/next/app/{route}/page.tsx` (thin import wrapper)
+
+⚠️ **KHÔNG tạo file trong `apps/next/pages/`** — dùng App Router.
 
 ### 4.4 i18n Keys
 - Thêm keys cho **cả vi và en**
@@ -132,7 +145,6 @@ packages/app/features/{module}/Page_{module}_{sub}.tsx
 ### 4.5 Styling
 - Sử dụng CSS variable tokens từ design system
 - KHÔNG dùng Tailwind `dark:` modifier
-- KHÔNG inline styles
 - Kiểm tra cả Light và Dark theme
 - Responsive layout
 
@@ -140,7 +152,7 @@ packages/app/features/{module}/Page_{module}_{sub}.tsx
 
 ## Bước 5: Kiểm Tra Chất Lượng (CTO)
 
-Đọc skill **vct-cto** (`/.agent/skills/vct-cto/SKILL.md`) và kiểm tra:
+Đọc skill **vct-cto** (`.agents/skills/vct-cto/SKILL.md`) và kiểm tra:
 
 ### Backend Checklist
 - [ ] Clean Architecture respected
@@ -150,14 +162,17 @@ packages/app/features/{module}/Page_{module}_{sub}.tsx
 - [ ] Input validation
 - [ ] SQL parameterized queries
 - [ ] No hardcoded secrets
+- [ ] Both in-memory AND PG adapters created
+- [ ] PG adapter wired in server.go upgrade block
 
 ### Frontend Checklist
-- [ ] Feature code in `packages/app/features/`, NOT in `apps/next/pages/`
+- [ ] Feature code in `packages/app/features/`, NOT in `apps/next/app/`
 - [ ] Using `@vct/ui` components with `VCT_` prefix
 - [ ] All text uses `t('key')`
 - [ ] Loading states with skeletons
 - [ ] No `console.log` in production code
 - [ ] Both themes verified
+- [ ] Route uses App Router (`apps/next/app/{route}/page.tsx`)
 
 ---
 

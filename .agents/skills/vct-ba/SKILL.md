@@ -35,20 +35,35 @@ Liên đoàn Quốc gia (National Federation)
 └── Ban Tổ Chức (Organizing Committees)
 ```
 
-### 2.2 Core Business Domains (10 Modules)
+### 2.2 Core Business Domains (25+ Modules)
 
 | # | Module | Domain | Key Entities |
 |---|--------|--------|-------------|
 | 1 | **Tổ chức** | Organization | Federation, Province, Club, School |
-| 2 | **Con người** | People | Athlete, Coach, Referee, Parent |
+| 2 | **VĐV** | Athlete | Athlete, Profile, Membership, TrainingSession |
 | 3 | **Đào tạo** | Training | Curriculum, Technique, Belt Exam |
-| 4 | **Giải đấu** ★ | Tournament | Tournament, Event, Match, Bracket |
-| 5 | **Chấm điểm** | Scoring | Score, Penalty, Judge Panel |
-| 6 | **Xếp hạng** | Ranking | ELO/Glicko Rating, National Ranking |
-| 7 | **Di sản** | Heritage | Lineage, Technique Archive, History |
-| 8 | **Tài chính** | Finance | Fees, Budget, Sponsorship |
-| 9 | **Cộng đồng** | Community | Social, Marketplace, News |
+| 4 | **Giải đấu** ★ | Tournament (+Mgmt) | Tournament, Category, Bracket, Match |
+| 5 | **Chấm điểm** | Scoring | Score, Penalty, Judge Panel, ScoringConfig |
+| 6 | **Xếp hạng** | Ranking | ELO/Glicko Rating, AthleteRanking, TeamRanking |
+| 7 | **Di sản** | Heritage | BeltRank, Technique, Lineage |
+| 8 | **Tài chính** | Finance (+Subscription) | Transaction, Budget, Invoice, Payment, Plan, Subscription |
+| 9 | **Cộng đồng** | Community | Club, Member, Event |
 | 10 | **Admin** | System | RBAC, Config, Audit Log |
+| 11 | **Liên đoàn** | Federation | Province, Unit, Personnel, MasterData |
+| 12 | **Cấp tỉnh** | Provincial (Phase 1+2) | Association, Club, Coach, Transfer |
+| 13 | **CLB nội bộ** | Club (+V2) | Attendance, Equipment, Facility |
+| 14 | **BTC** | Ban Tổ Chức | BTCMember, BTCTask |
+| 15 | **Phụ huynh** | Parent | ParentLink, Consent, Attendance |
+| 16 | **Phê duyệt** | Approval | ApprovalRequest, Workflow |
+| 17 | **Chứng chỉ** | Certification | Certificate, IssuedCert |
+| 18 | **Kỷ luật** | Discipline | Case, Hearing |
+| 19 | **Văn bản** | Document | Document |
+| 20 | **Quốc tế** | International | Partner, IntlEvent, Delegation |
+| 21 | **Đăng ký** | Registration | Registration, Entry |
+| 22 | **Hỗ trợ** | Support | Ticket, Category, FAQ |
+| 23 | **Đơn vị HC** | Divisions | Province, District, Ward |
+| 24 | **Bracket** | Bracket | Bracket, BracketMatch |
+| 25 | **Orchestrator** | Module Coordination | Orchestrator |
 
 ### 2.3 Regulation Framework
 

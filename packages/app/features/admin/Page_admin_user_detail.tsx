@@ -1,7 +1,7 @@
 'use client'
 
 import * as React from 'react'
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { VCT_AvatarLetter, VCT_Badge } from '../components/vct-ui-data-display'
 import { VCT_Button } from '../components/vct-ui-layout'
@@ -12,11 +12,11 @@ import { VCT_Timeline } from '../components/VCT_Timeline'
 import type { TimelineEvent } from '../components/VCT_Timeline'
 import { VCT_ConfirmDialog } from '../components/vct-ui'
 import { VCT_StatRow } from '../components/VCT_StatRow'
-import { MOCK_USERS, ROLE_COLORS, STATUS_MAP, getRoleLabel, type SystemUser } from './admin-users.data'
+import { ROLE_COLORS, STATUS_MAP, getRoleLabel, type SystemUser } from './admin-users.data'
 import { AdminPageShell, useShellToast } from './components/AdminPageShell'
 import { useAdminFetch } from './hooks/useAdminAPI'
 import { AdminGuard } from './components/AdminGuard'
-import { useI18n as _useI18n } from '../i18n'
+
 
 interface PageAdminUserDetailProps {
     userId: string
@@ -144,15 +144,12 @@ export const Page_admin_user_detail = ({ userId }: PageAdminUserDetailProps) => 
 
 const Page_admin_user_detail_Content = ({ userId }: PageAdminUserDetailProps) => {
     const router = useRouter()
-    const { data: _fetchedUsers, isLoading } = useAdminFetch<SystemUser[]>('/admin/users', { mockData: MOCK_USERS })
+    const { data: fetchedUser, isLoading } = useAdminFetch<SystemUser>(`/admin/users/${userId}`)
     const [confirmLock, setConfirmLock] = useState(false)
     const [confirmReset, setConfirmReset] = useState(false)
     const { showToast } = useShellToast()
 
-    const user = React.useMemo(
-        () => MOCK_USERS.find((candidate) => candidate.id.toLowerCase() === userId.toLowerCase()),
-        [userId]
-    )
+    const user = fetchedUser ?? null
 
     if (!user) {
         return (

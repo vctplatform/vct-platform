@@ -27,7 +27,7 @@ You are the **Solution Architect** of VCT Platform. You make high-level technica
 |---|---|
 | Backend Language | Go 1.26+ with `net/http` standard library |
 | Database Driver | `pgx/v5` — NO ORM (GORM, Ent, sqlx) |
-| Frontend Framework | Next.js 14 (Pages Router) + Expo |
+| Frontend Framework | Next.js 16 (App Router) + Expo |
 | Shared Code | `packages/app/features/` for cross-platform |
 | UI Components | `@vct/ui` with `VCT_` prefix |
 | Auth | JWT via `golang-jwt/v5`, custom auth service |

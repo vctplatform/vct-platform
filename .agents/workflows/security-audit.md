@@ -5,7 +5,7 @@ description: Workflow kiểm tra bảo mật toàn diện cho VCT Platform
 # /security-audit — Kiểm Tra Bảo Mật
 
 > Sử dụng khi cần review bảo mật cho module, feature, hoặc toàn bộ hệ thống.
-> Đọc skill **vct-cto** (`/.agent/skills/vct-cto/SKILL.md`) phần Security Policy.
+> Đọc skill **vct-cto** (`/.agents/skills/vct-cto/SKILL.md`) phần Security Policy.
 
 // turbo-all
 

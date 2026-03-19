@@ -97,9 +97,8 @@ export function useAdminFetch<T>(
     const fetchData = useCallback(async () => {
         setState(prev => ({ ...prev, isLoading: true, error: null }))
 
-        // Use mock data if configured
+        // Use mock data only if explicitly configured via env var
         if (USE_MOCK && mockData !== undefined) {
-            // Simulate network delay for realistic UX
             await new Promise(r => setTimeout(r, 600))
             if (mountedRef.current) {
                 setState({ data: mockData, error: null, isLoading: false })
@@ -113,11 +112,6 @@ export function useAdminFetch<T>(
                 setState({ data, error: null, isLoading: false })
             }
         } catch (err) {
-            // Fallback to mock data on network error
-            if (mockData !== undefined && mountedRef.current) {
-                setState({ data: mockData, error: null, isLoading: false })
-                return
-            }
             if (mountedRef.current) {
                 setState({
                     data: null,
@@ -126,8 +120,7 @@ export function useAdminFetch<T>(
                 })
             }
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [url, USE_MOCK])
+    }, [url, mockData])
 
     useEffect(() => {
         mountedRef.current = true

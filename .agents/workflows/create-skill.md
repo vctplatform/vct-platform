@@ -106,11 +106,11 @@ description: QA Engineer role for VCT Platform. Activate when writing tests,
 ## Bước 4: Tạo Folder & File
 
 ```
-.agent/skills/vct-{name}/
+.agents/skills/vct-{name}/
 └── SKILL.md
 ```
 
-File path: `.agent/skills/vct-{name}/SKILL.md`
+File path: `.agents/skills/vct-{name}/SKILL.md`
 
 ---
 
@@ -137,14 +137,14 @@ Cập nhật `vct-skill-evolver/SKILL.md`:
 
 ```bash
 # Kiểm tra file tồn tại
-cat .agent/skills/vct-{name}/SKILL.md | head -5
+cat .agents/skills/vct-{name}/SKILL.md | head -5
 
 # Kiểm tra frontmatter
-grep "^name:" .agent/skills/vct-{name}/SKILL.md
-grep "^description:" .agent/skills/vct-{name}/SKILL.md
+grep "^name:" .agents/skills/vct-{name}/SKILL.md
+grep "^description:" .agents/skills/vct-{name}/SKILL.md
 
 # Kiểm tra orchestrator đã include
-grep "vct-{name}" .agent/skills/vct-orchestrator/SKILL.md
+grep "vct-{name}" .agents/skills/vct-orchestrator/SKILL.md
 ```
 
 Checklist:

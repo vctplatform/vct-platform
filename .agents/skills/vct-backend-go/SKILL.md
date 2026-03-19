@@ -13,79 +13,113 @@ description: VCT Platform Go 1.26 backend — Clean Architecture, domain modules
 
 ```
 backend/
-├── cmd/                    # Main entry point
+├── cmd/                    # Main entry point (cmd/server/main.go)
 ├── internal/               # All application code
 │   ├── config/             # Environment config (Config struct + Load())
-│   ├── auth/               # JWT auth service (issue, validate, revoke)
+│   ├── auth/               # JWT auth service (issue, validate, revoke, OTP)
 │   ├── authz/              # Authorization (role-based access)
+│   ├── audit/              # Audit logging
 │   ├── domain/             # Business domain models & services
 │   │   ├── models.go       # Shared base models (Entity, etc.)
+│   │   ├── v7_models.go    # V7 extended models (25KB)
 │   │   ├── state_machine.go# Tournament/entity state machines
-│   │   ├── athlete/        # Athlete domain
+│   │   ├── athlete/        # Athlete + Profile + Training
 │   │   ├── federation/     # National federation
-│   │   ├── provincial/     # Provincial federation
+│   │   ├── provincial/     # Provincial federation (Phase 1 + 2)
 │   │   ├── tournament/     # Tournament management
-│   │   ├── scoring/        # Scoring & brackets
+│   │   ├── scoring/        # Scoring & brackets & registration
 │   │   ├── btc/            # Ban Tổ Chức (organizing committee)
-│   │   └── ... (22 domain packages)
-│   ├── httpapi/            # HTTP handlers & server
+│   │   ├── club/           # Club management (Attendance, Equipment, Facilities)
+│   │   ├── community/      # Community features
+│   │   ├── finance/        # Finance + Subscription/Billing
+│   │   ├── support/        # Customer support & tickets
+│   │   ├── parent/         # Parent/Guardian module
+│   │   ├── divisions/      # Administrative divisions (Tỉnh/Huyện/Xã)
+│   │   └── ... (25+ domain packages)
+│   ├── httpapi/            # HTTP handlers & server (47 files)
 │   │   ├── server.go       # Main server, wiring, Handler()
-│   │   ├── middleware.go   # Auth, CORS, logging, rate limit
+│   │   ├── middleware.go   # Auth, CORS, CSRF, logging, rate limit, security headers
 │   │   ├── helpers.go      # JSON response helpers
-│   │   └── *_handler.go    # Domain-specific handlers
+│   │   ├── apierror.go     # APIError envelope
+│   │   ├── metrics.go      # Metrics endpoint
+│   │   ├── health.go       # Health & readiness checks
+│   │   └── *_handler.go    # Domain-specific handlers (40+ files)
 │   ├── store/              # Data storage layer
 │   │   ├── store.go        # In-memory store
 │   │   ├── postgres_store.go # PostgreSQL store
 │   │   ├── cached_store.go # Cache wrapper
 │   │   ├── models.go       # Store-level models
-│   │   └── seed.go         # Seed data
+│   │   ├── v7_models.go    # V7 models
+│   │   ├── v7_store.go     # V7 store methods
+│   │   ├── storage.go      # Storage driver interface
+│   │   ├── seed.go         # Seed data
+│   │   └── inmemory/       # In-memory store components
 │   ├── adapter/            # Repository adapters (domain ↔ store)
-│   │   ├── repositories.go # In-memory adapters
-│   │   ├── *_pg_repos.go   # PostgreSQL adapters
-│   │   └── store_adapter.go# Base adapter
+│   │   ├── repositories.go         # In-memory adapters
+│   │   ├── domain_repositories.go  # Domain repository wiring
+│   │   ├── store_adapter.go        # Base adapter
+│   │   ├── *_pg.go / *_pg_repos.go # PostgreSQL adapters (15+ files)
+│   │   ├── *_mem.go                # In-memory adapters
+│   │   ├── meilisearch/            # Full-text search (stub)
+│   │   ├── minio/                  # File storage (stub)
+│   │   ├── nats/                   # Message queue (stub)
+│   │   ├── postgres/               # PostgreSQL utilities
+│   │   └── redis/                  # Cache adapter (stub)
 │   ├── cache/              # In-memory cache with TTL
-│   ├── events/             # Domain event bus
+│   ├── email/              # Email service (Resend)
+│   ├── events/             # Domain event bus (InMemoryBus)
+│   ├── gamification/       # Gamification logic
+│   ├── logger/             # Structured logging
+│   ├── notifications/      # Notification system
 │   ├── realtime/           # WebSocket hub
+│   ├── service/            # Cross-cutting services
+│   ├── validate/           # Input validation
+│   ├── worker/             # Background workers
 │   └── pkg/                # Shared packages
-├── migrations/             # SQL migrations (0001–0036+)
+├── migrations/             # SQL migrations (0001–0085, 85 pairs)
+├── sql/                    # SQL query files
+├── data/                   # Static data files
 ├── go.mod                  # Go 1.26, pgx/v5, gorilla/websocket, golang-jwt/v5
-└── Dockerfile
+├── Dockerfile              # Standard Docker build
+└── Dockerfile.render       # Render.com deployment
 ```
 
-### Domain Modules Catalog (23 modules)
+### Domain Modules Catalog (25+ packages)
 | Module | Description | Key Entities |
 |--------|-------------|-------------|
-| `athlete` | VĐV management | Athlete, BeltHistory |
-| `auth` | Authentication + RBAC | User, Session, Role |
-| `club` | CLB management | Club, Membership |
-| `tournament` | Giải đấu management | Tournament, Category, Match |
+| `athlete` | VĐV management + profiles + training | Athlete, Profile, Membership, TrainingSession |
+| `approval` | Phê duyệt workflow | ApprovalRequest, ApprovalStep, Workflow |
 | `bracket` | Bracket/draw generation | Bracket, BracketMatch |
-| `finance` | Tài chính | Payment, Invoice, Budget |
-| `registration` | Đăng ký giải | Registration, Entry |
-| `score` | Chấm điểm live | ScoreEntry, ScoreResult |
-| `coach` | HLV management | Coach, CoachAssignment |
-| `referee` | Trọng tài management | Referee, RefAssignment |
-| `venue` | Địa điểm thi đấu | Venue, Tatami, Schedule |
-| `belt` | Đai hạng management | Belt, BeltExam |
-| `activity_log` | Audit trail | ActivityLog |
-| `notification` | Thông báo | Notification, Template |
-| `federation` | Liên đoàn management | Federation, Member |
-| `discipline` | Bộ môn/nội dung | Discipline, DisciplineRule |
+| `btc` | Ban Tổ Chức giải | BTC, BTCMember, BTCTask |
 | `certification` | Chứng chỉ | Certificate, IssuedCert |
-| `approval` | Phê duyệt workflow | ApprovalRequest, ApprovalStep |
-| `international` | Quan hệ quốc tế | IntlEvent, Delegation |
-| `organization` | Tổ chức nội bộ | OrgUnit, OrgMember |
+| `club` | CLB management (Attendance, Equipment, Facilities) | Club, Attendance, Equipment, Facility |
+| `community` | Community features | Club, Member, Event |
+| `discipline` | Kỷ luật & sanctions | Case, Hearing |
+| `divisions` | Đơn vị hành chính (Tỉnh/Huyện/Xã) | Province, District, Ward |
+| `document` | Official documents | Document |
+| `federation` | Liên đoàn management | Province, Unit, Personnel, MasterData |
+| `finance` | Tài chính + Subscription/Billing | Transaction, Budget, Invoice, Payment, Plan, Subscription |
+| `heritage` | Đai hạng & kỹ thuật | BeltRank, Technique |
+| `international` | Quan hệ quốc tế | Partner, IntlEvent, Delegation |
 | `orchestrator` | Module coordination | Orchestrator |
-| `report` | Báo cáo tổng hợp | Report, DataExport |
-| `media` | Ảnh/video management | Media, MediaGallery |
+| `organization` | Tổ chức nội bộ | Team, Referee, Arena |
+| `parent` | Phụ huynh/Guardian | ParentLink, Consent, Attendance, Result |
+| `provincial` | Liên đoàn cấp tỉnh (Phase 1 + 2) | Association, Club, Athlete, Coach, Referee, Transfer |
+| `ranking` | Xếp hạng VĐV & đội | AthleteRanking, TeamRanking |
+| `registration` | Đăng ký giải | Registration, Entry |
+| `repository` | Shared repository interfaces | — |
+| `scoring` | Chấm điểm live | ScoreEntry, ScoreResult, ScoringConfig |
+| `support` | Customer support | Ticket, Category, FAQ |
+| `tournament` | Tournament management | Tournament, Category, TournamentMgmt |
+| `training` | Training programs | Training session management |
 
 ### Clean Architecture Layers
 ```
 Domain (models, interfaces, services)
   ↓
-Adapter (repository implementations)
+Adapter (repository implementations — in-memory + PostgreSQL)
   ↓
-Store (data persistence — memory/postgres)
+Store (data persistence — memory/postgres/cached)
   ↓
 HTTP API (handlers, middleware, routing)
 ```
@@ -99,15 +133,19 @@ module vct-platform/backend
 go 1.26
 
 // Key dependencies:
-github.com/jackc/pgx/v5          // PostgreSQL driver
+github.com/jackc/pgx/v5          // PostgreSQL driver (+ stdlib for database/sql)
 github.com/golang-jwt/jwt/v5     // JWT authentication
 github.com/gorilla/websocket     // WebSocket
+github.com/joho/godotenv         // .env loading
+golang.org/x/crypto              // Password hashing
+github.com/resend/resend-go/v3   // Email (Resend)
 ```
 
 ### Rules
 - **Standard library HTTP** — use `net/http` directly, NO frameworks (Gin, Echo, Fiber)
 - **Go 1.22+ ServeMux** — use subtree patterns `/api/v1/entity/` (trailing slash)
-- **No ORM** — raw SQL with `pgx/v5`
+- **No ORM** — raw SQL with `pgx/v5` or `database/sql`
+- **Dual storage** — both `database/sql` (for PG adapters) and `pgx` (for store layer)
 
 ---
 
@@ -209,39 +247,111 @@ func methodNotAllowed(w http.ResponseWriter)
 func decodeJSON(w http.ResponseWriter, r *http.Request, dst any) bool
 ```
 
+### APIError Envelope (apierror.go)
+```go
+type APIError struct {
+    Code    string `json:"code"`
+    Message string `json:"message"`
+    Details any    `json:"details,omitempty"`
+}
+```
+
 ---
 
 ## 5. Route Registration
 
-In `server.go` → `Handler()` method:
+In `server.go` → `Handler()` method — current registrations:
 
 ```go
 func (s *Server) Handler() http.Handler {
     mux := http.NewServeMux()
     
-    // Health check
+    // ── Health & Monitoring ──────────────────────────────
+    mux.HandleFunc("/", s.handleRoot)
     mux.HandleFunc("/healthz", s.handleHealth)
+    mux.HandleFunc("/readyz", s.handleReadiness)
     
-    // Auth routes (stricter rate limiting)
+    // ── WebSocket ────────────────────────────────────────
+    mux.HandleFunc("/api/v1/ws", s.handleWebSocket)
+    
+    // ── Auth (stricter rate limiting) ────────────────────
     mux.Handle("/api/v1/auth/login", loginRL(loginBody(http.HandlerFunc(s.handleAuthLogin))))
+    mux.Handle("/api/v1/auth/register", loginRL(loginBody(http.HandlerFunc(s.handleAuthRegister))))
+    mux.HandleFunc("/api/v1/auth/refresh", s.handleAuthRefresh)
+    mux.HandleFunc("/api/v1/auth/me", s.withAuth(s.handleAuthMe))
+    mux.HandleFunc("/api/v1/auth/logout", s.withAuth(s.handleAuthLogout))
+    mux.HandleFunc("/api/v1/auth/revoke", s.withAuth(s.handleAuthRevoke))
+    mux.HandleFunc("/api/v1/auth/audit", s.withAuth(s.handleAuthAudit))
+    mux.HandleFunc("/api/v1/auth/switch-context", s.withAuth(s.handleAuthSwitchContext))
+    mux.HandleFunc("/api/v1/auth/my-roles", s.withAuth(s.handleAuthMyRoles))
+    mux.Handle("/api/v1/auth/send-otp", loginRL(loginBody(http.HandlerFunc(s.handleAuthSendOTP))))
+    mux.Handle("/api/v1/auth/verify-otp", loginRL(loginBody(http.HandlerFunc(s.handleAuthVerifyOTP))))
     
-    // Protected routes
-    mux.HandleFunc("/api/v1/entity/", s.withAuth(s.handleEntityRoutes))
+    // ── Domain Entity APIs ───────────────────────────────
+    mux.HandleFunc("/api/v1/scoring/", s.handleScoringRoutes)
+    mux.HandleFunc("/api/v1/public/", s.handlePublicRoutes)
+    mux.HandleFunc("/api/v1/athletes/", s.handleAthleteRoutes)
+    mux.HandleFunc("/api/v1/teams/", s.handleTeamRoutes)
+    mux.HandleFunc("/api/v1/referees/", s.handleRefereeRoutes)
+    mux.HandleFunc("/api/v1/arenas/", s.handleArenaRoutes)
+    mux.HandleFunc("/api/v1/registration/", s.handleRegistrationRoutes)
+    mux.HandleFunc("/api/v1/tournaments/", s.handleTournamentRoutes)
+    mux.HandleFunc("/api/v1/rankings/", s.handleRankingRoutes)
+    mux.HandleFunc("/api/v1/belts/", s.handleBeltRoutes)
+    mux.HandleFunc("/api/v1/techniques/", s.handleTechniqueRoutes)
+    mux.HandleFunc("/api/v1/transactions/", s.handleTransactionRoutes)
+    mux.HandleFunc("/api/v1/budgets", s.handleBudgetRoutes)
+    mux.HandleFunc("/api/v1/clubs/", s.handleClubRoutes)
+    mux.HandleFunc("/api/v1/members/", s.handleMemberRoutes)
+    mux.HandleFunc("/api/v1/community-events/", s.handleCommunityEventRoutes)
     
-    // Route group registration
-    s.handleModuleRoutes(mux)
+    // ── Module Route Groups (delegated registration) ─────
+    s.handleApprovalRoutes(mux)
+    s.handleFederationRoutes(mux)
+    s.handleExtendedFederationRoutes(mux)
+    s.handleDocumentRoutes(mux)
+    s.handleDisciplineRoutes(mux)
+    s.handleCertificationRoutes(mux)
+    s.handleInternationalRoutes(mux)
+    s.handleAthleteProfileRoutes(mux)
+    s.handleProvincialRoutes(mux)
+    s.handleProvincialPhase2Routes(mux)
+    s.handleClubInternalRoutes(mux)
+    s.handleClubV2Routes(mux)
+    s.handleBTCRoutes(mux)
+    s.handleParentRoutes(mux)
+    s.handleTournamentMgmtRoutes(mux)
+    s.handleProvincialFederationRoutes(mux)
+    divisions.NewHandler().RegisterRoutes(mux)
+    s.handleSupportRoutes(mux)
+    s.handleAdminRoutes(mux)
     
-    // Wrap with middleware
-    return withRecover(withRequestID(withRateLimit(s.rateLimiter)(
-        withBodyLimit(s.withCORS(s.withLogging(mux))))))
+    // ── Finance V2 + Subscription/Billing ────────────────
+    // (See server.go for full finance route list)
+    
+    // ── Bracket & Tournament Actions ─────────────────────
+    // (See server.go for full action route list)
+    
+    // ── Domain Events ────────────────────────────────────
+    mux.HandleFunc("/api/v1/events/recent", s.withAuth(s.handleRecentEvents))
+    
+    // ── Generic entity CRUD (catch-all) ──────────────────
+    mux.HandleFunc("/api/v1/", s.handleEntityRoutes)
+    
+    // Middleware stack
+    return withRecover(withRequestID(withSecurityHeaders(
+        withRateLimit(s.rateLimiter)(withBodyLimit(
+            s.withCSRF(s.withCORS(s.withLogging(mux))))))))
 }
 ```
 
 ### URL Path Convention
 ```
-/api/v1/{module}/              # List / Create
-/api/v1/{module}/{id}          # Get / Update / Delete
-/api/v1/{module}-action/{verb} # Custom actions
+/api/v1/{module}/                      # List / Create
+/api/v1/{module}/{id}                  # Get / Update / Delete
+/api/v1/{module}-action/{verb}         # Custom actions
+/api/v1/finance/{sub-module}           # Finance sub-routes
+/api/v1/finance/{sub-module}/{id}      # Finance entity detail
 ```
 
 ---
@@ -249,15 +359,17 @@ func (s *Server) Handler() http.Handler {
 ## 6. Middleware Stack
 
 ```
-Request → Recover → RequestID → RateLimit → BodyLimit → CORS → Logging → Auth → Handler
+Request → Recover → RequestID → SecurityHeaders → RateLimit → BodyLimit → CSRF → CORS → Logging → Auth → Handler
 ```
 
 | Middleware | Purpose |
 |-----------|---------|
 | `withRecover` | Panic recovery → 500 response |
 | `withRequestID` | Inject `X-Request-ID` header |
+| `withSecurityHeaders` | Security headers (X-Content-Type-Options, etc.) |
 | `withRateLimit` | Token bucket rate limiting |
 | `withBodyLimit` | Max body size (default 1MB) |
+| `withCSRF` | CSRF protection |
 | `withCORS` | CORS headers from `VCT_CORS_ORIGINS` |
 | `withLogging` | Request/response logging |
 | `withAuth` | JWT authentication, extracts `auth.Claims` |
@@ -313,13 +425,20 @@ type DataStore interface {
 - Wraps any `DataStore` with in-memory TTL cache
 - Configured via `VCT_CACHE_TTL` (default 30s) and `VCT_CACHE_MAX_ENTRIES` (default 2000)
 
+### PG Adapter Upgrade Pattern
+When `VCT_STORAGE_DRIVER=postgres`, the server automatically creates both:
+1. `store.PostgresStore` — for generic entity storage via `DataStore` interface
+2. `*sql.DB` — for dedicated PG adapters with raw SQL (higher performance)
+
+Services are initially wired with in-memory stores, then **upgraded** to PG adapters when `sql.DB` is available.
+
 ---
 
 ## 8. Repository Adapter Pattern
 
+### In-Memory (default)
 ```go
-// internal/adapter/repositories.go
-
+// internal/adapter/repositories.go or {module}_mem.go
 type AthleteRepository struct {
     store store.DataStore
 }
@@ -327,34 +446,36 @@ type AthleteRepository struct {
 func NewAthleteRepository(store store.DataStore) *AthleteRepository {
     return &AthleteRepository{store: store}
 }
-
-func (r *AthleteRepository) List() ([]athlete.Athlete, error) {
-    raw, err := r.store.List("athletes")
-    if err != nil { return nil, err }
-    // Convert map[string]any → domain model
-    return convertToAthletes(raw), nil
-}
 ```
 
-### PostgreSQL Adapter Pattern
+### PostgreSQL (via database/sql)
 ```go
-// internal/adapter/{module}_pg_repos.go
-
+// internal/adapter/{module}_pg.go or {module}_pg_repos.go
 type PgEntityRepo struct {
-    store *store.CachedStore
+    db *sql.DB
 }
 
-func NewPgEntityRepo(s *store.CachedStore) *PgEntityRepo {
-    return &PgEntityRepo{store: s}
+func NewPgEntityRepo(db *sql.DB) *PgEntityRepo {
+    return &PgEntityRepo{db: db}
 }
 
 func (r *PgEntityRepo) Create(e Entity) error {
-    return r.store.ExecSQL(
+    _, err := r.db.Exec(
         `INSERT INTO entities (id, name, created_at) VALUES ($1, $2, $3)`,
         e.ID, e.Name, e.CreatedAt,
     )
+    return err
 }
 ```
+
+### Infrastructure Adapters (Planned)
+| Adapter | Status | Purpose |
+|---------|--------|---------|
+| `adapter/postgres/` | Active | PostgreSQL utilities |
+| `adapter/meilisearch/` | Stub | Full-text search |
+| `adapter/minio/` | Stub | S3-compatible file storage |
+| `adapter/nats/` | Stub | Message queue / pub-sub |
+| `adapter/redis/` | Stub | Distributed cache |
 
 ---
 
@@ -362,12 +483,12 @@ func (r *PgEntityRepo) Create(e Entity) error {
 
 - Location: `backend/migrations/`
 - Format: `{NNNN}_{description}.sql` + `{NNNN}_{description}_down.sql`
-- Current: 36 migration pairs (0001–0036)
+- **Current: 85 migration pairs (0001–0085)**
 - Auto-run on startup when `VCT_DB_AUTO_MIGRATE=true`
 
 ### Creating a New Migration
 ```sql
--- backend/migrations/0037_new_feature.sql
+-- backend/migrations/0086_new_feature.sql
 CREATE TABLE IF NOT EXISTS new_table (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     name TEXT NOT NULL,
@@ -377,21 +498,69 @@ CREATE TABLE IF NOT EXISTS new_table (
 
 CREATE INDEX IF NOT EXISTS idx_new_table_name ON new_table(name);
 
--- backend/migrations/0037_new_feature_down.sql
+-- backend/migrations/0086_new_feature_down.sql
 DROP TABLE IF EXISTS new_table;
 ```
 
+### Recent Migration Areas
+| Range | Description |
+|-------|-------------|
+| 0001–0036 | Core schema, scoring, enterprise, audit |
+| 0037–0043 | Federation (core, master data, approvals, PR, international, workflows) |
+| 0044–0048 | Scoring, tournament mgmt, clubs, athlete profiles, BTC/parent/training |
+| 0049–0058 | Tenant isolation, FK constraints, consolidation, partitions, indexes, audit, archival, PG17 |
+| 0059–0073 | Fuzzy search, ELO ratings, query cache, CDC outbox, ltree, temporal, BRIN, backups |
+| 0074–0085 | Fixes (dual tables, RLS, migration tracking, status values, triggers, enums, FK, security), system admin, subscriptions |
+
 ---
 
-## 10. UUID Generation
+## 10. Server Struct & Service Wiring
+
+The `Server` struct holds all service dependencies:
+
 ```go
-// The project uses custom v4 UUID generation (no external lib)
-func newUUID() string {
-    b := make([]byte, 16)
-    _, _ = rand.Read(b)
-    b[6] = (b[6] & 0x0f) | 0x40
-    b[8] = (b[8] & 0x3f) | 0x80
-    return fmt.Sprintf("%08x-%04x-%04x-%04x-%012x", b[0:4], b[4:6], b[6:8], b[8:10], b[10:16])
+type Server struct {
+    cfg              config.Config
+    authService      *auth.Service
+    store            store.DataStore
+    cachedStore      *store.CachedStore
+    realtimeHub      *realtime.Hub
+    eventBus         *events.InMemoryBus
+    emailService     *email.Service
+    sqlDB            *sql.DB              // only when PG driver
+
+    // Domain services
+    athleteService      *athlete.Service
+    athleteProfileSvc   *athlete.ProfileService
+    trainingSessionSvc  *athlete.TrainingService
+    orgService          *organization.Service
+    scoringService      *scoring.Service
+    registrationService *scoring.RegistrationService
+    tournamentCRUD      adapter.TournamentCRUD
+    tournamentMgmtSvc   *tournament.MgmtService
+    rankingService      *ranking.Service
+    heritageService     *heritage.Service
+    financeService      *finance.Service
+    communityService    *community.Service
+    federationSvc       *federation.Service
+    approvalSvc         *approval.Service
+    certificationSvc    *certification.Service
+    disciplineSvc       *discipline.Service
+    documentSvc         *document.Service
+    internationalSvc    *international.Service
+    provincialSvc       *provincial.Service
+    btcSvc              *btc.Service
+    parentSvc           *parent.Service
+    clubSvc             *clubdomain.Service
+    supportSvc          *support.Service
+    subscriptionSvc     *finance.SubscriptionService
+    
+    // Provincial Phase 2 stores
+    tournamentStore     provincial.TournamentStore
+    financeStore        provincial.FinanceStore
+    certStore           provincial.CertStore
+    disciplineStore     provincial.DisciplineStore
+    docStore            provincial.DocStore
 }
 ```
 
@@ -403,7 +572,6 @@ func newUUID() string {
 ```go
 import "vct-platform/backend/internal/events"
 
-// Publishing
 s.eventBus.Publish(events.DomainEvent{
     Type:       events.EventCreated,
     EntityType: "athlete",
@@ -418,20 +586,21 @@ s.eventBus.Publish(events.DomainEvent{
 - Hub at `internal/realtime/`
 - First-message auth: `{"action":"auth","token":"xxx"}`
 - Channel subscription: `{"action":"subscribe","channel":"athletes"}`
-- Auto-broadcast from EventBus → WebSocket hub
+- Auto-broadcast from EventBus → WebSocket hub (entity + entity:id channels)
 
 ---
 
 ## 12. Anti-Patterns (NEVER Do These)
 
 1. ❌ **NEVER** use a web framework (Gin, Echo, Fiber) — use `net/http`
-2. ❌ **NEVER** use an ORM (GORM, Ent) — use raw SQL with `pgx`
+2. ❌ **NEVER** use an ORM (GORM, Ent) — use raw SQL with `pgx` / `database/sql`
 3. ❌ **NEVER** put business logic in handlers — handlers call services
 4. ❌ **NEVER** access `store` directly from handlers — go through service → adapter
 5. ❌ **NEVER** return errors without wrapping — use `fmt.Errorf("context: %w", err)`
 6. ❌ **NEVER** skip the `_down.sql` migration — always create both up and down
 7. ❌ **NEVER** add new dependencies without strong justification (stdlib-first)
 8. ❌ **NEVER** use `panic` for error handling — return errors properly
+9. ❌ **NEVER** forget to wire PG adapter upgrade in `server.go` when adding new PG stores
 
 ---
 
@@ -439,12 +608,14 @@ s.eventBus.Publish(events.DomainEvent{
 
 1. [ ] Create domain package: `internal/domain/{module}/`
 2. [ ] Define models, repository interface, service
-3. [ ] Create adapter: `internal/adapter/{module}_pg_repos.go`
-4. [ ] Create handler: `internal/httpapi/{module}_handler.go`
-5. [ ] Register routes in `server.go` → `Handler()`
-6. [ ] Wire service in `server.go` → `New()`
-7. [ ] Create migration: `migrations/{NNNN}_{desc}.sql` + `_down.sql`
-8. [ ] Add tests: `internal/httpapi/{module}_handler_test.go`
+3. [ ] Create in-memory adapter: `internal/adapter/{module}_mem.go`
+4. [ ] Create PG adapter: `internal/adapter/{module}_pg.go`
+5. [ ] Create handler: `internal/httpapi/{module}_handler.go`
+6. [ ] Register routes in `server.go` → `Handler()`
+7. [ ] Wire service in `server.go` → `New()` (in-memory first)
+8. [ ] Wire PG upgrade in `server.go` → `if storageDriver == "postgres"` block
+9. [ ] Create migration: `migrations/0086_{desc}.sql` + `_down.sql`
+10. [ ] Add tests: `internal/httpapi/{module}_handler_test.go` or `internal/adapter/{module}_pg_test.go`
 
 ---
 
@@ -478,7 +649,7 @@ go func() { srv.ListenAndServe() }()
 shutdownCtx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
 defer cancel()
 srv.Shutdown(shutdownCtx)  // Graceful: finish in-flight requests
-store.Close()              // Close DB connections
+server.Close()             // Close DB, WebSocket, auth cleanup
 ```
 
 ---
@@ -494,7 +665,22 @@ func (s *Service) Create(ctx context.Context, input CreateInput) (Entity, error)
 
 // In PostgreSQL adapter
 func (r *PgRepo) Create(ctx context.Context, e Entity) error {
-    _, err := r.pool.Exec(ctx, `INSERT INTO ...`, e.ID, e.Name)
+    _, err := r.db.ExecContext(ctx, `INSERT INTO ...`, e.ID, e.Name)
     return err
+}
+```
+
+---
+
+## 17. UUID Generation
+
+```go
+// The project uses custom v4 UUID generation (no external lib)
+func newUUID() string {
+    b := make([]byte, 16)
+    _, _ = rand.Read(b)
+    b[6] = (b[6] & 0x0f) | 0x40
+    b[8] = (b[8] & 0x3f) | 0x80
+    return fmt.Sprintf("%08x-%04x-%04x-%04x-%012x", b[0:4], b[4:6], b[6:8], b[8:10], b[10:16])
 }
 ```

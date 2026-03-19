@@ -52,6 +52,220 @@ func (s *Server) handleAdminRoutes(mux *http.ServeMux) {
 
 	// Audit Logs
 	mux.HandleFunc("/api/v1/admin/audit-logs", s.withAuth(s.handleAdminAuditLogs))
+
+	// CMS Config — admin CRUD for platform branding, theme, settings
+	mux.HandleFunc("/api/v1/admin/cms/config", s.withAuth(s.handleCMSConfigList))
+	mux.HandleFunc("/api/v1/admin/cms/config/", s.withAuth(s.handleCMSConfigDetail))
+
+	// CMS Public — public theme/branding endpoint (no auth)
+	mux.HandleFunc("/api/v1/cms/theme", s.handleCMSPublicTheme)
+	mux.HandleFunc("/api/v1/cms/branding", s.handleCMSPublicBranding)
+
+	// Dashboard stats (real data)
+	mux.HandleFunc("/api/v1/admin/dashboard/stats", s.withAuth(s.handleAdminDashboardStats))
+
+	// Notifications
+	mux.HandleFunc("/api/v1/admin/notifications/stats", s.withAuth(s.handleAdminNotificationStats))
+
+	// Documents
+	mux.HandleFunc("/api/v1/admin/documents/issued", s.withAuth(s.handleAdminDocumentsIssued))
+
+	// Integrity Monitoring
+	mux.HandleFunc("/api/v1/admin/integrity/alerts", s.withAuth(s.handleAdminIntegrityAlerts))
+
+	// Data Quality
+	mux.HandleFunc("/api/v1/admin/data-quality/scores", s.withAuth(s.handleAdminDataQualityScores))
+	mux.HandleFunc("/api/v1/admin/data-quality/rules", s.withAuth(s.handleAdminDataQualityRules))
+}
+
+// ════════════════════════════════════════════════════════════
+// CMS CONFIG — CRUD on platform config (branding, theme, etc.)
+// Uses entity store with entity = "cms-config"
+// ════════════════════════════════════════════════════════════
+
+const cmsEntity = "cms-config"
+
+func (s *Server) handleCMSConfigList(w http.ResponseWriter, r *http.Request, p auth.Principal) {
+	if !requireAdmin(w, p) {
+		return
+	}
+	switch r.Method {
+	case http.MethodGet:
+		items := s.store.List(cmsEntity)
+		success(w, http.StatusOK, items)
+	case http.MethodPost:
+		var body map[string]any
+		if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+			badRequest(w, "invalid JSON body")
+			return
+		}
+		created, err := s.store.Create(cmsEntity, body)
+		if err != nil {
+			badRequest(w, err.Error())
+			return
+		}
+		success(w, http.StatusCreated, created)
+	default:
+		methodNotAllowed(w)
+	}
+}
+
+func (s *Server) handleCMSConfigDetail(w http.ResponseWriter, r *http.Request, p auth.Principal) {
+	if !requireAdmin(w, p) {
+		return
+	}
+	key := strings.TrimPrefix(r.URL.Path, "/api/v1/admin/cms/config/")
+
+	switch r.Method {
+	case http.MethodGet:
+		item, found := s.store.GetByID(cmsEntity, key)
+		if !found {
+			notFound(w)
+			return
+		}
+		success(w, http.StatusOK, item)
+
+	case http.MethodPut:
+		var body map[string]any
+		if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+			badRequest(w, "invalid JSON body")
+			return
+		}
+		body["id"] = key
+		// Try update first, create if not found
+		updated, err := s.store.Update(cmsEntity, key, body)
+		if err != nil {
+			created, createErr := s.store.Create(cmsEntity, body)
+			if createErr != nil {
+				badRequest(w, createErr.Error())
+				return
+			}
+			success(w, http.StatusCreated, created)
+			return
+		}
+		success(w, http.StatusOK, updated)
+
+	case http.MethodDelete:
+		s.store.Delete(cmsEntity, key)
+		success(w, http.StatusOK, map[string]string{"message": "Đã xóa config"})
+
+	default:
+		methodNotAllowed(w)
+	}
+}
+
+// ── Public CMS endpoints (no auth) ────────────────────────
+
+func (s *Server) handleCMSPublicTheme(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		methodNotAllowed(w)
+		return
+	}
+	item, found := s.store.GetByID(cmsEntity, "theme")
+	if !found {
+		// Default theme
+		success(w, http.StatusOK, map[string]any{
+			"id":            "theme",
+			"accent_color":  "#0ea5e9",
+			"font_family":   "Inter, system-ui, sans-serif",
+			"border_radius": "12px",
+			"mode_default":  "dark",
+		})
+		return
+	}
+	success(w, http.StatusOK, item)
+}
+
+func (s *Server) handleCMSPublicBranding(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		methodNotAllowed(w)
+		return
+	}
+	item, found := s.store.GetByID(cmsEntity, "branding")
+	if !found {
+		// Default branding
+		success(w, http.StatusOK, map[string]any{
+			"id":            "branding",
+			"platform_name": "VCT Platform",
+			"slogan":        "Nền tảng Võ Cổ Truyền Việt Nam",
+			"logo_url":      "",
+			"favicon_url":   "",
+		})
+		return
+	}
+	success(w, http.StatusOK, item)
+}
+
+// ════════════════════════════════════════════════════════════
+// DASHBOARD STATS — GET /api/v1/admin/dashboard/stats
+// Returns real system metrics for the admin dashboard
+// ════════════════════════════════════════════════════════════
+
+func (s *Server) handleAdminDashboardStats(w http.ResponseWriter, r *http.Request, p auth.Principal) {
+	if r.Method != http.MethodGet {
+		methodNotAllowed(w)
+		return
+	}
+	if !requireAdmin(w, p) {
+		return
+	}
+
+	var memStats runtime.MemStats
+	runtime.ReadMemStats(&memStats)
+
+	// Service statuses from real data
+	services := []map[string]any{
+		{"name": "Go API Backend", "status": "online", "latency": "—"},
+	}
+
+	dbStatus := "offline"
+	if s.sqlDB != nil {
+		if err := s.sqlDB.PingContext(r.Context()); err == nil {
+			dbStatus = "online"
+		}
+		services = append(services, map[string]any{
+			"name": "PostgreSQL Database", "status": dbStatus, "latency": "—",
+		})
+	}
+
+	cacheStatus := "offline"
+	if s.cachedStore != nil {
+		cacheStatus = "online"
+	}
+	services = append(services, map[string]any{
+		"name": "Cache Layer", "status": cacheStatus, "latency": "—",
+	})
+
+	wsClients := 0
+	if s.realtimeHub != nil {
+		wsClients = s.realtimeHub.CountClients()
+	}
+	services = append(services, map[string]any{
+		"name": "WebSocket Hub", "status": "online", "latency": "—",
+		"clients": wsClients,
+	})
+
+	// Recent audit events (~timeline)
+	auditEntries := s.authService.GetAuditLogs(10, "", "")
+	timeline := make([]map[string]any, 0, len(auditEntries))
+	for _, e := range auditEntries {
+		timeline = append(timeline, map[string]any{
+			"time":        e.Time.Format("15:04:05"),
+			"title":       e.Action,
+			"description": e.Username + " · " + e.IP,
+		})
+	}
+
+	success(w, http.StatusOK, map[string]any{
+		"services":     services,
+		"timeline":     timeline,
+		"goroutines":   runtime.NumGoroutine(),
+		"memory_mb":    memStats.Alloc / 1024 / 1024,
+		"gc_runs":      memStats.NumGC,
+		"ws_clients":   wsClients,
+		"storage":      s.storageDriver,
+		"go_version":   runtime.Version(),
+	})
 }
 
 // ════════════════════════════════════════════════════════════
@@ -469,4 +683,84 @@ func (s *Server) handleAdminAuditLogs(w http.ResponseWriter, r *http.Request, p 
 		})
 	}
 	success(w, http.StatusOK, result)
+}
+
+// ════════════════════════════════════════════════════════════
+// NOTIFICATIONS STATS — GET /api/v1/admin/notifications/stats
+// ════════════════════════════════════════════════════════════
+
+func (s *Server) handleAdminNotificationStats(w http.ResponseWriter, r *http.Request, p auth.Principal) {
+	if r.Method != http.MethodGet {
+		methodNotAllowed(w)
+		return
+	}
+	if !requireAdmin(w, p) {
+		return
+	}
+	// TODO: query actual notification delivery stats from DB
+	success(w, http.StatusOK, []any{})
+}
+
+// ════════════════════════════════════════════════════════════
+// DOCUMENTS ISSUED — GET /api/v1/admin/documents/issued
+// ════════════════════════════════════════════════════════════
+
+func (s *Server) handleAdminDocumentsIssued(w http.ResponseWriter, r *http.Request, p auth.Principal) {
+	if r.Method != http.MethodGet {
+		methodNotAllowed(w)
+		return
+	}
+	if !requireAdmin(w, p) {
+		return
+	}
+	// TODO: query issued documents from DB
+	success(w, http.StatusOK, []any{})
+}
+
+// ════════════════════════════════════════════════════════════
+// INTEGRITY ALERTS — GET /api/v1/admin/integrity/alerts
+// ════════════════════════════════════════════════════════════
+
+func (s *Server) handleAdminIntegrityAlerts(w http.ResponseWriter, r *http.Request, p auth.Principal) {
+	if r.Method != http.MethodGet {
+		methodNotAllowed(w)
+		return
+	}
+	if !requireAdmin(w, p) {
+		return
+	}
+	// TODO: query integrity alerts from anti-match-fixing module
+	success(w, http.StatusOK, []any{})
+}
+
+// ════════════════════════════════════════════════════════════
+// DATA QUALITY — GET /api/v1/admin/data-quality/scores
+// ════════════════════════════════════════════════════════════
+
+func (s *Server) handleAdminDataQualityScores(w http.ResponseWriter, r *http.Request, p auth.Principal) {
+	if r.Method != http.MethodGet {
+		methodNotAllowed(w)
+		return
+	}
+	if !requireAdmin(w, p) {
+		return
+	}
+	// TODO: compute data quality scores across key tables
+	success(w, http.StatusOK, []any{})
+}
+
+// ════════════════════════════════════════════════════════════
+// DATA QUALITY — GET /api/v1/admin/data-quality/rules
+// ════════════════════════════════════════════════════════════
+
+func (s *Server) handleAdminDataQualityRules(w http.ResponseWriter, r *http.Request, p auth.Principal) {
+	if r.Method != http.MethodGet {
+		methodNotAllowed(w)
+		return
+	}
+	if !requireAdmin(w, p) {
+		return
+	}
+	// TODO: list data quality rules and their violation counts
+	success(w, http.StatusOK, []any{})
 }

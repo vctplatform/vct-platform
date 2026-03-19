@@ -5,7 +5,7 @@ description: Workflow nâng cấp skill AI đã có dựa trên bài học và t
 # /upgrade-skill — Nâng Cấp Skill Hiện Có
 
 > Sử dụng khi cần cập nhật một skill AI đã có với kiến thức mới, patterns mới, hoặc sửa lỗi trong skill.
-> Đọc skill **vct-skill-evolver** (`/.agent/skills/vct-skill-evolver/SKILL.md`) trước khi bắt đầu.
+> Đọc skill **vct-skill-evolver** (`/.agents/skills/vct-skill-evolver/SKILL.md`) trước khi bắt đầu.
 
 // turbo-all
 
@@ -96,11 +96,11 @@ Hiển thị plan cho user review trước khi thực hiện.
 
 ```bash
 # Kiểm tra YAML frontmatter hợp lệ
-head -5 .agent/skills/{skill-name}/SKILL.md
+head -5 .agents/skills/{skill-name}/SKILL.md
 
 # Kiểm tra cross-references
-grep -rn "{skill-name}" .agent/skills/*/SKILL.md
-grep -rn "{skill-name}" .agent/workflows/*.md
+grep -rn "{skill-name}" .agents/skills/*/SKILL.md
+grep -rn "{skill-name}" .agents/workflows/*.md
 ```
 
 Checklist:

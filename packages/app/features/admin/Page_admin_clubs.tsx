@@ -17,7 +17,7 @@ import { useDebounce } from '../hooks/useDebounce'
 import { exportToCSV } from './utils/adminExport'
 import { usePagination } from '../hooks/usePagination'
 import { AdminGuard } from './components/AdminGuard'
-import { useI18n as _useI18n } from '../i18n'
+
 
 // ════════════════════════════════════════
 // TYPES & MOCK DATA

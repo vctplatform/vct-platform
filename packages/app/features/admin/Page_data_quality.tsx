@@ -9,27 +9,31 @@ import { VCT_Icons } from '../components/vct-icons'
 import { usePagination } from '../hooks/usePagination'
 import { AdminSkeletonRow } from './components/AdminSkeletonRow'
 import { AdminPaginationBar } from './components/AdminPaginationBar'
+import { useAdminFetch } from './hooks/useAdminAPI'
 
 // ════════════════════════════════════════
-// MOCK DATA — Data Quality Dashboard
+// TYPES
 // ════════════════════════════════════════
-const MOCK_SCORES = [
-    { table: 'athletes', overall: 94.2, completeness: 96.0, accuracy: 98.5, consistency: 91.0, timeliness: 91.3 },
-    { table: 'tournaments', overall: 97.5, completeness: 99.0, accuracy: 98.0, consistency: 96.0, timeliness: 97.0 },
-    { table: 'combat_matches', overall: 88.1, completeness: 85.0, accuracy: 97.0, consistency: 82.4, timeliness: 88.0 },
-    { table: 'registrations', overall: 91.8, completeness: 90.5, accuracy: 96.0, consistency: 88.7, timeliness: 92.0 },
-    { table: 'referees', overall: 95.0, completeness: 97.0, accuracy: 98.0, consistency: 93.0, timeliness: 92.0 },
-    { table: 'teams', overall: 89.5, completeness: 88.0, accuracy: 95.0, consistency: 84.0, timeliness: 91.0 },
-]
+interface DQScore {
+    table: string
+    overall: number
+    completeness: number
+    accuracy: number
+    consistency: number
+    timeliness: number
+}
 
-const MOCK_RULES = [
-    { id: 'DQ-001', rule_name: 'athletes_date_of_birth', table: 'athletes', type: 'COMPLETENESS', severity: 'critical', status: 'CRITICAL', violations: 142, total: 4500, rate: 3.16 },
-    { id: 'DQ-002', rule_name: 'match_events_integrity', table: 'combat_matches', type: 'CONSISTENCY', severity: 'warning', status: 'WARNING', violations: 85, total: 12000, rate: 0.71 },
-    { id: 'DQ-003', rule_name: 'registrations_duplicate', table: 'registrations', type: 'UNIQUENESS', severity: 'warning', status: 'PASS', violations: 0, total: 3200, rate: 0 },
-    { id: 'DQ-004', rule_name: 'athletes_weight_range', table: 'athletes', type: 'ACCURACY', severity: 'info', status: 'WARNING', violations: 23, total: 4500, rate: 0.51 },
-    { id: 'DQ-005', rule_name: 'tournaments_config_valid', table: 'tournaments', type: 'CUSTOM', severity: 'critical', status: 'PASS', violations: 0, total: 45, rate: 0 },
-    { id: 'DQ-006', rule_name: 'referee_soft_fk', table: 'referees', type: 'REFERENTIAL', severity: 'warning', status: 'PASS', violations: 2, total: 230, rate: 0.87 },
-]
+interface DQRule {
+    id: string
+    rule_name: string
+    table: string
+    type: string
+    severity: string
+    status: string
+    violations: number
+    total: number
+    rate: number
+}
 
 const STATUS_MAP: Record<string, { color: string; type: 'success' | 'warning' | 'danger' }> = {
     PASS: { color: 'green', type: 'success' },
@@ -49,15 +53,14 @@ function getScoreColor(score: number): string {
 // MAIN COMPONENT
 // ════════════════════════════════════════
 export const Page_data_quality = () => {
+    const { data: fetchedScores, isLoading: loadingScores } = useAdminFetch<DQScore[]>('/admin/data-quality/scores')
+    const { data: fetchedRules, isLoading: loadingRules } = useAdminFetch<DQRule[]>('/admin/data-quality/rules')
+    const isLoading = loadingScores || loadingRules
+    const scores = useMemo(() => fetchedScores ?? [], [fetchedScores])
+    const rules = useMemo(() => fetchedRules ?? [], [fetchedRules])
     const [search, setSearch] = useState('')
     const [typeFilter, setTypeFilter] = useState('all')
-    const [isLoading, setIsLoading] = useState(true)
     const [toast, setToast] = useState({ show: false, msg: '', type: 'success' })
-
-    React.useEffect(() => {
-        const t = setTimeout(() => setIsLoading(false), 800)
-        return () => clearTimeout(t)
-    }, [])
 
     const showToast = useCallback((msg: string, type = 'success') => {
         setToast({ show: true, msg, type })
@@ -65,21 +68,22 @@ export const Page_data_quality = () => {
     }, [])
 
     const filteredRules = useMemo(() => {
-        let v = MOCK_RULES
+        let v = rules
         if (typeFilter !== 'all') v = v.filter(r => r.type === typeFilter)
         if (search) {
             const q = search.toLowerCase()
             v = v.filter(r => r.rule_name.toLowerCase().includes(q) || r.table.toLowerCase().includes(q))
         }
         return v
-    }, [search, typeFilter])
+    }, [rules, search, typeFilter])
 
     const pagination = usePagination(filteredRules, { pageSize: 5 })
 
     const avgScore = useMemo(() => {
-        const total = MOCK_SCORES.reduce((acc, s) => acc + s.overall, 0)
-        return (total / MOCK_SCORES.length).toFixed(1)
-    }, [])
+        if (scores.length === 0) return '0.0'
+        const total = scores.reduce((acc, s) => acc + s.overall, 0)
+        return (total / scores.length).toFixed(1)
+    }, [scores])
 
     return (
         <div className="mx-auto max-w-[1400px] p-4 pb-24">
@@ -93,7 +97,7 @@ export const Page_data_quality = () => {
                     <VCT_Button variant="outline" icon={<VCT_Icons.Refresh size={16} />} onClick={() => showToast('Đang chạy kiểm tra chất lượng dữ liệu...')}>Chạy kiểm tra</VCT_Button>
                     <VCT_Button variant="outline" icon={<VCT_Icons.Download size={16} />} onClick={() => {
                         const header = 'Bảng,Overall,Completeness,Accuracy,Consistency,Timeliness'
-                        const csv = [header, ...MOCK_SCORES.map(s => `${s.table},${s.overall},${s.completeness},${s.accuracy},${s.consistency},${s.timeliness}`)].join('\n')
+                        const csv = [header, ...scores.map(s => `${s.table},${s.overall},${s.completeness},${s.accuracy},${s.consistency},${s.timeliness}`)].join('\n')
                         const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' })
                         const url = URL.createObjectURL(blob)
                         const a = document.createElement('a'); a.href = url; a.download = `vct_data_quality_${new Date().toISOString().slice(0, 10)}.csv`; a.click()
@@ -105,7 +109,7 @@ export const Page_data_quality = () => {
 
             {/* ── SCORE CARDS ── */}
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4 mb-8">
-                {MOCK_SCORES.map(s => (
+                {scores.map(s => (
                     <div key={s.table} className="bg-(--vct-bg-card) border border-(--vct-border-strong) rounded-2xl p-4 text-center">
                         <div className="text-[10px] uppercase tracking-wider text-(--vct-text-tertiary) font-bold mb-2">{s.table}</div>
                         <div className="text-3xl font-bold" style={{ color: getScoreColor(s.overall) }}>{s.overall}%</div>
@@ -123,7 +127,7 @@ export const Page_data_quality = () => {
             <div className="bg-linear-to-r from-(--vct-accent-blue,#3b82f6)/10 to-(--vct-accent-cyan,#06b6d4)/10 border border-(--vct-border-strong) rounded-2xl p-6 mb-8 flex items-center justify-between">
                 <div>
                     <div className="text-sm font-semibold text-(--vct-text-primary)">Điểm Chất Lượng Trung Bình Toàn Hệ Thống</div>
-                    <div className="text-[11px] text-(--vct-text-secondary) mt-1">Dựa trên {MOCK_SCORES.length} bảng dữ liệu chính</div>
+                    <div className="text-[11px] text-(--vct-text-secondary) mt-1">Dựa trên {scores.length} bảng dữ liệu chính</div>
                 </div>
                 <div className="text-4xl font-bold" style={{ color: getScoreColor(parseFloat(avgScore)) }}>{avgScore}%</div>
             </div>

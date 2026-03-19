@@ -418,6 +418,7 @@ func resolveCredentials(raw string, allowDemo bool) (map[string]userCredential, 
 // These are fixed IDs used for demo users so that seed data in
 // in-memory stores can reference them consistently.
 const (
+	OwnerUserID       = "owner-hbtung-00000001"
 	DemoAthleteUserID = "demo-athlete-00000001"
 	DemoParentUserID  = "demo-parent-000000001"
 )
@@ -433,6 +434,13 @@ func demoCredentials() map[string]userCredential {
 	}
 
 	return map[string]userCredential{
+		// ── Platform Owner ──
+		"hbtung": {
+			passwordHash: hashOrPanic("BaTung@1511"),
+			displayName:  "Hoàng Bá Tùng",
+			allowedRole:  []UserRole{RoleAdmin, RoleFederationPresident, RoleBTC},
+			userID:       OwnerUserID,
+		},
 		"admin": {
 			passwordHash: hashOrPanic("Admin@123"),
 			displayName:  "Quản trị hệ thống",

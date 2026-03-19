@@ -98,7 +98,7 @@ description: [mô tả ngắn, chứa keywords trigger]
 
 ### File location:
 ```
-.agent/workflows/{name}.md
+.agents/workflows/{name}.md
 ```
 
 ---
@@ -119,17 +119,17 @@ description: [mô tả ngắn, chứa keywords trigger]
 
 ```bash
 # Kiểm tra file tồn tại
-ls .agent/workflows/{name}.md
+ls .agents/workflows/{name}.md
 
 # Kiểm tra frontmatter
-head -5 .agent/workflows/{name}.md
+head -5 .agents/workflows/{name}.md
 
 # Kiểm tra tổng số workflows
-ls .agent/workflows/*.md | wc -l
+ls .agents/workflows/*.md | wc -l
 ```
 
 Checklist:
-- [ ] File `.md` tồn tại trong `.agent/workflows/`
+- [ ] File `.md` tồn tại trong `.agents/workflows/`
 - [ ] YAML frontmatter valid (`description:`)
 - [ ] `// turbo-all` annotation có
 - [ ] Tất cả bước có numbering đúng

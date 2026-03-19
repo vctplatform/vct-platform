@@ -89,7 +89,8 @@ npm run build                         # Build verification
   - Migrations in backend/migrations/
 
 □ Frontend organization:
-  - Feature code in packages/app/features/ (NOT apps/next/pages/)
+  - Feature code in packages/app/features/ (NOT apps/next/app/)
+  - App Router pages are thin import wrappers only
   - Components use VCT_ prefix
   - Pages named Page_{module}_{sub}.tsx
   - Routes registered in route-registry.ts

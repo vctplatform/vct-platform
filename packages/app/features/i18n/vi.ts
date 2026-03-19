@@ -760,4 +760,61 @@ export const vi: Record<string, string> = {
     'admin.toast.saveSuccess': 'Đã lưu thành công!',
     'admin.toast.deleteSuccess': 'Đã xóa thành công!',
     'admin.toast.error': 'Đã xảy ra lỗi. Vui lòng thử lại.',
+
+    // ── Admin – CMS ──
+    'admin.cms.title': 'CMS — Quản Trị Nội Dung',
+    'admin.cms.subtitle': 'Cấu hình giao diện, thương hiệu và nội dung toàn hệ thống',
+    'admin.cms.save': 'Lưu cấu hình',
+    'admin.cms.reset': 'Đặt lại',
+    'admin.cms.preview': 'Xem trước',
+    'admin.cms.noChanges': 'Không có thay đổi nào',
+
+    // ── Admin – People / Nhân sự ──
+    'admin.people.title': 'Quản lý Nhân sự',
+    'admin.people.subtitle': 'Quản lý VĐV, HLV, Trọng tài toàn hệ thống',
+    'admin.people.search': 'Tìm theo tên, mã, đơn vị...',
+    'admin.people.noResults': 'Không tìm thấy nhân sự',
+
+    // ── Admin – Clubs ──
+    'admin.clubs.title': 'Quản lý CLB / Võ đường',
+    'admin.clubs.subtitle': 'Quản lý đăng ký, trạng thái và hoạt động CLB',
+    'admin.clubs.search': 'Tìm CLB...',
+    'admin.clubs.noResults': 'Không có CLB nào',
+    'admin.clubs.exportCSV': 'Xuất CSV',
+
+    // ── Admin – Federation ──
+    'admin.federation.title': 'Quản lý Liên đoàn',
+    'admin.federation.subtitle': 'Quản trị Liên đoàn, chi nhánh, tổ chức thành viên',
+    'admin.federation.search': 'Tìm liên đoàn...',
+    'admin.federation.noResults': 'Không có liên đoàn nào',
+
+    // ── Admin – Scoring ──
+    'admin.scoring.title': 'Hệ thống Chấm điểm',
+    'admin.scoring.subtitle': 'Cấu hình quy tắc chấm điểm, biểu điểm và phạt',
+    'admin.scoring.noTemplates': 'Chưa có biểu điểm nào',
+
+    // ── Admin – Tournaments ──
+    'admin.tournaments.title': 'Quản lý Giải đấu',
+    'admin.tournaments.subtitle': 'Quản trị toàn bộ giải đấu VCT',
+    'admin.tournaments.search': 'Tìm giải đấu...',
+    'admin.tournaments.noResults': 'Không có giải đấu nào',
+    'admin.tournaments.create': 'Tạo Giải đấu',
+
+    // ── Admin – Rankings ──
+    'admin.rankings.title': 'Bảng Xếp hạng',
+    'admin.rankings.subtitle': 'Quản lý bảng xếp hạng quốc gia VĐV, CLB, Đoàn',
+    'admin.rankings.search': 'Tìm VĐV, CLB...',
+    'admin.rankings.noResults': 'Không có kết quả',
+
+    // ── Admin – Finance ──
+    'admin.finance.title': 'Tài chính Hệ thống',
+    'admin.finance.subtitle': 'Báo cáo doanh thu, chi phí, và đối soát tài chính',
+    'admin.finance.noData': 'Chưa có dữ liệu tài chính',
+
+    // ── Admin – Reference Data ──
+    'admin.refdata.title': 'Dữ liệu Tham chiếu',
+    'admin.refdata.subtitle': 'Quản lý danh mục chuẩn — đai, hạng cân, loại hình',
+    'admin.refdata.search': 'Tìm danh mục...',
+    'admin.refdata.noResults': 'Không có danh mục nào',
+    'admin.refdata.create': 'Thêm mục mới',
 }

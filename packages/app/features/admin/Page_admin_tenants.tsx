@@ -15,7 +15,8 @@ import { useAdminFetch } from './hooks/useAdminAPI'
 import { useDebounce } from '../hooks/useDebounce'
 import { exportToCSV } from './utils/adminExport'
 import { AdminGuard } from './components/AdminGuard'
-import { useI18n as _useI18n } from '../i18n'
+import { useI18n } from '../i18n'
+import { VCT_Icons as BreadcrumbIcons } from '../components/vct-icons'
 
 // ════════════════════════════════════════
 // MOCK DATA — Tenants / Organizations
@@ -34,16 +35,7 @@ interface Tenant {
     last_active: string
 }
 
-const MOCK_TENANTS: Tenant[] = [
-    { id: 'TN-001', name: 'Liên đoàn Vovinam Việt Nam', type: 'federation', plan: 'enterprise', status: 'active', members: 12500, admins: 8, created_at: '2023-01-15', region: 'Việt Nam', contact_email: 'admin@vovinam.vn', last_active: '2024-03-13' },
-    { id: 'TN-002', name: 'Fédération Française de Vovinam', type: 'federation', plan: 'professional', status: 'active', members: 3200, admins: 4, created_at: '2023-03-22', region: 'Pháp', contact_email: 'contact@vovinam.fr', last_active: '2024-03-12' },
-    { id: 'TN-003', name: 'Vovinam Italia Federation', type: 'federation', plan: 'starter', status: 'active', members: 1100, admins: 3, created_at: '2023-06-10', region: 'Ý', contact_email: 'info@vovinam.it', last_active: '2024-03-11' },
-    { id: 'TN-004', name: 'CLB Vovinam Thủ Đức', type: 'club', plan: 'free', status: 'active', members: 85, admins: 2, created_at: '2023-09-01', region: 'TP.HCM', contact_email: 'thuduc@vovinam.club', last_active: '2024-03-13' },
-    { id: 'TN-005', name: 'Vietnam Vovinam Association USA', type: 'association', plan: 'starter', status: 'trial', members: 450, admins: 2, created_at: '2024-01-05', region: 'Mỹ', contact_email: 'usa@vovinam.org', last_active: '2024-03-10' },
-    { id: 'TN-006', name: 'CLB Vovinam Đại học Bách Khoa', type: 'club', plan: 'free', status: 'pending', members: 120, admins: 1, created_at: '2024-02-20', region: 'Hà Nội', contact_email: 'bk@vovinam.edu', last_active: '—' },
-    { id: 'TN-007', name: 'Vovinam Cambodia Federation', type: 'federation', plan: 'starter', status: 'suspended', members: 600, admins: 2, created_at: '2023-11-12', region: 'Campuchia', contact_email: 'info@vovinam.kh', last_active: '2024-01-15' },
-    { id: 'TN-008', name: 'CLB Vovinam Quận 1', type: 'club', plan: 'starter', status: 'active', members: 200, admins: 2, created_at: '2023-08-18', region: 'TP.HCM', contact_email: 'q1@vovinam.club', last_active: '2024-03-13' },
-]
+
 
 const PLAN_BADGE: Record<string, { type: 'info' | 'success' | 'warning' | 'neutral'; label: string }> = {
     free: { type: 'neutral', label: 'Free' },
@@ -86,7 +78,8 @@ export const Page_admin_tenants = () => (
 )
 
 const Page_admin_tenants_Content = () => {
-    const { data: fetchedTenants, isLoading } = useAdminFetch<Tenant[]>('/admin/tenants', { mockData: MOCK_TENANTS })
+    const { t } = useI18n()
+    const { data: fetchedTenants, isLoading } = useAdminFetch<Tenant[]>('/admin/tenants')
     const [tenants, setTenants] = useState<Tenant[]>([])
     const [search, setSearch] = useState('')
     const debouncedSearch = useDebounce(search, 300)
@@ -155,11 +148,6 @@ const Page_admin_tenants_Content = () => {
         })
     }
 
-    const toggleSelectAll = () => {
-        if (selected.length === filtered.length) setSelected([])
-        else setSelected(filtered.map(t => t.id))
-    }
-
     const handleBulkConfirm = useCallback(() => {
         if (!bulkConfirm || selected.length === 0) return
         const newStatus = bulkConfirm.action === 'suspend' ? 'suspended' as const : 'active' as const
@@ -200,9 +188,13 @@ const Page_admin_tenants_Content = () => {
 
     return (
         <AdminPageShell
-            title="Quản Lý Tổ Chức (Tenants)"
-            subtitle="Phê duyệt, quản lý và giám sát các tổ chức sử dụng nền tảng VCT PLATFORM."
+            title={t('admin.tenants.title')}
+            subtitle={t('admin.tenants.subtitle')}
             icon={<VCT_Icons.Building size={28} className="text-[#3b82f6]" />}
+            breadcrumbs={[
+                { label: 'Admin', href: '/admin', icon: <BreadcrumbIcons.Home size={14} /> },
+                { label: 'Tổ chức (Tenants)' },
+            ]}
             stats={kpiStats}
             actions={
                 <VCT_Button variant="outline" icon={<VCT_Icons.Download size={16} />} onClick={handleExport}>Xuất CSV</VCT_Button>

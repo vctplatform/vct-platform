@@ -181,10 +181,10 @@ const { data, loading, error } = useApiQuery<Item[]>('/api/v1/admin/feature')
 
 ## Bước 4: Đăng Ký Route & Sidebar
 
-1. **Next.js page** (thin wrapper):
+1. **App Router page** (thin wrapper):
    ```tsx
-   // apps/next/pages/admin/{feature}.tsx
-   import { Page_admin_{feature} } from '@vct/app/features/admin/Page_admin_{feature}'
+   // apps/next/app/admin/{feature}/page.tsx
+   import { Page_admin_{feature} } from 'app/features/admin/Page_admin_{feature}'
    export default Page_admin_{feature}
    ```
 
@@ -214,15 +214,41 @@ Checklist:
 
 ---
 
-## Existing Admin Pages (Reference)
+## Existing Admin Pages (22 pages — Reference)
 
 | Page | File | Key Pattern |
 |------|------|-------------|
+| Dashboard | `Page_admin_dashboard.tsx` | Overview stats, charts |
 | Users | `Page_admin_users.tsx` | Table + Drawer + Search |
+| User Detail | `Page_admin_user_detail.tsx` | Profile + Timeline |
 | Roles | `Page_admin_roles.tsx` | Permission matrix |
 | System | `Page_admin_system.tsx` | Health metrics + config |
+| Clubs | `Page_admin_clubs.tsx` | Club management |
+| Federation | `Page_admin_federation.tsx` | Federation overview |
+| Finance | `Page_admin_finance.tsx` | Financial overview |
+| People | `Page_admin_people.tsx` | People directory |
+| Rankings | `Page_admin_rankings.tsx` | Rankings management |
+| Scoring | `Page_admin_scoring.tsx` | Scoring configuration |
+| Subscriptions | `Page_admin_subscriptions.tsx` | Subscription/billing |
+| Support | `Page_admin_support.tsx` | Support tickets |
+| Tenants | `Page_admin_tenants.tsx` | Multi-tenant management |
+| Tournaments | `Page_admin_tournaments.tsx` | Tournament management |
 | Documents | `Page_documents.tsx` | Upload + Drawer preview |
 | Notifications | `Page_notifications_admin.tsx` | List + Drawer + Create form |
 | Integrity | `Page_integrity.tsx` | Validation checks |
 | Data Quality | `Page_data_quality.tsx` | Quality metrics |
 | Audit Logs | `Page_audit_logs.tsx` | Activity trail |
+| Feature Flags | `Page_admin_feature_flags.tsx` | Toggle features |
+| Reference Data | `Page_admin_reference_data.tsx` | Master data management |
+
+### Admin Sub-Structure
+```
+features/admin/
+├── admin.module.css           # CSS Modules
+├── admin.types.ts             # Shared types
+├── admin-users.data.ts        # Data helpers
+├── components/                # Admin-specific components
+├── hooks/                     # Admin-specific hooks
+├── utils/                     # Admin-specific utilities
+└── __tests__/                 # Admin tests
+```

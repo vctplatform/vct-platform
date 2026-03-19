@@ -287,9 +287,9 @@ What is the change that we're proposing and/or doing?
 □ Explore `backend/internal/domain/` — backend modules
 
 ### Key Conventions
-□ Read `.agent/skills/vct-frontend/SKILL.md` — frontend rules
-□ Read `.agent/skills/vct-backend-go/SKILL.md` — backend rules
-□ Read `.agent/skills/vct-cto/SKILL.md` — quality standards
+□ Read `.agents/skills/vct-frontend/SKILL.md` — frontend rules
+□ Read `.agents/skills/vct-backend-go/SKILL.md` — backend rules
+□ Read `.agents/skills/vct-cto/SKILL.md` — quality standards
 ```
 
 ---

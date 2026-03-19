@@ -742,4 +742,61 @@ export const en: Record<string, string> = {
     'admin.toast.saveSuccess': 'Saved successfully!',
     'admin.toast.deleteSuccess': 'Deleted successfully!',
     'admin.toast.error': 'An error occurred. Please try again.',
+
+    // ── Admin – CMS ──
+    'admin.cms.title': 'CMS — Content Management',
+    'admin.cms.subtitle': 'Configure branding, theme and system-wide content',
+    'admin.cms.save': 'Save Configuration',
+    'admin.cms.reset': 'Reset',
+    'admin.cms.preview': 'Preview',
+    'admin.cms.noChanges': 'No changes to save',
+
+    // ── Admin – People ──
+    'admin.people.title': 'Personnel Management',
+    'admin.people.subtitle': 'Manage athletes, coaches, referees across the system',
+    'admin.people.search': 'Search by name, code, organization...',
+    'admin.people.noResults': 'No personnel found',
+
+    // ── Admin – Clubs ──
+    'admin.clubs.title': 'Club / Dojo Management',
+    'admin.clubs.subtitle': 'Manage registration, status and club activities',
+    'admin.clubs.search': 'Search clubs...',
+    'admin.clubs.noResults': 'No clubs found',
+    'admin.clubs.exportCSV': 'Export CSV',
+
+    // ── Admin – Federation ──
+    'admin.federation.title': 'Federation Management',
+    'admin.federation.subtitle': 'Manage federations, branches, member organizations',
+    'admin.federation.search': 'Search federations...',
+    'admin.federation.noResults': 'No federations found',
+
+    // ── Admin – Scoring ──
+    'admin.scoring.title': 'Scoring System',
+    'admin.scoring.subtitle': 'Configure scoring rules, templates and penalties',
+    'admin.scoring.noTemplates': 'No scoring templates found',
+
+    // ── Admin – Tournaments ──
+    'admin.tournaments.title': 'Tournament Management',
+    'admin.tournaments.subtitle': 'Manage all VCT tournaments',
+    'admin.tournaments.search': 'Search tournaments...',
+    'admin.tournaments.noResults': 'No tournaments found',
+    'admin.tournaments.create': 'Create Tournament',
+
+    // ── Admin – Rankings ──
+    'admin.rankings.title': 'Rankings',
+    'admin.rankings.subtitle': 'Manage national rankings for athletes, clubs, teams',
+    'admin.rankings.search': 'Search athletes, clubs...',
+    'admin.rankings.noResults': 'No results found',
+
+    // ── Admin – Finance ──
+    'admin.finance.title': 'System Finance',
+    'admin.finance.subtitle': 'Revenue reports, expenses, and financial reconciliation',
+    'admin.finance.noData': 'No financial data available',
+
+    // ── Admin – Reference Data ──
+    'admin.refdata.title': 'Reference Data',
+    'admin.refdata.subtitle': 'Manage standard catalogs — belts, weight classes, types',
+    'admin.refdata.search': 'Search catalogs...',
+    'admin.refdata.noResults': 'No catalog items found',
+    'admin.refdata.create': 'Add New Item',
 }

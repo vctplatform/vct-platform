@@ -13,13 +13,15 @@ description: Workflow tạo module mới hoàn chỉnh cho VCT Platform (từ BA
 
 ## Bước 1: Phân Tích Requirements (BA)
 
-Đọc skill **vct-ba** (`/.agent/skills/vct-ba/SKILL.md`):
+Đọc skill **vct-ba** (`/.agents/skills/vct-ba/SKILL.md`):
 
-1. Module này thuộc domain nào trong 10 domain của VCT?
+1. Module này thuộc domain nào? (25+ modules hiện tại)
    ```
-   1. Tổ chức  2. Con người  3. Đào tạo   4. Giải đấu ★
-   5. Chấm điểm 6. Xếp hạng  7. Di sản    8. Tài chính
-   9. Cộng đồng 10. Admin
+   athlete, approval, bracket, btc, certification, club, community,
+   discipline, divisions, document, federation, finance (+ subscription),
+   heritage, international, orchestrator, organization, parent,
+   provincial (phase1+2), ranking, registration, scoring, support,
+   tournament (+ mgmt), training
    ```
 2. Liệt kê entities chính (với attributes + relationships)
 3. Liệt kê business rules và regulations liên quan
@@ -30,7 +32,7 @@ description: Workflow tạo module mới hoàn chỉnh cho VCT Platform (từ BA
 
 ## Bước 2: Thiết Kế Kiến Trúc (SA)
 
-Đọc skill **vct-sa** (`/.agent/skills/vct-sa/SKILL.md`):
+Đọc skill **vct-sa** (`/.agents/skills/vct-sa/SKILL.md`):
 
 1. **Database Schema** — ERD với tables, columns, relationships
 2. **API Contract** — Endpoints list với method, path, request/response
@@ -49,7 +51,7 @@ description: Workflow tạo module mới hoàn chỉnh cho VCT Platform (từ BA
    ├── packages/app/features/{module}/Page_{module}.tsx
    ├── packages/app/features/{module}/Page_{module}_*.tsx
    ├── packages/app/features/{module}/components/
-   └── apps/next/pages/{module}/*.tsx  (thin wrappers)
+   └── apps/next/app/{module}/page.tsx  (App Router wrapper)
    ```
 4. **Dependencies** — Module nào phải hoàn thành trước?
 5. Viết implementation plan và request user review
@@ -159,10 +161,13 @@ File: `packages/shared-types/src/{module}/common.ts`
 
 ## Bước 9: Route Registration & Sidebar
 
-### 9.1 Next.js Pages (thin wrappers)
+### 9.1 App Router Pages (thin wrappers)
+
+⚠️ **Dùng App Router**, KHÔNG Pages Router.
+
 ```
-apps/next/pages/{module}/index.tsx
-apps/next/pages/{module}/{sub}.tsx
+apps/next/app/{module}/page.tsx
+apps/next/app/{module}/{sub}/page.tsx
 ```
 
 ### 9.2 Route Registry
@@ -177,7 +182,7 @@ Thêm sidebar entries cho roles có quyền truy cập:
 
 ## Bước 10: Quality Review & Verify (CTO)
 
-Đọc skill **vct-cto** (`/.agent/skills/vct-cto/SKILL.md`) và kiểm tra:
+Đọc skill **vct-cto** (`/.agents/skills/vct-cto/SKILL.md`) và kiểm tra:
 
 ### Backend
 - [ ] Clean Architecture layers respected
@@ -188,7 +193,8 @@ Thêm sidebar entries cho roles có quyền truy cập:
 - [ ] Migration has up + down scripts
 
 ### Frontend
-- [ ] Code in `packages/app/features/`, NOT `apps/next/pages/`
+- [ ] Code in `packages/app/features/`, NOT in `apps/next/app/`
+- [ ] App Router pages are thin wrappers only
 - [ ] `VCT_` prefix on all components
 - [ ] All text uses `t('key')`
 - [ ] Loading states with `VCT_PageSkeleton`
