@@ -13,6 +13,7 @@ import { AdminDataTable } from './components/AdminDataTable'
 import { AdminPageShell, useShellToast } from './components/AdminPageShell'
 import { useAdminFetch } from './hooks/useAdminAPI'
 import { AdminGuard } from './components/AdminGuard'
+import { useI18n } from '../i18n'
 
 // ════════════════════════════════════════
 // TYPES & MOCK DATA
@@ -70,6 +71,7 @@ export const Page_admin_rankings = () => (
 )
 
 const Page_admin_rankings_Content = () => {
+    const { t } = useI18n()
     const { data: fetchedRankings, isLoading } = useAdminFetch<RankedAthlete[]>('/admin/rankings', { mockData: MOCK_RANKINGS })
     const [tab, setTab] = useState<'rankings' | 'exams'>('rankings')
     const [search, setSearch] = useState('')

@@ -1,4 +1,25 @@
 services:
+  # ── PostgreSQL ───────────────────────────────────────────────
+  postgres:
+    build:
+      context: ./infra/docker/postgres
+    container_name: vct-postgres-dev
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: vct_platform
+      POSTGRES_USER: vct_admin
+      POSTGRES_PASSWORD: vct_secret_2026
+    ports:
+      - "5432:5432"
+    volumes:
+      - backend_pg_data:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U vct_admin -d vct_platform" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ── Go Backend API ──────────────────────────────────────────
   vct-backend:
     build:
       context: ./backend
@@ -6,6 +27,9 @@ services:
     container_name: vct-backend
     ports:
       - '18080:18080'
+    depends_on:
+      postgres:
+        condition: service_healthy
     environment:
       VCT_ENV: 'development'
       VCT_BACKEND_ADDR: ':18080'
@@ -16,8 +40,16 @@ services:
       VCT_ACCESS_TTL: '15m'
       VCT_REFRESH_TTL: '168h'
       VCT_DISABLE_AUTH_FOR_DATA: 'false'
+      VCT_STORAGE_DRIVER: 'postgres'
+      VCT_POSTGRES_PROVIDER: 'selfhost'
+      VCT_POSTGRES_URL: 'postgres://vct_admin:vct_secret_2026@postgres:5432/vct_platform?sslmode=disable'
+      VCT_DB_AUTO_MIGRATE: 'true'
     healthcheck:
       test: [ "CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:18080/healthz" ]
       interval: 15s
       timeout: 5s
       retries: 3
+
+volumes:
+  backend_pg_data:
+    driver: local

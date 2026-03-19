@@ -15,6 +15,7 @@ import { useAdminFetch } from './hooks/useAdminAPI'
 import { useAdminMutation } from './hooks/useAdminMutation'
 import { useFormValidation } from './hooks/useFormValidation'
 import { AdminGuard } from './components/AdminGuard'
+import { useI18n } from '../i18n'
 
 
 interface RefItem {
@@ -73,6 +74,7 @@ export const Page_admin_reference_data = () => (
 )
 
 const Page_admin_reference_data_Content = () => {
+    const { t } = useI18n()
     const { data: fetchedTables, isLoading } = useAdminFetch<RefTable[]>('/admin/reference-data', { mockData: MOCK_REF_TABLES })
     const [tables, setTables] = useState<RefTable[]>([])
     const [activeTable, setActiveTable] = useState(MOCK_REF_TABLES[0]?.key || '')
@@ -152,7 +154,7 @@ const Page_admin_reference_data_Content = () => {
 
     return (
         <AdminPageShell
-            title="Dữ Liệu Tham Chiếu"
+            title={t('admin.refdata.title')}
             subtitle="Quản lý bảng lookup: cấp đai, hạng cân, tiêu chí, lứa tuổi..."
             icon={<VCT_Icons.Layers size={28} className="text-[#8b5cf6]" />}
             stats={stats}

@@ -21,7 +21,7 @@ services:
       - key: VCT_STORAGE_DRIVER
         value: postgres
       - key: VCT_POSTGRES_PROVIDER
-        value: neon
+        value: selfhost
       - key: VCT_POSTGRES_URL
         sync: false   # Set manually in Render dashboard
       - key: VCT_JWT_SECRET

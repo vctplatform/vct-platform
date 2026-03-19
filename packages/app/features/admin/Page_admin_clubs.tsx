@@ -17,6 +17,7 @@ import { useDebounce } from '../hooks/useDebounce'
 import { exportToCSV } from './utils/adminExport'
 import { usePagination } from '../hooks/usePagination'
 import { AdminGuard } from './components/AdminGuard'
+import { useI18n } from '../i18n'
 
 
 // ════════════════════════════════════════
@@ -56,6 +57,7 @@ export const Page_admin_clubs = () => (
 )
 
 const Page_admin_clubs_Content = () => {
+    const { t } = useI18n()
     const { data: fetchedClubs, isLoading } = useAdminFetch<Club[]>('/admin/clubs', { mockData: MOCK_CLUBS })
     const [clubs, setClubs] = useState<Club[]>([])
     const [search, setSearch] = useState('')
@@ -131,7 +133,7 @@ const Page_admin_clubs_Content = () => {
 
     return (
         <AdminPageShell
-            title="Quản lý Câu lạc bộ"
+            title={t('admin.clubs.title')}
             subtitle="CLB, thành viên, cơ sở vật chất, và thiết bị"
             icon={<VCT_Icons.Home size={28} className="text-[#10b981]" />}
             stats={stats}

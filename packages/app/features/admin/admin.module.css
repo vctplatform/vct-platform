@@ -352,3 +352,119 @@
     margin-bottom: 8px;
     background-color: var(--_banner-color, #f59e0b);
 }
+
+/* ════════════════════════════════════════
+   Phase C: Real-Time Status Indicators
+   ════════════════════════════════════════ */
+
+/* ── Status Dot with pulse animation ── */
+.admin-status-dot {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    position: relative;
+    flex-shrink: 0;
+}
+
+.admin-status-dot--healthy {
+    background: #10b981;
+    box-shadow: 0 0 6px #10b98180;
+}
+
+.admin-status-dot--warning {
+    background: #f59e0b;
+    box-shadow: 0 0 6px #f59e0b80;
+}
+
+.admin-status-dot--error {
+    background: #ef4444;
+    box-shadow: 0 0 6px #ef444480;
+    animation: admin-pulse-error 1.5s ease-in-out infinite;
+}
+
+.admin-status-dot--healthy::after,
+.admin-status-dot--warning::after,
+.admin-status-dot--error::after {
+    content: '';
+    position: absolute;
+    inset: -3px;
+    border-radius: 50%;
+    border: 2px solid currentColor;
+    opacity: 0;
+    animation: admin-pulse-ring 2s ease-out infinite;
+}
+
+.admin-status-dot--healthy::after { border-color: #10b981; }
+.admin-status-dot--warning::after { border-color: #f59e0b; }
+.admin-status-dot--error::after { border-color: #ef4444; }
+
+/* ── LIVE Badge ── */
+.admin-live-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 2px 10px;
+    border-radius: 999px;
+    font-size: 10px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    background: linear-gradient(135deg, #10b981, #059669);
+    color: white;
+    box-shadow: 0 0 12px #10b98140;
+}
+
+.admin-live-badge::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: white;
+    animation: admin-pulse-live 1.2s ease-in-out infinite;
+}
+
+/* ── Pulse Keyframes ── */
+@keyframes admin-pulse-ring {
+    0% { opacity: 0.6; transform: scale(1); }
+    100% { opacity: 0; transform: scale(1.8); }
+}
+
+@keyframes admin-pulse-error {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+@keyframes admin-pulse-live {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.4; transform: scale(0.7); }
+}
+
+/* ════════════════════════════════════════
+   Phase D: Accessibility
+   ════════════════════════════════════════ */
+
+/* Focus-visible ring for all interactive admin elements */
+.admin-focus-ring:focus-visible {
+    outline: 2px solid #8b5cf6;
+    outline-offset: 2px;
+    border-radius: 8px;
+}
+
+/* Skip-to-content for keyboard users */
+.admin-skip-link {
+    position: absolute;
+    top: -40px;
+    left: 0;
+    padding: 8px 16px;
+    background: #8b5cf6;
+    color: white;
+    font-weight: 700;
+    z-index: 100;
+    transition: top 0.2s;
+}
+
+.admin-skip-link:focus {
+    top: 0;
+}
+

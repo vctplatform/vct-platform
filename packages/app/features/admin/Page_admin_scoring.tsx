@@ -12,6 +12,7 @@ import { VCT_Drawer } from '../components/VCT_Drawer'
 import { AdminPageShell, useShellToast } from './components/AdminPageShell'
 import { useAdminFetch } from './hooks/useAdminAPI'
 import { AdminGuard } from './components/AdminGuard'
+import { useI18n } from '../i18n'
 
 
 // ════════════════════════════════════════
@@ -131,6 +132,7 @@ export const Page_admin_scoring = () => (
 )
 
 const Page_admin_scoring_Content = () => {
+    const { t } = useI18n()
     const { data: fetchedMatches, isLoading } = useAdminFetch<LiveMatch[]>('/admin/scoring/matches', { mockData: MOCK_MATCHES })
     const [selected, setSelected] = useState<LiveMatch | null>(null)
     const { showToast } = useShellToast()

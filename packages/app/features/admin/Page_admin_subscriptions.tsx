@@ -14,6 +14,7 @@ import { VCT_Timeline } from '../components/VCT_Timeline'
 import { AdminDataTable } from './components/AdminDataTable'
 import { AdminPageShell, useShellToast } from './components/AdminPageShell'
 import { AdminGuard } from './components/AdminGuard'
+import { useI18n } from '../i18n'
 
 // ════════════════════════════════════════
 // TYPES & MAPS
@@ -74,6 +75,7 @@ export const Page_admin_subscriptions = () => (
 )
 
 const Page_admin_subscriptions_Content = () => {
+    const { t } = useI18n()
     const [tab, setTab] = useState<'subscriptions' | 'plans' | 'history'>('subscriptions')
     const [subs, setSubs] = useState<Subscription[]>([])
     const [plans, setPlans] = useState<SubPlan[]>([])
@@ -237,8 +239,8 @@ const Page_admin_subscriptions_Content = () => {
 
     return (
         <AdminPageShell
-            title="Quản lý Subscription & Billing"
-            subtitle="Quản lý gói dịch vụ, thanh toán, và gia hạn cho liên đoàn, tổ chức, giải đấu"
+            title={t('admin.subscriptions.title')}
+            subtitle={t('admin.subscriptions.subtitle')}
             icon={<VCT_Icons.CreditCard size={28} className="text-[#8b5cf6]" />}
             stats={stats}
         >

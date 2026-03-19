@@ -60,6 +60,7 @@ services:
   postgres:
     build:
       context: ./infra/docker/postgres
+    command: postgres -c config_file=/etc/postgresql/postgresql.conf
     volumes:
       - postgres_data:/var/lib/postgresql/data
     environment:
@@ -84,6 +85,32 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
+    restart: unless-stopped
+
+  # ── Database Backup (daily at 2 AM) ────────────────────────
+  db-backup:
+    image: postgres:17-alpine
+    volumes:
+      - ./infra/scripts/backup.sh:/backup.sh:ro
+      - backup_data:/backups
+    environment:
+      DB_HOST: postgres
+      DB_PORT: "5432"
+      DB_NAME: vct_platform
+      DB_USER: vct_user
+      DB_PASSWORD: ${DB_PASSWORD}
+      BACKUP_DIR: /backups
+      RETAIN_DAILY: "7"
+      RETAIN_WEEKLY: "4"
+    entrypoint: >
+      /bin/sh -c "
+        chmod +x /backup.sh &&
+        echo '0 2 * * * /backup.sh >> /var/log/backup.log 2>&1' | crontab - &&
+        crond -f
+      "
+    depends_on:
+      postgres:
+        condition: service_healthy
     restart: unless-stopped
 
   # ── Redis ──────────────────────────────────────────────────
@@ -176,3 +203,4 @@ volumes:
   minio_data:
   nats_data:
   meili_data:
+  backup_data:

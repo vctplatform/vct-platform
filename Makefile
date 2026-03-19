@@ -63,6 +63,27 @@ seed: ## Seed database with reference data
 db-smoke-backend: ## Run backend DB smoke flow (migrate/seed/down/up)
 	node scripts/run-backend-db-smoke.mjs
 
+db-up: ## Start PostgreSQL container
+	docker compose up -d postgres
+
+db-down: ## Stop PostgreSQL container
+	docker compose stop postgres
+
+db-reset: ## Reset database (drop volume + recreate)
+	docker compose down -v && docker compose up -d postgres
+
+db-backup: ## Backup database to ./backups/
+	@mkdir -p backups
+	docker exec vct-postgres pg_dump -U $${POSTGRES_USER:-vct_admin} -Fc vct_platform > backups/vct_platform_$$(date +%%Y%%m%%d_%%H%%M%%S).dump
+	@echo "Backup saved to backups/"
+
+db-restore: ## Restore database from backup (usage: make db-restore FILE=backups/xxx.dump)
+	docker exec -i vct-postgres pg_restore -U $${POSTGRES_USER:-vct_admin} -d vct_platform --clean < $(FILE)
+
+db-shell: ## Open psql shell to database
+	docker exec -it vct-postgres psql -U $${POSTGRES_USER:-vct_admin} -d vct_platform
+
+
 # ── Code Generation ───────────────────────────────────────────
 
 generate: ## Run all code generators

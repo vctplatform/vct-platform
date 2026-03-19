@@ -13,6 +13,7 @@ import { AdminPageShell, useShellToast } from './components/AdminPageShell'
 import { useAdminFetch } from './hooks/useAdminAPI'
 import { useAdminMutation } from './hooks/useAdminMutation'
 import { AdminGuard } from './components/AdminGuard'
+import { useI18n } from '../i18n'
 
 // ════════════════════════════════════════
 // TYPES
@@ -193,6 +194,7 @@ export const Page_admin_cms = () => (
 )
 
 const Page_admin_cms_Content = () => {
+    const { t } = useI18n()
     const { showToast } = useShellToast()
 
     // Fetch existing config from backend

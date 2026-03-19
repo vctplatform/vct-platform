@@ -1,8 +1,12 @@
-FROM postgres:18
+FROM postgres:17-alpine
 
 # Install extensions for VCT Platform
-RUN apt-get update && apt-get install -y \
-    postgresql-18-pgvector \
-    && rm -rf /var/lib/apt/lists/*
+# ltree, pg_trgm, btree_gist are included in postgresql17-contrib (pre-installed on Alpine)
+# pgvector requires separate installation
+RUN apk add --no-cache postgresql17-pg_trgm
 
-COPY init.sql /docker-entrypoint-initdb.d/
+# Copy initialization SQL
+COPY init.sql /docker-entrypoint-initdb.d/00_init.sql
+
+# Copy production config (used when started with -c config_file=...)
+COPY postgresql.conf /etc/postgresql/postgresql.conf

@@ -6,7 +6,8 @@
 services:
   # ── PostgreSQL ───────────────────────────────────────────────
   postgres:
-    image: postgres:17-alpine
+    build:
+      context: ./infra/docker/postgres
     container_name: vct-postgres
     restart: unless-stopped
     environment:
@@ -17,7 +18,6 @@ services:
       - "${POSTGRES_PORT:-5432}:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      - ./infra/docker/postgres/init.sql:/docker-entrypoint-initdb.d/00_init.sql:ro
     healthcheck:
       test: [ "CMD-SHELL", "pg_isready -U $POSTGRES_USER -d $POSTGRES_DB" ]
       interval: 10s

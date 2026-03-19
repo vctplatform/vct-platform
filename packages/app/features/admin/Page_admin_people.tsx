@@ -14,6 +14,7 @@ import { AdminPageShell, useShellToast } from './components/AdminPageShell'
 import { useAdminFetch } from './hooks/useAdminAPI'
 import { useDebounce } from '../hooks/useDebounce'
 import { AdminGuard } from './components/AdminGuard'
+import { useI18n } from '../i18n'
 
 
 // ════════════════════════════════════════
@@ -65,6 +66,7 @@ export const Page_admin_people = () => (
 )
 
 const Page_admin_people_Content = () => {
+    const { t } = useI18n()
     const { data: fetchedPeople, isLoading } = useAdminFetch<Person[]>('/admin/people', { mockData: MOCK_PEOPLE })
     const [people, setPeople] = useState<Person[]>([])
     const [tab, setTab] = useState<'athlete' | 'coach' | 'referee'>('athlete')
@@ -136,7 +138,7 @@ const Page_admin_people_Content = () => {
 
     return (
         <AdminPageShell
-            title="Quản lý Nhân sự"
+            title={t('admin.people.title')}
             subtitle="VĐV, Huấn luyện viên, và Trọng tài toàn hệ thống"
             icon={<VCT_Icons.Users size={28} className="text-[#0ea5e9]" />}
             stats={stats}

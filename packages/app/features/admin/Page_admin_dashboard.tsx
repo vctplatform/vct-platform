@@ -167,9 +167,11 @@ const Page_admin_dashboard_Content = () => {
                     <span className="text-[10px] text-(--vct-text-tertiary)">
                         Cập nhật: {lastRefreshed.toLocaleTimeString('vi-VN')}
                     </span>
+                    {autoRefresh && <span className="admin-live-badge" role="status" aria-label="Tự động cập nhật đang bật">LIVE</span>}
                     <button
                         onClick={() => setAutoRefresh(!autoRefresh)}
-                        className={`px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all ${autoRefresh ? 'bg-[#10b98120] border-[#10b981] text-[#10b981]' : 'bg-transparent border-(--vct-border-subtle) text-(--vct-text-tertiary)'}`}
+                        aria-label={autoRefresh ? 'Tắt tự động cập nhật' : 'Bật tự động cập nhật'}
+                        className={`px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all admin-focus-ring ${autoRefresh ? 'bg-[#10b98120] border-[#10b981] text-[#10b981]' : 'bg-transparent border-(--vct-border-subtle) text-(--vct-text-tertiary)'}`}
                     >
                         {autoRefresh ? '● Auto' : '○ Manual'}
                     </button>

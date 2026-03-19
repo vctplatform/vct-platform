@@ -77,6 +77,7 @@ import { AdminPageShell, useShellToast } from './components/AdminPageShell'
 import { useAdminFetch } from './hooks/useAdminAPI'
 import { useAdminMutation } from './hooks/useAdminMutation'
 import { AdminGuard } from './components/AdminGuard'
+import { useI18n } from '../i18n'
 
 
 // ════════════════════════════════════════
@@ -89,6 +90,7 @@ export const Page_admin_tournaments = () => (
 )
 
 const Page_admin_tournaments_Content = () => {
+    const { t } = useI18n()
     const { data: fetchedTournaments, isLoading } = useAdminFetch<Tournament[]>('/admin/tournaments', { mockData: MOCK_TOURNAMENTS })
     const [tournaments, setTournaments] = useState<Tournament[]>([])
     const [search, setSearch] = useState('')
@@ -153,7 +155,7 @@ const Page_admin_tournaments_Content = () => {
 
     return (
         <AdminPageShell
-            title="Quản lý Giải đấu"
+            title={t('admin.tournaments.title')}
             subtitle="Tạo, theo dõi và điều hành toàn bộ giải đấu VCT"
             icon={<VCT_Icons.Trophy size={28} className="text-[#f59e0b]" />}
             stats={stats}

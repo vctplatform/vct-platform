@@ -16,6 +16,7 @@ import { AdminPageShell, useShellToast } from './components/AdminPageShell'
 import { useAdminFetch } from './hooks/useAdminAPI'
 import { useAdminMutation } from './hooks/useAdminMutation'
 import { AdminGuard } from './components/AdminGuard'
+import { useI18n } from '../i18n'
 
 
 // ════════════════════════════════════════
@@ -97,6 +98,7 @@ export const Page_admin_finance = () => (
 )
 
 const Page_admin_finance_Content = () => {
+    const { t } = useI18n()
     const { data: fetchedInvoices, isLoading } = useAdminFetch<Invoice[]>('/admin/finance/invoices', { mockData: MOCK_INVOICES })
     const [tab, setTab] = useState<'invoices' | 'budgets' | 'sponsors'>('invoices')
     const [invoices, setInvoices] = useState<Invoice[]>([])
@@ -182,7 +184,7 @@ const Page_admin_finance_Content = () => {
 
     return (
         <AdminPageShell
-            title="Quản lý Tài chính"
+            title={t('admin.finance.title')}
             subtitle="Hóa đơn, ngân sách, và tài trợ cho toàn hệ thống VCT"
             icon={<VCT_Icons.DollarSign size={28} className="text-[#10b981]" />}
             stats={stats}

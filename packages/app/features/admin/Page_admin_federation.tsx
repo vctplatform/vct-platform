@@ -15,6 +15,7 @@ import { useAdminFetch } from './hooks/useAdminAPI'
 import { useAdminMutation } from './hooks/useAdminMutation'
 import { useDebounce } from '../hooks/useDebounce'
 import { AdminGuard } from './components/AdminGuard'
+import { useI18n } from '../i18n'
 
 
 // ════════════════════════════════════════
@@ -75,6 +76,7 @@ export const Page_admin_federation = () => (
 )
 
 const Page_admin_federation_Content = () => {
+    const { t } = useI18n()
     const { data: fetchedUnits, isLoading } = useAdminFetch<FederationUnit[]>('/admin/federation/units', { mockData: MOCK_UNITS })
     const [tab, setTab] = useState<'units' | 'personnel'>('units')
     const [units, setUnits] = useState<FederationUnit[]>([])
@@ -153,7 +155,7 @@ const Page_admin_federation_Content = () => {
 
     return (
         <AdminPageShell
-            title="Quản lý Liên đoàn"
+            title={t('admin.federation.title')}
             subtitle="Tổ chức, nhân sự, và cơ cấu Liên đoàn VCT các cấp"
             icon={<VCT_Icons.Building size={28} className="text-[#8b5cf6]" />}
             stats={stats}

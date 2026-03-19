@@ -65,7 +65,14 @@ const Page_admin_roles_Content = () => {
     const { mutate: mutatePerm } = useAdminMutation('/admin/roles/permissions', { onSuccess: () => {} })
     const { mutate: mutateCreate } = useAdminMutation('/admin/roles/create', { onSuccess: () => {} })
 
-    React.useEffect(() => { if (fetchedRoles) { setRoles(fetchedRoles); if (!selectedRole) setSelectedRole(fetchedRoles[0] ?? null) } }, [fetchedRoles, selectedRole])
+    React.useEffect(() => {
+        if (fetchedRoles) {
+            // Normalize: ensure every role has a permissions array (API may omit it)
+            const normalized = fetchedRoles.map(r => ({ ...r, permissions: r.permissions ?? [] }))
+            setRoles(normalized)
+            if (!selectedRole) setSelectedRole(normalized[0] ?? null)
+        }
+    }, [fetchedRoles, selectedRole])
 
     const filtered = useMemo(() => {
         if (!search) return roles
@@ -81,24 +88,24 @@ const Page_admin_roles_Content = () => {
 
     const doTogglePerm = async (roleId: string, permKey: string) => {
         const perm = PERMISSIONS.find(p => p.key === permKey)
-        const isAdding = !roles.find(r => r.id === roleId)?.permissions.includes(permKey)
+        const isAdding = !(roles.find(r => r.id === roleId)?.permissions ?? []).includes(permKey)
         
         await mutatePerm({ roleId, permissions: [permKey], action: isAdding ? 'add' : 'remove' })
 
         setRoles(prev => prev.map(r => {
             if (r.id !== roleId) return r
-            const perms = r.permissions.includes(permKey) ? r.permissions.filter(p => p !== permKey) : [...r.permissions, permKey]
+            const perms = (r.permissions ?? []).includes(permKey) ? (r.permissions ?? []).filter(p => p !== permKey) : [...(r.permissions ?? []), permKey]
             return { ...r, permissions: perms }
         }))
         if (selectedRole?.id === roleId) {
-            setSelectedRole(prev => prev ? { ...prev, permissions: prev.permissions.includes(permKey) ? prev.permissions.filter(p => p !== permKey) : [...prev.permissions, permKey] } : prev)
+            setSelectedRole(prev => prev ? { ...prev, permissions: (prev.permissions ?? []).includes(permKey) ? (prev.permissions ?? []).filter(p => p !== permKey) : [...(prev.permissions ?? []), permKey] } : prev)
         }
         showToast(`${isAdding ? 'Đã thêm' : 'Đã gỡ'} quyền "${perm?.label}"`, isAdding ? 'success' : 'warning')
     }
 
     const togglePerm = (roleId: string, permKey: string) => {
         const role = roles.find(r => r.id === roleId)
-        if (role?.is_system && permKey.startsWith('admin.')) { setConfirmPerm({ roleId, permKey, roleName: role.name }); return }
+        if (role?.is_system && permKey.startsWith('admin.')) { setConfirmPerm({ roleId, permKey, roleName: role?.name ?? '' }); return }
         doTogglePerm(roleId, permKey)
     }
 
@@ -164,7 +171,7 @@ const Page_admin_roles_Content = () => {
                                 <div className="text-[11px] text-(--vct-text-tertiary)">{role.description}</div>
                                 <div className="flex items-center gap-3 mt-2 text-[10px] text-(--vct-text-tertiary)">
                                     <span className="flex items-center gap-1"><VCT_Icons.Users size={10} /> {role.user_count}</span>
-                                    <span className="flex items-center gap-1"><VCT_Icons.Shield size={10} /> {role.permissions.length} quyền</span>
+                                    <span className="flex items-center gap-1"><VCT_Icons.Shield size={10} /> {(role.permissions ?? []).length} quyền</span>
                                     <span className="flex items-center gap-1"><VCT_Icons.Layers size={10} /> {SCOPE_LABELS[role.scope_type] ?? 'Khác'}</span>
                                 </div>
                             </div>
@@ -182,7 +189,7 @@ const Page_admin_roles_Content = () => {
                                 {Object.entries(permModules).map(([mod, perms]) => (
                                     <div key={mod}><div className="text-[11px] font-bold uppercase tracking-wider text-(--vct-text-tertiary) mb-3 flex items-center gap-2"><div className="w-1.5 h-1.5 rounded-full bg-(--vct-accent-cyan)" />{mod}</div>
                                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">{perms.map(perm => {
-                                            const has = selectedRole.permissions.includes(perm.key)
+                                            const has = (selectedRole.permissions ?? []).includes(perm.key)
                                             return (<button key={perm.key} onClick={() => togglePerm(selectedRole.id, perm.key)} className={`flex items-center gap-3 p-3 rounded-xl border transition-all text-left ${has ? 'bg-[#10b98115] border-[#10b98140] hover:border-[#10b981]' : 'bg-(--vct-bg-base) border-(--vct-border-subtle) hover:border-(--vct-border-strong)'}`}><div className={`w-5 h-5 rounded flex items-center justify-center shrink-0 ${has ? 'bg-[#10b981] text-white' : 'bg-(--vct-border-strong)'}`}>{has && <VCT_Icons.Check size={12} />}</div><div><div className="text-sm font-semibold text-(--vct-text-primary)">{perm.label}</div><div className="text-[10px] font-mono text-(--vct-text-tertiary)">{perm.key}</div></div></button>)
                                         })}</div></div>
                                 ))}
