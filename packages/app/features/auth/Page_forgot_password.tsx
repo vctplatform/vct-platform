@@ -70,7 +70,7 @@ export function Page_forgot_password() {
     return (
         <main className="relative min-h-dvh overflow-hidden bg-vct-bg text-vct-text" style={{ backgroundImage: 'radial-gradient(circle at 12% 80%, var(--vct-accent-muted, rgba(59,130,246,0.08)), transparent 38%), radial-gradient(circle at 88% 14%, var(--vct-danger-muted), transparent 42%)' }}>
             <div className="flex min-h-dvh items-center justify-center px-4 py-8">
-                <div className="w-full max-w-[480px] rounded-3xl border border-vct-border bg-vct-elevated/95 p-6 shadow-[var(--vct-shadow-xl)] tablet:p-8">
+                <div className="w-full max-w-[480px] rounded-3xl border border-vct-border bg-vct-elevated/95 p-6 shadow-(--vct-shadow-xl) tablet:p-8">
                     {/* Logo */}
                     <div className="mb-6 flex items-center gap-3">
                         <span className="inline-flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br from-red-700 to-emerald-700 text-white">

@@ -198,7 +198,7 @@ const Page_admin_user_detail_Content = ({ userId }: PageAdminUserDetailProps) =>
         <AdminPageShell
             title={user.name}
             subtitle={`${roleLabel} • ${user.scope}`}
-            icon={<VCT_Icons.User size={28} style={{ color: accentColor }} />}
+            icon={<VCT_Icons.User size={28} className="admin-metric-value" style={{ '--_metric-color': accentColor } as React.CSSProperties} />}
             stats={statItems}
             actions={
                 <VCT_Button variant="outline" icon={<VCT_Icons.ChevronLeft size={16} />} onClick={() => router.push('/admin/users')}>
@@ -243,7 +243,7 @@ const Page_admin_user_detail_Content = ({ userId }: PageAdminUserDetailProps) =>
                                             {user.id}
                                         </button>
                                         <VCT_Badge text={statusMeta.label} type={statusMeta.type} pulse={false} />
-                                        <span className="rounded-full px-3 py-1" style={{ background: `${accentColor}22`, color: accentColor }}>
+                                        <span className="admin-accent-badge" style={{ '--_accent-color': accentColor } as React.CSSProperties}>
                                             {roleLabel}
                                         </span>
                                     </div>

@@ -1,5 +1,7 @@
 'use client'
 
+import './admin.module.css'
+
 import * as React from 'react'
 import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
@@ -37,33 +39,33 @@ interface DashboardStats {
 
 // ── System Admin Navigation (primary) ──
 const QUICK_NAV = [
-    { label: 'Quản lý Tài khoản', desc: 'Người dùng & phân quyền', icon: VCT_Icons.Users, color: '#0ea5e9', href: '/admin/users' },
-    { label: 'Vai trò & Quyền', desc: 'RBAC, phân quyền chi tiết', icon: VCT_Icons.Shield, color: '#6366f1', href: '/admin/roles' },
-    { label: 'Tổ chức (Tenants)', desc: 'Quản lý multi-tenant', icon: VCT_Icons.Building, color: '#8b5cf6', href: '/admin/tenants' },
-    { label: 'Feature Flags', desc: 'Bật/tắt tính năng, rollout', icon: VCT_Icons.Flag, color: '#ef4444', href: '/admin/feature-flags' },
-    { label: 'CMS Nội Dung', desc: 'Branding, theme, giao diện', icon: VCT_Icons.Layout, color: '#8b5cf6', href: '/admin/cms' },
-    { label: 'Cấu hình Hệ thống', desc: 'Tham số, health & cài đặt', icon: VCT_Icons.Settings, color: '#f59e0b', href: '/admin/system' },
-    { label: 'Nhật ký Audit', desc: 'Lịch sử thao tác & bảo mật', icon: VCT_Icons.FileText, color: '#0ea5e9', href: '/admin/audit-logs' },
-    { label: 'Toàn vẹn Dữ liệu', desc: 'Giám sát liêm chính hệ thống', icon: VCT_Icons.ShieldCheck, color: '#10b981', href: '/admin/integrity' },
-    { label: 'Chất lượng Dữ liệu', desc: 'Kiểm tra & xác thực dữ liệu', icon: VCT_Icons.Activity, color: '#06b6d4', href: '/admin/data-quality' },
-    { label: 'Thông báo Hệ thống', desc: 'Quản lý thông báo platform', icon: VCT_Icons.Bell, color: '#f97316', href: '/admin/notifications' },
-    { label: 'Gói Dịch vụ', desc: 'Subscription, thanh toán & gia hạn', icon: VCT_Icons.CreditCard, color: '#a855f7', href: '/admin/subscriptions' },
-    { label: 'Chứng chỉ & Tài liệu', desc: 'Quản lý văn bằng, chứng chỉ', icon: VCT_Icons.FileText, color: '#14b8a6', href: '/admin/documents' },
+    { label: 'Quản lý Tài khoản', desc: 'Người dùng & phân quyền', icon: VCT_Icons.Users, color: 'sky', href: '/admin/users' },
+    { label: 'Vai trò & Quyền', desc: 'RBAC, phân quyền chi tiết', icon: VCT_Icons.Shield, color: 'indigo', href: '/admin/roles' },
+    { label: 'Tổ chức (Tenants)', desc: 'Quản lý multi-tenant', icon: VCT_Icons.Building, color: 'violet', href: '/admin/tenants' },
+    { label: 'Feature Flags', desc: 'Bật/tắt tính năng, rollout', icon: VCT_Icons.Flag, color: 'red', href: '/admin/feature-flags' },
+    { label: 'CMS Nội Dung', desc: 'Branding, theme, giao diện', icon: VCT_Icons.Layout, color: 'violet', href: '/admin/cms' },
+    { label: 'Cấu hình Hệ thống', desc: 'Tham số, health & cài đặt', icon: VCT_Icons.Settings, color: 'amber', href: '/admin/system' },
+    { label: 'Nhật ký Audit', desc: 'Lịch sử thao tác & bảo mật', icon: VCT_Icons.FileText, color: 'sky', href: '/admin/audit-logs' },
+    { label: 'Toàn vẹn Dữ liệu', desc: 'Giám sát liêm chính hệ thống', icon: VCT_Icons.ShieldCheck, color: 'emerald', href: '/admin/integrity' },
+    { label: 'Chất lượng Dữ liệu', desc: 'Kiểm tra & xác thực dữ liệu', icon: VCT_Icons.Activity, color: 'cyan', href: '/admin/data-quality' },
+    { label: 'Thông báo Hệ thống', desc: 'Quản lý thông báo platform', icon: VCT_Icons.Bell, color: 'orange', href: '/admin/notifications' },
+    { label: 'Gói Dịch vụ', desc: 'Subscription, thanh toán & gia hạn', icon: VCT_Icons.CreditCard, color: 'violet', href: '/admin/subscriptions' },
+    { label: 'Chứng chỉ & Tài liệu', desc: 'Quản lý văn bằng, chứng chỉ', icon: VCT_Icons.FileText, color: 'teal', href: '/admin/documents' },
 ]
 
 // ════════════════════════════════════════
 // HEALTH SCORE CALCULATION
 // ════════════════════════════════════════
 function getHealthScore(services: ServiceStatus[]): { score: number; grade: string; color: string } {
-    if (services.length === 0) return { score: 0, grade: '—', color: '#94a3b8' }
+    if (services.length === 0) return { score: 0, grade: '—', color: 'slate' }
     const onlineCount = services.filter(s => s.status === 'online').length
     const total = services.length
     const score = Math.round((onlineCount / total) * 100)
-    if (score >= 98) return { score, grade: 'A', color: '#10b981' }
-    if (score >= 90) return { score, grade: 'B', color: '#22c55e' }
-    if (score >= 75) return { score, grade: 'C', color: '#f59e0b' }
-    if (score >= 50) return { score, grade: 'D', color: '#ef4444' }
-    return { score, grade: 'F', color: '#dc2626' }
+    if (score >= 98) return { score, grade: 'A', color: 'emerald' }
+    if (score >= 90) return { score, grade: 'B', color: 'green' }
+    if (score >= 75) return { score, grade: 'C', color: 'amber' }
+    if (score >= 50) return { score, grade: 'D', color: 'red' }
+    return { score, grade: 'F', color: 'red-dark' }
 }
 
 // ════════════════════════════════════════
@@ -192,10 +194,11 @@ const Page_admin_dashboard_Content = () => {
                     ) : (
                         <div
                             className="admin-health-ring mb-3"
-                            style={{ '--_ring-color': health.color, '--_ring-deg': `${health.score * 3.6}deg` } as React.CSSProperties}
+                            data-color={health.color}
+                            style={{ '--_ring-deg': `${health.score * 3.6}deg` } as React.CSSProperties}
                         >
                             <div className="admin-health-ring__inner">
-                                <span className="admin-health-grade" style={{ '--_grade-color': health.color } as React.CSSProperties}>{health.grade}</span>
+                                <span className="admin-health-grade" data-color={health.color}>{health.grade}</span>
                             </div>
                         </div>
                     )}
@@ -258,14 +261,14 @@ const Page_admin_dashboard_Content = () => {
                     ) : dashData ? (
                         <div className="grid grid-cols-2 gap-4">
                             {[
-                                { label: 'Goroutines', value: dashData.goroutines, color: '#10b981' },
-                                { label: 'Memory', value: `${dashData.memory_mb} MB`, color: '#0ea5e9' },
-                                { label: 'GC Runs', value: dashData.gc_runs, color: '#f59e0b' },
-                                { label: 'WS Clients', value: dashData.ws_clients, color: '#8b5cf6' },
+                                { label: 'Goroutines', value: dashData.goroutines, color: 'emerald' },
+                                { label: 'Memory', value: `${dashData.memory_mb} MB`, color: 'sky' },
+                                { label: 'GC Runs', value: dashData.gc_runs, color: 'amber' },
+                                { label: 'WS Clients', value: dashData.ws_clients, color: 'violet' },
                             ].map(m => (
                                 <div key={m.label} className="p-4 bg-(--vct-bg-base) rounded-xl border border-(--vct-border-subtle)">
                                     <div className="text-[10px] uppercase tracking-wider text-(--vct-text-tertiary) font-bold mb-1">{m.label}</div>
-                                    <div className="text-2xl font-black" style={{ color: m.color }}>{m.value}</div>
+                                    <div className="admin-metric-value" data-color={m.color}>{m.value}</div>
                                 </div>
                             ))}
                         </div>
@@ -311,15 +314,10 @@ const Page_admin_dashboard_Content = () => {
                             key={nav.href}
                             type="button"
                             onClick={() => router.push(nav.href)}
-                            className="rounded-xl p-5 flex items-center gap-4 cursor-pointer transition-all text-left hover:scale-[1.02] hover:shadow-lg"
-                            style={{
-                                background: `linear-gradient(135deg, ${nav.color}15, transparent)`,
-                                border: `1px solid ${nav.color}30`,
-                            }}
-                            onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.borderColor = nav.color }}
-                            onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.borderColor = `${nav.color}30` }}
+                            className="admin-nav-card"
+                            data-color={nav.color}
                         >
-                            <div className="w-11 h-11 rounded-full flex items-center justify-center text-white shrink-0 shadow-lg" style={{ backgroundColor: nav.color, boxShadow: `0 8px 16px -4px ${nav.color}40` }}>
+                            <div className="admin-nav-icon" data-color={nav.color}>
                                 <nav.icon size={22} />
                             </div>
                             <div>

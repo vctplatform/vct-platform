@@ -200,10 +200,10 @@ export const Page_club_settings = () => {
       />
 
       <div className="mb-6">
-        <h1 className="text-2xl font-bold tracking-tight text-[var(--vct-text-primary)]">
+        <h1 className="text-2xl font-bold tracking-tight text-(--vct-text-primary)">
           Cau hinh CLB
         </h1>
-        <p className="mt-1 text-sm text-[var(--vct-text-secondary)]">
+        <p className="mt-1 text-sm text-(--vct-text-secondary)">
           Cap nhat thong tin don vi, van hanh co so, lich tap va thong tin lien he.
         </p>
       </div>
@@ -211,7 +211,7 @@ export const Page_club_settings = () => {
       <VCT_StatRow items={stats} className="mb-6" />
 
       <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
-        <div className="flex items-center gap-2 text-xs text-[var(--vct-text-secondary)]">
+        <div className="flex items-center gap-2 text-xs text-(--vct-text-secondary)">
           {isDirty ? (
             <VCT_Badge text="Co thay doi chua luu" type="warning" />
           ) : (
@@ -236,8 +236,8 @@ export const Page_club_settings = () => {
       </div>
 
       <div className="grid grid-cols-1 gap-4 xl:grid-cols-2">
-        <section className="rounded-2xl border border-[var(--vct-border-subtle)] bg-[var(--vct-bg-glass)] p-4">
-          <h2 className="mb-3 text-sm font-bold text-[var(--vct-text-primary)]">
+        <section className="rounded-2xl border border-(--vct-border-subtle) bg-(--vct-bg-glass) p-4">
+          <h2 className="mb-3 text-sm font-bold text-(--vct-text-primary)">
             Thong tin co ban
           </h2>
           <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
@@ -311,8 +311,8 @@ export const Page_club_settings = () => {
           </div>
         </section>
 
-        <section className="rounded-2xl border border-[var(--vct-border-subtle)] bg-[var(--vct-bg-glass)] p-4">
-          <h2 className="mb-3 text-sm font-bold text-[var(--vct-text-primary)]">
+        <section className="rounded-2xl border border-(--vct-border-subtle) bg-(--vct-bg-glass) p-4">
+          <h2 className="mb-3 text-sm font-bold text-(--vct-text-primary)">
             Lien he va dia chi
           </h2>
           <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
@@ -369,8 +369,8 @@ export const Page_club_settings = () => {
           </div>
         </section>
 
-        <section className="rounded-2xl border border-[var(--vct-border-subtle)] bg-[var(--vct-bg-glass)] p-4">
-          <h2 className="mb-3 text-sm font-bold text-[var(--vct-text-primary)]">
+        <section className="rounded-2xl border border-(--vct-border-subtle) bg-(--vct-bg-glass) p-4">
+          <h2 className="mb-3 text-sm font-bold text-(--vct-text-primary)">
             Co so vat chat
           </h2>
           <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
@@ -421,11 +421,11 @@ export const Page_club_settings = () => {
           </div>
         </section>
 
-        <section className="rounded-2xl border border-[var(--vct-border-subtle)] bg-[var(--vct-bg-glass)] p-4">
-          <h2 className="mb-3 text-sm font-bold text-[var(--vct-text-primary)]">
+        <section className="rounded-2xl border border-(--vct-border-subtle) bg-(--vct-bg-glass) p-4">
+          <h2 className="mb-3 text-sm font-bold text-(--vct-text-primary)">
             Lich hoat dong
           </h2>
-          <div className="mb-3 text-xs text-[var(--vct-text-secondary)]">
+          <div className="mb-3 text-xs text-(--vct-text-secondary)">
             Chon cac ngay CLB mo tap luyen trong tuan.
           </div>
           <div className="flex flex-wrap gap-2">
@@ -439,7 +439,7 @@ export const Page_club_settings = () => {
                   className={`rounded-lg border px-3 py-1.5 text-xs font-semibold transition ${
                     active
                       ? 'border-cyan-500/40 bg-cyan-500/15 text-cyan-500'
-                      : 'border-[var(--vct-border-subtle)] bg-[var(--vct-bg-card)] text-[var(--vct-text-secondary)]'
+                      : 'border-(--vct-border-subtle) bg-(--vct-bg-card) text-(--vct-text-secondary)'
                   }`}
                 >
                   {item.label}
@@ -447,7 +447,7 @@ export const Page_club_settings = () => {
               )
             })}
           </div>
-          <div className="mt-4 text-xs text-[var(--vct-text-secondary)]">
+          <div className="mt-4 text-xs text-(--vct-text-secondary)">
             He thong dang ghi nhan {draft.trainingDays.length} ngay tap moi tuan.
           </div>
         </section>

@@ -45,7 +45,7 @@ export function VCT_NotificationBell({
 
             {/* Badge */}
             {count > 0 && (
-                <span className="absolute -right-1 -top-1 flex min-w-[18px] items-center justify-center rounded-full bg-[var(--vct-danger)] px-1 text-[10px] font-bold leading-none text-white shadow-[0_0_0_2px_var(--vct-bg-elevated)] animate-pulse">
+                <span className="absolute -right-1 -top-1 flex min-w-[18px] items-center justify-center rounded-full bg-(--vct-danger) px-1 text-[10px] font-bold leading-none text-white shadow-[0_0_0_2px_var(--vct-bg-elevated)] animate-pulse">
                     {count > 99 ? '99+' : count}
                 </span>
             )}

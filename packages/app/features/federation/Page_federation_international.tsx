@@ -68,11 +68,11 @@ export function Page_federation_international() {
     return (
         <VCT_PageContainer size="wide" animated>
             <div className="mb-6">
-                <h1 className="text-2xl font-bold tracking-tight text-[var(--vct-text-primary)]">
+                <h1 className="text-2xl font-bold tracking-tight text-(--vct-text-primary)">
                     Quan hệ Quốc tế
-                    {(loadingP || loadingE) && <span className="ml-2 text-sm font-normal text-[var(--vct-accent-cyan)]">Đang tải...</span>}
+                    {(loadingP || loadingE) && <span className="ml-2 text-sm font-normal text-(--vct-accent-cyan)">Đang tải...</span>}
                 </h1>
-                <p className="text-sm text-[var(--vct-text-secondary)] mt-1">
+                <p className="text-sm text-(--vct-text-secondary) mt-1">
                     Đối tác quốc tế, sự kiện quốc tế và hợp tác lưỡng phương/đa phương.
                 </p>
             </div>
@@ -86,59 +86,59 @@ export function Page_federation_international() {
 
             {/* ── Tab Bar + Search ── */}
             <div className="flex flex-col sm:flex-row gap-3 mb-5">
-                <div className="flex gap-1 p-1 rounded-xl bg-[var(--vct-bg-elevated)]">
+                <div className="flex gap-1 p-1 rounded-xl bg-(--vct-bg-elevated)">
                     {(['partners', 'events'] as const).map(t => (
                         <button key={t} onClick={() => setTab(t)}
                             className={`px-4 py-2 text-sm font-medium rounded-lg transition-all ${
-                                tab === t ? 'bg-[var(--vct-accent-gold)] text-white shadow-sm' : 'text-[var(--vct-text-secondary)] hover:text-[var(--vct-text-primary)]'
+                                tab === t ? 'bg-(--vct-accent-gold) text-white shadow-sm' : 'text-(--vct-text-secondary) hover:text-(--vct-text-primary)'
                             }`}>
                             {t === 'partners' ? '🌍 Đối tác' : '🏅 Sự kiện'}
                         </button>
                     ))}
                 </div>
                 <div className="relative flex-1">
-                    <VCT_Icons.Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--vct-text-secondary)]" />
+                    <VCT_Icons.Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-(--vct-text-secondary)" />
                     <input type="text" placeholder="Tìm kiếm..." value={search} onChange={e => setSearch(e.target.value)}
-                        className="w-full pl-9 pr-3 py-2 text-sm rounded-xl border border-[var(--vct-border-subtle)] bg-[var(--vct-bg-elevated)] text-[var(--vct-text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--vct-accent-cyan)]" />
+                        className="w-full pl-9 pr-3 py-2 text-sm rounded-xl border border-(--vct-border-subtle) bg-(--vct-bg-elevated) text-(--vct-text-primary) focus:outline-none focus:ring-2 focus:ring-(--vct-accent-cyan)" />
                 </div>
             </div>
 
             {/* ── Partners Tab ── */}
             {tab === 'partners' && (
-                <div className="rounded-2xl border border-[var(--vct-border-subtle)] bg-[var(--vct-bg-glass)] p-5">
-                    <h2 className="text-sm font-bold text-[var(--vct-text-primary)] mb-4 uppercase tracking-wide">🌍 Đối tác Quốc tế ({filteredPartners.length})</h2>
+                <div className="rounded-2xl border border-(--vct-border-subtle) bg-(--vct-bg-glass) p-5">
+                    <h2 className="text-sm font-bold text-(--vct-text-primary) mb-4 uppercase tracking-wide">🌍 Đối tác Quốc tế ({filteredPartners.length})</h2>
                     <div className="space-y-3">
                         {filteredPartners.map(p => (
-                            <div key={p.id} className="flex items-center gap-3 p-3 rounded-xl hover:bg-[var(--vct-bg-elevated)] transition-colors cursor-pointer group">
+                            <div key={p.id} className="flex items-center gap-3 p-3 rounded-xl hover:bg-(--vct-bg-elevated) transition-colors cursor-pointer group">
                                 <div className="text-2xl">{FLAG_MAP[p.country_code] || '🌐'}</div>
                                 <div className="flex-1 min-w-0">
-                                    <div className="text-sm font-semibold text-[var(--vct-text-primary)] truncate group-hover:text-[var(--vct-accent-gold)] transition-colors">
+                                    <div className="text-sm font-semibold text-(--vct-text-primary) truncate group-hover:text-(--vct-accent-gold) transition-colors">
                                         {p.name} {p.abbreviation ? `(${p.abbreviation})` : ''}
                                     </div>
-                                    <div className="text-xs text-[var(--vct-text-secondary)]">{p.type} · {p.country} · Từ {p.partner_since}</div>
+                                    <div className="text-xs text-(--vct-text-secondary)">{p.type} · {p.country} · Từ {p.partner_since}</div>
                                 </div>
                                 <VCT_Badge text={p.status === 'active' ? 'Hoạt động' : p.status === 'pending' ? 'Đang xúc tiến' : 'Hết hạn'} type={p.status === 'active' ? 'success' : p.status === 'pending' ? 'warning' : 'neutral'} />
                             </div>
                         ))}
-                        {filteredPartners.length === 0 && <p className="text-sm text-[var(--vct-text-secondary)] text-center py-8">Không tìm thấy đối tác phù hợp.</p>}
+                        {filteredPartners.length === 0 && <p className="text-sm text-(--vct-text-secondary) text-center py-8">Không tìm thấy đối tác phù hợp.</p>}
                     </div>
                 </div>
             )}
 
             {/* ── Events Tab ── */}
             {tab === 'events' && (
-                <div className="rounded-2xl border border-[var(--vct-border-subtle)] bg-[var(--vct-bg-glass)] p-5">
-                    <h2 className="text-sm font-bold text-[var(--vct-text-primary)] mb-4 uppercase tracking-wide">🏅 Sự kiện Quốc tế ({filteredEvents.length})</h2>
+                <div className="rounded-2xl border border-(--vct-border-subtle) bg-(--vct-bg-glass) p-5">
+                    <h2 className="text-sm font-bold text-(--vct-text-primary) mb-4 uppercase tracking-wide">🏅 Sự kiện Quốc tế ({filteredEvents.length})</h2>
                     <div className="space-y-3">
                         {filteredEvents.map(e => {
                             const st = STATUS_MAP[e.status] || { text: e.status, type: 'neutral' as const }
                             return (
-                                <div key={e.id} className="p-4 rounded-xl border border-[var(--vct-border-subtle)] hover:border-[var(--vct-accent-cyan)] transition-all hover:shadow-md cursor-pointer">
+                                <div key={e.id} className="p-4 rounded-xl border border-(--vct-border-subtle) hover:border-(--vct-accent-cyan) transition-all hover:shadow-md cursor-pointer">
                                     <VCT_Stack direction="row" justify="space-between" align="center" className="mb-2">
-                                        <div className="text-sm font-bold text-[var(--vct-text-primary)]">{e.name}</div>
+                                        <div className="text-sm font-bold text-(--vct-text-primary)">{e.name}</div>
                                         <VCT_Badge text={st.text} type={st.type} />
                                     </VCT_Stack>
-                                    <VCT_Stack direction="row" gap={16} className="text-xs text-[var(--vct-text-secondary)]">
+                                    <VCT_Stack direction="row" gap={16} className="text-xs text-(--vct-text-secondary)">
                                         <span>📍 {e.location}, {e.country}</span>
                                         <span>📅 {e.start_date} → {e.end_date}</span>
                                         <span>👥 {e.athlete_count} VĐV</span>
@@ -149,7 +149,7 @@ export function Page_federation_international() {
                                 </div>
                             )
                         })}
-                        {filteredEvents.length === 0 && <p className="text-sm text-[var(--vct-text-secondary)] text-center py-8">Không có sự kiện phù hợp.</p>}
+                        {filteredEvents.length === 0 && <p className="text-sm text-(--vct-text-secondary) text-center py-8">Không có sự kiện phù hợp.</p>}
                     </div>
                 </div>
             )}

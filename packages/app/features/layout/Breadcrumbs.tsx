@@ -39,7 +39,7 @@ export const VCT_Breadcrumbs = ({ items, className = '' }: VCTBreadcrumbsProps) 
               ) : hasLink ? (
                 <a
                   href={item.href}
-                  className="rounded px-1 py-0.5 transition hover:bg-[var(--vct-bg-hover)] hover:text-vct-text"
+                  className="rounded px-1 py-0.5 transition hover:bg-(--vct-bg-hover) hover:text-vct-text"
                 >
                   {item.label}
                 </a>

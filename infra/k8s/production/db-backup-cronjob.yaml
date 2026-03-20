@@ -1,0 +1,120 @@
+# ════════════════════════════════════════
+# VCT Platform — Automated Database Backup
+# Daily pg_dump → GCS bucket with 30-day retention
+# ════════════════════════════════════════
+
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: vct-db-backup
+  labels:
+    app.kubernetes.io/name: vct-db-backup
+    app.kubernetes.io/component: backup
+    app.kubernetes.io/part-of: vct-platform
+spec:
+  schedule: "0 2 * * *"   # Daily at 2:00 AM
+  timeZone: "Asia/Ho_Chi_Minh"
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 7
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      backoffLimit: 2
+      activeDeadlineSeconds: 3600    # 1hr max
+      template:
+        metadata:
+          labels:
+            app.kubernetes.io/name: vct-db-backup
+        spec:
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 1000
+            seccompProfile:
+              type: RuntimeDefault
+          restartPolicy: OnFailure
+          containers:
+            - name: backup
+              image: postgres:17-alpine
+              securityContext:
+                allowPrivilegeEscalation: false
+                readOnlyRootFilesystem: true
+                capabilities:
+                  drop: ["ALL"]
+              env:
+                - name: PGPASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: vct-secrets
+                      key: postgres-password
+                - name: POSTGRES_HOST
+                  value: vct-postgres
+                - name: POSTGRES_DB
+                  value: vct_platform
+                - name: POSTGRES_USER
+                  valueFrom:
+                    secretKeyRef:
+                      name: vct-secrets
+                      key: postgres-user
+                - name: BACKUP_BUCKET
+                  value: vct-platform-backups
+              command:
+                - /bin/sh
+                - -c
+                - |
+                  set -euo pipefail
+
+                  TIMESTAMP=$(date +%Y%m%d_%H%M%S)
+                  BACKUP_FILE="/tmp/vct_platform_${TIMESTAMP}.sql.gz"
+
+                  echo "🔧 Starting backup: ${TIMESTAMP}"
+
+                  # Create compressed backup
+                  pg_dump \
+                    -h "${POSTGRES_HOST}" \
+                    -U "${POSTGRES_USER}" \
+                    -d "${POSTGRES_DB}" \
+                    --no-owner \
+                    --no-acl \
+                    --format=plain \
+                    | gzip > "${BACKUP_FILE}"
+
+                  BACKUP_SIZE=$(du -h "${BACKUP_FILE}" | cut -f1)
+                  echo "✅ Backup complete: ${BACKUP_FILE} (${BACKUP_SIZE})"
+
+                  # Upload to GCS (requires workload identity)
+                  if command -v gsutil &> /dev/null; then
+                    gsutil cp "${BACKUP_FILE}" "gs://${BACKUP_BUCKET}/daily/${TIMESTAMP}.sql.gz"
+                    echo "☁️  Uploaded to gs://${BACKUP_BUCKET}/daily/"
+
+                    # Cleanup backups older than 30 days
+                    gsutil ls "gs://${BACKUP_BUCKET}/daily/" | while read -r f; do
+                      FILE_DATE=$(basename "$f" | grep -oP '\d{8}' | head -1)
+                      if [ -n "$FILE_DATE" ]; then
+                        CUTOFF=$(date -d "30 days ago" +%Y%m%d 2>/dev/null || date -v-30d +%Y%m%d)
+                        if [ "$FILE_DATE" -lt "$CUTOFF" ] 2>/dev/null; then
+                          gsutil rm "$f"
+                          echo "🗑️  Removed old backup: $f"
+                        fi
+                      fi
+                    done
+                  else
+                    echo "⚠️  gsutil not available, backup stored locally only"
+                  fi
+
+                  # Verify backup integrity
+                  gunzip -t "${BACKUP_FILE}" && echo "✅ Integrity check passed" || echo "❌ Integrity check FAILED"
+                  rm -f "${BACKUP_FILE}"
+              resources:
+                requests:
+                  cpu: 100m
+                  memory: 256Mi
+                limits:
+                  cpu: 500m
+                  memory: 512Mi
+              volumeMounts:
+                - name: tmp
+                  mountPath: /tmp
+          volumes:
+            - name: tmp
+              emptyDir:
+                sizeLimit: 2Gi

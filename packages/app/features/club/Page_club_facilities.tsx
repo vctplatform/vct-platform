@@ -48,8 +48,8 @@ const FacilityStatusChart = ({ items }: { items: ClubFacility[] }) => {
   const total = data.reduce((s, d) => s + d.value, 0) || 1
 
   return (
-    <div className="rounded-2xl border border-[var(--vct-border-subtle)] bg-[var(--vct-bg-glass)] p-4">
-      <h3 className="mb-3 text-sm font-semibold text-[var(--vct-text-primary)]">Trạng thái cơ sở</h3>
+    <div className="rounded-2xl border border-(--vct-border-subtle) bg-(--vct-bg-glass) p-4">
+      <h3 className="mb-3 text-sm font-semibold text-(--vct-text-primary)">Trạng thái cơ sở</h3>
       <svg viewBox="0 0 200 200" className="mx-auto" style={{ maxWidth: 140, maxHeight: 140 }}>
         {(() => {
           let offset = 0
@@ -72,7 +72,7 @@ const FacilityStatusChart = ({ items }: { items: ClubFacility[] }) => {
         {data.map((d) => (
           <div key={d.key} className="flex items-center gap-1 text-xs">
             <span className="h-2 w-2 rounded-full" style={{ backgroundColor: d.color }} />
-            <span className="text-[var(--vct-text-secondary)]">{d.label}: {d.value}</span>
+            <span className="text-(--vct-text-secondary)">{d.label}: {d.value}</span>
           </div>
         ))}
       </div>
@@ -86,16 +86,16 @@ const FacilityAreaChart = ({ items }: { items: ClubFacility[] }) => {
   const colors = ['#0ea5e9', '#10b981', '#8b5cf6', '#f59e0b', '#ef4444', '#ec4899', '#14b8a6']
 
   return (
-    <div className="rounded-2xl border border-[var(--vct-border-subtle)] bg-[var(--vct-bg-glass)] p-4">
-      <h3 className="mb-3 text-sm font-semibold text-[var(--vct-text-primary)]">Diện tích theo cơ sở</h3>
+    <div className="rounded-2xl border border-(--vct-border-subtle) bg-(--vct-bg-glass) p-4">
+      <h3 className="mb-3 text-sm font-semibold text-(--vct-text-primary)">Diện tích theo cơ sở</h3>
       <div className="space-y-2">
         {sorted.map((f, i) => (
           <div key={f.id} className="flex items-center gap-2">
-            <span className="w-[100px] shrink-0 truncate text-xs text-[var(--vct-text-secondary)]">{f.name}</span>
-            <div className="relative h-5 flex-1 overflow-hidden rounded-full bg-[var(--vct-bg-input)]">
+            <span className="w-[100px] shrink-0 truncate text-xs text-(--vct-text-secondary)">{f.name}</span>
+            <div className="relative h-5 flex-1 overflow-hidden rounded-full bg-(--vct-bg-input)">
               <div className="h-full rounded-full transition-all duration-500" style={{ width: `${(f.areaSqm / max) * 100}%`, backgroundColor: colors[i % colors.length] }} />
             </div>
-            <span className="w-[48px] text-right text-xs font-semibold text-[var(--vct-text-primary)]">{f.areaSqm}m²</span>
+            <span className="w-[48px] text-right text-xs font-semibold text-(--vct-text-primary)">{f.areaSqm}m²</span>
           </div>
         ))}
       </div>
@@ -303,7 +303,7 @@ export const Page_club_facilities = () => {
       render: (row: ClubFacility) => (
         <div>
           <div className="text-sm font-semibold">{row.name}</div>
-          <div className="text-xs text-[var(--vct-text-secondary)]">{FACILITY_TYPE_LABEL[row.type]}</div>
+          <div className="text-xs text-(--vct-text-secondary)">{FACILITY_TYPE_LABEL[row.type]}</div>
         </div>
       ),
     },
@@ -324,7 +324,7 @@ export const Page_club_facilities = () => {
       render: (row: ClubFacility) => {
         const isOverdue = row.nextMaintenanceDate && row.nextMaintenanceDate <= new Date().toISOString().slice(0, 10)
         return (
-          <span className={`text-xs ${isOverdue ? 'font-semibold text-red-500' : 'text-[var(--vct-text-secondary)]'}`}>
+          <span className={`text-xs ${isOverdue ? 'font-semibold text-red-500' : 'text-(--vct-text-secondary)'}`}>
             {row.nextMaintenanceDate || '—'} {isOverdue ? '⚠️' : ''}
           </span>
         )
@@ -336,7 +336,7 @@ export const Page_club_facilities = () => {
       align: 'right' as const,
       render: (row: ClubFacility) => (
         <div className="flex justify-end gap-1">
-          {can('update') ? <button type="button" onClick={() => openEditModal(row)} className="rounded-md bg-[var(--vct-bg-input)] px-2 py-1 text-xs font-semibold">Sửa</button> : null}
+          {can('update') ? <button type="button" onClick={() => openEditModal(row)} className="rounded-md bg-(--vct-bg-input) px-2 py-1 text-xs font-semibold">Sửa</button> : null}
           {can('delete') ? <button type="button" onClick={() => requestDelete(row)} className="rounded-md bg-red-500/15 px-2 py-1 text-xs font-semibold text-red-500">Xóa</button> : null}
         </div>
       ),
@@ -348,8 +348,8 @@ export const Page_club_facilities = () => {
       <VCT_Toast isVisible={toast.show} message={toast.msg} type={toast.type} onClose={() => setToast((prev) => ({ ...prev, show: false }))} />
 
       <div className="mb-6">
-        <h1 className="text-2xl font-bold tracking-tight text-[var(--vct-text-primary)]">Cơ sở vật chất</h1>
-        <p className="mt-1 text-sm text-[var(--vct-text-secondary)]">Quản lý phòng tập, sân đấu, kho thiết bị và các tiện ích của CLB.</p>
+        <h1 className="text-2xl font-bold tracking-tight text-(--vct-text-primary)">Cơ sở vật chất</h1>
+        <p className="mt-1 text-sm text-(--vct-text-secondary)">Quản lý phòng tập, sân đấu, kho thiết bị và các tiện ích của CLB.</p>
       </div>
 
       <VCT_StatRow items={stats} className="mb-6" />
@@ -371,9 +371,9 @@ export const Page_club_facilities = () => {
           </div>
           <div className="space-y-1">
             {overdueFacilities.map(f => (
-              <div key={f.id} className="flex items-center gap-2 text-xs text-[var(--vct-text-secondary)]">
+              <div key={f.id} className="flex items-center gap-2 text-xs text-(--vct-text-secondary)">
                 <span>•</span>
-                <span className="font-medium text-[var(--vct-text-primary)]">{f.name}</span>
+                <span className="font-medium text-(--vct-text-primary)">{f.name}</span>
                 <span>— hạn: {f.nextMaintenanceDate}</span>
               </div>
             ))}
@@ -383,10 +383,10 @@ export const Page_club_facilities = () => {
 
       {/* Monthly rent summary */}
       {totalRent > 0 && (
-        <div className="mb-4 flex items-center gap-2 rounded-xl border border-[var(--vct-border-subtle)] bg-[var(--vct-bg-glass)] p-3">
+        <div className="mb-4 flex items-center gap-2 rounded-xl border border-(--vct-border-subtle) bg-(--vct-bg-glass) p-3">
           <VCT_Icons.DollarSign size={18} className="text-emerald-500" />
-          <span className="text-sm text-[var(--vct-text-secondary)]">
-            Tổng chi phí thuê: <span className="font-semibold text-[var(--vct-text-primary)]">{formatVND(totalRent)}/tháng</span>
+          <span className="text-sm text-(--vct-text-secondary)">
+            Tổng chi phí thuê: <span className="font-semibold text-(--vct-text-primary)">{formatVND(totalRent)}/tháng</span>
           </span>
         </div>
       )}
@@ -440,7 +440,7 @@ export const Page_club_facilities = () => {
       {filteredItems.length === 0 ? (
         <VCT_EmptyState icon="🏢" title="Không có cơ sở" description="Thử đổi bộ lọc hoặc thêm cơ sở mới." actionLabel={can('create') ? 'Thêm cơ sở' : undefined} onAction={can('create') ? openCreateModal : undefined} />
       ) : (
-        <div className="rounded-2xl border border-[var(--vct-border-subtle)] bg-[var(--vct-bg-glass)] p-2">
+        <div className="rounded-2xl border border-(--vct-border-subtle) bg-(--vct-bg-glass) p-2">
           <VCT_Table columns={columns} data={filteredItems} rowKey="id" />
         </div>
       )}

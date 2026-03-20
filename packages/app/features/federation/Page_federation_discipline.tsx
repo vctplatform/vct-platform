@@ -60,8 +60,8 @@ export const Page_federation_discipline = () => {
     return (
         <VCT_PageContainer size="wide" animated>
             <div className="mb-6">
-                <h1 className="text-2xl font-bold tracking-tight text-[var(--vct-text-primary)]">Kỷ luật & Thanh tra</h1>
-                <p className="text-sm text-[var(--vct-text-secondary)] mt-1">Quản lý vụ việc vi phạm, xử lý kỷ luật và theo dõi kháng cáo.</p>
+                <h1 className="text-2xl font-bold tracking-tight text-(--vct-text-primary)">Kỷ luật & Thanh tra</h1>
+                <p className="text-sm text-(--vct-text-secondary) mt-1">Quản lý vụ việc vi phạm, xử lý kỷ luật và theo dõi kháng cáo.</p>
             </div>
 
             <VCT_StatRow items={[
@@ -76,7 +76,7 @@ export const Page_federation_discipline = () => {
                     <div className="w-full max-w-[300px]">
                         <VCT_SearchInput value={search} onChange={setSearch} onClear={() => setSearch('')} placeholder="Tìm vụ việc, đối tượng..." />
                     </div>
-                    <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className="bg-[var(--vct-bg-elevated)] border border-[var(--vct-border-subtle)] text-[var(--vct-text-primary)] text-sm rounded-lg px-3 py-2 outline-none">
+                    <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className="bg-(--vct-bg-elevated) border border-(--vct-border-subtle) text-(--vct-text-primary) text-sm rounded-lg px-3 py-2 outline-none">
                         <option value="">Tất cả trạng thái</option>
                         {Object.entries(STATUS_MAP).map(([k, v]) => <option key={k} value={k}>{v.label}</option>)}
                     </select>
@@ -92,14 +92,14 @@ export const Page_federation_discipline = () => {
                         const st = STATUS_MAP[c.status]
                         const sv = SEVERITY_MAP[c.severity]
                         return (
-                            <div key={c.id} className="rounded-2xl border border-[var(--vct-border-subtle)] bg-[var(--vct-bg-glass)] p-4 hover:border-[var(--vct-accent-cyan)] transition-colors cursor-pointer" style={{ borderLeft: `4px solid ${st.color}` }}>
+                            <div key={c.id} className="rounded-2xl border border-(--vct-border-subtle) bg-(--vct-bg-glass) p-4 hover:border-(--vct-accent-cyan) transition-colors cursor-pointer" style={{ borderLeft: `4px solid ${st.color}` }}>
                                 <VCT_Stack direction="row" justify="space-between" align="flex-start">
                                     <div className="flex-1 min-w-0">
                                         <div className="flex items-center gap-2 mb-1">
                                             <span className="text-xs font-mono opacity-60">{c.case_number}</span>
                                             <span className="text-xs px-2 py-0.5 rounded-full font-bold" style={{ background: (sv?.color || '#000') + '15', color: sv?.color }}>{sv?.label}</span>
                                         </div>
-                                        <div className="font-bold text-sm text-[var(--vct-text-primary)]">{c.title}</div>
+                                        <div className="font-bold text-sm text-(--vct-text-primary)">{c.title}</div>
                                         <div className="text-xs opacity-50 mt-1">
                                             Đối tượng: <strong>{c.subject_name}</strong> ({c.subject_type}) • Điều tra: {c.investigator} • {c.reported_date}
                                         </div>

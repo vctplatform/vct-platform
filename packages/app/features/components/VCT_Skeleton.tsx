@@ -13,7 +13,7 @@ interface SkeletonProps {
     className?: string
 }
 
-const shimmerClass = 'animate-pulse rounded-lg bg-[var(--vct-bg-elevated)]'
+const shimmerClass = 'animate-pulse rounded-lg bg-(--vct-bg-elevated)'
 
 const TextLine = ({ w = '100%' }: { w?: string }) => (
     <div className={shimmerClass} style={{ width: w, height: 14, marginBottom: 8 }} />
@@ -24,7 +24,7 @@ const CircleSkeleton = ({ size = 40 }: { size?: number }) => (
 )
 
 const CardSkeleton = () => (
-    <div className="rounded-2xl border border-[var(--vct-border-subtle)] bg-[var(--vct-bg-card)] p-5">
+    <div className="rounded-2xl border border-(--vct-border-subtle) bg-(--vct-bg-card) p-5">
         <div className="flex items-center gap-3 mb-4">
             <CircleSkeleton size={32} />
             <div className="flex-1">
@@ -41,7 +41,7 @@ const CardSkeleton = () => (
 const KpiRowSkeleton = () => (
     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
         {[1, 2, 3, 4].map(i => (
-            <div key={i} className="rounded-2xl border border-[var(--vct-border-subtle)] bg-[var(--vct-bg-card)] p-5">
+            <div key={i} className="rounded-2xl border border-(--vct-border-subtle) bg-(--vct-bg-card) p-5">
                 <div className="flex items-center justify-between mb-3">
                     <div className={shimmerClass} style={{ width: 100, height: 12 }} />
                     <CircleSkeleton size={24} />
@@ -54,16 +54,16 @@ const KpiRowSkeleton = () => (
 )
 
 const TableSkeleton = ({ rows = 5 }: { rows?: number }) => (
-    <div className="overflow-hidden rounded-2xl border border-[var(--vct-border-subtle)] bg-[var(--vct-bg-glass)]">
+    <div className="overflow-hidden rounded-2xl border border-(--vct-border-subtle) bg-(--vct-bg-glass)">
         {/* Header */}
-        <div className="flex gap-4 border-b border-[var(--vct-border-strong)] bg-[var(--vct-bg-card)] p-4">
+        <div className="flex gap-4 border-b border-(--vct-border-strong) bg-(--vct-bg-card) p-4">
             {[80, 120, 100, 80, 60].map((w, i) => (
                 <div key={i} className={shimmerClass} style={{ width: w, height: 12 }} />
             ))}
         </div>
         {/* Rows */}
         {Array.from({ length: rows }).map((_, r) => (
-            <div key={r} className="flex items-center gap-4 border-b border-[var(--vct-border-subtle)] p-4">
+            <div key={r} className="flex items-center gap-4 border-b border-(--vct-border-subtle) p-4">
                 <CircleSkeleton size={28} />
                 <div className="flex-1 flex gap-4">
                     {[140, 100, 80, 60, 70].map((w, i) => (

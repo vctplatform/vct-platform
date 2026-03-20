@@ -58,7 +58,7 @@ const SkeletonMetricCard = () => (
 
 const SkeletonMetricGrid = ({ title, color }: { title: string; color: string }) => (
     <div className="bg-(--vct-bg-elevated) border border-(--vct-border-strong) rounded-2xl p-5">
-        <h3 className="admin-skeleton-title text-(--vct-text-primary) mb-4" style={{ '--_skeleton-color': color } as React.CSSProperties}>
+        <h3 className="admin-skeleton-title mb-4" data-color={color}>
             <div className="w-[18px] h-[18px] bg-(--vct-bg-card) rounded animate-pulse" /> {title}
         </h3>
         <div className="grid grid-cols-2 gap-3">
@@ -89,7 +89,7 @@ interface MetricItem { label: string; value: string | number; status?: string }
 
 const MetricGrid = ({ title, icon, metrics, color }: { title: string; icon: React.ReactNode; metrics: MetricItem[]; color: string }) => (
     <div className="bg-(--vct-bg-elevated) border border-(--vct-border-strong) rounded-2xl p-5">
-        <h3 className="font-bold text-(--vct-text-primary) mb-4 flex items-center gap-2" style={{ color }}>
+        <h3 className="admin-section-title mb-4" data-color={color}>
             {icon} {title}
         </h3>
         <div className="grid grid-cols-2 gap-3">

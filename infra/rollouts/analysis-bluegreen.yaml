@@ -1,0 +1,131 @@
+# ════════════════════════════════════════
+# Argo Rollouts — Canary Analysis Templates
+# Automated quality gates using Prometheus metrics
+# ════════════════════════════════════════
+apiVersion: argoproj.io/v1alpha1
+kind: AnalysisTemplate
+metadata:
+  name: vct-canary-analysis
+  namespace: vct-production
+spec:
+  metrics:
+    # ── Error Rate Gate ───────────────────
+    - name: error-rate
+      interval: 60s
+      count: 3
+      successCondition: result[0] < 0.05
+      failureLimit: 1
+      provider:
+        prometheus:
+          address: http://prometheus:9090
+          query: |
+            sum(rate(http_requests_total{status=~"5..",pod=~".*canary.*"}[2m]))
+            / sum(rate(http_requests_total{pod=~".*canary.*"}[2m]))
+
+    # ── Latency Gate ─────────────────────
+    - name: latency-p95
+      interval: 60s
+      count: 3
+      successCondition: result[0] < 2.0
+      failureLimit: 1
+      provider:
+        prometheus:
+          address: http://prometheus:9090
+          query: |
+            histogram_quantile(0.95,
+              sum(rate(http_request_duration_seconds_bucket{pod=~".*canary.*"}[2m]))
+              by (le)
+            )
+
+    # ── Saturation Gate ──────────────────
+    - name: memory-usage
+      interval: 60s
+      count: 2
+      successCondition: result[0] < 0.85
+      failureLimit: 1
+      provider:
+        prometheus:
+          address: http://prometheus:9090
+          query: |
+            max(container_memory_working_set_bytes{pod=~".*canary.*"})
+            / max(kube_pod_container_resource_limits{pod=~".*canary.*",resource="memory"})
+
+    # ── Restart Gate ─────────────────────
+    - name: pod-restarts
+      interval: 60s
+      count: 2
+      successCondition: result[0] == 0
+      failureLimit: 0
+      provider:
+        prometheus:
+          address: http://prometheus:9090
+          query: |
+            sum(increase(kube_pod_container_status_restarts_total{pod=~".*canary.*"}[5m]))
+---
+# ════════════════════════════════════════
+# Blue-Green Deployment (for major releases)
+# ════════════════════════════════════════
+apiVersion: argoproj.io/v1alpha1
+kind: Rollout
+metadata:
+  name: vct-api-bluegreen
+  namespace: vct-production
+spec:
+  replicas: 4
+  revisionHistoryLimit: 3
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: vct-api-bg
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: vct-api-bg
+    spec:
+      containers:
+        - name: api
+          image: ghcr.io/vct-platform/backend:latest
+          ports:
+            - containerPort: 18080
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 18080
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: 18080
+  strategy:
+    blueGreen:
+      activeService: vct-api-active-svc
+      previewService: vct-api-preview-svc
+      autoPromotionEnabled: false
+      prePromotionAnalysis:
+        templates:
+          - templateName: vct-canary-analysis
+        args:
+          - name: service-name
+            value: vct-api-preview-svc
+      scaleDownDelaySeconds: 300  # 5min grace period
+      abortScaleDownDelaySeconds: 30
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: vct-api-active-svc
+  namespace: vct-production
+spec:
+  ports:
+    - port: 18080
+  selector:
+    app.kubernetes.io/name: vct-api-bg
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: vct-api-preview-svc
+  namespace: vct-production
+spec:
+  ports:
+    - port: 18080
+  selector:
+    app.kubernetes.io/name: vct-api-bg

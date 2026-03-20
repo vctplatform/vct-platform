@@ -27,13 +27,6 @@ interface TrainingSession {
     capacity: number
 }
 
-const MOCK_SESSIONS: TrainingSession[] = [
-    { id: 'S1', date: '2023-11-20', time: '18:00 - 19:30', club_name: 'Võ Đường Liên Hoa', class_name: 'Lớp Căn Bản 1', instructor: 'Võ sư Lê Văn A', topic: 'Ôn tập di chuyển, Tứ trụ quyền', status: 'completed', attendees: 25, capacity: 30 },
-    { id: 'S2', date: '2023-11-21', time: '17:30 - 19:00', club_name: 'CLB Long An', class_name: 'Lớp Nâng Cao', instructor: 'HLV Trần B', topic: 'Thực chiến cơ bản', status: 'upcoming', attendees: 18, capacity: 20 },
-    { id: 'S3', date: '2023-11-21', time: '19:30 - 21:00', club_name: 'Võ Đường Liên Hoa', class_name: 'Lớp Đối Kháng', instructor: 'HLV Nguyễn C', topic: 'Kỹ thuật gạt, né', status: 'upcoming', attendees: 12, capacity: 15 },
-    { id: 'S4', date: '2023-11-22', time: '18:00 - 20:00', club_name: 'Nhà Thiếu Nhi Quận 1', class_name: 'Lớp Nhi Đồng', instructor: 'HLV Phạm D', topic: 'Rèn luyện thể lực', status: 'upcoming', attendees: 35, capacity: 40 },
-]
-
 const STATUS_MAP = {
     upcoming: { label: 'Sắp diễn ra', color: 'blue', render: <VCT_Badge text="Sắp tới" type="info" /> },
     ongoing: { label: 'Đang diễn ra', color: 'green', render: <VCT_Badge text="Đang học" type="success" /> },
@@ -63,7 +56,7 @@ export const Page_training_plans = () => {
                 attendees: 0, capacity: 30,
             })))
         }
-        return MOCK_SESSIONS
+        return []
     }, [apiPlans])
 
     const filtered = useMemo(() => {
@@ -87,8 +80,8 @@ export const Page_training_plans = () => {
                 gradientTo="rgba(139, 92, 246, 0.06)"
                 actions={
                     <div className="flex bg-vct-elevated border border-vct-border rounded-lg p-1">
-                        <button onClick={() => setViewMode('list')} className={`px-4 py-2 text-sm font-semibold rounded-md transition-colors ${viewMode === 'list' ? 'bg-[var(--vct-accent-cyan)] text-black' : 'text-[var(--vct-text-secondary)] hover:text-white'}`}>Danh sách</button>
-                        <button onClick={() => setViewMode('calendar')} className={`px-4 py-2 text-sm font-semibold rounded-md transition-colors ${viewMode === 'calendar' ? 'bg-[var(--vct-accent-cyan)] text-black' : 'text-[var(--vct-text-secondary)] hover:text-white'}`}>Lịch trực quan</button>
+                        <button onClick={() => setViewMode('list')} className={`px-4 py-2 text-sm font-semibold rounded-md transition-colors ${viewMode === 'list' ? 'bg-(--vct-accent-cyan) text-black' : 'text-(--vct-text-secondary) hover:text-white'}`}>Danh sách</button>
+                        <button onClick={() => setViewMode('calendar')} className={`px-4 py-2 text-sm font-semibold rounded-md transition-colors ${viewMode === 'calendar' ? 'bg-(--vct-accent-cyan) text-black' : 'text-(--vct-text-secondary) hover:text-white'}`}>Lịch trực quan</button>
                     </div>
                 }
             />
@@ -101,7 +94,7 @@ export const Page_training_plans = () => {
             ] as StatItem[]} className="mb-6" />
 
             {/* ── TOOLBAR ── */}
-            <div className="mb-6 grid grid-cols-1 md:grid-cols-4 gap-4 bg-[var(--vct-bg-elevated)] p-4 rounded-xl border border-[var(--vct-border-subtle)]">
+            <div className="mb-6 grid grid-cols-1 md:grid-cols-4 gap-4 bg-(--vct-bg-elevated) p-4 rounded-xl border border-(--vct-border-subtle)">
                 <div className="md:col-span-2">
                     <VCT_SearchInput placeholder="Tìm giáo án, lớp, HLV..." value={search} onChange={setSearch} onClear={() => setSearch('')} />
                 </div>
@@ -132,21 +125,21 @@ export const Page_training_plans = () => {
                 ) : (
                     <div className="flex flex-col gap-4">
                         {filtered.map(session => (
-                            <div key={session.id} className="bg-[var(--vct-bg-card)] border border-[var(--vct-border-strong)] rounded-xl p-5 hover:border-[var(--vct-accent-cyan)] transition-colors flex flex-col md:flex-row gap-6 items-start md:items-center">
+                            <div key={session.id} className="bg-(--vct-bg-card) border border-(--vct-border-strong) rounded-xl p-5 hover:border-(--vct-accent-cyan) transition-colors flex flex-col md:flex-row gap-6 items-start md:items-center">
                                 {/* Date Box */}
-                                <div className="flex flex-col items-center justify-center p-4 bg-[var(--vct-bg-elevated)] rounded-xl shrink-0 border border-[var(--vct-border-subtle)] w-24">
-                                    <span className="text-[11px] font-bold uppercase text-[var(--vct-text-secondary)] tracking-wider">THÁNG {session.date.split('-')[1]}</span>
-                                    <span className="text-3xl font-black text-[var(--vct-text-primary)] leading-none my-1">{session.date.split('-')[2]}</span>
+                                <div className="flex flex-col items-center justify-center p-4 bg-(--vct-bg-elevated) rounded-xl shrink-0 border border-(--vct-border-subtle) w-24">
+                                    <span className="text-[11px] font-bold uppercase text-(--vct-text-secondary) tracking-wider">THÁNG {session.date.split('-')[1]}</span>
+                                    <span className="text-3xl font-black text-(--vct-text-primary) leading-none my-1">{session.date.split('-')[2]}</span>
                                 </div>
 
                                 {/* Info */}
                                 <div className="flex-1">
                                     <div className="flex flex-wrap items-center gap-2 mb-2">
                                         {STATUS_MAP[session.status].render}
-                                        <span className="text-[12px] text-[var(--vct-text-secondary)] font-medium flex items-center gap-1"><VCT_Icons.Clock size={13} /> {session.time}</span>
+                                        <span className="text-[12px] text-(--vct-text-secondary) font-medium flex items-center gap-1"><VCT_Icons.Clock size={13} /> {session.time}</span>
                                     </div>
-                                    <h3 className="text-lg font-bold text-[var(--vct-text-primary)] mb-1">{session.topic}</h3>
-                                    <div className="flex flex-wrap items-center gap-x-6 gap-y-2 mt-3 text-sm text-[var(--vct-text-secondary)]">
+                                    <h3 className="text-lg font-bold text-(--vct-text-primary) mb-1">{session.topic}</h3>
+                                    <div className="flex flex-wrap items-center gap-x-6 gap-y-2 mt-3 text-sm text-(--vct-text-secondary)">
                                         <div className="flex items-center gap-2"><VCT_Icons.MapPin size={15} className="text-[#0ea5e9]" /> <span className="font-semibold">{session.club_name}</span></div>
                                         <div className="flex items-center gap-2"><VCT_Icons.Users size={15} className="text-[#8b5cf6]" /> {session.class_name}</div>
                                         <div className="flex items-center gap-2"><VCT_Icons.Award size={15} className="text-[#f59e0b]" /> HLV: {session.instructor}</div>
@@ -154,10 +147,10 @@ export const Page_training_plans = () => {
                                 </div>
 
                                 {/* Actions / Stats */}
-                                <div className="shrink-0 flex flex-col items-end gap-3 w-full md:w-auto mt-4 md:mt-0 pt-4 md:pt-0 border-t md:border-t-0 md:border-l border-[var(--vct-border-subtle)] md:pl-6">
+                                <div className="shrink-0 flex flex-col items-end gap-3 w-full md:w-auto mt-4 md:mt-0 pt-4 md:pt-0 border-t md:border-t-0 md:border-l border-(--vct-border-subtle) md:pl-6">
                                     <div className="text-right">
-                                        <div className="text-[11px] text-[var(--vct-text-tertiary)] uppercase font-semibold">Tỉ lệ tham gia</div>
-                                        <div className="text-xl font-bold text-white tracking-tight">{session.attendees}<span className="text-sm font-medium text-[var(--vct-text-secondary)]">/{session.capacity}</span></div>
+                                        <div className="text-[11px] text-(--vct-text-tertiary) uppercase font-semibold">Tỉ lệ tham gia</div>
+                                        <div className="text-xl font-bold text-white tracking-tight">{session.attendees}<span className="text-sm font-medium text-(--vct-text-secondary)">/{session.capacity}</span></div>
                                     </div>
                                     <VCT_Button variant="secondary" size="sm" icon={<VCT_Icons.Edit size={14} />}>Chỉnh sửa</VCT_Button>
                                 </div>
@@ -169,10 +162,10 @@ export const Page_training_plans = () => {
 
             {/* ── CALENDAR VIEW (Placeholder) ── */}
             {viewMode === 'calendar' && (
-                <div className="bg-[var(--vct-bg-elevated)] border border-[var(--vct-border-subtle)] rounded-xl p-8 text-center flex flex-col items-center justify-center min-h-[400px]">
-                    <VCT_Icons.Calendar size={48} className="text-[var(--vct-text-tertiary)] mb-4" />
+                <div className="bg-(--vct-bg-elevated) border border-(--vct-border-subtle) rounded-xl p-8 text-center flex flex-col items-center justify-center min-h-[400px]">
+                    <VCT_Icons.Calendar size={48} className="text-(--vct-text-tertiary) mb-4" />
                     <h3 className="text-lg font-bold text-white">Chế độ xem lịch đang được phát triển</h3>
-                    <p className="text-[var(--vct-text-secondary)] mt-2">Tính năng kéo thả và xem tổng quan theo tháng sẽ sớm ra mắt.</p>
+                    <p className="text-(--vct-text-secondary) mt-2">Tính năng kéo thả và xem tổng quan theo tháng sẽ sớm ra mắt.</p>
                 </div>
             )}
         </VCT_PageContainer>

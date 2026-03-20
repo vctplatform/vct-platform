@@ -12,7 +12,7 @@ import type { StatItem } from '../components/VCT_StatRow';
 import { VCT_Icons } from '../components/vct-icons';
 import { TOURNAMENT_CONFIG } from '../data/tournament-config';
 import type { TournamentConfig, TrangThaiGiai } from '../data/types';
-import { DON_VIS, VAN_DONG_VIENS, TRONG_TAIS, SAN_DAUS } from '../data/mock-data';
+import { useDonVis, useVanDongViens, useTrongTais, useSanDaus } from '../hooks/useTournamentAPI';
 import { repositories, useEntityCollection, type TournamentConfigRecord } from '../data/repository';
 import { useRouteActionGuard } from '../hooks/use-route-action-guard';
 
@@ -106,14 +106,24 @@ export const Page_giai_dau = () => {
     const [pointModal, setPointModal] = useState({ open: false, isEdit: false, index: -1, data: { thu_hang: 1, diem: 10 } });
     const [confirmDeletePoint, setConfirmDeletePoint] = useState({ open: false, index: -1 });
 
+    const { data: apiDonVis } = useDonVis();
+    const { data: apiVdvs } = useVanDongViens();
+    const { data: apiTrongTais } = useTrongTais();
+    const { data: apiSanDaus } = useSanDaus();
+
+    const donVis = apiDonVis || [];
+    const vdvs = apiVdvs || [];
+    const trongTais = apiTrongTais || [];
+    const sanDaus = apiSanDaus || [];
+
     // Live Stats
     const stats = useMemo(() => ({
-        doan: DON_VIS.length,
-        vdv: VAN_DONG_VIENS.length,
-        trong_tai: TRONG_TAIS.length,
-        san: SAN_DAUS.length,
-        san_active: SAN_DAUS.filter(s => s.trang_thai === 'dang_thi_dau').length
-    }), []);
+        doan: donVis.length,
+        vdv: vdvs.length,
+        trong_tai: trongTais.length,
+        san: sanDaus.length,
+        san_active: sanDaus.filter(s => s.trang_thai === 'dang_thi_dau').length
+    }), [donVis, vdvs, trongTais, sanDaus]);
 
     const daysUntil = Math.max(0, Math.ceil((new Date(config.ngay_bat_dau).getTime() - new Date().getTime()) / (1000 * 3600 * 24)));
     const doneChecklist = config.checklist.filter(c => c.done).length;

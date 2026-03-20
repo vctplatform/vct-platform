@@ -62,27 +62,27 @@ export const Page_coach_profile = () => {
     return (
         <div className="mx-auto max-w-[1400px] p-4 pb-24">
             {/* ── BREADCRUMB ── */}
-            <div className="flex items-center gap-2 text-sm text-[var(--vct-text-tertiary)] mb-6">
-                <span className="hover:text-[var(--vct-accent-cyan)] cursor-pointer">Huấn luyện viên</span>
+            <div className="flex items-center gap-2 text-sm text-(--vct-text-tertiary) mb-6">
+                <span className="hover:text-(--vct-accent-cyan) cursor-pointer">Huấn luyện viên</span>
                 <VCT_Icons.Chevron size={14} />
-                <span className="text-[var(--vct-text-primary)]">{c.name}</span>
+                <span className="text-(--vct-text-primary)">{c.name}</span>
             </div>
 
             {/* ── PROFILE HEADER ── */}
-            <div className="bg-[var(--vct-bg-elevated)] border border-[var(--vct-border-strong)] rounded-2xl p-6 mb-6">
+            <div className="bg-(--vct-bg-elevated) border border-(--vct-border-strong) rounded-2xl p-6 mb-6">
                 <div className="flex flex-col md:flex-row gap-6">
                     <div className="flex items-center gap-5">
                         <div className="relative">
                             <VCT_AvatarLetter name={c.name} size={80} />
-                            <div className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-[#10b981] border-3 border-[var(--vct-bg-elevated)]"></div>
+                            <div className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-[#10b981] border-3 border-(--vct-bg-elevated)"></div>
                         </div>
                         <div>
-                            <h1 className="text-2xl font-bold text-[var(--vct-text-primary)]">{c.name}</h1>
+                            <h1 className="text-2xl font-bold text-(--vct-text-primary)">{c.name}</h1>
                             <div className="flex items-center gap-2 mt-1">
                                 <span className="text-xs font-bold px-2 py-1 rounded-lg bg-[#ec489915] text-[#ec4899] border border-[#ec489930]">{c.belt_rank}</span>
-                                <span className="text-xs text-[var(--vct-text-secondary)]">{c.certification}</span>
+                                <span className="text-xs text-(--vct-text-secondary)">{c.certification}</span>
                             </div>
-                            <div className="flex items-center gap-3 mt-2 text-[12px] text-[var(--vct-text-tertiary)]">
+                            <div className="flex items-center gap-3 mt-2 text-[12px] text-(--vct-text-tertiary)">
                                 <span className="flex items-center gap-1"><VCT_Icons.Building2 size={12} /> {c.club} – {c.club_city}</span>
                                 <span className="flex items-center gap-1"><VCT_Icons.Calendar size={12} /> {c.dob}</span>
                             </div>
@@ -96,28 +96,28 @@ export const Page_coach_profile = () => {
                 </div>
 
                 {/* Stats row */}
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-6 pt-6 border-t border-[var(--vct-border-subtle)]">
-                    <div className="text-center p-3 bg-[var(--vct-bg-base)] rounded-xl">
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-6 pt-6 border-t border-(--vct-border-subtle)">
+                    <div className="text-center p-3 bg-(--vct-bg-base) rounded-xl">
                         <div className="text-2xl font-black text-[#0ea5e9]">{c.students}</div>
-                        <div className="text-[10px] text-[var(--vct-text-tertiary)] mt-1">Học trò</div>
+                        <div className="text-[10px] text-(--vct-text-tertiary) mt-1">Học trò</div>
                     </div>
-                    <div className="text-center p-3 bg-[var(--vct-bg-base)] rounded-xl">
+                    <div className="text-center p-3 bg-(--vct-bg-base) rounded-xl">
                         <div className="text-2xl font-black text-[#10b981]">{c.experience_years}</div>
-                        <div className="text-[10px] text-[var(--vct-text-tertiary)] mt-1">Năm kinh nghiệm</div>
+                        <div className="text-[10px] text-(--vct-text-tertiary) mt-1">Năm kinh nghiệm</div>
                     </div>
-                    <div className="text-center p-3 bg-[var(--vct-bg-base)] rounded-xl">
+                    <div className="text-center p-3 bg-(--vct-bg-base) rounded-xl">
                         <div className="text-2xl font-black text-[#f59e0b]">{c.specialties.length}</div>
-                        <div className="text-[10px] text-[var(--vct-text-tertiary)] mt-1">Chuyên môn</div>
+                        <div className="text-[10px] text-(--vct-text-tertiary) mt-1">Chuyên môn</div>
                     </div>
-                    <div className="text-center p-3 bg-[var(--vct-bg-base)] rounded-xl">
+                    <div className="text-center p-3 bg-(--vct-bg-base) rounded-xl">
                         <div className="text-2xl font-black text-[#8b5cf6]">{CERTIFICATIONS.filter(cr => cr.status === 'valid').length}</div>
-                        <div className="text-[10px] text-[var(--vct-text-tertiary)] mt-1">Chứng chỉ còn hạn</div>
+                        <div className="text-[10px] text-(--vct-text-tertiary) mt-1">Chứng chỉ còn hạn</div>
                     </div>
                 </div>
             </div>
 
             {/* ── TABS ── */}
-            <div className="mb-6 border-b border-[var(--vct-border-subtle)] pb-0">
+            <div className="mb-6 border-b border-(--vct-border-subtle) pb-0">
                 <VCT_Tabs
                     tabs={[{ key: 'overview', label: 'Hồ sơ' }, { key: 'students', label: `Học trò (${STUDENTS.length})` }, { key: 'certifications', label: 'Chứng chỉ' }, { key: 'schedule', label: 'Lịch dạy' }]}
                     activeTab={activeTab}
@@ -128,41 +128,41 @@ export const Page_coach_profile = () => {
             {/* ── TAB CONTENT ── */}
             {activeTab === 'overview' && (
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    <div className="lg:col-span-2 bg-[var(--vct-bg-elevated)] border border-[var(--vct-border-strong)] rounded-2xl p-6">
-                        <h3 className="font-bold text-[var(--vct-text-primary)] mb-3">Tiểu sử</h3>
-                        <p className="text-sm text-[var(--vct-text-secondary)] leading-relaxed">{c.bio}</p>
-                        <h3 className="font-bold text-[var(--vct-text-primary)] mt-6 mb-3">Chuyên môn</h3>
+                    <div className="lg:col-span-2 bg-(--vct-bg-elevated) border border-(--vct-border-strong) rounded-2xl p-6">
+                        <h3 className="font-bold text-(--vct-text-primary) mb-3">Tiểu sử</h3>
+                        <p className="text-sm text-(--vct-text-secondary) leading-relaxed">{c.bio}</p>
+                        <h3 className="font-bold text-(--vct-text-primary) mt-6 mb-3">Chuyên môn</h3>
                         <div className="flex flex-wrap gap-2">
-                            {c.specialties.map(s => <span key={s} className="px-3 py-1.5 text-sm font-medium rounded-xl bg-[var(--vct-accent-cyan)]/10 text-[var(--vct-accent-cyan)] border border-[var(--vct-accent-cyan)]/20">{s}</span>)}
+                            {c.specialties.map(s => <span key={s} className="px-3 py-1.5 text-sm font-medium rounded-xl bg-(--vct-accent-cyan)/10 text-(--vct-accent-cyan) border border-(--vct-accent-cyan)/20">{s}</span>)}
                         </div>
                     </div>
-                    <div className="bg-[var(--vct-bg-elevated)] border border-[var(--vct-border-strong)] rounded-2xl p-6">
-                        <h3 className="font-bold text-[var(--vct-text-primary)] mb-4">Thông tin liên hệ</h3>
+                    <div className="bg-(--vct-bg-elevated) border border-(--vct-border-strong) rounded-2xl p-6">
+                        <h3 className="font-bold text-(--vct-text-primary) mb-4">Thông tin liên hệ</h3>
                         <VCT_Stack gap={12}>
-                            <div className="flex items-center gap-3"><VCT_Icons.Phone size={16} className="text-[var(--vct-text-tertiary)]" /><span className="text-sm text-[var(--vct-text-secondary)]">{c.phone}</span></div>
-                            <div className="flex items-center gap-3"><VCT_Icons.Mail size={16} className="text-[var(--vct-text-tertiary)]" /><span className="text-sm text-[var(--vct-text-secondary)]">{c.email}</span></div>
-                            <div className="flex items-center gap-3"><VCT_Icons.MapPin size={16} className="text-[var(--vct-text-tertiary)]" /><span className="text-sm text-[var(--vct-text-secondary)]">{c.address}</span></div>
-                            <div className="flex items-center gap-3"><VCT_Icons.Building2 size={16} className="text-[var(--vct-text-tertiary)]" /><span className="text-sm text-[var(--vct-text-secondary)]">{c.club}</span></div>
+                            <div className="flex items-center gap-3"><VCT_Icons.Phone size={16} className="text-(--vct-text-tertiary)" /><span className="text-sm text-(--vct-text-secondary)">{c.phone}</span></div>
+                            <div className="flex items-center gap-3"><VCT_Icons.Mail size={16} className="text-(--vct-text-tertiary)" /><span className="text-sm text-(--vct-text-secondary)">{c.email}</span></div>
+                            <div className="flex items-center gap-3"><VCT_Icons.MapPin size={16} className="text-(--vct-text-tertiary)" /><span className="text-sm text-(--vct-text-secondary)">{c.address}</span></div>
+                            <div className="flex items-center gap-3"><VCT_Icons.Building2 size={16} className="text-(--vct-text-tertiary)" /><span className="text-sm text-(--vct-text-secondary)">{c.club}</span></div>
                         </VCT_Stack>
                     </div>
                 </div>
             )}
 
             {activeTab === 'students' && (
-                <div className="bg-[var(--vct-bg-elevated)] border border-[var(--vct-border-strong)] rounded-2xl overflow-hidden">
+                <div className="bg-(--vct-bg-elevated) border border-(--vct-border-strong) rounded-2xl overflow-hidden">
                     <table className="w-full border-collapse">
                         <thead>
-                            <tr className="bg-[var(--vct-bg-card)] border-b border-[var(--vct-border-strong)] text-[11px] uppercase tracking-wider text-[var(--vct-text-tertiary)] font-bold">
+                            <tr className="bg-(--vct-bg-card) border-b border-(--vct-border-strong) text-[11px] uppercase tracking-wider text-(--vct-text-tertiary) font-bold">
                                 <th className="p-4 text-left">Học viên</th><th className="p-4 text-left">Cấp đai</th><th className="p-4 text-left">Tham gia</th><th className="p-4 text-center">Xếp loại</th><th className="p-4 text-center">Trạng thái</th>
                             </tr>
                         </thead>
-                        <tbody className="divide-y divide-[var(--vct-border-subtle)]">
+                        <tbody className="divide-y divide-(--vct-border-subtle)">
                             {STUDENTS.map(s => (
                                 <tr key={s.id} className="hover:bg-white/5 transition-colors">
-                                    <td className="p-4"><VCT_Stack direction="row" gap={10} align="center"><VCT_AvatarLetter name={s.name} size={32} /><div><div className="font-bold text-sm text-[var(--vct-text-primary)]">{s.name}</div><div className="text-[11px] text-[var(--vct-text-tertiary)]">{s.id}</div></div></VCT_Stack></td>
-                                    <td className="p-4 text-sm text-[var(--vct-text-secondary)]">{s.belt}</td>
-                                    <td className="p-4 text-sm text-[var(--vct-text-secondary)]">{s.joined}</td>
-                                    <td className="p-4 text-center"><span className="font-black text-sm text-[var(--vct-accent-cyan)]">{s.performance}</span></td>
+                                    <td className="p-4"><VCT_Stack direction="row" gap={10} align="center"><VCT_AvatarLetter name={s.name} size={32} /><div><div className="font-bold text-sm text-(--vct-text-primary)">{s.name}</div><div className="text-[11px] text-(--vct-text-tertiary)">{s.id}</div></div></VCT_Stack></td>
+                                    <td className="p-4 text-sm text-(--vct-text-secondary)">{s.belt}</td>
+                                    <td className="p-4 text-sm text-(--vct-text-secondary)">{s.joined}</td>
+                                    <td className="p-4 text-center"><span className="font-black text-sm text-(--vct-accent-cyan)">{s.performance}</span></td>
                                     <td className="p-4 text-center"><VCT_Badge text={s.status === 'active' ? 'Đang học' : 'Nghỉ'} type={s.status === 'active' ? 'success' : 'neutral'} /></td>
                                 </tr>
                             ))}
@@ -176,12 +176,12 @@ export const Page_coach_profile = () => {
                     {CERTIFICATIONS.map(cert => {
                         const st = CERT_STATUS_MAP[cert.status] || CERT_STATUS_MAP.valid!
                         return (
-                            <div key={cert.id} className="bg-[var(--vct-bg-elevated)] border border-[var(--vct-border-strong)] rounded-2xl p-5 flex items-center justify-between hover:border-[var(--vct-accent-cyan)] transition-colors">
+                            <div key={cert.id} className="bg-(--vct-bg-elevated) border border-(--vct-border-strong) rounded-2xl p-5 flex items-center justify-between hover:border-(--vct-accent-cyan) transition-colors">
                                 <div className="flex items-center gap-4">
-                                    <div className="w-12 h-12 rounded-xl bg-[var(--vct-accent-cyan)]/10 flex items-center justify-center"><VCT_Icons.Award size={24} className="text-[var(--vct-accent-cyan)]" /></div>
+                                    <div className="w-12 h-12 rounded-xl bg-(--vct-accent-cyan)/10 flex items-center justify-center"><VCT_Icons.Award size={24} className="text-(--vct-accent-cyan)" /></div>
                                     <div>
-                                        <div className="font-bold text-[var(--vct-text-primary)]">{cert.name}</div>
-                                        <div className="text-[12px] text-[var(--vct-text-tertiary)] mt-1">Cấp bởi: {cert.issuer} • Ngày cấp: {cert.date} • Hết hạn: {cert.expiry}</div>
+                                        <div className="font-bold text-(--vct-text-primary)">{cert.name}</div>
+                                        <div className="text-[12px] text-(--vct-text-tertiary) mt-1">Cấp bởi: {cert.issuer} • Ngày cấp: {cert.date} • Hết hạn: {cert.expiry}</div>
                                     </div>
                                 </div>
                                 <VCT_Badge text={st.label} type={st.type} />
@@ -192,21 +192,21 @@ export const Page_coach_profile = () => {
             )}
 
             {activeTab === 'schedule' && (
-                <div className="bg-[var(--vct-bg-elevated)] border border-[var(--vct-border-strong)] rounded-2xl p-6">
-                    <h3 className="font-bold text-[var(--vct-text-primary)] mb-4">Lịch dạy hàng tuần</h3>
+                <div className="bg-(--vct-bg-elevated) border border-(--vct-border-strong) rounded-2xl p-6">
+                    <h3 className="font-bold text-(--vct-text-primary) mb-4">Lịch dạy hàng tuần</h3>
                     <div className="grid grid-cols-7 gap-2">
                         {SCHEDULE.map(day => (
                             <div key={day.day} className="flex flex-col">
-                                <div className="text-center font-bold text-sm text-[var(--vct-text-primary)] mb-2 p-2 bg-[var(--vct-bg-card)] rounded-xl">{day.day}</div>
+                                <div className="text-center font-bold text-sm text-(--vct-text-primary) mb-2 p-2 bg-(--vct-bg-card) rounded-xl">{day.day}</div>
                                 {day.sessions.length === 0 ? (
-                                    <div className="text-center py-8 text-[11px] text-[var(--vct-text-tertiary)]">Nghỉ</div>
+                                    <div className="text-center py-8 text-[11px] text-(--vct-text-tertiary)">Nghỉ</div>
                                 ) : (
                                     <div className="space-y-2">
                                         {day.sessions.map((session, i) => (
-                                            <div key={i} className="p-3 bg-[var(--vct-accent-cyan)]/5 border border-[var(--vct-accent-cyan)]/20 rounded-xl">
-                                                <div className="text-[11px] font-bold text-[var(--vct-accent-cyan)]">{session.time}</div>
-                                                <div className="text-[12px] font-semibold text-[var(--vct-text-primary)] mt-1">{session.class}</div>
-                                                <div className="text-[10px] text-[var(--vct-text-tertiary)] mt-1">{session.students} HV • {session.location}</div>
+                                            <div key={i} className="p-3 bg-(--vct-accent-cyan)/5 border border-(--vct-accent-cyan)/20 rounded-xl">
+                                                <div className="text-[11px] font-bold text-(--vct-accent-cyan)">{session.time}</div>
+                                                <div className="text-[12px] font-semibold text-(--vct-text-primary) mt-1">{session.class}</div>
+                                                <div className="text-[10px] text-(--vct-text-tertiary) mt-1">{session.students} HV • {session.location}</div>
                                             </div>
                                         ))}
                                     </div>

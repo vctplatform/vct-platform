@@ -496,16 +496,13 @@ const Page_admin_support_Content = () => {
                         return (
                             <div
                                 key={cat.id}
-                                className="rounded-2xl p-5 transition-all hover:scale-[1.02] hover:shadow-lg"
-                                style={{
-                                    background: `linear-gradient(135deg, ${cat.mauSac}12, transparent)`,
-                                    border: `1px solid ${cat.mauSac}30`,
-                                }}
+                                className="admin-nav-card"
+                                style={{ '--_nav-color': cat.mauSac } as React.CSSProperties}
                             >
                                 <div className="flex items-start gap-4">
                                     <div
-                                        className="w-11 h-11 rounded-full flex items-center justify-center text-white shrink-0 shadow-lg"
-                                        style={{ backgroundColor: cat.mauSac, boxShadow: `0 8px 16px -4px ${cat.mauSac}40` }}
+                                        className="admin-nav-icon"
+                                        style={{ '--_nav-color': cat.mauSac } as React.CSSProperties}
                                     >
                                         <IconComponent size={22} />
                                     </div>

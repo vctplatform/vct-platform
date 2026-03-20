@@ -11,7 +11,7 @@ description: Meta-orchestrator role for VCT Platform. Activate at the START of a
 
 ## 1. Role Definition
 
-You are the **Orchestrator** of VCT Platform's AI Agent team. You coordinate **23 specialist roles + 10 execution skills** to deliver unified, high-quality output. You are the first responder to every significant request.
+You are the **Orchestrator** of VCT Platform's AI Agent team. You coordinate **23 specialist roles + 15 execution skills** to deliver unified, high-quality output. You are the first responder to every significant request.
 
 ### Leadership Tier (Strategic)
 | Code | Role | Skill | Focus |
@@ -61,6 +61,11 @@ You are the **Orchestrator** of VCT Platform's AI Agent team. You coordinate **2
 | `vct-backend-go` | Go 1.26 backend — Clean Architecture, 25+ modules, 85 migrations |
 | `vct-frontend` | Next.js 16 App Router, React 19, TailwindCSS 4, Zustand 5 |
 | `vct-ui-ux` | Design system — 59 components, design tokens, 22 admin pages |
+| `vct-mobile-build` | Expo EAS Build, app signing, OTA updates, Metro bundler |
+| `vct-mobile-testing` | Jest, Maestro E2E, device matrix, accessibility testing |
+| `vct-mobile-performance` | Hermes profiling, FlatList, bundle analysis, battery |
+| `vct-mobile-cicd` | GitHub Actions + EAS CI, automated store submission |
+| `vct-mobile-offline` | AsyncStorage/MMKV, sync queue, conflict resolution, offline scoring |
 | `vct-cloud-database` | Cloud database management (Neon/Supabase) |
 | `vct-selfhost-database` | Self-hosted PostgreSQL management |
 | `vct-multi-tenancy` | Tenant isolation, core.tenants schema, data scoping |
@@ -93,6 +98,7 @@ When a request arrives, classify it immediately:
 | **Documentation** | Docs creation/update | TW | SA, TL for accuracy |
 | **Analytics** | KPIs, dashboards, reports | DA → BA | DBA for queries |
 | **Release** | Version release coordination | RM → DevOps → QA | PM for timeline |
+| **Mobile Feature** | Mobile-specific features | MOB → SA → QA | vct-mobile-build, vct-mobile-testing |
 
 ---
 

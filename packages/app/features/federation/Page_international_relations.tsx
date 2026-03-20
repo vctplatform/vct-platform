@@ -69,7 +69,7 @@ export function Page_international_relations() {
     useEffect(() => {
         partnersApi.execute('/international/partners');
         eventsApi.execute('/international/events');
-    }, []); // eslint-disable-line react-hooks/exhaustive-deps
+    }, []);  
 
     const partners = partnersApi.data?.partners?.length ? partnersApi.data.partners : FALLBACK_PARTNERS;
     const events = eventsApi.data?.events?.length ? eventsApi.data.events : FALLBACK_EVENTS;

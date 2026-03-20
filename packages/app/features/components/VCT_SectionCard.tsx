@@ -51,7 +51,7 @@ export const VCT_SectionCard = ({
     const resolvedAction = headerAction || action
     return (
         <div
-            className={`rounded-2xl border border-vct-border bg-vct-elevated shadow-[var(--vct-shadow-sm)] transition-all duration-200 ${hover ? 'vct-card-hover cursor-pointer' : ''} ${glow ? 'hover:shadow-[var(--vct-shadow-glow)]' : ''} ${onClick ? 'cursor-pointer' : ''} ${className}`}
+            className={`rounded-2xl border border-vct-border bg-vct-elevated shadow-(--vct-shadow-sm) transition-all duration-200 ${hover ? 'vct-card-hover cursor-pointer' : ''} ${glow ? 'hover:shadow-(--vct-shadow-glow)' : ''} ${onClick ? 'cursor-pointer' : ''} ${className}`}
             style={{
                 ...style,
                 ...(accentColor ? { borderTop: `3px solid ${accentColor}` } : {}),

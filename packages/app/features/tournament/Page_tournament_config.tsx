@@ -52,7 +52,7 @@ export const Page_tournament_config = () => {
     return (
         <VCT_PageContainer size="wide" animated>
             <div className="flex items-center gap-2 text-sm text-vct-text-tertiary mb-6">
-                <span className="hover:text-[var(--vct-accent-cyan)] cursor-pointer">Giải đấu</span>
+                <span className="hover:text-(--vct-accent-cyan) cursor-pointer">Giải đấu</span>
                 <VCT_Icons.Chevron size={14} />
                 <span className="text-vct-text-primary">Cấu hình</span>
             </div>
@@ -81,8 +81,8 @@ export const Page_tournament_config = () => {
             <div className="mb-6"><VCT_Tabs tabs={[{ key: 'general', label: 'Thông tin chung' }, { key: 'categories', label: 'Nội dung thi' }, { key: 'scoring', label: 'Cấu hình chấm điểm' }, { key: 'arenas', label: 'Sàn đấu' }]} activeTab={activeTab} onChange={setActiveTab} /></div>
 
             {activeTab === 'general' && (
-                <div className="bg-[var(--vct-bg-elevated)] border border-[var(--vct-border-strong)] rounded-2xl p-6">
-                    <h3 className="font-bold text-[var(--vct-text-primary)] mb-6">Thông tin chung</h3>
+                <div className="bg-(--vct-bg-elevated) border border-(--vct-border-strong) rounded-2xl p-6">
+                    <h3 className="font-bold text-(--vct-text-primary) mb-6">Thông tin chung</h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <VCT_Field label="Tên giải"><VCT_Input value={g.name} readOnly /></VCT_Field>
                         <VCT_Field label="Địa điểm"><VCT_Input value={g.location} readOnly /></VCT_Field>
@@ -97,12 +97,12 @@ export const Page_tournament_config = () => {
             {activeTab === 'categories' && (
                 <div className="space-y-3">
                     {CONTENT_CATEGORIES.map(cat => (
-                        <div key={cat.id} className="bg-[var(--vct-bg-elevated)] border border-[var(--vct-border-strong)] rounded-2xl p-5 flex items-center justify-between hover:border-[var(--vct-accent-cyan)] transition-colors">
+                        <div key={cat.id} className="bg-(--vct-bg-elevated) border border-(--vct-border-strong) rounded-2xl p-5 flex items-center justify-between hover:border-(--vct-accent-cyan) transition-colors">
                             <div className="flex items-center gap-4">
-                                <div className="w-12 h-12 rounded-xl bg-[var(--vct-accent-cyan)]/10 flex items-center justify-center"><VCT_Icons.Swords size={24} className="text-[var(--vct-accent-cyan)]" /></div>
+                                <div className="w-12 h-12 rounded-xl bg-(--vct-accent-cyan)/10 flex items-center justify-center"><VCT_Icons.Swords size={24} className="text-(--vct-accent-cyan)" /></div>
                                 <div>
-                                    <div className="font-bold text-[var(--vct-text-primary)]">{cat.name}</div>
-                                    <div className="flex items-center gap-3 mt-1 text-[11px] text-[var(--vct-text-tertiary)]">
+                                    <div className="font-bold text-(--vct-text-primary)">{cat.name}</div>
+                                    <div className="flex items-center gap-3 mt-1 text-[11px] text-(--vct-text-tertiary)">
                                         <span>Lứa tuổi: {cat.age_groups.join(', ')}</span>
                                         {cat.weight_classes > 0 && <span>{cat.weight_classes} hạng cân</span>}
                                         <span>{cat.athletes} VĐV</span>
@@ -120,17 +120,17 @@ export const Page_tournament_config = () => {
             )}
 
             {activeTab === 'scoring' && (
-                <div className="bg-[var(--vct-bg-elevated)] border border-[var(--vct-border-strong)] rounded-2xl overflow-hidden">
+                <div className="bg-(--vct-bg-elevated) border border-(--vct-border-strong) rounded-2xl overflow-hidden">
                     <table className="w-full border-collapse">
-                        <thead><tr className="bg-[var(--vct-bg-card)] border-b border-[var(--vct-border-strong)] text-[11px] uppercase tracking-wider text-[var(--vct-text-tertiary)] font-bold">
+                        <thead><tr className="bg-(--vct-bg-card) border-b border-(--vct-border-strong) text-[11px] uppercase tracking-wider text-(--vct-text-tertiary) font-bold">
                             <th className="p-4 text-left">Tham số</th><th className="p-4 text-center">Giá trị</th><th className="p-4 text-left">Áp dụng cho</th><th className="p-4 w-12"></th>
                         </tr></thead>
-                        <tbody className="divide-y divide-[var(--vct-border-subtle)]">{SCORING_RULES.map(r => (
+                        <tbody className="divide-y divide-(--vct-border-subtle)">{SCORING_RULES.map(r => (
                             <tr key={r.key} className="hover:bg-white/5 transition-colors group">
-                                <td className="p-4 font-semibold text-sm text-[var(--vct-text-primary)]">{r.label}</td>
-                                <td className="p-4 text-center font-bold text-[var(--vct-accent-cyan)]">{r.value}</td>
+                                <td className="p-4 font-semibold text-sm text-(--vct-text-primary)">{r.label}</td>
+                                <td className="p-4 text-center font-bold text-(--vct-accent-cyan)">{r.value}</td>
                                 <td className="p-4"><VCT_Badge text={r.type} type={r.type === 'Đối kháng' ? 'error' : 'info'} /></td>
-                                <td className="p-4"><button className="p-1 text-[var(--vct-text-tertiary)] hover:text-white opacity-0 group-hover:opacity-100 transition-all rounded hover:bg-white/10"><VCT_Icons.Edit size={14} /></button></td>
+                                <td className="p-4"><button className="p-1 text-(--vct-text-tertiary) hover:text-white opacity-0 group-hover:opacity-100 transition-all rounded hover:bg-white/10"><VCT_Icons.Edit size={14} /></button></td>
                             </tr>
                         ))}</tbody>
                     </table>
@@ -140,12 +140,12 @@ export const Page_tournament_config = () => {
             {activeTab === 'arenas' && (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {ARENAS.map(a => (
-                        <div key={a.id} className={`bg-[var(--vct-bg-elevated)] border rounded-2xl p-5 transition-colors ${a.status === 'ready' ? 'border-[#10b98140]' : 'border-[#f59e0b40]'}`}>
+                        <div key={a.id} className={`bg-(--vct-bg-elevated) border rounded-2xl p-5 transition-colors ${a.status === 'ready' ? 'border-[#10b98140]' : 'border-[#f59e0b40]'}`}>
                             <div className="flex items-center justify-between mb-3">
-                                <span className="font-bold text-[var(--vct-text-primary)]">{a.name}</span>
+                                <span className="font-bold text-(--vct-text-primary)">{a.name}</span>
                                 <VCT_Badge text={a.status === 'ready' ? 'Sẵn sàng' : 'Bảo trì'} type={a.status === 'ready' ? 'success' : 'warning'} />
                             </div>
-                            <div className="space-y-1 text-[12px] text-[var(--vct-text-secondary)]">
+                            <div className="space-y-1 text-[12px] text-(--vct-text-secondary)">
                                 <div className="flex items-center gap-2"><VCT_Icons.LayoutGrid size={12} /> Kích thước: {a.size}</div>
                                 <div className="flex items-center gap-2"><VCT_Icons.Swords size={12} /> Dành cho: {a.type}</div>
                             </div>

@@ -43,8 +43,8 @@ export const Page_provincial_documents = () => {
         <VCT_PageContainer size="wide" animated>
             <VCT_Toast isVisible={toast.show} message={toast.msg} type={toast.type} onClose={() => setToast(p => ({ ...p, show: false }))} />
             <div className="mb-6">
-                <h1 className="text-2xl font-bold tracking-tight text-[var(--vct-text-primary)]">📄 Văn Bản & Công Văn</h1>
-                <p className="text-sm text-[var(--vct-text-secondary)] mt-1">Quản lý quyết định, công văn, thông báo liên đoàn tỉnh</p>
+                <h1 className="text-2xl font-bold tracking-tight text-(--vct-text-primary)">📄 Văn Bản & Công Văn</h1>
+                <p className="text-sm text-(--vct-text-secondary) mt-1">Quản lý quyết định, công văn, thông báo liên đoàn tỉnh</p>
             </div>
 
             <VCT_StatRow items={[
@@ -65,15 +65,15 @@ export const Page_provincial_documents = () => {
                     {filtered.map(d => {
                         const st = STATUS_MAP[d.status] || { label: d.status, type: 'neutral' }
                         return (
-                            <div key={d.id} className="rounded-2xl border border-[var(--vct-border-subtle)] bg-[var(--vct-bg-glass)] p-4 hover:border-[var(--vct-accent-cyan)] transition-colors">
+                            <div key={d.id} className="rounded-2xl border border-(--vct-border-subtle) bg-(--vct-bg-glass) p-4 hover:border-(--vct-accent-cyan) transition-colors">
                                 <div className="flex items-start justify-between">
                                     <div className="flex-1">
                                         <div className="flex items-center gap-2 mb-1">
                                             <VCT_Badge text={TYPE_MAP[d.type] || d.type} type="info" />
                                             <span className="text-xs font-mono opacity-60">{d.number}</span>
                                         </div>
-                                        <div className="font-semibold text-sm text-[var(--vct-text-primary)]">{d.title}</div>
-                                        <div className="text-xs text-[var(--vct-text-secondary)] mt-1">
+                                        <div className="font-semibold text-sm text-(--vct-text-primary)">{d.title}</div>
+                                        <div className="text-xs text-(--vct-text-secondary) mt-1">
                                             ✍️ {d.author} {d.issued_date && `• 📅 ${d.issued_date}`}
                                         </div>
                                     </div>

@@ -46,8 +46,8 @@ export const Page_provincial_personnel = () => {
         <VCT_PageContainer size="wide" animated>
             <VCT_Toast isVisible={toast.show} message={toast.msg} type={toast.type} onClose={() => setToast(p => ({ ...p, show: false }))} />
             <div className="mb-6">
-                <h1 className="text-2xl font-bold tracking-tight text-[var(--vct-text-primary)]">👥 Ban Chấp Hành</h1>
-                <p className="text-sm text-[var(--vct-text-secondary)] mt-1">Thành viên Ban Chấp hành Liên đoàn tỉnh</p>
+                <h1 className="text-2xl font-bold tracking-tight text-(--vct-text-primary)">👥 Ban Chấp Hành</h1>
+                <p className="text-sm text-(--vct-text-secondary) mt-1">Thành viên Ban Chấp hành Liên đoàn tỉnh</p>
             </div>
 
             <VCT_StatRow items={[
@@ -65,20 +65,20 @@ export const Page_provincial_personnel = () => {
             ) : (
                 <div className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
                     {filtered.map(m => (
-                        <div key={m.id} className="rounded-2xl border border-[var(--vct-border-subtle)] bg-[var(--vct-bg-glass)] p-5 hover:border-[var(--vct-accent-cyan)] transition-colors">
+                        <div key={m.id} className="rounded-2xl border border-(--vct-border-subtle) bg-(--vct-bg-glass) p-5 hover:border-(--vct-accent-cyan) transition-colors">
                             <VCT_Stack direction="row" gap={12} align="center" className="mb-3">
                                 <VCT_AvatarLetter name={m.full_name} size={48} />
                                 <div>
-                                    <div className="font-bold text-sm text-[var(--vct-text-primary)]">{m.full_name}</div>
+                                    <div className="font-bold text-sm text-(--vct-text-primary)">{m.full_name}</div>
                                     <VCT_Badge text={ROLE_MAP[m.role] || m.role} type="info" />
                                 </div>
                             </VCT_Stack>
-                            <div className="space-y-1.5 text-xs text-[var(--vct-text-secondary)]">
+                            <div className="space-y-1.5 text-xs text-(--vct-text-secondary)">
                                 <div><span className="font-semibold opacity-60">Chức danh:</span> {m.title}</div>
                                 <div><span className="font-semibold opacity-60">Nhiệm kỳ:</span> {m.term}</div>
                                 <div><span className="font-semibold opacity-60">QĐ bổ nhiệm:</span> {m.decision_no}</div>
                             </div>
-                            <div className="mt-3 pt-3 border-t border-[var(--vct-border-subtle)]">
+                            <div className="mt-3 pt-3 border-t border-(--vct-border-subtle)">
                                 <VCT_Badge text={m.is_active ? 'Đang hoạt động' : 'Hết nhiệm kỳ'} type={m.is_active ? 'success' : 'neutral'} />
                             </div>
                         </div>

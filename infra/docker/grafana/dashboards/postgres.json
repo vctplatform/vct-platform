@@ -1,0 +1,161 @@
+{
+  "annotations": {
+    "list": []
+  },
+  "description": "VCT Platform — PostgreSQL Database Monitoring",
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 1,
+  "links": [],
+  "panels": [
+    {
+      "title": "Database Size",
+      "type": "stat",
+      "gridPos": { "h": 4, "w": 6, "x": 0, "y": 0 },
+      "targets": [
+        {
+          "expr": "pg_database_size_bytes{datname=\"vct_platform\"}",
+          "legendFormat": "DB Size"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "bytes",
+          "thresholds": {
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "yellow", "value": 536870912 },
+              { "color": "red", "value": 1073741824 }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "title": "Active Connections",
+      "type": "gauge",
+      "gridPos": { "h": 4, "w": 6, "x": 6, "y": 0 },
+      "targets": [
+        {
+          "expr": "pg_stat_activity_count{datname=\"vct_platform\",state=\"active\"}",
+          "legendFormat": "Active"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "max": 100,
+          "thresholds": {
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "yellow", "value": 50 },
+              { "color": "red", "value": 80 }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "title": "Transactions / sec",
+      "type": "stat",
+      "gridPos": { "h": 4, "w": 6, "x": 12, "y": 0 },
+      "targets": [
+        {
+          "expr": "rate(pg_stat_database_xact_commit{datname=\"vct_platform\"}[5m])",
+          "legendFormat": "Commits/s"
+        }
+      ]
+    },
+    {
+      "title": "Cache Hit Ratio",
+      "type": "gauge",
+      "gridPos": { "h": 4, "w": 6, "x": 18, "y": 0 },
+      "targets": [
+        {
+          "expr": "pg_stat_database_blks_hit{datname=\"vct_platform\"} / (pg_stat_database_blks_hit{datname=\"vct_platform\"} + pg_stat_database_blks_read{datname=\"vct_platform\"}) * 100",
+          "legendFormat": "Hit %"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "max": 100,
+          "thresholds": {
+            "steps": [
+              { "color": "red", "value": null },
+              { "color": "yellow", "value": 90 },
+              { "color": "green", "value": 99 }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "title": "Queries per Second",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 4 },
+      "targets": [
+        {
+          "expr": "rate(pg_stat_database_xact_commit{datname=\"vct_platform\"}[5m])",
+          "legendFormat": "Commits"
+        },
+        {
+          "expr": "rate(pg_stat_database_xact_rollback{datname=\"vct_platform\"}[5m])",
+          "legendFormat": "Rollbacks"
+        }
+      ]
+    },
+    {
+      "title": "Connection States",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 4 },
+      "targets": [
+        {
+          "expr": "pg_stat_activity_count{datname=\"vct_platform\",state=\"active\"}",
+          "legendFormat": "Active"
+        },
+        {
+          "expr": "pg_stat_activity_count{datname=\"vct_platform\",state=\"idle\"}",
+          "legendFormat": "Idle"
+        },
+        {
+          "expr": "pg_stat_activity_count{datname=\"vct_platform\",state=\"idle in transaction\"}",
+          "legendFormat": "Idle in TX"
+        }
+      ]
+    },
+    {
+      "title": "Table Rows (Top 10)",
+      "type": "bargauge",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 12 },
+      "targets": [
+        {
+          "expr": "topk(10, pg_stat_user_tables_n_live_tup{schemaname=\"public\"})",
+          "legendFormat": "{{relname}}"
+        }
+      ]
+    },
+    {
+      "title": "Disk I/O",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 12 },
+      "targets": [
+        {
+          "expr": "rate(pg_stat_database_blks_read{datname=\"vct_platform\"}[5m])",
+          "legendFormat": "Blocks Read"
+        },
+        {
+          "expr": "rate(pg_stat_database_blks_hit{datname=\"vct_platform\"}[5m])",
+          "legendFormat": "Cache Hits"
+        }
+      ]
+    }
+  ],
+  "schemaVersion": 39,
+  "tags": ["vct-platform", "postgresql", "database"],
+  "templating": { "list": [] },
+  "time": { "from": "now-1h", "to": "now" },
+  "timepicker": {},
+  "timezone": "Asia/Ho_Chi_Minh",
+  "title": "VCT Platform — PostgreSQL",
+  "uid": "vct-postgres-dashboard"
+}

@@ -37,11 +37,11 @@ export function Page_federation_workflow_config() {
     return (
         <VCT_PageContainer size="wide" animated>
             <div className="mb-6">
-                <h1 className="text-2xl font-bold tracking-tight text-[var(--vct-text-primary)]">
+                <h1 className="text-2xl font-bold tracking-tight text-(--vct-text-primary)">
                     Cấu hình Quy trình
-                    {isLoading && <span className="ml-2 text-sm font-normal text-[var(--vct-accent-cyan)]">Đang tải...</span>}
+                    {isLoading && <span className="ml-2 text-sm font-normal text-(--vct-accent-cyan)">Đang tải...</span>}
                 </h1>
-                <p className="text-sm text-[var(--vct-text-secondary)] mt-1">
+                <p className="text-sm text-(--vct-text-secondary) mt-1">
                     Thiết lập và quản lý quy trình phê duyệt — bước xét duyệt, vai trò, điều kiện.
                 </p>
             </div>
@@ -60,8 +60,8 @@ export function Page_federation_workflow_config() {
                         <div key={w.id}
                             onClick={() => setSelectedId(w.id === selectedId ? null : w.id)}
                             className={`p-4 rounded-2xl border transition-all cursor-pointer ${w.id === selectedId
-                                ? 'border-[var(--vct-accent-cyan)] bg-[var(--vct-bg-elevated)] shadow-lg'
-                                : 'border-[var(--vct-border-subtle)] bg-[var(--vct-bg-glass)] hover:border-[var(--vct-accent-cyan)]'
+                                ? 'border-(--vct-accent-cyan) bg-(--vct-bg-elevated) shadow-lg'
+                                : 'border-(--vct-border-subtle) bg-(--vct-bg-glass) hover:border-(--vct-accent-cyan)'
                             }`}>
                             <VCT_Stack direction="row" justify="space-between" align="center">
                                 <VCT_Stack direction="row" gap={12} align="center">
@@ -70,8 +70,8 @@ export function Page_federation_workflow_config() {
                                         {w.steps?.length || 0}
                                     </div>
                                     <div>
-                                        <div className="font-bold text-sm text-[var(--vct-text-primary)]">{w.name}</div>
-                                        <div className="text-xs text-[var(--vct-text-secondary)]">{w.description}</div>
+                                        <div className="font-bold text-sm text-(--vct-text-primary)">{w.name}</div>
+                                        <div className="text-xs text-(--vct-text-secondary)">{w.description}</div>
                                     </div>
                                 </VCT_Stack>
                                 <VCT_Stack direction="row" gap={8} align="center">
@@ -85,29 +85,29 @@ export function Page_federation_workflow_config() {
                         </div>
                     ))}
                     {workflows.length === 0 && !isLoading && (
-                        <p className="text-sm text-[var(--vct-text-secondary)] text-center py-8">Chưa có quy trình nào.</p>
+                        <p className="text-sm text-(--vct-text-secondary) text-center py-8">Chưa có quy trình nào.</p>
                     )}
                 </div>
 
                 {/* ── Detail Panel ── */}
-                <div className="rounded-2xl border border-[var(--vct-border-subtle)] bg-[var(--vct-bg-glass)] p-5">
-                    <h2 className="text-sm font-bold text-[var(--vct-text-primary)] mb-4 uppercase tracking-wide">📋 Chi tiết Quy trình</h2>
+                <div className="rounded-2xl border border-(--vct-border-subtle) bg-(--vct-bg-glass) p-5">
+                    <h2 className="text-sm font-bold text-(--vct-text-primary) mb-4 uppercase tracking-wide">📋 Chi tiết Quy trình</h2>
                     {selected ? (
                         <div>
-                            <div className="text-lg font-bold text-[var(--vct-text-primary)] mb-2">{selected.name}</div>
-                            <div className="text-xs text-[var(--vct-text-secondary)] mb-4">{selected.description}</div>
-                            <div className="text-xs text-[var(--vct-text-secondary)] mb-4">
-                                Mã: <code className="px-1 py-0.5 rounded bg-[var(--vct-bg-elevated)]">{selected.code}</code>
+                            <div className="text-lg font-bold text-(--vct-text-primary) mb-2">{selected.name}</div>
+                            <div className="text-xs text-(--vct-text-secondary) mb-4">{selected.description}</div>
+                            <div className="text-xs text-(--vct-text-secondary) mb-4">
+                                Mã: <code className="px-1 py-0.5 rounded bg-(--vct-bg-elevated)">{selected.code}</code>
                             </div>
                             <div className="space-y-2 mb-4">
-                                <div className="text-xs font-bold text-[var(--vct-text-primary)] uppercase">Các bước:</div>
+                                <div className="text-xs font-bold text-(--vct-text-primary) uppercase">Các bước:</div>
                                 {(selected.steps || []).map((step, i) => (
-                                    <div key={i} className="flex items-center gap-3 p-2 rounded-lg bg-[var(--vct-bg-elevated)]">
-                                        <div className="w-6 h-6 rounded-full bg-[var(--vct-accent-cyan)] text-white text-xs font-bold flex items-center justify-center">{step.order || i + 1}</div>
+                                    <div key={i} className="flex items-center gap-3 p-2 rounded-lg bg-(--vct-bg-elevated)">
+                                        <div className="w-6 h-6 rounded-full bg-(--vct-accent-cyan) text-white text-xs font-bold flex items-center justify-center">{step.order || i + 1}</div>
                                         <div className="flex-1">
-                                            <span className="text-sm text-[var(--vct-text-primary)]">{step.name}</span>
+                                            <span className="text-sm text-(--vct-text-primary)">{step.name}</span>
                                             {step.role_code && (
-                                                <span className="ml-2 text-xs px-1.5 py-0.5 rounded bg-[var(--vct-bg-glass)] text-[var(--vct-text-secondary)]">{step.role_code}</span>
+                                                <span className="ml-2 text-xs px-1.5 py-0.5 rounded bg-(--vct-bg-glass) text-(--vct-text-secondary)">{step.role_code}</span>
                                             )}
                                         </div>
                                         {step.auto_approve && <VCT_Badge text="Tự động" type="info" />}
@@ -118,7 +118,7 @@ export function Page_federation_workflow_config() {
                     ) : (
                         <div className="text-center py-8">
                             <div className="text-3xl mb-3">⚙️</div>
-                            <div className="text-sm text-[var(--vct-text-secondary)]">Chọn quy trình để xem chi tiết</div>
+                            <div className="text-sm text-(--vct-text-secondary)">Chọn quy trình để xem chi tiết</div>
                         </div>
                     )}
                 </div>

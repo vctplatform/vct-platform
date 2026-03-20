@@ -113,7 +113,7 @@ export const Page_referees = () => {
                         </thead>
                         <tbody className="divide-y divide-vct-border">
                             {filtered.map(ref => (
-                                <tr key={ref.id} className="hover:bg-vct-accent/[0.03] transition-colors cursor-pointer group">
+                                <tr key={ref.id} className="hover:bg-vct-accent/3 transition-colors cursor-pointer group">
                                     <td className="p-4">
                                         <VCT_Stack direction="row" gap={10} align="center">
                                             <VCT_AvatarLetter name={ref.name} size={36} />

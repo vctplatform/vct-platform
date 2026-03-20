@@ -1,0 +1,62 @@
+# ════════════════════════════════════════
+# VCT Platform — Staging Configuration
+# Mirrors production with relaxed monitoring
+# ════════════════════════════════════════
+
+env: staging
+version: "${BUILD_VERSION}"
+
+server:
+  addr: ":18080"
+  read_timeout: 15s
+  write_timeout: 15s
+  idle_timeout: 60s
+  shutdown_timeout: 30s
+  cors_origins:
+    - "https://staging.vct-platform.com"
+    - "https://staging-admin.vct-platform.com"
+
+database:
+  url: "${VCT_POSTGRES_URL}"
+  max_open_conns: 15
+  max_idle_conns: 5
+  conn_max_lifetime: 30m
+  auto_migrate: false
+
+redis:
+  addr: "${VCT_REDIS_ADDR}"
+  password: "${VCT_REDIS_PASSWORD}"
+  db: 0
+  pool_size: 10
+
+auth:
+  jwt_secret: "${VCT_JWT_SECRET}"
+  token_expiry: 4h
+  refresh_expiry: 168h  # 7 days
+  bcrypt_cost: 12
+
+nats:
+  url: "${VCT_NATS_URL}"
+
+storage:
+  driver: s3
+  endpoint: "${VCT_STORAGE_ENDPOINT}"
+  bucket: vct-staging-uploads
+  region: ap-southeast-1
+
+otel:
+  enabled: true
+  endpoint: "${VCT_OTEL_ENDPOINT}"
+  service_name: vct-api-staging
+  sample_rate: 0.5  # sample 50% in staging
+
+logging:
+  level: info
+  format: json
+
+limits:
+  rate_anonymous: 10
+  rate_user: 40
+  rate_admin: 200
+  max_body_size: 2097152    # 2MB
+  max_upload_size: 20971520 # 20MB

@@ -28,8 +28,8 @@ export const Page_provincial_dashboard = () => {
     return (
         <VCT_PageContainer size="wide" animated>
             <div className="mb-6">
-                <h1 className="text-2xl font-bold tracking-tight text-[var(--vct-text-primary)]">Bảng điều khiển — LĐ Tỉnh/TP</h1>
-                <p className="text-sm text-[var(--vct-text-secondary)] mt-1">Tổng quan hoạt động Liên đoàn Võ cổ truyền địa phương.</p>
+                <h1 className="text-2xl font-bold tracking-tight text-(--vct-text-primary)">Bảng điều khiển — LĐ Tỉnh/TP</h1>
+                <p className="text-sm text-(--vct-text-secondary) mt-1">Tổng quan hoạt động Liên đoàn Võ cổ truyền địa phương.</p>
             </div>
 
             <VCT_StatRow items={[
@@ -41,27 +41,27 @@ export const Page_provincial_dashboard = () => {
 
             <div className="grid gap-6 grid-cols-1 lg:grid-cols-2">
                 {/* Quick Actions */}
-                <div className="rounded-2xl border border-[var(--vct-border-subtle)] bg-[var(--vct-bg-card)] p-5">
-                    <h2 className="font-bold text-sm text-[var(--vct-text-primary)] mb-4">Thao tác nhanh</h2>
+                <div className="rounded-2xl border border-(--vct-border-subtle) bg-(--vct-bg-card) p-5">
+                    <h2 className="font-bold text-sm text-(--vct-text-primary) mb-4">Thao tác nhanh</h2>
                     <div className="grid grid-cols-2 gap-3">
                         {QUICK_ACTIONS.map(a => (
-                            <button key={a.label} className="flex items-center gap-3 p-3 rounded-xl border border-[var(--vct-border-subtle)] bg-[var(--vct-bg-glass)] hover:border-[var(--vct-accent-cyan)] transition-colors cursor-pointer text-left">
+                            <button key={a.label} className="flex items-center gap-3 p-3 rounded-xl border border-(--vct-border-subtle) bg-(--vct-bg-glass) hover:border-(--vct-accent-cyan) transition-colors cursor-pointer text-left">
                                 <span className="text-2xl">{a.icon}</span>
-                                <span className="text-sm font-bold text-[var(--vct-text-primary)]">{a.label}</span>
+                                <span className="text-sm font-bold text-(--vct-text-primary)">{a.label}</span>
                             </button>
                         ))}
                     </div>
                 </div>
 
                 {/* Recent Activity */}
-                <div className="rounded-2xl border border-[var(--vct-border-subtle)] bg-[var(--vct-bg-card)] p-5">
-                    <h2 className="font-bold text-sm text-[var(--vct-text-primary)] mb-4">Hoạt động gần đây</h2>
+                <div className="rounded-2xl border border-(--vct-border-subtle) bg-(--vct-bg-card) p-5">
+                    <h2 className="font-bold text-sm text-(--vct-text-primary) mb-4">Hoạt động gần đây</h2>
                     <div className="space-y-3">
                         {RECENT_ACTIVITIES.map(a => (
-                            <div key={a.id} className="flex items-start gap-3 p-3 rounded-xl bg-[var(--vct-bg-glass)]">
+                            <div key={a.id} className="flex items-start gap-3 p-3 rounded-xl bg-(--vct-bg-glass)">
                                 <div className="w-2 h-2 rounded-full mt-1.5 flex-shrink-0" style={{ background: a.type === 'success' ? '#10b981' : a.type === 'warning' ? '#f59e0b' : '#0ea5e9' }} />
                                 <div>
-                                    <div className="text-sm text-[var(--vct-text-primary)]">{a.text}</div>
+                                    <div className="text-sm text-(--vct-text-primary)">{a.text}</div>
                                     <div className="text-xs opacity-50 mt-0.5">{a.time}</div>
                                 </div>
                             </div>

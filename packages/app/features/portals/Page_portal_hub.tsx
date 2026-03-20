@@ -336,7 +336,7 @@ export function Page_portal_hub() {
                         type="button"
                         onClick={toggleTheme}
                         title={theme === 'dark' ? 'Chuyển sang sáng' : 'Chuyển sang tối'}
-                        className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-vct-border transition-all duration-200 hover:border-vct-accent hover:shadow-[var(--vct-shadow-glow)]" style={{ background: 'var(--vct-bg-elevated)' }}
+                        className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-vct-border transition-all duration-200 hover:border-vct-accent hover:shadow-(--vct-shadow-glow)" style={{ background: 'var(--vct-bg-elevated)' }}
                     >
                         {theme === 'dark'
                             ? <VCT_Icons.Sun size={18} className="text-amber-400" />
@@ -370,7 +370,7 @@ export function Page_portal_hub() {
                             key={f.value}
                             onClick={() => setFilter(f.value)}
                             className={`rounded-full px-5 py-2 text-[13px] font-medium transition-all ${filter === f.value
-                                ? 'border border-vct-accent bg-vct-accent text-white shadow-[var(--vct-shadow-glow)]'
+                                ? 'border border-vct-accent bg-vct-accent text-white shadow-(--vct-shadow-glow)'
                                 : 'border border-vct-border bg-transparent text-vct-text-muted hover:border-vct-border-strong hover:text-vct-text-secondary'
                                 }`}
                         >

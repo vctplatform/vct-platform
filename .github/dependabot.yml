@@ -28,6 +28,17 @@ updates:
           - "react*"
           - "@types/react*"
           - "next*"
+      expo-ecosystem:
+        patterns:
+          - "expo*"
+          - "@expo/*"
+          - "react-native*"
+          - "@react-native/*"
+          - "@react-native-community/*"
+          - "react-native-reanimated"
+          - "react-native-gesture-handler"
+          - "react-native-screens"
+          - "react-native-safe-area-context"
       dev-dependencies:
         dependency-type: "development"
         update-types:

@@ -72,7 +72,7 @@ export const Page_community = () => {
             <VCT_StatRow items={kpis} className="mb-8" />
 
             {(clubsLoading || eventsLoading) && (
-                <div className="text-center py-8 text-[var(--vct-text-tertiary)] text-sm animate-pulse">
+                <div className="text-center py-8 text-(--vct-text-tertiary) text-sm animate-pulse">
                     Đang tải dữ liệu cộng đồng...
                 </div>
             )}
@@ -85,26 +85,26 @@ export const Page_community = () => {
                     </div>
 
                     {posts.filter(p => !search || p.content.toLowerCase().includes(search.toLowerCase()) || p.author.toLowerCase().includes(search.toLowerCase())).map(post => (
-                        <div key={post.id} className="bg-[var(--vct-bg-elevated)] border border-[var(--vct-border-strong)] rounded-2xl p-5 hover:border-[var(--vct-accent-cyan)] transition-all">
+                        <div key={post.id} className="bg-(--vct-bg-elevated) border border-(--vct-border-strong) rounded-2xl p-5 hover:border-(--vct-accent-cyan) transition-all">
                             <div className="flex items-start gap-3 mb-3">
-                                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[var(--vct-accent-cyan)] to-[#0ea5e9] flex items-center justify-center font-bold text-white text-sm shrink-0">
+                                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-(--vct-accent-cyan) to-[#0ea5e9] flex items-center justify-center font-bold text-white text-sm shrink-0">
                                     {post.avatar}
                                 </div>
                                 <div className="flex-1">
                                     <div className="flex items-center gap-2">
-                                        <span className="font-bold text-sm text-[var(--vct-text-primary)]">{post.author}</span>
+                                        <span className="font-bold text-sm text-(--vct-text-primary)">{post.author}</span>
                                         {post.type === 'announcement' && <VCT_Badge type="info" text="Thông báo" />}
                                         {post.type === 'achievement' && <VCT_Badge type="success" text="Thành tích" />}
                                     </div>
-                                    <div className="text-[11px] text-[var(--vct-text-tertiary)]">{post.time}</div>
+                                    <div className="text-[11px] text-(--vct-text-tertiary)">{post.time}</div>
                                 </div>
                             </div>
-                            <p className="text-sm text-[var(--vct-text-secondary)] leading-relaxed mb-4">{post.content}</p>
-                            <div className="flex items-center gap-6 text-[var(--vct-text-tertiary)] text-xs">
+                            <p className="text-sm text-(--vct-text-secondary) leading-relaxed mb-4">{post.content}</p>
+                            <div className="flex items-center gap-6 text-(--vct-text-tertiary) text-xs">
                                 <button className="flex items-center gap-1.5 hover:text-[#ef4444] transition-colors">
                                     <VCT_Icons.Heart size={14} /> {post.likes}
                                 </button>
-                                <button className="flex items-center gap-1.5 hover:text-[var(--vct-accent-cyan)] transition-colors">
+                                <button className="flex items-center gap-1.5 hover:text-(--vct-accent-cyan) transition-colors">
                                     <VCT_Icons.FileText size={14} /> {post.comments} bình luận
                                 </button>
                             </div>
@@ -115,15 +115,15 @@ export const Page_community = () => {
                 {/* ── SIDEBAR ── */}
                 <div className="space-y-6">
                     {/* Events */}
-                    <div className="bg-[var(--vct-bg-elevated)] border border-[var(--vct-border-strong)] rounded-2xl p-5">
-                        <h3 className="font-bold text-[var(--vct-text-primary)] mb-4 flex items-center gap-2">
-                            <VCT_Icons.Calendar size={18} className="text-[var(--vct-accent-cyan)]" /> Sự kiện sắp tới
+                    <div className="bg-(--vct-bg-elevated) border border-(--vct-border-strong) rounded-2xl p-5">
+                        <h3 className="font-bold text-(--vct-text-primary) mb-4 flex items-center gap-2">
+                            <VCT_Icons.Calendar size={18} className="text-(--vct-accent-cyan)" /> Sự kiện sắp tới
                         </h3>
                         <div className="space-y-3">
                             {eventsDisplay.map(ev => (
-                                <div key={ev.id} className="p-3 bg-[var(--vct-bg-base)] rounded-xl border border-[var(--vct-border-subtle)] hover:border-[var(--vct-accent-cyan)] transition-colors cursor-pointer">
-                                    <div className="font-semibold text-sm text-[var(--vct-text-primary)] line-clamp-1">{ev.title}</div>
-                                    <div className="flex items-center gap-3 mt-1.5 text-[11px] text-[var(--vct-text-tertiary)]">
+                                <div key={ev.id} className="p-3 bg-(--vct-bg-base) rounded-xl border border-(--vct-border-subtle) hover:border-(--vct-accent-cyan) transition-colors cursor-pointer">
+                                    <div className="font-semibold text-sm text-(--vct-text-primary) line-clamp-1">{ev.title}</div>
+                                    <div className="flex items-center gap-3 mt-1.5 text-[11px] text-(--vct-text-tertiary)">
                                         <span className="flex items-center gap-1"><VCT_Icons.Calendar size={10} /> {ev.date}</span>
                                         <span className="flex items-center gap-1"><VCT_Icons.MapPin size={10} /> {ev.location}</span>
                                     </div>
@@ -133,14 +133,14 @@ export const Page_community = () => {
                     </div>
 
                     {/* Quick Links */}
-                    <div className="bg-[var(--vct-bg-elevated)] border border-[var(--vct-border-strong)] rounded-2xl p-5">
-                        <h3 className="font-bold text-[var(--vct-text-primary)] mb-4 flex items-center gap-2">
+                    <div className="bg-(--vct-bg-elevated) border border-(--vct-border-strong) rounded-2xl p-5">
+                        <h3 className="font-bold text-(--vct-text-primary) mb-4 flex items-center gap-2">
                             <VCT_Icons.Flag size={18} className="text-[#f59e0b]" /> Nổi bật
                         </h3>
                         <div className="space-y-2 text-sm">
-                            <div className="p-2 rounded-lg hover:bg-white/5 cursor-pointer text-[var(--vct-text-secondary)] transition-colors">📸 Album ảnh Giải Trẻ 2024</div>
-                            <div className="p-2 rounded-lg hover:bg-white/5 cursor-pointer text-[var(--vct-text-secondary)] transition-colors">🎥 Video highlight tháng 3</div>
-                            <div className="p-2 rounded-lg hover:bg-white/5 cursor-pointer text-[var(--vct-text-secondary)] transition-colors">📋 Tài liệu huấn luyện mới</div>
+                            <div className="p-2 rounded-lg hover:bg-white/5 cursor-pointer text-(--vct-text-secondary) transition-colors">📸 Album ảnh Giải Trẻ 2024</div>
+                            <div className="p-2 rounded-lg hover:bg-white/5 cursor-pointer text-(--vct-text-secondary) transition-colors">🎥 Video highlight tháng 3</div>
+                            <div className="p-2 rounded-lg hover:bg-white/5 cursor-pointer text-(--vct-text-secondary) transition-colors">📋 Tài liệu huấn luyện mới</div>
                         </div>
                     </div>
                 </div>

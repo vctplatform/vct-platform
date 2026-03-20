@@ -111,10 +111,10 @@ export const Page_provincial_dashboard = () => {
             <VCT_Toast isVisible={toast.show} message={toast.msg} type={toast.type} onClose={() => setToast(prev => ({ ...prev, show: false }))} />
 
             <div className="mb-6">
-                <h1 className="text-2xl font-bold tracking-tight text-[var(--vct-text-primary)]">
+                <h1 className="text-2xl font-bold tracking-tight text-(--vct-text-primary)">
                     🏛️ Liên đoàn VCT TP. Hồ Chí Minh
                 </h1>
-                <p className="text-sm text-[var(--vct-text-secondary)] mt-1">
+                <p className="text-sm text-(--vct-text-secondary) mt-1">
                     Tổng quan hoạt động liên đoàn cấp tỉnh/thành phố
                 </p>
             </div>
@@ -128,10 +128,10 @@ export const Page_provincial_dashboard = () => {
                     <VCT_Stack direction="row" gap={24} align="center">
                         <VCT_Icons.Alert size={20} color="#f59e0b" />
                         <VCT_Stack gap={4}>
-                            <span className="text-sm font-semibold text-[var(--vct-text-primary)]">
+                            <span className="text-sm font-semibold text-(--vct-text-primary)">
                                 Cần xử lý
                             </span>
-                            <span className="text-xs text-[var(--vct-text-secondary)]">
+                            <span className="text-xs text-(--vct-text-secondary)">
                                 {stats.pending_clubs > 0 && `${stats.pending_clubs} CLB chờ duyệt`}
                                 {stats.pending_clubs > 0 && stats.pending_transfers > 0 && ' • '}
                                 {stats.pending_transfers > 0 && `${stats.pending_transfers} yêu cầu chuyển CLB`}
@@ -143,7 +143,7 @@ export const Page_provincial_dashboard = () => {
 
             {/* ── Club Summary Table ── */}
             <div className="mb-2 flex items-center justify-between">
-                <h2 className="text-lg font-bold text-[var(--vct-text-primary)]">
+                <h2 className="text-lg font-bold text-(--vct-text-primary)">
                     Danh sách CLB
                 </h2>
                 <VCT_Badge text={`${clubs.length} CLB`} type="info" />
@@ -156,10 +156,10 @@ export const Page_provincial_dashboard = () => {
                     icon="🏠"
                 />
             ) : (
-                <div className="overflow-hidden rounded-2xl border border-[var(--vct-border-subtle)] bg-[var(--vct-bg-glass)]">
+                <div className="overflow-hidden rounded-2xl border border-(--vct-border-subtle) bg-(--vct-bg-glass)">
                     <table className="w-full border-collapse">
                         <thead>
-                            <tr className="border-b border-[var(--vct-border-strong)] bg-[var(--vct-bg-card)]">
+                            <tr className="border-b border-(--vct-border-strong) bg-(--vct-bg-card)">
                                 {['CLB', 'Quận/Huyện', 'Trưởng CLB', 'VĐV', 'HLV', 'Trạng thái'].map(h => (
                                     <th key={h} className="px-4 py-3 text-left text-xs font-bold uppercase opacity-50">{h}</th>
                                 ))}
@@ -169,7 +169,7 @@ export const Page_provincial_dashboard = () => {
                             {clubs.map((c, i) => {
                                 const st = STATUS_MAP[c.status] || { label: c.status, type: 'neutral' }
                                 return (
-                                    <tr key={c.id} className="border-b border-[var(--vct-border-subtle)] hover:bg-[var(--vct-bg-hover)] transition-colors">
+                                    <tr key={c.id} className="border-b border-(--vct-border-subtle) hover:bg-(--vct-bg-hover) transition-colors">
                                         <td className="px-4 py-3">
                                             <div className="font-semibold text-sm">{c.name}</div>
                                             <div className="text-xs opacity-50">{c.short_name}</div>

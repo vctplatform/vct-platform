@@ -1,0 +1,203 @@
+# ════════════════════════════════════════
+# VCT Platform — Network Policies
+# Zero-trust: deny all, then allow explicitly
+# ════════════════════════════════════════
+
+# ── Default Deny All ──────────────────────
+# Blocks all ingress and egress unless whitelisted
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: default-deny-all
+  namespace: vct-production
+spec:
+  podSelector: {}
+  policyTypes:
+    - Ingress
+    - Egress
+---
+# ── API Backend ───────────────────────────
+# Ingress: from Nginx ingress + internal services
+# Egress: to PostgreSQL, Redis, NATS, DNS
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-api
+  namespace: vct-production
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: vct-api
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    # From Nginx ingress controller
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: ingress-nginx
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/name: ingress-nginx
+      ports:
+        - port: 18080
+          protocol: TCP
+    # From other VCT services (internal)
+    - from:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/part-of: vct-platform
+      ports:
+        - port: 18080
+          protocol: TCP
+  egress:
+    # PostgreSQL
+    - to:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/name: postgresql
+      ports:
+        - port: 5432
+          protocol: TCP
+    # Redis
+    - to:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/name: redis
+      ports:
+        - port: 6379
+          protocol: TCP
+    # NATS
+    - to:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/name: nats
+      ports:
+        - port: 4222
+          protocol: TCP
+    # DNS resolution
+    - to: []
+      ports:
+        - port: 53
+          protocol: UDP
+        - port: 53
+          protocol: TCP
+    # OTel Collector
+    - to:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/name: otel-collector
+      ports:
+        - port: 4317
+          protocol: TCP
+---
+# ── PostgreSQL ────────────────────────────
+# Ingress: only from API backend
+# Egress: DNS only (no external access)
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-postgresql
+  namespace: vct-production
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: postgresql
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/name: vct-api
+      ports:
+        - port: 5432
+          protocol: TCP
+  egress:
+    # DNS only
+    - to: []
+      ports:
+        - port: 53
+          protocol: UDP
+---
+# ── Redis ─────────────────────────────────
+# Ingress: only from API backend
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-redis
+  namespace: vct-production
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: redis
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/name: vct-api
+      ports:
+        - port: 6379
+          protocol: TCP
+  egress:
+    - to: []
+      ports:
+        - port: 53
+          protocol: UDP
+---
+# ── NATS ──────────────────────────────────
+# Ingress: only from API backend
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-nats
+  namespace: vct-production
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: nats
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/name: vct-api
+      ports:
+        - port: 4222
+          protocol: TCP
+  egress:
+    - to: []
+      ports:
+        - port: 53
+          protocol: UDP
+---
+# ── Monitoring ────────────────────────────
+# Prometheus can scrape all VCT pods on /metrics
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-monitoring
+  namespace: vct-production
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/part-of: vct-platform
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: monitoring
+      ports:
+        - port: 9090
+          protocol: TCP
+        - port: 18080
+          protocol: TCP

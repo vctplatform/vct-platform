@@ -1,13 +1,13 @@
 'use client';
 import * as React from 'react';
-import { useState, useMemo, useRef, useCallback } from 'react';
+import { useState, useMemo, useRef, useCallback, useEffect } from 'react';
 import {
     VCT_Button, VCT_Text, VCT_Stack, VCT_Badge, VCT_Toast,
 } from '../components/vct-ui';
 import { VCT_PageContainer, VCT_StatRow } from '../components/vct-ui';
 import type { StatItem } from '../components/VCT_StatRow';
 import { VCT_Icons } from '../components/vct-icons';
-import { HANG_CANS, NOI_DUNG_QUYENS } from '../data/mock-data';
+import { useHangCans, useNoiDungQuyens } from '../hooks/useTournamentAPI';
 import { repositories, useEntityCollection } from '../data/repository';
 import { useRouteActionGuard } from '../hooks/use-route-action-guard';
 
@@ -25,22 +25,37 @@ import type { BracketMatch, SchemaSize } from './bracket';
 // ════════════════════════════════════════════════════════════════
 // CONTENT OPTIONS
 // ════════════════════════════════════════════════════════════════
-const NOI_DUNG_OPTIONS = [
-    ...HANG_CANS.map(dk => ({
-        value: `dk_${dk.id}`,
-        label: `ĐK ${dk.gioi === 'nam' ? 'Nam' : 'Nữ'} ${dk.can_den ? `${dk.can_tu}-${dk.can_den}kg` : `>${dk.can_tu}kg`}`,
-    })),
-    ...NOI_DUNG_QUYENS
-        .filter(q => q.hinh_thuc_thi_dau === 'dau_loai_ban_ket')
-        .map(q => ({ value: `q_${q.id}`, label: `Quyền: ${q.ten}` })),
-];
+
 
 // ════════════════════════════════════════════════════════════════
 // MAIN PAGE COMPONENT
 // ════════════════════════════════════════════════════════════════
 export const Page_bracket = () => {
+    const { data: hangCans } = useHangCans();
+    const { data: noiDungQuyens } = useNoiDungQuyens();
+
+    const noiDungOptions = useMemo(() => {
+        const hc = hangCans || [];
+        const nq = noiDungQuyens || [];
+        return [
+            ...hc.map(dk => ({
+                value: `dk_${dk.id}`,
+                label: `ĐK ${dk.gioi === 'nam' ? 'Nam' : 'Nữ'} ${dk.can_den ? `${dk.can_tu}-${dk.can_den}kg` : `>${dk.can_tu}kg`}`,
+            })),
+            ...nq
+                .filter(q => q.hinh_thuc_thi_dau === 'dau_loai_ban_ket')
+                .map(q => ({ value: `q_${q.id}`, label: `Quyền: ${q.ten}` })),
+        ];
+    }, [hangCans, noiDungQuyens]);
+
     const combatStore = useEntityCollection(repositories.combatMatches.mock);
-    const [selectedND, setSelectedND] = useState(NOI_DUNG_OPTIONS[0]?.value ?? '');
+    const [selectedND, setSelectedND] = useState('');
+
+    useEffect(() => {
+        if (!selectedND && noiDungOptions.length > 0) {
+            setSelectedND(noiDungOptions[0]?.value || '');
+        }
+    }, [noiDungOptions, selectedND]);
     const [selectedSchema, setSelectedSchema] = useState<number>(8);
     const [zoom, setZoom] = useState(1);
     const [pan, setPan] = useState({ x: 0, y: 0 });
@@ -166,7 +181,7 @@ export const Page_bracket = () => {
             <BracketToolbar
                 selectedND={selectedND}
                 onNDChange={setSelectedND}
-                contentOptions={NOI_DUNG_OPTIONS}
+                contentOptions={noiDungOptions}
                 selectedSchema={selectedSchema as SchemaSize}
                 onSchemaChange={handleSchemaChange}
                 canUpdate={permissions.canUpdate}

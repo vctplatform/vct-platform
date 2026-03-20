@@ -46,7 +46,7 @@ function useAsyncData<T>(fetcher: () => Promise<T>, deps: unknown[] = []) {
       .then(setData)
       .catch((e: unknown) => setError(e instanceof Error ? e.message : 'Có lỗi xảy ra'))
       .finally(() => setIsLoading(false))
-  }, deps) // eslint-disable-line react-hooks/exhaustive-deps
+  }, deps)  
 
   useEffect(() => { refetch() }, [refetch])
 

@@ -284,7 +284,7 @@ export const Page_club_tournaments = () => {
         render: (row: ClubTournament) => (
           <div>
             <div className="text-sm font-semibold">{row.name}</div>
-            <div className="text-xs text-[var(--vct-text-secondary)]">
+            <div className="text-xs text-(--vct-text-secondary)">
               {row.location}
             </div>
           </div>
@@ -294,7 +294,7 @@ export const Page_club_tournaments = () => {
         key: 'period',
         label: 'Thoi gian',
         render: (row: ClubTournament) => (
-          <div className="text-xs text-[var(--vct-text-secondary)]">
+          <div className="text-xs text-(--vct-text-secondary)">
             <div>{row.startDate}</div>
             <div>{row.endDate}</div>
           </div>
@@ -318,7 +318,7 @@ export const Page_club_tournaments = () => {
         key: 'medals',
         label: 'Huy chuong',
         render: (row: ClubTournament) => (
-          <span className="text-xs text-[var(--vct-text-secondary)]">
+          <span className="text-xs text-(--vct-text-secondary)">
             🥇{row.medals.gold} • 🥈{row.medals.silver} • 🥉{row.medals.bronze}
           </span>
         ),
@@ -368,7 +368,7 @@ export const Page_club_tournaments = () => {
               <button
                 type="button"
                 onClick={() => openEditModal(row)}
-                className="rounded-md bg-[var(--vct-bg-input)] px-2 py-1 text-xs font-semibold"
+                className="rounded-md bg-(--vct-bg-input) px-2 py-1 text-xs font-semibold"
               >
                 Sua
               </button>
@@ -458,10 +458,10 @@ export const Page_club_tournaments = () => {
       />
 
       <div className="mb-6">
-        <h1 className="text-2xl font-bold tracking-tight text-[var(--vct-text-primary)]">
+        <h1 className="text-2xl font-bold tracking-tight text-(--vct-text-primary)">
           Quan ly giai dau CLB
         </h1>
-        <p className="mt-1 text-sm text-[var(--vct-text-secondary)]">
+        <p className="mt-1 text-sm text-(--vct-text-secondary)">
           Theo doi cac giai tham gia, dang ky VDV va tong ket huy chuong.
         </p>
       </div>
@@ -535,7 +535,7 @@ export const Page_club_tournaments = () => {
           onAction={can('create') ? openCreateModal : undefined}
         />
       ) : (
-        <div className="rounded-2xl border border-[var(--vct-border-subtle)] bg-[var(--vct-bg-glass)] p-2">
+        <div className="rounded-2xl border border-(--vct-border-subtle) bg-(--vct-bg-glass) p-2">
           <VCT_Table columns={columns} data={filteredTournaments} rowKey="id" />
         </div>
       )}

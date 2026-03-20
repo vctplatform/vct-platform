@@ -85,11 +85,11 @@ export function Page_federation_personnel() {
     return (
         <VCT_PageContainer size="wide" animated>
             <div className="mb-6">
-                <h1 className="text-2xl font-bold tracking-tight text-[var(--vct-text-primary)]">
+                <h1 className="text-2xl font-bold tracking-tight text-(--vct-text-primary)">
                     Nhân sự Ban chấp hành
-                    {isLoading && <span className="ml-2 text-sm font-normal text-[var(--vct-accent-cyan)]">Đang tải...</span>}
+                    {isLoading && <span className="ml-2 text-sm font-normal text-(--vct-accent-cyan)">Đang tải...</span>}
                 </h1>
-                <p className="text-sm text-[var(--vct-text-secondary)] mt-1">
+                <p className="text-sm text-(--vct-text-secondary) mt-1">
                     Quản lý nhân sự BCH liên đoàn — bổ nhiệm, nhiệm kỳ, phân công chức vụ.
                 </p>
             </div>
@@ -106,7 +106,7 @@ export function Page_federation_personnel() {
                     <VCT_SearchInput value={search} onChange={setSearch} onClear={() => setSearch('')} placeholder="Tìm nhân sự..." />
                 </div>
                 <select value={unitFilter} onChange={(e) => setUnitFilter(e.target.value)}
-                    className="bg-[var(--vct-bg-elevated)] border border-[var(--vct-border-subtle)] text-[var(--vct-text-primary)] text-sm rounded-lg px-3 py-2 outline-none focus:border-[var(--vct-accent-cyan)]">
+                    className="bg-(--vct-bg-elevated) border border-(--vct-border-subtle) text-(--vct-text-primary) text-sm rounded-lg px-3 py-2 outline-none focus:border-(--vct-accent-cyan)">
                     <option value="">Tất cả đơn vị</option>
                     {units.map(u => <option key={u as string} value={u as string}>{u as string}</option>)}
                 </select>
@@ -124,17 +124,17 @@ export function Page_federation_personnel() {
                     {filtered.map((p: PersonnelAssignment) => {
                         const displayName = p.user_name || (p as unknown as Record<string, string>).name || 'N/A'
                         return (
-                            <div key={p.id} className="flex items-center gap-4 p-4 rounded-2xl border border-[var(--vct-border-subtle)] bg-[var(--vct-bg-glass)] hover:border-[var(--vct-accent-cyan)] transition-colors cursor-pointer">
+                            <div key={p.id} className="flex items-center gap-4 p-4 rounded-2xl border border-(--vct-border-subtle) bg-(--vct-bg-glass) hover:border-(--vct-accent-cyan) transition-colors cursor-pointer">
                                 <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#8b5cf6] to-[#6d28d9] flex items-center justify-center text-white font-bold text-sm">
                                     {displayName.split(' ').map((w: string) => w[0]).slice(-2).join('')}
                                 </div>
                                 <div className="flex-1 min-w-0">
-                                    <div className="font-bold text-sm text-[var(--vct-text-primary)]">{displayName}</div>
-                                    <div className="text-xs text-[var(--vct-text-secondary)]">{p.position} — {p.unit_name}</div>
+                                    <div className="font-bold text-sm text-(--vct-text-primary)">{displayName}</div>
+                                    <div className="text-xs text-(--vct-text-secondary)">{p.position} — {p.unit_name}</div>
                                 </div>
                                 <VCT_Badge text={ROLE_LABELS[p.role_code]?.label || p.role_code} type={ROLE_LABELS[p.role_code]?.type || 'neutral'} />
                                 <VCT_Badge text={p.is_active ? 'Đang nhiệm' : 'Hết NK'} type={p.is_active ? 'success' : 'neutral'} />
-                                <span className="text-xs text-[var(--vct-text-secondary)] hidden sm:block">{p.start_date}</span>
+                                <span className="text-xs text-(--vct-text-secondary) hidden sm:block">{p.start_date}</span>
                             </div>
                         )
                     })}
@@ -142,8 +142,8 @@ export function Page_federation_personnel() {
             )}
             
             {/* Audit Trails */}
-            <div className="rounded-2xl border border-[var(--vct-border-subtle)] bg-[var(--vct-bg-glass)] p-5 mt-6">
-                <h3 className="text-sm font-bold text-[var(--vct-text-primary)] mb-4">📜 Lịch sử thay đổi nhân sự (Audit Trails)</h3>
+            <div className="rounded-2xl border border-(--vct-border-subtle) bg-(--vct-bg-glass) p-5 mt-6">
+                <h3 className="text-sm font-bold text-(--vct-text-primary) mb-4">📜 Lịch sử thay đổi nhân sự (Audit Trails)</h3>
                 <VCT_Timeline events={PERSONNEL_AUDIT_LOGS} />
             </div>
         </VCT_PageContainer>

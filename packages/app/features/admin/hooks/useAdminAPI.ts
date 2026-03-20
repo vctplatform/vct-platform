@@ -126,7 +126,7 @@ export function useAdminFetch<T>(
         mountedRef.current = true
         if (immediate) fetchData()
         return () => { mountedRef.current = false }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
+         
     }, [fetchData, ...deps])
 
     const mutate = useCallback(async (opts: MutateOptions): Promise<T | null> => {

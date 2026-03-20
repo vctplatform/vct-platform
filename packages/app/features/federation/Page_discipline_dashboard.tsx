@@ -31,8 +31,8 @@ export const Page_discipline_dashboard = () => {
     return (
         <VCT_PageContainer size="wide" animated>
             <div className="mb-6">
-                <h1 className="text-2xl font-bold tracking-tight text-[var(--vct-text-primary)]">Kỷ luật — Bảng điều khiển</h1>
-                <p className="text-sm text-[var(--vct-text-secondary)] mt-1">Tổng quan vụ việc kỷ luật, lịch xét xử và chế tài đã áp dụng.</p>
+                <h1 className="text-2xl font-bold tracking-tight text-(--vct-text-primary)">Kỷ luật — Bảng điều khiển</h1>
+                <p className="text-sm text-(--vct-text-secondary) mt-1">Tổng quan vụ việc kỷ luật, lịch xét xử và chế tài đã áp dụng.</p>
             </div>
 
             <VCT_StatRow items={[
@@ -44,8 +44,8 @@ export const Page_discipline_dashboard = () => {
 
             <div className="grid gap-6 grid-cols-1 lg:grid-cols-3">
                 {/* Case Pipeline */}
-                <div className="rounded-2xl border border-[var(--vct-border-subtle)] bg-[var(--vct-bg-card)] p-5">
-                    <h2 className="font-bold text-sm text-[var(--vct-text-primary)] mb-4">Phân bổ vụ việc</h2>
+                <div className="rounded-2xl border border-(--vct-border-subtle) bg-(--vct-bg-card) p-5">
+                    <h2 className="font-bold text-sm text-(--vct-text-primary) mb-4">Phân bổ vụ việc</h2>
                     <div className="space-y-3">
                         {CASE_SUMMARY.map(cs => (
                             <div key={cs.status} className="flex items-center justify-between">
@@ -60,18 +60,18 @@ export const Page_discipline_dashboard = () => {
                 </div>
 
                 {/* Upcoming Hearings */}
-                <div className="rounded-2xl border border-[var(--vct-border-subtle)] bg-[var(--vct-bg-card)] p-5 lg:col-span-2">
-                    <h2 className="font-bold text-sm text-[var(--vct-text-primary)] mb-4">Lịch xét xử sắp tới</h2>
+                <div className="rounded-2xl border border-(--vct-border-subtle) bg-(--vct-bg-card) p-5 lg:col-span-2">
+                    <h2 className="font-bold text-sm text-(--vct-text-primary) mb-4">Lịch xét xử sắp tới</h2>
                     <div className="space-y-3">
                         {UPCOMING_HEARINGS.map(h => (
-                            <div key={h.id} className="rounded-xl border border-[var(--vct-border-subtle)] bg-[var(--vct-bg-glass)] p-4" style={{ borderLeft: '4px solid #8b5cf6' }}>
+                            <div key={h.id} className="rounded-xl border border-(--vct-border-subtle) bg-(--vct-bg-glass) p-4" style={{ borderLeft: '4px solid #8b5cf6' }}>
                                 <VCT_Stack direction="row" justify="space-between" align="flex-start">
                                     <div>
                                         <div className="flex items-center gap-2 mb-1">
                                             <span className="text-xs font-mono opacity-60">{h.case}</span>
                                             <VCT_Badge text={h.violation} type="error" />
                                         </div>
-                                        <div className="font-bold text-sm text-[var(--vct-text-primary)]">{h.subject}</div>
+                                        <div className="font-bold text-sm text-(--vct-text-primary)">{h.subject}</div>
                                         <div className="text-xs opacity-50 mt-1">{h.venue}</div>
                                     </div>
                                     <div className="text-right">
@@ -86,12 +86,12 @@ export const Page_discipline_dashboard = () => {
             </div>
 
             {/* Recent Sanctions */}
-            <div className="mt-6 rounded-2xl border border-[var(--vct-border-subtle)] bg-[var(--vct-bg-card)] p-5">
-                <h2 className="font-bold text-sm text-[var(--vct-text-primary)] mb-4">Chế tài gần đây</h2>
-                <div className="overflow-hidden rounded-xl border border-[var(--vct-border-subtle)]">
+            <div className="mt-6 rounded-2xl border border-(--vct-border-subtle) bg-(--vct-bg-card) p-5">
+                <h2 className="font-bold text-sm text-(--vct-text-primary) mb-4">Chế tài gần đây</h2>
+                <div className="overflow-hidden rounded-xl border border-(--vct-border-subtle)">
                     <table className="w-full border-collapse">
                         <thead>
-                            <tr className="bg-[var(--vct-bg-elevated)]">
+                            <tr className="bg-(--vct-bg-elevated)">
                                 <th className="p-3 text-left text-xs font-bold uppercase opacity-50">Đối tượng</th>
                                 <th className="p-3 text-left text-xs font-bold uppercase opacity-50">Hình thức</th>
                                 <th className="p-3 text-left text-xs font-bold uppercase opacity-50">Thời hạn</th>
@@ -100,7 +100,7 @@ export const Page_discipline_dashboard = () => {
                         </thead>
                         <tbody>
                             {RECENT_SANCTIONS.map(s => (
-                                <tr key={s.id} className="border-t border-[var(--vct-border-subtle)]">
+                                <tr key={s.id} className="border-t border-(--vct-border-subtle)">
                                     <td className="p-3 text-sm font-bold">{s.subject}</td>
                                     <td className="p-3"><VCT_Badge text={s.type} type="error" /></td>
                                     <td className="p-3 text-sm">{s.duration}</td>

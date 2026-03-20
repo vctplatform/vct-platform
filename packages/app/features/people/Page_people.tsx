@@ -152,7 +152,7 @@ export const Page_people = () => {
                     </thead>
                     <tbody className="divide-y divide-vct-border">
                         {filtered.map(person => (
-                            <tr key={person.id} className="hover:bg-vct-accent/[0.03] transition-colors group cursor-pointer">
+                            <tr key={person.id} className="hover:bg-vct-accent/3 transition-colors group cursor-pointer">
                                 <td className="p-4">
                                     <div className="flex items-center gap-3">
                                         <div className="w-9 h-9 rounded-full flex items-center justify-center font-bold text-white text-xs shrink-0 shadow-md" style={{ background: ROLE_MAP[person.role]?.color ?? '#94a3b8' }}>

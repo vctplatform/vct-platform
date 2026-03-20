@@ -17,8 +17,8 @@ export const Page_provincial_reports = () => {
     return (
         <VCT_PageContainer size="wide" animated>
             <div className="mb-6">
-                <h1 className="text-2xl font-bold tracking-tight text-[var(--vct-text-primary)]">📊 Báo Cáo & Thống Kê</h1>
-                <p className="text-sm text-[var(--vct-text-secondary)] mt-1">Báo cáo hoạt động, tài chính, thống kê tổng hợp liên đoàn tỉnh</p>
+                <h1 className="text-2xl font-bold tracking-tight text-(--vct-text-primary)">📊 Báo Cáo & Thống Kê</h1>
+                <p className="text-sm text-(--vct-text-secondary) mt-1">Báo cáo hoạt động, tài chính, thống kê tổng hợp liên đoàn tỉnh</p>
             </div>
 
             <VCT_StatRow items={[
@@ -29,12 +29,12 @@ export const Page_provincial_reports = () => {
 
             <div className="grid gap-4 grid-cols-1 md:grid-cols-2">
                 {reports.map(r => (
-                    <div key={r.id} className="rounded-2xl border border-[var(--vct-border-subtle)] bg-[var(--vct-bg-glass)] p-5 hover:border-[var(--vct-accent-cyan)] transition-colors cursor-pointer">
+                    <div key={r.id} className="rounded-2xl border border-(--vct-border-subtle) bg-(--vct-bg-glass) p-5 hover:border-(--vct-accent-cyan) transition-colors cursor-pointer">
                         <div className="flex items-start gap-3">
                             <div className="text-2xl">{r.icon}</div>
                             <div className="flex-1">
-                                <div className="font-bold text-sm text-[var(--vct-text-primary)]">{r.title}</div>
-                                <div className="text-xs text-[var(--vct-text-secondary)] mt-1">{r.desc}</div>
+                                <div className="font-bold text-sm text-(--vct-text-primary)">{r.title}</div>
+                                <div className="text-xs text-(--vct-text-secondary) mt-1">{r.desc}</div>
                                 <div className="mt-2">
                                     <span className={`text-xs px-2 py-0.5 rounded-full ${r.status === 'Đang soạn' ? 'bg-amber-500/10 text-amber-500' : r.status === 'Đã duyệt' ? 'bg-emerald-500/10 text-emerald-500' : 'bg-sky-500/10 text-sky-500'}`}>
                                         {r.status}

@@ -1,0 +1,34 @@
+# Staging overrides for VCT Platform Helm chart
+
+global:
+  environment: staging
+
+api:
+  replicaCount: 1
+  resources:
+    requests:
+      cpu: 50m
+      memory: 64Mi
+    limits:
+      cpu: 250m
+      memory: 256Mi
+  autoscaling:
+    enabled: false
+
+postgres:
+  storage:
+    size: 2Gi
+  resources:
+    limits:
+      memory: 512Mi
+
+nginx:
+  replicaCount: 1
+  service:
+    type: NodePort
+
+ingress:
+  enabled: false
+
+podDisruptionBudget:
+  enabled: false

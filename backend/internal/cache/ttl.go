@@ -2,6 +2,7 @@ package cache
 
 import (
 	"sync"
+	"sync/atomic"
 	"time"
 )
 
@@ -11,12 +12,30 @@ type entry struct {
 	createdAt time.Time
 }
 
+// CacheStats holds cache performance metrics.
+type CacheStats struct {
+	Hits       int64
+	Misses     int64
+	Entries    int
+	MaxEntries int
+	HitRatio   float64
+	Evictions  int64
+}
+
 type TTLCache struct {
 	mu         sync.RWMutex
 	entries    map[string]entry
 	defaultTTL time.Duration
 	maxEntries int
 	entityTTL  map[string]time.Duration // per-entity TTL overrides
+
+	// Atomic counters for lock-free stats
+	hits      atomic.Int64
+	misses    atomic.Int64
+	evictions atomic.Int64
+
+	// GC control
+	stopGC chan struct{}
 }
 
 func NewTTLCache(defaultTTL time.Duration, maxEntries int) *TTLCache {
@@ -26,11 +45,38 @@ func NewTTLCache(defaultTTL time.Duration, maxEntries int) *TTLCache {
 	if maxEntries <= 0 {
 		maxEntries = 2000
 	}
-	return &TTLCache{
+	c := &TTLCache{
 		entries:    make(map[string]entry, maxEntries),
 		defaultTTL: defaultTTL,
 		maxEntries: maxEntries,
 		entityTTL:  make(map[string]time.Duration),
+		stopGC:     make(chan struct{}),
+	}
+	go c.gcLoop()
+	return c
+}
+
+// Stats returns current cache performance metrics.
+func (c *TTLCache) Stats() CacheStats {
+	c.mu.RLock()
+	entryCount := len(c.entries)
+	c.mu.RUnlock()
+
+	hits := c.hits.Load()
+	misses := c.misses.Load()
+	total := hits + misses
+	var ratio float64
+	if total > 0 {
+		ratio = float64(hits) / float64(total)
+	}
+
+	return CacheStats{
+		Hits:       hits,
+		Misses:     misses,
+		Entries:    entryCount,
+		MaxEntries: c.maxEntries,
+		HitRatio:   ratio,
+		Evictions:  c.evictions.Load(),
 	}
 }
 
@@ -70,6 +116,7 @@ func (c *TTLCache) Get(key string) (any, bool) {
 	record, ok := c.entries[key]
 	c.mu.RUnlock()
 	if !ok {
+		c.misses.Add(1)
 		return nil, false
 	}
 
@@ -77,9 +124,11 @@ func (c *TTLCache) Get(key string) (any, bool) {
 		c.mu.Lock()
 		delete(c.entries, key)
 		c.mu.Unlock()
+		c.misses.Add(1)
 		return nil, false
 	}
 
+	c.hits.Add(1)
 	return record.value, true
 }
 
@@ -121,6 +170,13 @@ func (c *TTLCache) InvalidatePrefix(prefix string) {
 	}
 }
 
+// Flush removes all entries.
+func (c *TTLCache) Flush() {
+	c.mu.Lock()
+	c.entries = make(map[string]entry, c.maxEntries)
+	c.mu.Unlock()
+}
+
 func (c *TTLCache) Len() int {
 	c.mu.RLock()
 	defer c.mu.RUnlock()
@@ -135,11 +191,58 @@ func (c *TTLCache) MaxEntries() int {
 	return c.maxEntries
 }
 
+// Close stops the GC goroutine.
+func (c *TTLCache) Close() {
+	close(c.stopGC)
+}
+
+// gcLoop runs periodic garbage collection of expired entries.
+func (c *TTLCache) gcLoop() {
+	ticker := time.NewTicker(30 * time.Second)
+	defer ticker.Stop()
+
+	for {
+		select {
+		case <-ticker.C:
+			c.purgeExpired()
+		case <-c.stopGC:
+			return
+		}
+	}
+}
+
+// purgeExpired removes all expired entries.
+func (c *TTLCache) purgeExpired() {
+	now := time.Now().UTC()
+	c.mu.Lock()
+	defer c.mu.Unlock()
+
+	for key, item := range c.entries {
+		if now.After(item.expiresAt) {
+			delete(c.entries, key)
+			c.evictions.Add(1)
+		}
+	}
+}
+
 func (c *TTLCache) evictIfNeededLocked() {
 	if len(c.entries) < c.maxEntries {
 		return
 	}
 
+	// First, try purging expired entries
+	now := time.Now().UTC()
+	for key, item := range c.entries {
+		if now.After(item.expiresAt) {
+			delete(c.entries, key)
+			c.evictions.Add(1)
+		}
+	}
+	if len(c.entries) < c.maxEntries {
+		return
+	}
+
+	// If still full, evict oldest entry (LRU)
 	var oldestKey string
 	var oldestAt time.Time
 	first := true
@@ -152,5 +255,7 @@ func (c *TTLCache) evictIfNeededLocked() {
 	}
 	if oldestKey != "" {
 		delete(c.entries, oldestKey)
+		c.evictions.Add(1)
 	}
 }
+

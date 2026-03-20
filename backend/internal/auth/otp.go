@@ -8,8 +8,6 @@ import (
 	"math/big"
 	"sync"
 	"time"
-
-	"vct-platform/backend/internal/email"
 )
 
 // ── OTP Verification ──────────────────────────────────────────
@@ -114,8 +112,13 @@ type VerifyOTPRequest struct {
 
 // ── Service Integration ───────────────────────────────────────
 
+// OTPSender is anything that can send an OTP email.
+type OTPSender interface {
+	SendOTP(to, code, displayName string) error
+}
+
 // SendOTP generates an OTP, stores the pending registration, and sends the email.
-func (svc *Service) SendOTP(input SendOTPRequest, emailService *email.Service) (SendOTPResponse, error) {
+func (svc *Service) SendOTP(input SendOTPRequest, emailService OTPSender) (SendOTPResponse, error) {
 	emailAddr := input.Email
 	if emailAddr == "" {
 		return SendOTPResponse{}, wrapCodedError(ErrBadRequest, CodeBadRequest, "email là bắt buộc")

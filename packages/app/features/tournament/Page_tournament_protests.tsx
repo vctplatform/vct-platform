@@ -76,7 +76,7 @@ export const Page_tournament_protests = () => {
                 { label: 'Từ chối', value: MOCK_PROTESTS.filter(p => p.status === 'rejected').length, icon: <VCT_Icons.x size={18} />, color: '#ef4444' },
             ] as StatItem[]} className="mb-8" />
 
-            <div className="mb-6 flex flex-wrap items-center justify-between gap-4 border-b border-[var(--vct-border-subtle)] pb-4">
+            <div className="mb-6 flex flex-wrap items-center justify-between gap-4 border-b border-(--vct-border-subtle) pb-4">
                 <VCT_Tabs
                     tabs={[{ key: 'all', label: 'Tất cả' }, { key: 'pending', label: 'Chờ xử lý' }, { key: 'reviewing', label: 'Đang xem' }, { key: 'accepted', label: 'Chấp nhận' }, { key: 'rejected', label: 'Từ chối' }, { key: 'appealed', label: 'Kháng nghị' }]}
                     activeTab={statusFilter}
@@ -94,15 +94,15 @@ export const Page_tournament_protests = () => {
                     {filtered.map(protest => {
                         const st = STATUS_MAP[protest.status] || STATUS_MAP.pending!
                         return (
-                            <div key={protest.id} className="bg-[var(--vct-bg-elevated)] border border-[var(--vct-border-strong)] rounded-2xl p-6 hover:border-[var(--vct-accent-cyan)] transition-all">
+                            <div key={protest.id} className="bg-(--vct-bg-elevated) border border-(--vct-border-strong) rounded-2xl p-6 hover:border-(--vct-accent-cyan) transition-all">
                                 {/* Header */}
                                 <div className="flex flex-col sm:flex-row items-start justify-between gap-3 mb-4">
                                     <div className="flex items-center gap-3">
-                                        <div className="w-10 h-10 rounded-xl bg-[var(--vct-accent-cyan)]/10 flex items-center justify-center text-sm font-bold text-[var(--vct-accent-cyan)]">{protest.id.replace('PR-', '#')}</div>
+                                        <div className="w-10 h-10 rounded-xl bg-(--vct-accent-cyan)/10 flex items-center justify-center text-sm font-bold text-(--vct-accent-cyan)">{protest.id.replace('PR-', '#')}</div>
                                         <div>
-                                            <div className="font-bold text-[var(--vct-text-primary)]">{protest.match_desc}</div>
-                                            <div className="flex items-center gap-3 text-[11px] text-[var(--vct-text-tertiary)] mt-0.5">
-                                                <span className="font-mono text-[var(--vct-accent-cyan)]">{protest.match_id}</span>
+                                            <div className="font-bold text-(--vct-text-primary)">{protest.match_desc}</div>
+                                            <div className="flex items-center gap-3 text-[11px] text-(--vct-text-tertiary) mt-0.5">
+                                                <span className="font-mono text-(--vct-accent-cyan)">{protest.match_id}</span>
                                                 <VCT_Badge text={protest.type} type="info" />
                                                 {protest.has_video && <span className="flex items-center gap-0.5 text-[#f59e0b]"><VCT_Icons.Video size={10} /> VAR</span>}
                                             </div>
@@ -112,13 +112,13 @@ export const Page_tournament_protests = () => {
                                 </div>
 
                                 {/* Reason */}
-                                <div className="bg-[var(--vct-bg-base)] rounded-xl p-4 mb-4 border border-[var(--vct-border-subtle)]">
-                                    <div className="text-sm text-[var(--vct-text-secondary)] leading-relaxed">{protest.reason}</div>
+                                <div className="bg-(--vct-bg-base) rounded-xl p-4 mb-4 border border-(--vct-border-subtle)">
+                                    <div className="text-sm text-(--vct-text-secondary) leading-relaxed">{protest.reason}</div>
                                 </div>
 
                                 {/* Details */}
                                 <div className="flex flex-wrap items-center justify-between gap-3">
-                                    <div className="flex items-center gap-4 text-[11px] text-[var(--vct-text-tertiary)]">
+                                    <div className="flex items-center gap-4 text-[11px] text-(--vct-text-tertiary)">
                                         <span className="flex items-center gap-1"><VCT_Icons.User size={10} /> {protest.submitter}</span>
                                         <span className="flex items-center gap-1"><VCT_Icons.Building2 size={10} /> {protest.team}</span>
                                         <span className="flex items-center gap-1"><VCT_Icons.Clock size={10} /> {protest.submitted_at}</span>
@@ -135,18 +135,18 @@ export const Page_tournament_protests = () => {
                                 </div>
 
                                 {/* Workflow Steps */}
-                                <div className="mt-4 pt-4 border-t border-[var(--vct-border-subtle)]">
+                                <div className="mt-4 pt-4 border-t border-(--vct-border-subtle)">
                                     <div className="flex items-center gap-2">
                                         {['Gửi', 'Xem xét', 'Quyết định', 'Kháng nghị'].map((step, i) => (
                                             <React.Fragment key={step}>
-                                                <div className={`flex items-center gap-1 text-[10px] font-bold ${i < st.step ? 'text-[var(--vct-accent-cyan)]' : 'text-[var(--vct-text-tertiary)]'}`}>
+                                                <div className={`flex items-center gap-1 text-[10px] font-bold ${i < st.step ? 'text-(--vct-accent-cyan)' : 'text-(--vct-text-tertiary)'}`}>
                                                     <div className={`w-5 h-5 rounded-full flex items-center justify-center text-[9px] ${i < st.step
-                                                        ? 'bg-[var(--vct-accent-cyan)] text-white'
-                                                        : 'bg-[var(--vct-border-strong)] text-[var(--vct-text-tertiary)]'
+                                                        ? 'bg-(--vct-accent-cyan) text-white'
+                                                        : 'bg-(--vct-border-strong) text-(--vct-text-tertiary)'
                                                         }`}>{i + 1}</div>
                                                     {step}
                                                 </div>
-                                                {i < 3 && <div className={`flex-1 h-0.5 rounded ${i < st.step - 1 ? 'bg-[var(--vct-accent-cyan)]' : 'bg-[var(--vct-border-strong)]'}`}></div>}
+                                                {i < 3 && <div className={`flex-1 h-0.5 rounded ${i < st.step - 1 ? 'bg-(--vct-accent-cyan)' : 'bg-(--vct-border-strong)'}`}></div>}
                                             </React.Fragment>
                                         ))}
                                     </div>

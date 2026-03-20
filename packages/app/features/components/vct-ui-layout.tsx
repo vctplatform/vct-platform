@@ -306,7 +306,7 @@ export const VCT_Card = ({
   return (
     <section
       className={cn(
-        'rounded-2xl border border-vct-border bg-vct-elevated shadow-[var(--vct-shadow-sm)]',
+        'rounded-2xl border border-vct-border bg-vct-elevated shadow-(--vct-shadow-sm)',
         className ?? ''
       )}
       style={style}

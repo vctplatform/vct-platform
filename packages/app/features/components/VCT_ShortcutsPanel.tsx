@@ -44,7 +44,7 @@ const SHORTCUTS: ShortcutGroup[] = [
 ]
 
 const Kbd = ({ children }: { children: ReactNode }) => (
-    <kbd className="inline-flex min-w-[24px] items-center justify-center rounded-md border border-[var(--vct-border-strong)] bg-[var(--vct-bg-elevated)] px-1.5 py-0.5 font-mono text-[11px] font-bold text-[var(--vct-text-primary)] shadow-[0_1px_2px_rgba(0,0,0,0.15)]">
+    <kbd className="inline-flex min-w-[24px] items-center justify-center rounded-md border border-(--vct-border-strong) bg-(--vct-bg-elevated) px-1.5 py-0.5 font-mono text-[11px] font-bold text-(--vct-text-primary) shadow-[0_1px_2px_rgba(0,0,0,0.15)]">
         {children}
     </kbd>
 )
@@ -87,10 +87,10 @@ export function VCT_ShortcutsPanel() {
                         animate={{ opacity: 1, scale: 1, y: 0 }}
                         exit={{ opacity: 0, scale: 0.95, y: 20 }}
                         transition={{ duration: 0.2, ease: [0.4, 0, 0.2, 1] }}
-                        className="fixed inset-x-4 top-[10%] z-[999] mx-auto max-w-lg overflow-hidden rounded-2xl border border-[var(--vct-border-subtle)] bg-[var(--vct-bg-card)] shadow-2xl sm:inset-x-auto"
+                        className="fixed inset-x-4 top-[10%] z-[999] mx-auto max-w-lg overflow-hidden rounded-2xl border border-(--vct-border-subtle) bg-(--vct-bg-card) shadow-2xl sm:inset-x-auto"
                     >
                         {/* Header */}
-                        <div className="flex items-center justify-between border-b border-[var(--vct-border-subtle)] px-5 py-4">
+                        <div className="flex items-center justify-between border-b border-(--vct-border-subtle) px-5 py-4">
                             <div className="flex items-center gap-2">
                                 <VCT_Icons.Settings size={18} />
                                 <span className="text-sm font-extrabold">Phím Tắt</span>
@@ -98,7 +98,7 @@ export function VCT_ShortcutsPanel() {
                             <button
                                 type="button"
                                 onClick={() => setOpen(false)}
-                                className="rounded-lg p-1.5 text-[var(--vct-text-tertiary)] transition hover:bg-[var(--vct-bg-elevated)]"
+                                className="rounded-lg p-1.5 text-(--vct-text-tertiary) transition hover:bg-(--vct-bg-elevated)"
                             >
                                 <VCT_Icons.x size={16} />
                             </button>
@@ -108,17 +108,17 @@ export function VCT_ShortcutsPanel() {
                         <div className="max-h-[60vh] overflow-y-auto p-5">
                             {SHORTCUTS.map((group, gi) => (
                                 <div key={gi} className={gi > 0 ? 'mt-5' : ''}>
-                                    <h3 className="mb-3 text-[10px] font-extrabold uppercase tracking-widest text-[var(--vct-text-tertiary)]">
+                                    <h3 className="mb-3 text-[10px] font-extrabold uppercase tracking-widest text-(--vct-text-tertiary)">
                                         {group.title}
                                     </h3>
                                     <div className="space-y-2">
                                         {group.shortcuts.map((s, si) => (
-                                            <div key={si} className="flex items-center justify-between rounded-lg px-2 py-1.5 transition hover:bg-[var(--vct-bg-elevated)]">
-                                                <span className="text-[13px] text-[var(--vct-text-secondary)]">{s.description}</span>
+                                            <div key={si} className="flex items-center justify-between rounded-lg px-2 py-1.5 transition hover:bg-(--vct-bg-elevated)">
+                                                <span className="text-[13px] text-(--vct-text-secondary)">{s.description}</span>
                                                 <div className="flex items-center gap-1">
                                                     {s.keys.map((k, ki) => (
                                                         <span key={ki} className="flex items-center gap-1">
-                                                            {ki > 0 && <span className="text-[10px] text-[var(--vct-text-tertiary)]">+</span>}
+                                                            {ki > 0 && <span className="text-[10px] text-(--vct-text-tertiary)">+</span>}
                                                             <Kbd>{k}</Kbd>
                                                         </span>
                                                     ))}
@@ -131,7 +131,7 @@ export function VCT_ShortcutsPanel() {
                         </div>
 
                         {/* Footer */}
-                        <div className="border-t border-[var(--vct-border-subtle)] px-5 py-3 text-center text-[11px] text-[var(--vct-text-tertiary)]">
+                        <div className="border-t border-(--vct-border-subtle) px-5 py-3 text-center text-[11px] text-(--vct-text-tertiary)">
                             Nhấn <Kbd>?</Kbd> để đóng • <Kbd>Esc</Kbd> để thoát
                         </div>
                     </motion.div>

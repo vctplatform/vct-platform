@@ -10,7 +10,8 @@ import {
 import { VCT_PageContainer, VCT_StatRow } from '../components/vct-ui';
 import type { StatItem } from '../components/VCT_StatRow';
 import { VCT_Icons } from '../components/vct-icons';
-import { DON_VIS, HANG_CANS, NOI_DUNG_QUYENS, genId } from '../data/mock-data';
+import { genId, useDonVis, useHangCans, useNoiDungQuyens } from '../hooks/useTournamentAPI';
+import type { DonVi, HangCan, NoiDungQuyen } from '../data/types';
 import type { VanDongVien, TrangThaiVDV, GioiTinh } from '../data/types';
 import { repositories, useEntityCollection } from '../data/repository';
 import { csvRowsToObjects, downloadTextFile, parseCsvRows, rowsToCsv } from '../data/export-utils';
@@ -31,14 +32,14 @@ const DOCS_SCHEMA = [
     { key: 'cmnd', label: 'CCCD/Định danh' }
 ];
 
-const getDoanTen = (id: string) => DON_VIS.find(d => d.id === id)?.ten || 'Không rõ';
-const getDKTen = (id?: string) => {
+const getDoanTen = (id: string, donVis: DonVi[]) => donVis.find(d => d.id === id)?.ten || 'Không rõ';
+const getDKTen = (id: string | undefined, hangCans: HangCan[]) => {
     if (!id) return null;
-    const dk = HANG_CANS.find(h => h.id === id);
+    const dk = hangCans.find(h => h.id === id);
     if (!dk) return id;
     return `ĐK ${dk.gioi === 'nam' ? 'Nam' : 'Nữ'} ${dk.can_den ? `${dk.can_tu}-${dk.can_den}kg` : `>${dk.can_tu}kg`}`;
 };
-const getQuyenTen = (id: string) => NOI_DUNG_QUYENS.find(q => q.id === id)?.ten || id;
+const getQuyenTen = (id: string, quyens: NoiDungQuyen[]) => quyens.find(q => q.id === id)?.ten || id;
 const calcTuoi = (ns: string) => ns ? new Date().getFullYear() - parseInt(ns.substring(0, 4)) : 0;
 
 const VDV_STATUS_LIST: TrangThaiVDV[] = ['du_dieu_kien', 'cho_xac_nhan', 'thieu_ho_so', 'nhap'];
@@ -74,13 +75,13 @@ const parseNdQuyen = (value: unknown) => {
         .filter(Boolean);
 };
 
-const normalizeDoanId = (rawDoanId: string, rawDoanTen: string) => {
+const normalizeDoanId = (rawDoanId: string, rawDoanTen: string, donVis: DonVi[]) => {
     if (rawDoanId) return rawDoanId;
-    const matchedByName = DON_VIS.find(d => d.ten.toLowerCase() === rawDoanTen.toLowerCase());
+    const matchedByName = donVis.find(d => d.ten.toLowerCase() === rawDoanTen.toLowerCase());
     return matchedByName?.id || '';
 };
 
-const mapImportedAthlete = (item: unknown): VanDongVien | null => {
+const mapImportedAthlete = (item: unknown, donVis: DonVi[]): VanDongVien | null => {
     const record = asRecord(item);
     if (!record) return null;
 
@@ -93,8 +94,8 @@ const mapImportedAthlete = (item: unknown): VanDongVien | null => {
     const ngay_sinh = normalizeString(pickField(record, ['ngay_sinh', 'ngaySinh', 'dob']));
     const rawDoanId = normalizeString(pickField(record, ['doan_id', 'doanId', 'team_id']));
     const rawDoanTen = normalizeString(pickField(record, ['doan_ten', 'doanTen', 'team_name', 'team']));
-    const doan_id = normalizeDoanId(rawDoanId, rawDoanTen);
-    const doan_ten = rawDoanTen || getDoanTen(doan_id);
+    const doan_id = normalizeDoanId(rawDoanId, rawDoanTen, donVis);
+    const doan_ten = rawDoanTen || getDoanTen(doan_id, donVis);
 
     const rawStatus = normalizeString(pickField(record, ['trang_thai', 'status'])).toLowerCase() as TrangThaiVDV;
     const trang_thai = VDV_STATUS_LIST.includes(rawStatus) ? rawStatus : 'nhap';
@@ -125,6 +126,12 @@ const mapImportedAthlete = (item: unknown): VanDongVien | null => {
 };
 
 export const Page_athletes = () => {
+    const { data: apiDonVis } = useDonVis();
+    const { data: apiHangCans } = useHangCans();
+    const { data: apiQuyens } = useNoiDungQuyens();
+    const donVis = apiDonVis || [];
+    const hangCans = apiHangCans || [];
+    const quyens = apiQuyens || [];
     const { items: data, setItems: setDataState } = useEntityCollection(repositories.athletes.mock);
     const [search, setSearch] = useState('');
     const [filterDoan, setFilterDoan] = useState('');
@@ -217,7 +224,7 @@ export const Page_athletes = () => {
             const imported: VanDongVien[] = [];
             let rejectedCount = 0;
             rawItems.forEach(item => {
-                const normalized = mapImportedAthlete(item);
+                const normalized = mapImportedAthlete(item, donVis);
                 if (!normalized || !normalized.doan_id) {
                     rejectedCount += 1;
                     return;
@@ -348,10 +355,10 @@ export const Page_athletes = () => {
                 <div className="w-[250px] flex-none">
                     <select
                         value={filterDoan} onChange={(e) => setFilterDoan(e.target.value)}
-                        className="w-full cursor-pointer appearance-none rounded-xl border border-[var(--vct-border-subtle)] bg-[var(--vct-bg-input)] px-4 py-3 text-sm font-semibold text-[var(--vct-text-primary)] outline-none"
+                        className="w-full cursor-pointer appearance-none rounded-xl border border-(--vct-border-subtle) bg-(--vct-bg-input) px-4 py-3 text-sm font-semibold text-(--vct-text-primary) outline-none"
                     >
                         <option value="">Tất cả Đoàn/Thành phố</option>
-                        {DON_VIS.map(d => <option key={d.id} value={d.id}>{d.ten}</option>)}
+                        {donVis.map(d => <option key={d.id} value={d.id}>{d.ten}</option>)}
                     </select>
                 </div>
                 <VCT_SegmentedControl
@@ -422,7 +429,7 @@ export const Page_athletes = () => {
                                     <div onClick={() => setExpandedId(isExpanded ? null : v.id)} style={{ flex: 2 }}>
                                         <VCT_Stack direction="row" gap={8} align="center">
                                             <div style={{ width: 8, height: 8, borderRadius: 4, background: 'var(--vct-accent-cyan)' }} />
-                                            <VCT_Text style={{ fontSize: '14px', fontWeight: 600 }}>{getDoanTen(v.doan_id)}</VCT_Text>
+                                            <VCT_Text style={{ fontSize: '14px', fontWeight: 600 }}>{getDoanTen(v.doan_id, donVis)}</VCT_Text>
                                         </VCT_Stack>
                                     </div>
                                     <div onClick={() => setExpandedId(isExpanded ? null : v.id)} style={{ flex: 1, textAlign: 'center' }}>
@@ -469,14 +476,14 @@ export const Page_athletes = () => {
                                                             {v.nd_quyen.length > 0 ? v.nd_quyen.map(qid => (
                                                                 <div key={qid} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 12px', background: 'var(--vct-bg-elevated)', borderRadius: 8, border: '1px solid var(--vct-border-subtle)' }}>
                                                                     <span style={{ color: '#22d3ee' }}>🥋</span>
-                                                                    <span style={{ fontSize: 13, fontWeight: 600 }}>{getQuyenTen(qid)}</span>
+                                                                    <span style={{ fontSize: 13, fontWeight: 600 }}>{getQuyenTen(qid, quyens)}</span>
                                                                 </div>
                                                             )) : <div style={{ fontSize: 12, opacity: 0.5, fontStyle: 'italic' }}>Chưa đăng ký quyền</div>}
 
                                                             {v.nd_dk ? (
                                                                 <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 12px', background: 'var(--vct-bg-elevated)', borderRadius: 8, border: '1px dashed #f59e0b', marginTop: 4 }}>
                                                                     <span style={{ color: '#f59e0b' }}>🥊</span>
-                                                                    <span style={{ fontSize: 13, fontWeight: 600 }}>{getDKTen(v.nd_dk)}</span>
+                                                                    <span style={{ fontSize: 13, fontWeight: 600 }}>{getDKTen(v.nd_dk, hangCans)}</span>
                                                                 </div>
                                                             ) : <div style={{ fontSize: 12, opacity: 0.5, fontStyle: 'italic', marginTop: 4 }}>Chưa đăng ký đối kháng</div>}
                                                         </VCT_Stack>
@@ -540,7 +547,7 @@ export const Page_athletes = () => {
                                     <span style={{ fontSize: 32, opacity: 0.3 }}>{v.ho_ten.charAt(0)}</span>
                                 </div>
                                 <div style={{ marginTop: 12, fontWeight: 800, fontSize: 18, textTransform: 'uppercase' }}>{v.ho_ten}</div>
-                                <div style={{ fontSize: 13, color: '#4b5563', fontWeight: 600, marginTop: 4 }}>{getDoanTen(v.doan_id)}</div>
+                                <div style={{ fontSize: 13, color: '#4b5563', fontWeight: 600, marginTop: 4 }}>{getDoanTen(v.doan_id, donVis)}</div>
 
                                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginTop: 16, textAlign: 'left', background: '#f3f4f6', padding: 8, borderRadius: 8 }}>
                                     <div>

@@ -24,6 +24,29 @@ services:
       timeout: 5s
       retries: 5
 
+  # ── PgBouncer — Connection Pooler ─────────────────────────────
+  pgbouncer:
+    image: edoburu/pgbouncer:1.23.1-p3
+    container_name: vct-pgbouncer
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      PGBOUNCER_USER: ${POSTGRES_USER:-vct_admin}
+      PGBOUNCER_PASSWORD: ${POSTGRES_PASSWORD:-vct_secret_2026}
+    volumes:
+      - ./infra/docker/pgbouncer/pgbouncer.ini:/etc/pgbouncer/pgbouncer.ini:ro
+      - ./infra/docker/pgbouncer/entrypoint.sh:/entrypoint.sh:ro
+    entrypoint: ["/bin/sh", "/entrypoint.sh"]
+    ports:
+      - "${PGBOUNCER_PORT:-6432}:6432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -h localhost -p 6432"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
   # ── Go Backend API ──────────────────────────────────────────
   backend:
     build:
@@ -32,7 +55,9 @@ services:
     container_name: vct-backend
     restart: unless-stopped
     depends_on:
-      postgres:
+      pgbouncer:
+        condition: service_healthy
+      redis:
         condition: service_healthy
     environment:
       VCT_ENV: ${VCT_ENV:-development}
@@ -45,10 +70,12 @@ services:
       VCT_REFRESH_TTL: ${VCT_REFRESH_TTL:-168h}
       VCT_STORAGE_DRIVER: ${VCT_STORAGE_DRIVER:-postgres}
       VCT_POSTGRES_PROVIDER: ${VCT_POSTGRES_PROVIDER:-selfhost}
-      VCT_POSTGRES_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}?sslmode=disable
+      VCT_POSTGRES_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@pgbouncer:6432/${POSTGRES_DB}?sslmode=disable
       VCT_DB_AUTO_MIGRATE: ${VCT_DB_AUTO_MIGRATE:-true}
       VCT_CACHE_TTL: ${VCT_CACHE_TTL:-30s}
       VCT_CACHE_MAX_ENTRIES: ${VCT_CACHE_MAX_ENTRIES:-2000}
+      REDIS_URL: redis://redis:6379
+      NATS_URL: nats://nats:4222
     ports:
       - "${BACKEND_PORT:-18080}:18080"
     healthcheck:
@@ -77,6 +104,90 @@ services:
       timeout: 5s
       retries: 3
 
+  # ── Redis ──────────────────────────────────────────────────
+  redis:
+    image: redis:7-alpine
+    container_name: vct-redis
+    restart: unless-stopped
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # ── NATS ───────────────────────────────────────────────────
+  nats:
+    image: nats:latest
+    container_name: vct-nats
+    restart: unless-stopped
+    command: "--jetstream --store_dir /data"
+    ports:
+      - "${NATS_PORT:-4222}:4222"
+      - "8222:8222"
+    volumes:
+      - nats_data:/data
+
+  # ── MinIO ──────────────────────────────────────────────────
+  minio:
+    image: minio/minio:latest
+    container_name: vct-minio
+    restart: unless-stopped
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ACCESS_KEY:-minioadmin}
+      MINIO_ROOT_PASSWORD: ${MINIO_SECRET_KEY:-minioadmin}
+    ports:
+      - "${MINIO_PORT:-9000}:9000"
+      - "9001:9001"
+    volumes:
+      - minio_data:/data
+
+  # ── Meilisearch ────────────────────────────────────────────
+  meilisearch:
+    image: getmeili/meilisearch:latest
+    container_name: vct-meilisearch
+    restart: unless-stopped
+    environment:
+      MEILI_MASTER_KEY: ${MEILI_MASTER_KEY:-vct-dev-master-key}
+      MEILI_ENV: development
+    ports:
+      - "${MEILI_PORT:-7700}:7700"
+    volumes:
+      - meili_data:/meili_data
+
+  # ── pgAdmin 4 — Database Admin UI ───────────────────────────
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: vct-pgadmin
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL:-admin@vct-platform.com}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD:-admin}
+      PGADMIN_LISTEN_PORT: 5050
+    ports:
+      - "${PGADMIN_PORT:-5050}:5050"
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    profiles:
+      - admin
+
 volumes:
   postgres_data:
+    driver: local
+  pgadmin_data:
+    driver: local
+  redis_data:
+    driver: local
+  nats_data:
+    driver: local
+  minio_data:
+    driver: local
+  meili_data:
     driver: local

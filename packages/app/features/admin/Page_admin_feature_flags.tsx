@@ -1,3 +1,4 @@
+'use client';
 'use client'
 
 import * as React from 'react'
@@ -39,9 +40,9 @@ interface FeatureFlag {
 const MODULE_FILTERS = ['Tất cả', 'Chấm điểm', 'Giải đấu', 'Đào tạo', 'Cộng đồng', 'Di sản', 'Hệ thống']
 
 const STATUS_STYLES: Record<string, { label: string; color: string; bgColor: string }> = {
-    enabled: { label: 'Đang bật', color: '#10b981', bgColor: '#10b98115' },
-    disabled: { label: 'Đang tắt', color: '#94a3b8', bgColor: '#94a3b815' },
-    partial: { label: 'Rollout', color: '#f59e0b', bgColor: '#f59e0b15' },
+    enabled: { label: 'Đang bật', color: 'emerald', bgColor: '#10b98115' },
+    disabled: { label: 'Đang tắt', color: 'slate', bgColor: '#94a3b815' },
+    partial: { label: 'Rollout', color: 'amber', bgColor: '#f59e0b15' },
 }
 
 // ════════════════════════════════════════
@@ -207,14 +208,15 @@ const Page_admin_feature_flags_Content = () => {
                                     <div className="flex items-center gap-4 shrink-0">
                                         {/* Rollout slider */}
                                         <div className="flex flex-col items-center gap-1 w-[120px]">
-                                            <div className="admin-colored-label" style={{ '--_label-color': st.color } as React.CSSProperties}>{flag.rollout_pct}%</div>
+                                            <div className="admin-colored-label" data-color={st.color}>{flag.rollout_pct}%</div>
                                             <input
                                                 type="range" min="0" max="100" step="5"
                                                 value={flag.rollout_pct}
                                                 onChange={(e) => updateRollout(flag.id, parseInt(e.target.value))}
                                                 aria-label={`Rollout ${flag.name}`}
                                                 className="admin-rollout-slider"
-                                                style={{ '--_slider-color': st.color, '--_slider-pct': `${flag.rollout_pct}%` } as React.CSSProperties}
+                                                data-color={st.color}
+                                                style={{ '--_slider-pct': `${flag.rollout_pct}%` } as React.CSSProperties}
                                             />
                                         </div>
 
@@ -223,7 +225,7 @@ const Page_admin_feature_flags_Content = () => {
                                             onClick={() => toggleFlag(flag)}
                                             aria-label={`${flag.status !== 'disabled' ? 'Tắt' : 'Bật'} ${flag.name}`}
                                             role="switch"
-                                            aria-checked={flag.status !== 'disabled' ? 'true' : 'false'}
+                                            aria-checked={flag.status !== 'disabled' ? true : false}
                                             className={`relative w-14 h-7 rounded-full transition-all duration-300 cursor-pointer ${flag.status !== 'disabled' ? 'bg-[#10b981] shadow-[0_0_12px_#10b98140]' : 'bg-(--vct-border-strong)'
                                                 }`}>
                                             <div className={`absolute top-1 w-5 h-5 rounded-full bg-white shadow-md transition-all duration-300 ${flag.status !== 'disabled' ? 'left-8' : 'left-1'
@@ -234,7 +236,7 @@ const Page_admin_feature_flags_Content = () => {
 
                                 {/* Progress bar */}
                                 <div className="mt-3 h-1 rounded-full bg-(--vct-border-strong) overflow-hidden">
-                                    <div className="admin-progress-bar__fill" style={{ '--_fill-color': st.color, '--_fill-width': `${flag.rollout_pct}%` } as React.CSSProperties}></div>
+                                    <div className="admin-progress-bar__fill" data-color={st.color} style={{ '--_fill-width': `${flag.rollout_pct}%` } as React.CSSProperties}></div>
                                 </div>
                             </div>
                         )

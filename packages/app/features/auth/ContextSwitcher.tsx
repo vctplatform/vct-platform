@@ -182,7 +182,7 @@ export function ContextSwitcher({
     // Don't render if user has only 1 or fewer roles
     if (bindings.length <= 1) {
         return (
-            <div className={`inline-flex items-center gap-1.5 rounded-full border border-vct-border bg-vct-input px-3 py-2 text-xs font-bold text-[var(--vct-text-secondary)] ${className}`}>
+            <div className={`inline-flex items-center gap-1.5 rounded-full border border-vct-border bg-vct-input px-3 py-2 text-xs font-bold text-(--vct-text-secondary) ${className}`}>
                 <span className="text-sm">{ROLE_ICONS[currentRole] || '👤'}</span>
                 <span>{getRoleName(currentRole)}</span>
             </div>
@@ -207,12 +207,12 @@ export function ContextSwitcher({
 
             {/* Dropdown */}
             {isOpen && (
-                <div className="absolute right-0 top-[calc(100%+6px)] z-[100] min-w-[280px] overflow-hidden rounded-xl border border-vct-border bg-vct-card shadow-[var(--vct-shadow-xl)]">
+                <div className="absolute right-0 top-[calc(100%+6px)] z-[100] min-w-[280px] overflow-hidden rounded-xl border border-vct-border bg-vct-card shadow-(--vct-shadow-xl)">
                     <div className="px-4 pb-2 pt-3 text-[11px] font-extrabold uppercase tracking-[0.5px] text-vct-text-muted">
                         {t('context.switchRole')}
                     </div>
                     {error && (
-                        <div className="px-4 py-2 text-xs text-[var(--vct-danger)] bg-[var(--vct-danger-muted)]">
+                        <div className="px-4 py-2 text-xs text-(--vct-danger) bg-(--vct-danger-muted)">
                             {error}
                         </div>
                     )}
@@ -223,7 +223,7 @@ export function ContextSwitcher({
                             disabled={isLoading || b.role === currentRole}
                             className={`flex w-full items-center gap-2.5 border-none px-4 py-2.5 text-left text-sm transition-colors ${b.role === currentRole
                                 ? 'cursor-default bg-vct-accent/10 opacity-70'
-                                : 'cursor-pointer bg-transparent hover:bg-[var(--vct-bg-hover)]'
+                                : 'cursor-pointer bg-transparent hover:bg-(--vct-bg-hover)'
                                 }`}
                         >
                             <span className="shrink-0 text-base">{ROLE_ICONS[b.role] || '👤'}</span>

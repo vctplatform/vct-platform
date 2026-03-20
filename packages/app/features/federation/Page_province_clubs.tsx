@@ -42,8 +42,8 @@ export const Page_province_clubs = () => {
     return (
         <VCT_PageContainer size="wide" animated>
             <div className="mb-6">
-                <h1 className="text-2xl font-bold tracking-tight text-[var(--vct-text-primary)]">Quản lý CLB</h1>
-                <p className="text-sm text-[var(--vct-text-secondary)] mt-1">Danh sách CLB Võ cổ truyền trực thuộc Hội Võ thuật tỉnh.</p>
+                <h1 className="text-2xl font-bold tracking-tight text-(--vct-text-primary)">Quản lý CLB</h1>
+                <p className="text-sm text-(--vct-text-secondary) mt-1">Danh sách CLB Võ cổ truyền trực thuộc Hội Võ thuật tỉnh.</p>
             </div>
 
             <VCT_StatRow items={[
@@ -60,12 +60,12 @@ export const Page_province_clubs = () => {
                     placeholder="Tìm CLB theo tên hoặc mã..."
                     value={search}
                     onChange={e => setSearch(e.target.value)}
-                    className="flex-1 min-w-[200px] px-4 py-2 rounded-xl border border-[var(--vct-border-subtle)] bg-[var(--vct-bg-glass)] text-sm text-[var(--vct-text-primary)] outline-none focus:border-[var(--vct-accent-cyan)]"
+                    className="flex-1 min-w-[200px] px-4 py-2 rounded-xl border border-(--vct-border-subtle) bg-(--vct-bg-glass) text-sm text-(--vct-text-primary) outline-none focus:border-(--vct-accent-cyan)"
                 />
                 <select
                     value={statusFilter}
                     onChange={e => setStatusFilter(e.target.value)}
-                    className="px-4 py-2 rounded-xl border border-[var(--vct-border-subtle)] bg-[var(--vct-bg-glass)] text-sm text-[var(--vct-text-primary)] outline-none"
+                    className="px-4 py-2 rounded-xl border border-(--vct-border-subtle) bg-(--vct-bg-glass) text-sm text-(--vct-text-primary) outline-none"
                 >
                     <option value="ALL">Tất cả trạng thái</option>
                     <option value="ACTIVE">Hoạt động</option>
@@ -77,32 +77,32 @@ export const Page_province_clubs = () => {
             {/* Club Grid */}
             <div className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
                 {filtered.map(club => (
-                    <div key={club.id} className="rounded-2xl border border-[var(--vct-border-subtle)] bg-[var(--vct-bg-card)] p-5 hover:border-[var(--vct-accent-cyan)] transition-colors">
+                    <div key={club.id} className="rounded-2xl border border-(--vct-border-subtle) bg-(--vct-bg-card) p-5 hover:border-(--vct-accent-cyan) transition-colors">
                         <div className="flex items-start justify-between mb-3">
                             <div>
-                                <h3 className="font-bold text-[var(--vct-text-primary)]">{club.name}</h3>
-                                <span className="text-xs text-[var(--vct-text-secondary)]">{club.code} — {club.district}</span>
+                                <h3 className="font-bold text-(--vct-text-primary)">{club.name}</h3>
+                                <span className="text-xs text-(--vct-text-secondary)">{club.code} — {club.district}</span>
                             </div>
                             <span className="text-xs font-bold px-2 py-1 rounded-lg" style={{ background: `${(STATUS_MAP[club.status]?.color ?? '#888')}22`, color: STATUS_MAP[club.status]?.color ?? '#888' }}>
                                 {STATUS_MAP[club.status]?.label ?? club.status}
                             </span>
                         </div>
                         <div className="space-y-2 text-sm">
-                            <div className="flex justify-between text-[var(--vct-text-secondary)]">
+                            <div className="flex justify-between text-(--vct-text-secondary)">
                                 <span>Chủ nhiệm</span>
-                                <span className="text-[var(--vct-text-primary)] font-medium">{club.leaderName}</span>
+                                <span className="text-(--vct-text-primary) font-medium">{club.leaderName}</span>
                             </div>
-                            <div className="flex justify-between text-[var(--vct-text-secondary)]">
+                            <div className="flex justify-between text-(--vct-text-secondary)">
                                 <span>Thành viên</span>
-                                <span className="text-[var(--vct-text-primary)] font-medium">{club.memberCount}</span>
+                                <span className="text-(--vct-text-primary) font-medium">{club.memberCount}</span>
                             </div>
-                            <div className="flex justify-between text-[var(--vct-text-secondary)]">
+                            <div className="flex justify-between text-(--vct-text-secondary)">
                                 <span>VĐV / HLV</span>
-                                <span className="text-[var(--vct-text-primary)] font-medium">{club.athleteCount} / {club.coachCount}</span>
+                                <span className="text-(--vct-text-primary) font-medium">{club.athleteCount} / {club.coachCount}</span>
                             </div>
-                            <div className="flex justify-between text-[var(--vct-text-secondary)]">
+                            <div className="flex justify-between text-(--vct-text-secondary)">
                                 <span>Thành lập</span>
-                                <span className="text-[var(--vct-text-primary)] font-medium">{club.foundedDate}</span>
+                                <span className="text-(--vct-text-primary) font-medium">{club.foundedDate}</span>
                             </div>
                         </div>
                     </div>

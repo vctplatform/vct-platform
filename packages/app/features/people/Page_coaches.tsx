@@ -113,7 +113,7 @@ export const Page_coaches = () => {
             ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
                     {filtered.map(coach => (
-                        <div key={coach.id} className="bg-vct-elevated border border-vct-border rounded-2xl p-5 hover:border-vct-accent transition-all cursor-pointer group hover:shadow-[var(--vct-shadow-md)] vct-card-press">
+                        <div key={coach.id} className="bg-vct-elevated border border-vct-border rounded-2xl p-5 hover:border-vct-accent transition-all cursor-pointer group hover:shadow-(--vct-shadow-md) vct-card-press">
                             {/* Header */}
                             <div className="flex items-start justify-between mb-4">
                                 <VCT_Stack direction="row" gap={12} align="center">

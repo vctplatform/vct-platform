@@ -1,0 +1,47 @@
+appId: com.vctplatform.app
+---
+# VCT Platform — Login E2E Flow
+# Run: maestro test apps/expo/maestro/login.yaml
+
+- launchApp
+
+# ── Verify Login Screen ─────────────────────────
+- assertVisible: "Nền tảng Võ Cổ Truyền Việt Nam"
+- assertVisible: "Tên đăng nhập"
+- assertVisible: "Mật khẩu"
+- assertVisible: "ĐĂNG NHẬP"
+
+# ── Enter Credentials ───────────────────────────
+- tapOn:
+    id: "label-username"
+- inputText: "parent"
+
+- tapOn:
+    id: "label-password"
+- inputText: "Parent@123"
+
+# ── Toggle Password Visibility ──────────────────
+- tapOn: "Hiện mật khẩu"
+- assertVisible: "Ẩn mật khẩu"
+- tapOn: "Ẩn mật khẩu"
+
+# ── Submit Login ────────────────────────────────
+- tapOn: "ĐĂNG NHẬP"
+
+# ── Wait for Navigation ─────────────────────────
+- extendedWaitUntil:
+    visible: "Trang chủ"
+    timeout: 10000
+
+# ── Verify Home Screen ──────────────────────────
+- assertVisible: "Trang chủ"
+
+# ── Test Demo Skip Flow ─────────────────────────
+- launchApp:
+    clearState: true
+
+- assertVisible: "Bỏ qua → Dùng chế độ Demo"
+- tapOn: "Bỏ qua → Dùng chế độ Demo"
+- extendedWaitUntil:
+    visible: "Trang chủ"
+    timeout: 10000

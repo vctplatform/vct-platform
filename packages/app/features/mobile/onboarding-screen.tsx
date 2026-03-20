@@ -10,7 +10,7 @@ import { hapticLight, hapticSelection } from './haptics'
 // Real logo on first slide, synced with web design system
 // ═══════════════════════════════════════════════════════════════
 
-// eslint-disable-next-line @typescript-eslint/no-require-imports
+ 
 const logoSource = require('app/assets/logo-vct.png')
 
 const { width } = Dimensions.get('window')

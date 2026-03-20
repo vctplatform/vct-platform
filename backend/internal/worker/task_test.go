@@ -35,13 +35,13 @@ func TestDispatcherStartStop(t *testing.T) {
 	d := NewDispatcher(DefaultConfig())
 	d.Start()
 	stats := d.Stats()
-	if !stats["running"].(bool) {
+	if !stats.Running {
 		t.Error("expected running=true after Start")
 	}
 	d.Stop()
 
 	stats = d.Stats()
-	if stats["running"].(bool) {
+	if stats.Running {
 		t.Error("expected running=false after Stop")
 	}
 }
@@ -65,8 +65,8 @@ func TestSubmitAndProcess(t *testing.T) {
 	}
 
 	stats := d.Stats()
-	if stats["processed"].(int64) != 1 {
-		t.Errorf("expected processed=1, got %v", stats["processed"])
+	if stats.Processed != 1 {
+		t.Errorf("expected processed=1, got %d", stats.Processed)
 	}
 }
 
@@ -117,8 +117,8 @@ func TestRegisterAll(t *testing.T) {
 	RegisterAll(d)
 
 	stats := d.Stats()
-	if stats["handlers"].(int) != 4 {
-		t.Errorf("expected 4 registered handlers, got %v", stats["handlers"])
+	if stats.Handlers != 4 {
+		t.Errorf("expected 4 registered handlers, got %d", stats.Handlers)
 	}
 }
 

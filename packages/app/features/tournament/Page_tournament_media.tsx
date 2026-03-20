@@ -85,12 +85,12 @@ export const Page_tournament_media = () => {
                 { label: 'Dung lượng', value: `${totalSize.toFixed(0)} MB`, icon: <VCT_Icons.Layers size={18} />, color: '#f59e0b' },
             ] as StatItem[]} className="mb-8" />
 
-            <div className="mb-6 flex flex-wrap items-center justify-between gap-4 border-b border-[var(--vct-border-subtle)] pb-4">
+            <div className="mb-6 flex flex-wrap items-center justify-between gap-4 border-b border-(--vct-border-subtle) pb-4">
                 <VCT_Tabs tabs={CATEGORIES.map(c => ({ key: c, label: c }))} activeTab={catFilter} onChange={setCatFilter} />
                 <div className="flex items-center gap-3">
-                    <div className="flex gap-1 bg-[var(--vct-bg-card)] rounded-lg p-0.5 border border-[var(--vct-border-subtle)]">
-                        <button onClick={() => setViewMode('grid')} className={`p-1.5 rounded ${viewMode === 'grid' ? 'bg-[var(--vct-accent-cyan)]/20 text-[var(--vct-accent-cyan)]' : 'text-[var(--vct-text-tertiary)]'}`}><VCT_Icons.LayoutGrid size={16} /></button>
-                        <button onClick={() => setViewMode('list')} className={`p-1.5 rounded ${viewMode === 'list' ? 'bg-[var(--vct-accent-cyan)]/20 text-[var(--vct-accent-cyan)]' : 'text-[var(--vct-text-tertiary)]'}`}><VCT_Icons.List size={16} /></button>
+                    <div className="flex gap-1 bg-(--vct-bg-card) rounded-lg p-0.5 border border-(--vct-border-subtle)">
+                        <button onClick={() => setViewMode('grid')} className={`p-1.5 rounded ${viewMode === 'grid' ? 'bg-(--vct-accent-cyan)/20 text-(--vct-accent-cyan)' : 'text-(--vct-text-tertiary)'}`}><VCT_Icons.LayoutGrid size={16} /></button>
+                        <button onClick={() => setViewMode('list')} className={`p-1.5 rounded ${viewMode === 'list' ? 'bg-(--vct-accent-cyan)/20 text-(--vct-accent-cyan)' : 'text-(--vct-text-tertiary)'}`}><VCT_Icons.List size={16} /></button>
                     </div>
                     <div className="w-[250px]">
                         <VCT_SearchInput placeholder="Tìm media..." value={search} onChange={setSearch} onClear={() => setSearch('')} />
@@ -103,15 +103,15 @@ export const Page_tournament_media = () => {
             ) : viewMode === 'grid' ? (
                 <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4">
                     {filtered.map(item => (
-                        <div key={item.id} className="bg-[var(--vct-bg-elevated)] border border-[var(--vct-border-strong)] rounded-2xl overflow-hidden hover:border-[var(--vct-accent-cyan)] transition-all cursor-pointer group">
-                            <div className="h-32 bg-gradient-to-br from-[var(--vct-bg-card)] to-[var(--vct-bg-base)] flex items-center justify-center text-4xl relative">
+                        <div key={item.id} className="bg-(--vct-bg-elevated) border border-(--vct-border-strong) rounded-2xl overflow-hidden hover:border-(--vct-accent-cyan) transition-all cursor-pointer group">
+                            <div className="h-32 bg-gradient-to-br from-(--vct-bg-card) to-(--vct-bg-base) flex items-center justify-center text-4xl relative">
                                 {item.thumbnail}
                                 {item.type === 'video' && <div className="absolute bottom-2 right-2 bg-black/60 rounded-full p-1.5"><VCT_Icons.Play size={14} className="text-white" /></div>}
                             </div>
                             <div className="p-3">
-                                <div className="font-bold text-sm text-[var(--vct-text-primary)] mb-1 truncate group-hover:text-[var(--vct-accent-cyan)] transition-colors">{item.title}</div>
+                                <div className="font-bold text-sm text-(--vct-text-primary) mb-1 truncate group-hover:text-(--vct-accent-cyan) transition-colors">{item.title}</div>
                                 <div className="flex items-center justify-between">
-                                    <div className="text-[10px] text-[var(--vct-text-tertiary)]">{item.uploaded_at} • {item.size}</div>
+                                    <div className="text-[10px] text-(--vct-text-tertiary)">{item.uploaded_at} • {item.size}</div>
                                     <VCT_Badge text={STATUS_COLORS[item.status]?.label || ''} type={STATUS_COLORS[item.status]?.type || 'neutral'} />
                                 </div>
                             </div>
@@ -119,19 +119,19 @@ export const Page_tournament_media = () => {
                     ))}
                 </div>
             ) : (
-                <div className="bg-[var(--vct-bg-elevated)] border border-[var(--vct-border-strong)] rounded-2xl overflow-hidden">
+                <div className="bg-(--vct-bg-elevated) border border-(--vct-border-strong) rounded-2xl overflow-hidden">
                     <table className="w-full border-collapse">
-                        <thead><tr className="bg-[var(--vct-bg-card)] border-b border-[var(--vct-border-strong)] text-[11px] uppercase tracking-wider text-[var(--vct-text-tertiary)] font-bold">
+                        <thead><tr className="bg-(--vct-bg-card) border-b border-(--vct-border-strong) text-[11px] uppercase tracking-wider text-(--vct-text-tertiary) font-bold">
                             <th className="p-4 text-left">File</th><th className="p-4 text-left">Danh mục</th><th className="p-4 text-left">Trận</th><th className="p-4 text-left">Upload bởi</th><th className="p-4 text-left">Ngày</th><th className="p-4 text-center">Dung lượng</th><th className="p-4 text-center">TT</th>
                         </tr></thead>
-                        <tbody className="divide-y divide-[var(--vct-border-subtle)]">{filtered.map(item => (
+                        <tbody className="divide-y divide-(--vct-border-subtle)">{filtered.map(item => (
                             <tr key={item.id} className="hover:bg-white/5 transition-colors cursor-pointer">
-                                <td className="p-4"><div className="flex items-center gap-3"><span className="text-xl">{item.type === 'video' ? '🎬' : '📸'}</span><div className="font-bold text-sm text-[var(--vct-text-primary)]">{item.title}</div></div></td>
-                                <td className="p-4 text-sm text-[var(--vct-text-secondary)]">{item.category}</td>
-                                <td className="p-4 text-sm font-mono text-[var(--vct-accent-cyan)]">{item.match || '—'}</td>
-                                <td className="p-4 text-sm text-[var(--vct-text-tertiary)]">{item.uploaded_by}</td>
-                                <td className="p-4 text-sm text-[var(--vct-text-tertiary)]">{item.uploaded_at}</td>
-                                <td className="p-4 text-center text-sm text-[var(--vct-text-secondary)]">{item.size}</td>
+                                <td className="p-4"><div className="flex items-center gap-3"><span className="text-xl">{item.type === 'video' ? '🎬' : '📸'}</span><div className="font-bold text-sm text-(--vct-text-primary)">{item.title}</div></div></td>
+                                <td className="p-4 text-sm text-(--vct-text-secondary)">{item.category}</td>
+                                <td className="p-4 text-sm font-mono text-(--vct-accent-cyan)">{item.match || '—'}</td>
+                                <td className="p-4 text-sm text-(--vct-text-tertiary)">{item.uploaded_by}</td>
+                                <td className="p-4 text-sm text-(--vct-text-tertiary)">{item.uploaded_at}</td>
+                                <td className="p-4 text-center text-sm text-(--vct-text-secondary)">{item.size}</td>
                                 <td className="p-4 text-center"><VCT_Badge text={STATUS_COLORS[item.status]?.label || ''} type={STATUS_COLORS[item.status]?.type || 'neutral'} /></td>
                             </tr>
                         ))}</tbody>

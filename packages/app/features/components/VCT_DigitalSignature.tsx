@@ -42,10 +42,10 @@ export function VCT_DigitalSignature({ isOpen, onClose, onSignComplete, document
             }
         >
             <VCT_Stack gap={16}>
-                <p className="text-sm text-[var(--vct-text-secondary)]">
+                <p className="text-sm text-(--vct-text-secondary)">
                     Vui lòng sử dụng chuột hoặc cảm ứng để ký tên vào khung dưới đây. Chữ ký sẽ được xác thực và đính kèm vào biên bản PDF.
                 </p>
-                <div className="border-2 border-dashed border-[var(--vct-border-subtle)] rounded-xl overflow-hidden bg-white/5 relative">
+                <div className="border-2 border-dashed border-(--vct-border-subtle) rounded-xl overflow-hidden bg-white/5 relative">
                     <SignatureCanvas
                         ref={sigCanvas}
                         penColor="black"

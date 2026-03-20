@@ -52,11 +52,11 @@ export function Page_federation_pr() {
     return (
         <VCT_PageContainer size="wide" animated>
             <div className="mb-6">
-                <h1 className="text-2xl font-bold tracking-tight text-[var(--vct-text-primary)]">
+                <h1 className="text-2xl font-bold tracking-tight text-(--vct-text-primary)">
                     Truyền thông & PR
-                    {isLoading && <span className="ml-2 text-sm font-normal text-[var(--vct-accent-cyan)]">Đang tải...</span>}
+                    {isLoading && <span className="ml-2 text-sm font-normal text-(--vct-accent-cyan)">Đang tải...</span>}
                 </h1>
-                <p className="text-sm text-[var(--vct-text-secondary)] mt-1">
+                <p className="text-sm text-(--vct-text-secondary) mt-1">
                     Quản lý tin tức, bài viết, hình ảnh và truyền thông đối ngoại của Liên đoàn.
                 </p>
             </div>
@@ -69,9 +69,9 @@ export function Page_federation_pr() {
             ] as StatItem[]} className="mb-6" />
 
             {/* ── News List ── */}
-            <div className="rounded-2xl border border-[var(--vct-border-subtle)] bg-[var(--vct-bg-glass)] p-5">
+            <div className="rounded-2xl border border-(--vct-border-subtle) bg-(--vct-bg-glass) p-5">
                 <VCT_Stack direction="row" justify="space-between" align="center" className="mb-4">
-                    <h2 className="text-sm font-bold text-[var(--vct-text-primary)] uppercase tracking-wide">📰 Bài viết & Tin tức</h2>
+                    <h2 className="text-sm font-bold text-(--vct-text-primary) uppercase tracking-wide">📰 Bài viết & Tin tức</h2>
                 </VCT_Stack>
                 <div className="space-y-3">
                     {articles.map((item: any) =>  {
@@ -81,17 +81,17 @@ export function Page_federation_pr() {
                         const views = item.view_count || item.views || 0
                         const icon = CATEGORY_ICONS[category] || '📋'
                         return (
-                            <div key={item.id} className="flex items-center gap-4 p-4 rounded-xl hover:bg-[var(--vct-bg-elevated)] transition-colors cursor-pointer border border-transparent hover:border-[var(--vct-border-subtle)]">
+                            <div key={item.id} className="flex items-center gap-4 p-4 rounded-xl hover:bg-(--vct-bg-elevated) transition-colors cursor-pointer border border-transparent hover:border-(--vct-border-subtle)">
                                 <span className="text-2xl">{icon}</span>
                                 <div className="flex-1 min-w-0">
-                                    <div className="text-sm font-semibold text-[var(--vct-text-primary)] truncate">{title}</div>
+                                    <div className="text-sm font-semibold text-(--vct-text-primary) truncate">{title}</div>
                                     <VCT_Stack direction="row" gap={8} align="center" className="mt-1">
                                         <span className="text-xs px-2 py-0.5 rounded-full font-bold" style={{ backgroundColor: (CATEGORY_COLORS[category] || '#666') + '20', color: CATEGORY_COLORS[category] }}>{category}</span>
-                                        {item.summary && <span className="text-xs text-[var(--vct-text-secondary)] truncate max-w-[200px]">{item.summary}</span>}
+                                        {item.summary && <span className="text-xs text-(--vct-text-secondary) truncate max-w-[200px]">{item.summary}</span>}
                                     </VCT_Stack>
                                 </div>
                                 {views > 0 && (
-                                    <span className="text-xs text-[var(--vct-text-secondary)] hidden sm:flex items-center gap-1">
+                                    <span className="text-xs text-(--vct-text-secondary) hidden sm:flex items-center gap-1">
                                         <VCT_Icons.Eye size={12} /> {views.toLocaleString('vi-VN')}
                                     </span>
                                 )}

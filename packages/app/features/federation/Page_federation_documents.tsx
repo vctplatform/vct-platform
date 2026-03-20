@@ -57,7 +57,7 @@ export const Page_federation_documents = () => {
 
     useEffect(() => {
         docsApi.execute('/documents')
-    }, []) // eslint-disable-line react-hooks/exhaustive-deps
+    }, [])  
 
     const docs = docsApi.data?.length ? docsApi.data : FALLBACK_DOCS
 
@@ -82,8 +82,8 @@ export const Page_federation_documents = () => {
     return (
         <VCT_PageContainer size="wide" animated>
             <div className="mb-6">
-                <h1 className="text-2xl font-bold tracking-tight text-[var(--vct-text-primary)]">Văn bản Pháp quy</h1>
-                <p className="text-sm text-[var(--vct-text-secondary)] mt-1">Quản lý quyết định, thông báo, quy chế và công văn chính thức của Liên đoàn.</p>
+                <h1 className="text-2xl font-bold tracking-tight text-(--vct-text-primary)">Văn bản Pháp quy</h1>
+                <p className="text-sm text-(--vct-text-secondary) mt-1">Quản lý quyết định, thông báo, quy chế và công văn chính thức của Liên đoàn.</p>
             </div>
 
             <VCT_StatRow items={[
@@ -100,11 +100,11 @@ export const Page_federation_documents = () => {
                     <div className="w-full max-w-[300px]">
                         <VCT_SearchInput value={search} onChange={setSearch} onClear={() => setSearch('')} placeholder="Tìm văn bản, số văn bản..." />
                     </div>
-                    <select value={typeFilter} onChange={(e) => setTypeFilter(e.target.value)} className="bg-[var(--vct-bg-elevated)] border border-[var(--vct-border-subtle)] text-[var(--vct-text-primary)] text-sm rounded-lg px-3 py-2 outline-none">
+                    <select value={typeFilter} onChange={(e) => setTypeFilter(e.target.value)} className="bg-(--vct-bg-elevated) border border-(--vct-border-subtle) text-(--vct-text-primary) text-sm rounded-lg px-3 py-2 outline-none">
                         <option value="">Tất cả loại</option>
                         {Object.entries(DOC_TYPE_MAP).map(([k, v]) => <option key={k} value={k}>{v.label}</option>)}
                     </select>
-                    <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className="bg-[var(--vct-bg-elevated)] border border-[var(--vct-border-subtle)] text-[var(--vct-text-primary)] text-sm rounded-lg px-3 py-2 outline-none">
+                    <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className="bg-(--vct-bg-elevated) border border-(--vct-border-subtle) text-(--vct-text-primary) text-sm rounded-lg px-3 py-2 outline-none">
                         <option value="">Tất cả trạng thái</option>
                         {Object.entries(STATUS_MAP).map(([k, v]) => <option key={k} value={k}>{v.label}</option>)}
                     </select>
@@ -120,14 +120,14 @@ export const Page_federation_documents = () => {
                         const dt = DOC_TYPE_MAP[doc.type]
                         const st = STATUS_MAP[doc.status]
                         return (
-                            <div key={doc.id} className="rounded-2xl border border-[var(--vct-border-subtle)] bg-[var(--vct-bg-glass)] p-4 hover:border-[var(--vct-accent-cyan)] transition-colors cursor-pointer" style={{ borderLeft: `4px solid ${dt.color}` }}>
+                            <div key={doc.id} className="rounded-2xl border border-(--vct-border-subtle) bg-(--vct-bg-glass) p-4 hover:border-(--vct-accent-cyan) transition-colors cursor-pointer" style={{ borderLeft: `4px solid ${dt.color}` }}>
                                 <VCT_Stack direction="row" justify="space-between" align="flex-start">
                                     <div className="flex-1 min-w-0">
                                         <div className="flex items-center gap-2 mb-1">
                                             <span className="text-xs font-mono px-2 py-0.5 rounded" style={{ background: dt.color + '15', color: dt.color }}>{dt.label}</span>
                                             <span className="text-xs font-mono opacity-60">{doc.number}</span>
                                         </div>
-                                        <div className="font-bold text-sm text-[var(--vct-text-primary)] leading-relaxed">{doc.title}</div>
+                                        <div className="font-bold text-sm text-(--vct-text-primary) leading-relaxed">{doc.title}</div>
                                         <div className="text-xs opacity-50 mt-1">{doc.issued_by} • {doc.issued_date}{doc.effective_date && ` • Hiệu lực: ${doc.effective_date}`}</div>
                                     </div>
                                     <VCT_Badge text={st.label} type={st.type} />

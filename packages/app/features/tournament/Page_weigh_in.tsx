@@ -81,15 +81,15 @@ export const Page_weigh_in = () => {
             <VCT_Toast isVisible={toast.show} message={toast.msg} type={toast.type} onClose={hideToast} />
 
             {uiState.error && (
-                <div className="mb-4 rounded-xl border border-red-500/25 bg-red-500/[0.08] px-3.5 py-3 text-[13px] font-bold text-red-500">
+                <div className="mb-4 rounded-xl border border-red-500/25 bg-red-500/8 px-3.5 py-3 text-[13px] font-bold text-red-500">
                     Không thể tải dữ liệu cân ký: {uiState.error}
                 </div>
             )}
 
             <div className="mb-6 flex items-center justify-between">
                 <div>
-                    <h1 className="text-2xl font-black uppercase text-[var(--vct-text-primary)]">Trạm Cân Ký</h1>
-                    <p className="text-sm font-medium text-[var(--vct-text-tertiary)]">Quản lý và cập nhật số liệu cân nặng thực tế</p>
+                    <h1 className="text-2xl font-black uppercase text-(--vct-text-primary)">Trạm Cân Ký</h1>
+                    <p className="text-sm font-medium text-(--vct-text-tertiary)">Quản lý và cập nhật số liệu cân nặng thực tế</p>
                 </div>
                 <VCT_SegmentedControl
                     options={[{ label: 'Giao diện Quản lý', value: 'admin' }, { label: 'Kiosk Mode', value: 'kiosk' }]}
@@ -265,7 +265,7 @@ export const Page_weigh_in = () => {
                             <motion.div key={r.id} layout initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} style={{ position: 'relative' }}>
                                 <div
                                     onClick={() => openWeigh(r)}
-                                    className={`relative cursor-pointer overflow-hidden rounded-2xl border-2 bg-[var(--vct-bg-card)] p-5 shadow-sm transition-all hover:-translate-y-1 hover:shadow-md ${isWait ? 'border-[var(--vct-accent-blue)]' : (isOverweight ? 'border-red-500' : 'border-emerald-500')}`}
+                                    className={`relative cursor-pointer overflow-hidden rounded-2xl border-2 bg-(--vct-bg-card) p-5 shadow-sm transition-all hover:-translate-y-1 hover:shadow-md ${isWait ? 'border-(--vct-accent-blue)' : (isOverweight ? 'border-red-500' : 'border-emerald-500')}`}
                                 >
                                     {/* Action overlay */}
                                     <div className="absolute right-3 top-3">
@@ -284,20 +284,20 @@ export const Page_weigh_in = () => {
                                         <div className="flex items-center gap-3">
                                             <VCT_AvatarLetter name={r.vdv_ten} size={56} className="shadow-sm" />
                                             <div>
-                                                <div className="text-lg font-black leading-tight text-[var(--vct-text-primary)]">{r.vdv_ten}</div>
-                                                <div className="text-xs font-semibold uppercase text-[var(--vct-text-tertiary)] opacity-80">{r.doan_ten} • {r.gioi === 'nam' ? 'Nam' : 'Nữ'}</div>
+                                                <div className="text-lg font-black leading-tight text-(--vct-text-primary)">{r.vdv_ten}</div>
+                                                <div className="text-xs font-semibold uppercase text-(--vct-text-tertiary) opacity-80">{r.doan_ten} • {r.gioi === 'nam' ? 'Nam' : 'Nữ'}</div>
                                             </div>
                                         </div>
 
-                                        <div className="flex justify-between rounded-xl bg-[var(--vct-bg-input)] p-3">
+                                        <div className="flex justify-between rounded-xl bg-(--vct-bg-input) p-3">
                                             <div className="text-center">
                                                 <div className="text-[10px] font-bold uppercase opacity-50">Đăng ký</div>
-                                                <div className="font-mono text-base font-bold text-[var(--vct-text-primary)]">{r.can_tu}-{r.can_den}k</div>
+                                                <div className="font-mono text-base font-bold text-(--vct-text-primary)">{r.can_tu}-{r.can_den}k</div>
                                             </div>
-                                            <div className="w-[1px] bg-[var(--vct-border-subtle)]" />
+                                            <div className="w-[1px] bg-(--vct-border-subtle)" />
                                             <div className="text-center">
                                                 <div className="text-[10px] font-bold uppercase opacity-50">Thực tế</div>
-                                                <div className={`font-mono text-base font-black ${isOverweight ? 'text-red-500' : (isWait ? 'text-[var(--vct-text-secondary)] opacity-30' : 'text-emerald-500')}`}>
+                                                <div className={`font-mono text-base font-black ${isOverweight ? 'text-red-500' : (isWait ? 'text-(--vct-text-secondary) opacity-30' : 'text-emerald-500')}`}>
                                                     {r.can_thuc_te > 0 ? `${r.can_thuc_te}k` : '—'}
                                                 </div>
                                             </div>
@@ -315,10 +315,10 @@ export const Page_weigh_in = () => {
                     })}
                 </div>
             ) : (
-                <div className="overflow-hidden rounded-2xl border border-[var(--vct-border-subtle)] bg-[var(--vct-bg-glass)]">
+                <div className="overflow-hidden rounded-2xl border border-(--vct-border-subtle) bg-(--vct-bg-glass)">
                     <table className="w-full border-collapse">
                         <thead>
-                            <tr className="border-b border-[var(--vct-border-strong)] bg-[var(--vct-bg-card)]">
+                            <tr className="border-b border-(--vct-border-strong) bg-(--vct-bg-card)">
                                 {['VĐV', 'Đoàn', 'Giới', 'Hạng cân ĐK', 'Cân thực tế', 'Kết quả', 'Thời gian', 'Ghi chú', ''].map((h, i) => (
                                     <th key={i} className="px-4 py-3 text-left text-[11px] font-bold uppercase opacity-50">{h}</th>
                                 ))}
@@ -357,7 +357,7 @@ export const Page_weigh_in = () => {
                             })}
                         </tbody>
                     </table>
-                    <div className="flex gap-6 border-t-2 border-[var(--vct-border-strong)] bg-[var(--vct-bg-card)] px-4 py-3 text-xs font-bold opacity-60">
+                    <div className="flex gap-6 border-t-2 border-(--vct-border-strong) bg-(--vct-bg-card) px-4 py-3 text-xs font-bold opacity-60">
                         <span>Hiện {filtered.length}/{records.length}</span>
                         <span>♂ {filtered.filter(r => r.gioi === 'nam').length} — ♀ {filtered.filter(r => r.gioi === 'nu').length}</span>
                     </div>

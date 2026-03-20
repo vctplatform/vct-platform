@@ -32,8 +32,8 @@ export const Page_province_reports = () => {
     return (
         <VCT_PageContainer size="wide" animated>
             <div className="mb-6">
-                <h1 className="text-2xl font-bold tracking-tight text-[var(--vct-text-primary)]">Báo cáo tổng hợp</h1>
-                <p className="text-sm text-[var(--vct-text-secondary)] mt-1">Báo cáo hoạt động và thống kê của Hội Võ thuật tỉnh.</p>
+                <h1 className="text-2xl font-bold tracking-tight text-(--vct-text-primary)">Báo cáo tổng hợp</h1>
+                <p className="text-sm text-(--vct-text-secondary) mt-1">Báo cáo hoạt động và thống kê của Hội Võ thuật tỉnh.</p>
             </div>
 
             <VCT_StatRow items={[
@@ -48,12 +48,12 @@ export const Page_province_reports = () => {
                 {MOCK_REPORTS.map(rpt => {
                     const s = STATUS_MAP[rpt.status] ?? { label: rpt.status, color: '#888' }
                     return (
-                        <div key={rpt.id} className="rounded-2xl border border-[var(--vct-border-subtle)] bg-[var(--vct-bg-card)] p-6 hover:border-[var(--vct-accent-cyan)] transition-colors">
+                        <div key={rpt.id} className="rounded-2xl border border-(--vct-border-subtle) bg-(--vct-bg-card) p-6 hover:border-(--vct-accent-cyan) transition-colors">
                             <div className="flex items-start justify-between mb-4">
                                 <div>
-                                    <h3 className="font-bold text-lg text-[var(--vct-text-primary)]">{rpt.title}</h3>
-                                    <div className="flex items-center gap-3 mt-1 text-xs text-[var(--vct-text-secondary)]">
-                                        <span className="px-2 py-0.5 rounded bg-[var(--vct-bg-glass)]">{TYPE_MAP[rpt.type]}</span>
+                                    <h3 className="font-bold text-lg text-(--vct-text-primary)">{rpt.title}</h3>
+                                    <div className="flex items-center gap-3 mt-1 text-xs text-(--vct-text-secondary)">
+                                        <span className="px-2 py-0.5 rounded bg-(--vct-bg-glass)">{TYPE_MAP[rpt.type]}</span>
                                         <span>Kỳ: {rpt.period}</span>
                                     </div>
                                 </div>
@@ -64,34 +64,34 @@ export const Page_province_reports = () => {
 
                             {/* Stats Grid */}
                             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
-                                <div className="text-center p-3 rounded-xl bg-[var(--vct-bg-glass)]">
-                                    <div className="text-xl font-bold text-[var(--vct-text-primary)]">{rpt.clubs}</div>
-                                    <div className="text-xs text-[var(--vct-text-secondary)]">CLB</div>
+                                <div className="text-center p-3 rounded-xl bg-(--vct-bg-glass)">
+                                    <div className="text-xl font-bold text-(--vct-text-primary)">{rpt.clubs}</div>
+                                    <div className="text-xs text-(--vct-text-secondary)">CLB</div>
                                 </div>
-                                <div className="text-center p-3 rounded-xl bg-[var(--vct-bg-glass)]">
-                                    <div className="text-xl font-bold text-[var(--vct-text-primary)]">{rpt.vdv}</div>
-                                    <div className="text-xs text-[var(--vct-text-secondary)]">VĐV</div>
+                                <div className="text-center p-3 rounded-xl bg-(--vct-bg-glass)">
+                                    <div className="text-xl font-bold text-(--vct-text-primary)">{rpt.vdv}</div>
+                                    <div className="text-xs text-(--vct-text-secondary)">VĐV</div>
                                 </div>
-                                <div className="text-center p-3 rounded-xl bg-[var(--vct-bg-glass)]">
-                                    <div className="text-xl font-bold text-[var(--vct-text-primary)]">{rpt.coaches}</div>
-                                    <div className="text-xs text-[var(--vct-text-secondary)]">HLV</div>
+                                <div className="text-center p-3 rounded-xl bg-(--vct-bg-glass)">
+                                    <div className="text-xl font-bold text-(--vct-text-primary)">{rpt.coaches}</div>
+                                    <div className="text-xs text-(--vct-text-secondary)">HLV</div>
                                 </div>
-                                <div className="text-center p-3 rounded-xl bg-[var(--vct-bg-glass)]">
-                                    <div className="text-xl font-bold text-[var(--vct-text-primary)]">{rpt.events}</div>
-                                    <div className="text-xs text-[var(--vct-text-secondary)]">Sự kiện</div>
+                                <div className="text-center p-3 rounded-xl bg-(--vct-bg-glass)">
+                                    <div className="text-xl font-bold text-(--vct-text-primary)">{rpt.events}</div>
+                                    <div className="text-xs text-(--vct-text-secondary)">Sự kiện</div>
                                 </div>
                             </div>
 
                             {/* Highlights & Issues */}
                             {rpt.highlights && (
                                 <div className="text-sm mb-2">
-                                    <span className="text-[var(--vct-text-secondary)]">Điểm nổi bật: </span>
-                                    <span className="text-[var(--vct-text-primary)]">{rpt.highlights}</span>
+                                    <span className="text-(--vct-text-secondary)">Điểm nổi bật: </span>
+                                    <span className="text-(--vct-text-primary)">{rpt.highlights}</span>
                                 </div>
                             )}
                             {rpt.issues && (
                                 <div className="text-sm">
-                                    <span className="text-[var(--vct-text-secondary)]">Vướng mắc: </span>
+                                    <span className="text-(--vct-text-secondary)">Vướng mắc: </span>
                                     <span className="text-[#f59e0b]">{rpt.issues}</span>
                                 </div>
                             )}

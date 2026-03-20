@@ -1,3 +1,4 @@
+'use client';
 'use client'
 
 import * as React from 'react'
@@ -60,16 +61,22 @@ export const SubscriptionDrawer = ({
             <VCT_Stack gap={20}>
                 {/* Drawer Tabs: Info / Billing */}
                 <div className="flex rounded-xl border border-(--vct-border-strong) overflow-hidden" role="tablist">
-                    {(['info', 'billing'] as const).map(t => (
-                        <button key={t} onClick={() => setDrawerTab(t)}
-                            role="tab"
-                            aria-selected={drawerTab === t}
-                            aria-label={t === 'info' ? 'Thông tin subscription' : 'Lịch sử thanh toán'}
-                            className={`flex-1 px-4 py-2 text-sm font-semibold transition-colors ${drawerTab === t ? 'bg-[#8b5cf6] text-white' : 'bg-(--vct-bg-elevated) text-(--vct-text-secondary) hover:bg-(--vct-bg-base)'}`}
-                        >
-                            {t === 'info' ? 'Thông tin' : 'Thanh toán'}
-                        </button>
-                    ))}
+                    <button onClick={() => setDrawerTab('info')}
+                        role="tab"
+                        aria-selected={drawerTab === 'info' ? true : false}
+                        aria-label="Thông tin subscription"
+                        className={`flex-1 px-4 py-2 text-sm font-semibold transition-colors ${drawerTab === 'info' ? 'bg-[#8b5cf6] text-white' : 'bg-(--vct-bg-elevated) text-(--vct-text-secondary) hover:bg-(--vct-bg-base)'}`}
+                    >
+                        Thông tin
+                    </button>
+                    <button onClick={() => setDrawerTab('billing')}
+                        role="tab"
+                        aria-selected={drawerTab === 'billing' ? true : false}
+                        aria-label="Lịch sử thanh toán"
+                        className={`flex-1 px-4 py-2 text-sm font-semibold transition-colors ${drawerTab === 'billing' ? 'bg-[#8b5cf6] text-white' : 'bg-(--vct-bg-elevated) text-(--vct-text-secondary) hover:bg-(--vct-bg-base)'}`}
+                    >
+                        Thanh toán
+                    </button>
                 </div>
 
                 {drawerTab === 'info' && (
@@ -88,8 +95,8 @@ export const SubscriptionDrawer = ({
                                     <span className="text-(--vct-text-tertiary)">{Math.max(0, daysUntil(selected.current_period_end))} / {Math.ceil((new Date(selected.current_period_end).getTime() - new Date(selected.current_period_start).getTime()) / (1000 * 60 * 60 * 24))} ngày</span>
                                 </div>
                                 <div className="w-full h-2 bg-[#8b5cf620] rounded-full overflow-hidden">
-                                    <div className="h-full bg-linear-to-r from-[#8b5cf6] to-[#a855f7] rounded-full transition-all"
-                                        style={{ width: `${Math.min(100, Math.max(0, 100 - (daysUntil(selected.current_period_end) / Math.max(1, Math.ceil((new Date(selected.current_period_end).getTime() - new Date(selected.current_period_start).getTime()) / (1000 * 60 * 60 * 24))) * 100)))}%` }}
+                                    <div className="admin-progress-width bg-linear-to-r from-[#8b5cf6] to-[#a855f7]"
+                                        style={{ '--_progress-width': `${Math.min(100, Math.max(0, 100 - (daysUntil(selected.current_period_end) / Math.max(1, Math.ceil((new Date(selected.current_period_end).getTime() - new Date(selected.current_period_start).getTime()) / (1000 * 60 * 60 * 24))) * 100)))}%` } as React.CSSProperties}
                                     />
                                 </div>
                             </div>

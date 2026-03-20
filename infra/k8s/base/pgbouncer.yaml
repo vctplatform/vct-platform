@@ -1,0 +1,143 @@
+# ════════════════════════════════════════
+# PgBouncer — Connection Pooler for PostgreSQL
+# Reduces connection overhead, enables pooling modes
+# ════════════════════════════════════════
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: pgbouncer-config
+  namespace: vct-production
+data:
+  pgbouncer.ini: |
+    [databases]
+    vct_platform = host=postgresql port=5432 dbname=vct_platform
+
+    [pgbouncer]
+    listen_addr = 0.0.0.0
+    listen_port = 6432
+    auth_type = md5
+    auth_file = /etc/pgbouncer/userlist.txt
+
+    ; Pool mode: transaction (best for web apps)
+    pool_mode = transaction
+
+    ; Pool sizing
+    default_pool_size = 20
+    min_pool_size = 5
+    reserve_pool_size = 5
+    reserve_pool_timeout = 3
+
+    ; Connection limits
+    max_client_conn = 200
+    max_db_connections = 50
+
+    ; Timeouts
+    server_idle_timeout = 300
+    client_idle_timeout = 600
+    query_timeout = 30
+    query_wait_timeout = 10
+    client_login_timeout = 15
+
+    ; Logging
+    log_connections = 1
+    log_disconnections = 1
+    log_pooler_errors = 1
+    stats_period = 60
+
+    ; DNS
+    dns_max_ttl = 15
+
+    ; Admin
+    admin_users = pgbouncer_admin
+    stats_users = pgbouncer_stats
+    ignore_startup_parameters = extra_float_digits
+
+  userlist.txt: |
+    "vct_user" "md5_hash_placeholder"
+    "pgbouncer_admin" "md5_hash_placeholder"
+    "pgbouncer_stats" "md5_hash_placeholder"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pgbouncer
+  namespace: vct-production
+  labels:
+    app.kubernetes.io/name: pgbouncer
+    app.kubernetes.io/part-of: vct-platform
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: pgbouncer
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: pgbouncer
+        app.kubernetes.io/part-of: vct-platform
+    spec:
+      serviceAccountName: vct-api
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        fsGroup: 1000
+      containers:
+        - name: pgbouncer
+          image: bitnami/pgbouncer:1.22.0
+          ports:
+            - containerPort: 6432
+              name: pgbouncer
+          resources:
+            requests:
+              cpu: 50m
+              memory: 64Mi
+            limits:
+              cpu: 200m
+              memory: 128Mi
+          livenessProbe:
+            tcpSocket:
+              port: 6432
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          readinessProbe:
+            tcpSocket:
+              port: 6432
+            initialDelaySeconds: 5
+          volumeMounts:
+            - name: config
+              mountPath: /bitnami/pgbouncer/conf
+              readOnly: true
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: ["ALL"]
+      volumes:
+        - name: config
+          configMap:
+            name: pgbouncer-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: pgbouncer
+  namespace: vct-production
+spec:
+  ports:
+    - port: 6432
+      targetPort: 6432
+      name: pgbouncer
+  selector:
+    app.kubernetes.io/name: pgbouncer
+---
+# PodDisruptionBudget — at least 1 replica always available
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: pgbouncer-pdb
+  namespace: vct-production
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: pgbouncer

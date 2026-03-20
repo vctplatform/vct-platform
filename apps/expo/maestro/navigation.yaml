@@ -1,0 +1,46 @@
+appId: com.vctplatform.app
+---
+# VCT Platform — Tab Navigation E2E Flow
+# Run: maestro test apps/expo/maestro/navigation.yaml
+# Prerequisites: User logged in (run login.yaml first)
+
+- launchApp
+
+# ── Wait for Home Screen ────────────────────────
+- extendedWaitUntil:
+    visible: "Trang chủ"
+    timeout: 15000
+
+# ── Navigate to Tournaments Tab ─────────────────
+- tapOn: "Giải đấu"
+- extendedWaitUntil:
+    visible: "Giải đấu"
+    timeout: 5000
+
+# ── Navigate to Rankings Tab ────────────────────
+- tapOn: "Xếp hạng"
+- extendedWaitUntil:
+    visible: "Xếp hạng"
+    timeout: 5000
+
+# ── Navigate to Notifications Tab ───────────────
+- tapOn: "Thông báo"
+- extendedWaitUntil:
+    visible: "Thông báo"
+    timeout: 5000
+
+# ── Navigate to Profile Tab ────────────────────
+- tapOn: "Hồ sơ"
+- extendedWaitUntil:
+    visible: "Hồ sơ"
+    timeout: 5000
+
+# ── Verify Settings Access ─────────────────────
+- tapOn: "Cài đặt"
+- extendedWaitUntil:
+    visible: "Cài đặt"
+    timeout: 5000
+
+# ── Return to Home ─────────────────────────────
+- tapOn: "Trang chủ"
+- assertVisible: "Trang chủ"

@@ -799,4 +799,8 @@ export const en: Record<string, string> = {
     'admin.refdata.search': 'Search catalogs...',
     'admin.refdata.noResults': 'No catalog items found',
     'admin.refdata.create': 'Add New Item',
+
+    // ── Audit Log ──
+    'admin.audit.title': 'System Audit Log',
+    'admin.audit.subtitle': 'Monitor all admin activities — create, update, delete, approve',
 }

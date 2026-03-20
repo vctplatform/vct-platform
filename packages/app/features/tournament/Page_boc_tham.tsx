@@ -1,15 +1,16 @@
 'use client';
+'use client';
 import * as React from 'react';
-import { useState, useMemo, useCallback } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { useState, useMemo, useCallback, useEffect } from 'react';
+import { motion } from 'framer-motion';
 import {
     VCT_Card, VCT_Badge, VCT_Button, VCT_Text, VCT_Stack, VCT_Toast,
-    VCT_Modal, VCT_EmptyState, VCT_Select, VCT_Tabs
+    VCT_EmptyState, VCT_Select
 } from '../components/vct-ui';
 import { VCT_PageContainer, VCT_StatRow } from '../components/vct-ui';
 import type { StatItem } from '../components/VCT_StatRow';
 import { VCT_Icons } from '../components/vct-icons';
-import { HANG_CANS, genId } from '../data/mock-data';
+import { useHangCans, genId } from '../hooks/useTournamentAPI';
 import type { VanDongVien } from '../data/types';
 import { repositories, useEntityCollection } from '../data/repository';
 import { useToast } from '../hooks/use-toast';
@@ -104,14 +105,7 @@ function drawWithConstraint(vdvs: VanDongVien[]): DrawSlot[] {
     return slots;
 }
 
-// ════════════════════════════════════════
-// CONTENT OPTIONS (Hạng cân Đối kháng + Quyền)
-// ════════════════════════════════════════
-const CONTENT_OPTIONS = HANG_CANS.filter(h => h.trang_thai === 'active').map(h => ({
-    value: h.id,
-    label: `ĐK ${h.gioi === 'nam' ? 'Nam' : 'Nữ'} ${h.can_tu}-${h.can_den}kg ${h.lua_tuoi}`,
-    type: 'doi_khang' as const,
-}));
+
 
 // ════════════════════════════════════════
 // COLOR HELPERS
@@ -131,11 +125,28 @@ function getTeamColor(doanId: string): string {
 // PAGE COMPONENT
 // ════════════════════════════════════════
 export const Page_boc_tham = () => {
+    const { data: hangCans } = useHangCans();
+    const contentOptions = useMemo(() => {
+        const hc = hangCans || [];
+        return hc.filter(h => h.trang_thai === 'active').map(h => ({
+            value: h.id,
+            label: `ĐK ${h.gioi === 'nam' ? 'Nam' : 'Nữ'} ${h.can_tu}-${h.can_den}kg ${h.lua_tuoi}`,
+            type: 'doi_khang' as const,
+        }));
+    }, [hangCans]);
+
     const registrationStore = useEntityCollection(repositories.registration.mock);
     const athleteStore = useEntityCollection(repositories.athletes.mock);
     const registrations = registrationStore.items;
     const athletes = athleteStore.items;
-    const [selectedContent, setSelectedContent] = useState(CONTENT_OPTIONS[0]?.value || '');
+    const [selectedContent, setSelectedContent] = useState('');
+
+    useEffect(() => {
+        if (!selectedContent && contentOptions.length > 0) {
+            setSelectedContent(contentOptions[0]?.value || '');
+        }
+    }, [contentOptions, selectedContent]);
+
     const [drawResults, setDrawResults] = useState<DrawResult[]>([]);
     const [isDrawing, setIsDrawing] = useState(false);
     const [animPhase, setAnimPhase] = useState<'idle' | 'shuffle' | 'reveal'>('idle');
@@ -144,14 +155,14 @@ export const Page_boc_tham = () => {
 
     // Get eligible VDVs for selected content
     const eligibleVDVs = useMemo(() => {
-        const content = CONTENT_OPTIONS.find(c => c.value === selectedContent);
+        const content = contentOptions.find(c => c.value === selectedContent);
         if (!content) return [];
         // Find registrations for this content
         const regIds = registrations
             .filter(d => d.nd_id === selectedContent && d.trang_thai === 'da_duyet')
             .map(d => d.vdv_id);
         return athletes.filter(v => regIds.includes(v.id) && v.trang_thai === 'du_dieu_kien');
-    }, [selectedContent, athletes, registrations]);
+    }, [selectedContent, athletes, registrations, contentOptions]);
 
     // Check if already drawn
     const existingDraw = useMemo(() => drawResults.find(d => d.nd_id === selectedContent), [drawResults, selectedContent]);
@@ -171,7 +182,7 @@ export const Page_boc_tham = () => {
         setAnimPhase('shuffle');
 
         // Shuffle animation: show random arrangements quickly
-        const content = CONTENT_OPTIONS.find(c => c.value === selectedContent);
+        const content = contentOptions.find(c => c.value === selectedContent);
         let animCount = 0;
         const animInterval = setInterval(() => {
             const shuffled = drawWithConstraint(eligibleVDVs);
@@ -201,7 +212,7 @@ export const Page_boc_tham = () => {
                 }, 1500);
             }
         }, 200);
-    }, [eligibleVDVs, selectedContent, showToast]);
+    }, [eligibleVDVs, selectedContent, showToast, contentOptions]);
 
     const handleConfirm = useCallback(() => {
         setDrawResults(prev => prev.map(d =>
@@ -223,7 +234,7 @@ export const Page_boc_tham = () => {
             <VCT_Toast isVisible={toast.show} message={toast.msg} type={toast.type} onClose={hideToast} />
 
             {(registrationStore.uiState.error || athleteStore.uiState.error) && (
-                <div className="mb-4 rounded-xl border border-red-500/25 bg-red-500/[0.08] px-3.5 py-3 text-[13px] font-bold text-red-500">
+                <div className="mb-4 rounded-xl border border-red-500/25 bg-red-500/8 px-3.5 py-3 text-[13px] font-bold text-red-500">
                     Không thể tải đủ dữ liệu để bốc thăm.
                 </div>
             )}
@@ -262,7 +273,7 @@ export const Page_boc_tham = () => {
                     <div className="flex-1">
                         <VCT_Select
                             label="Hạng cân / Nội dung"
-                            options={CONTENT_OPTIONS.map(c => ({ value: c.value, label: c.label }))}
+                            options={contentOptions.map((c: any) => ({ value: c.value, label: c.label }))}
                             value={selectedContent}
                             onChange={setSelectedContent}
                         />
@@ -338,7 +349,7 @@ export const Page_boc_tham = () => {
             {/* ── DRAW RESULT BRACKET ── */}
             {displaySlots.length > 0 && (
                 <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }} className="mt-6">
-                    <VCT_Card title={`Kết quả Bốc thăm — ${CONTENT_OPTIONS.find(c => c.value === selectedContent)?.label || ''}`}
+                    <VCT_Card title={`Kết quả Bốc thăm — ${contentOptions.find((c: any) => c.value === selectedContent)?.label || ''}`}
                         headerAction={existingDraw && <VCT_Badge text={`Schema ${existingDraw.schema} • ${existingDraw.timestamp}`} type="info" />}
                     >
                         {/* Bracket Table */}

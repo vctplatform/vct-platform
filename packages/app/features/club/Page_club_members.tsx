@@ -316,7 +316,7 @@ export const Page_club_members = () => {
             <VCT_AvatarLetter name={row.fullName} size={34} />
             <div>
               <div className="text-sm font-semibold">{row.fullName}</div>
-              <div className="text-xs text-[var(--vct-text-secondary)]">{row.email || row.phone}</div>
+              <div className="text-xs text-(--vct-text-secondary)">{row.email || row.phone}</div>
             </div>
           </div>
         ),
@@ -339,7 +339,7 @@ export const Page_club_members = () => {
         key: 'classes',
         label: 'Lop',
         render: (row: ClubMember) => (
-          <span className="text-xs text-[var(--vct-text-secondary)]">
+          <span className="text-xs text-(--vct-text-secondary)">
             {row.classIds.length === 0
               ? 'Chua xep lop'
               : row.classIds
@@ -391,7 +391,7 @@ export const Page_club_members = () => {
               <button
                 type="button"
                 onClick={() => openEditModal(row)}
-                className="rounded-md bg-[var(--vct-bg-input)] px-2 py-1 text-xs font-semibold"
+                className="rounded-md bg-(--vct-bg-input) px-2 py-1 text-xs font-semibold"
               >
                 Sua
               </button>
@@ -449,10 +449,10 @@ export const Page_club_members = () => {
       />
 
       <div className="mb-6">
-        <h1 className="text-2xl font-bold tracking-tight text-[var(--vct-text-primary)]">
+        <h1 className="text-2xl font-bold tracking-tight text-(--vct-text-primary)">
           Quan ly thanh vien CLB
         </h1>
-        <p className="mt-1 text-sm text-[var(--vct-text-secondary)]">
+        <p className="mt-1 text-sm text-(--vct-text-secondary)">
           Ho so vo sinh, HLV, tro giang va quy trinh duyet gia nhap.
         </p>
       </div>
@@ -554,7 +554,7 @@ export const Page_club_members = () => {
           onAction={can('create') ? openCreateModal : undefined}
         />
       ) : (
-        <div className="rounded-2xl border border-[var(--vct-border-subtle)] bg-[var(--vct-bg-glass)] p-2">
+        <div className="rounded-2xl border border-(--vct-border-subtle) bg-(--vct-bg-glass) p-2">
           <VCT_Table columns={columns} data={filteredMembers} rowKey="id" />
         </div>
       )}

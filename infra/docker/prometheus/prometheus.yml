@@ -1,0 +1,37 @@
+# VCT Platform — Prometheus Configuration
+# Scrapes PostgreSQL metrics via postgres_exporter
+
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+rule_files:
+  - /etc/prometheus/alert_rules.yml
+
+scrape_configs:
+  # ── PostgreSQL Exporter ──────────────────────────────────────
+  - job_name: 'postgres'
+    static_configs:
+      - targets: ['pg-exporter:9187']
+        labels:
+          service: 'vct-postgres'
+
+  # ── PgBouncer (via exporter) ─────────────────────────────────
+  - job_name: 'pgbouncer'
+    static_configs:
+      - targets: ['pg-exporter:9187']
+        labels:
+          service: 'vct-pgbouncer'
+
+  # ── Backend API Health ───────────────────────────────────────
+  - job_name: 'vct-backend'
+    metrics_path: /healthz
+    static_configs:
+      - targets: ['api:18080']
+        labels:
+          service: 'vct-backend'
+
+  # ── Prometheus Self ──────────────────────────────────────────
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']

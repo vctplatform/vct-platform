@@ -16,7 +16,7 @@ import * as React from 'react'
 /* ---------- Try to import next/image at build time ---------- */
 let NextImage: React.ComponentType<any> | null = null
 try {
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
+     
     NextImage = require('next/image').default
 } catch {
     // Not in a Next.js environment — will fall back to <img>

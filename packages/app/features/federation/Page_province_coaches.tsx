@@ -38,8 +38,8 @@ export const Page_province_coaches = () => {
     return (
         <VCT_PageContainer size="wide" animated>
             <div className="mb-6">
-                <h1 className="text-2xl font-bold tracking-tight text-[var(--vct-text-primary)]">Quản lý HLV</h1>
-                <p className="text-sm text-[var(--vct-text-secondary)] mt-1">Danh sách Huấn luyện viên thuộc Hội Võ thuật tỉnh.</p>
+                <h1 className="text-2xl font-bold tracking-tight text-(--vct-text-primary)">Quản lý HLV</h1>
+                <p className="text-sm text-(--vct-text-secondary) mt-1">Danh sách Huấn luyện viên thuộc Hội Võ thuật tỉnh.</p>
             </div>
 
             <VCT_StatRow items={[
@@ -56,9 +56,9 @@ export const Page_province_coaches = () => {
                     placeholder="Tìm HLV theo tên..."
                     value={search}
                     onChange={e => setSearch(e.target.value)}
-                    className="flex-1 min-w-[200px] px-4 py-2 rounded-xl border border-[var(--vct-border-subtle)] bg-[var(--vct-bg-glass)] text-sm text-[var(--vct-text-primary)] outline-none focus:border-[var(--vct-accent-cyan)]"
+                    className="flex-1 min-w-[200px] px-4 py-2 rounded-xl border border-(--vct-border-subtle) bg-(--vct-bg-glass) text-sm text-(--vct-text-primary) outline-none focus:border-(--vct-accent-cyan)"
                 />
-                <select value={levelFilter} onChange={e => setLevelFilter(e.target.value)} className="px-4 py-2 rounded-xl border border-[var(--vct-border-subtle)] bg-[var(--vct-bg-glass)] text-sm text-[var(--vct-text-primary)] outline-none">
+                <select value={levelFilter} onChange={e => setLevelFilter(e.target.value)} className="px-4 py-2 rounded-xl border border-(--vct-border-subtle) bg-(--vct-bg-glass) text-sm text-(--vct-text-primary) outline-none">
                     <option value="ALL">Tất cả cấp bậc</option>
                     <option value="MASTER">Bậc Cao</option>
                     <option value="NATIONAL">Quốc gia</option>
@@ -69,21 +69,21 @@ export const Page_province_coaches = () => {
             {/* Coach Cards */}
             <div className="grid gap-4 grid-cols-1 md:grid-cols-2">
                 {filtered.map(coach => (
-                    <div key={coach.id} className="rounded-2xl border border-[var(--vct-border-subtle)] bg-[var(--vct-bg-card)] p-5 hover:border-[var(--vct-accent-cyan)] transition-colors">
+                    <div key={coach.id} className="rounded-2xl border border-(--vct-border-subtle) bg-(--vct-bg-card) p-5 hover:border-(--vct-accent-cyan) transition-colors">
                         <div className="flex items-start justify-between mb-3">
                             <div>
-                                <h3 className="font-bold text-[var(--vct-text-primary)]">{coach.fullName}</h3>
-                                <span className="text-xs text-[var(--vct-text-secondary)]">{coach.clubName}</span>
+                                <h3 className="font-bold text-(--vct-text-primary)">{coach.fullName}</h3>
+                                <span className="text-xs text-(--vct-text-secondary)">{coach.clubName}</span>
                             </div>
                             <span className="text-xs font-bold px-2 py-1 rounded-lg" style={{ background: `${(LEVEL_MAP[coach.level]?.color ?? '#888')}22`, color: LEVEL_MAP[coach.level]?.color ?? '#888' }}>
                                 {LEVEL_MAP[coach.level]?.label ?? coach.level}
                             </span>
                         </div>
                         <div className="grid grid-cols-2 gap-2 text-sm">
-                            <div className="text-[var(--vct-text-secondary)]">Chứng chỉ <span className="text-[var(--vct-text-primary)] font-medium ml-1">{coach.certNumber}</span></div>
-                            <div className="text-[var(--vct-text-secondary)]">Cấp đai <span className="text-[var(--vct-text-primary)] font-medium ml-1">{coach.beltName}</span></div>
-                            <div className="text-[var(--vct-text-secondary)]">Kinh nghiệm <span className="text-[var(--vct-text-primary)] font-medium ml-1">{coach.yearsExp} năm</span></div>
-                            <div className="text-[var(--vct-text-secondary)]">Chuyên ngành <span className="text-[var(--vct-text-primary)] font-medium ml-1">{coach.spec}</span></div>
+                            <div className="text-(--vct-text-secondary)">Chứng chỉ <span className="text-(--vct-text-primary) font-medium ml-1">{coach.certNumber}</span></div>
+                            <div className="text-(--vct-text-secondary)">Cấp đai <span className="text-(--vct-text-primary) font-medium ml-1">{coach.beltName}</span></div>
+                            <div className="text-(--vct-text-secondary)">Kinh nghiệm <span className="text-(--vct-text-primary) font-medium ml-1">{coach.yearsExp} năm</span></div>
+                            <div className="text-(--vct-text-secondary)">Chuyên ngành <span className="text-(--vct-text-primary) font-medium ml-1">{coach.spec}</span></div>
                         </div>
                     </div>
                 ))}

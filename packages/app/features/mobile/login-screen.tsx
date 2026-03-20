@@ -23,7 +23,7 @@ import { hapticLight, hapticSuccess, hapticError } from './haptics'
 // Real logo, cyan accent, synced with web design system
 // ═══════════════════════════════════════════════════════════════
 
-// eslint-disable-next-line @typescript-eslint/no-require-imports
+ 
 const logoSource = require('app/assets/logo-vct.png')
 
 const s = StyleSheet.create({

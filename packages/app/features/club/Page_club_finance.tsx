@@ -317,7 +317,7 @@ export const Page_club_finance = () => {
         render: (row: ClubFinanceEntry) => (
           <div>
             <div className="text-sm font-semibold">{row.description}</div>
-            <div className="text-xs text-[var(--vct-text-secondary)]">
+            <div className="text-xs text-(--vct-text-secondary)">
               {row.category} • {row.date}
             </div>
           </div>
@@ -384,7 +384,7 @@ export const Page_club_finance = () => {
               <button
                 type="button"
                 onClick={() => openEditModal(row)}
-                className="rounded-md bg-[var(--vct-bg-input)] px-2 py-1 text-xs font-semibold"
+                className="rounded-md bg-(--vct-bg-input) px-2 py-1 text-xs font-semibold"
               >
                 Sua
               </button>
@@ -472,10 +472,10 @@ export const Page_club_finance = () => {
       />
 
       <div className="mb-6">
-        <h1 className="text-2xl font-bold tracking-tight text-[var(--vct-text-primary)]">
+        <h1 className="text-2xl font-bold tracking-tight text-(--vct-text-primary)">
           Quan ly tai chinh CLB
         </h1>
-        <p className="mt-1 text-sm text-[var(--vct-text-secondary)]">
+        <p className="mt-1 text-sm text-(--vct-text-secondary)">
           So thu chi, cong no giao dich va tong quan dong tien theo thang.
         </p>
       </div>
@@ -551,12 +551,12 @@ export const Page_club_finance = () => {
         }}
       />
 
-      <div className="mb-4 rounded-2xl border border-[var(--vct-border-subtle)] bg-[var(--vct-bg-glass)] p-4">
-        <div className="mb-3 text-sm font-semibold text-[var(--vct-text-primary)]">
+      <div className="mb-4 rounded-2xl border border-(--vct-border-subtle) bg-(--vct-bg-glass) p-4">
+        <div className="mb-3 text-sm font-semibold text-(--vct-text-primary)">
           Dong tien theo thang
         </div>
         {monthlyNet.length === 0 ? (
-          <div className="text-xs text-[var(--vct-text-secondary)]">Chua co du lieu.</div>
+          <div className="text-xs text-(--vct-text-secondary)">Chua co du lieu.</div>
         ) : (
           <div className="flex items-end gap-2 overflow-x-auto">
             {monthlyNet.map((item) => {
@@ -569,7 +569,7 @@ export const Page_club_finance = () => {
                     style={{ height: `${normalized}px` }}
                     title={`${item.month}: ${money(item.value)}`}
                   />
-                  <div className="text-[11px] text-[var(--vct-text-secondary)]">{item.month}</div>
+                  <div className="text-[11px] text-(--vct-text-secondary)">{item.month}</div>
                 </div>
               )
             })}
@@ -586,7 +586,7 @@ export const Page_club_finance = () => {
           onAction={can('create') ? openCreateModal : undefined}
         />
       ) : (
-        <div className="rounded-2xl border border-[var(--vct-border-subtle)] bg-[var(--vct-bg-glass)] p-2">
+        <div className="rounded-2xl border border-(--vct-border-subtle) bg-(--vct-bg-glass) p-2">
           <VCT_Table columns={columns} data={filteredEntries} rowKey="id" />
         </div>
       )}

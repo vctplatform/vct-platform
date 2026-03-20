@@ -1,0 +1,113 @@
+# ════════════════════════════════════════
+# Argo Rollouts — Canary Deployment
+# Progressive delivery with automated analysis
+# ════════════════════════════════════════
+apiVersion: argoproj.io/v1alpha1
+kind: Rollout
+metadata:
+  name: vct-api-canary
+  namespace: vct-production
+  labels:
+    app.kubernetes.io/name: vct-api
+    app.kubernetes.io/component: backend
+spec:
+  replicas: 4
+  revisionHistoryLimit: 5
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: vct-api
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: vct-api
+    spec:
+      containers:
+        - name: api
+          image: ghcr.io/vct-platform/backend:latest
+          ports:
+            - containerPort: 18080
+          env:
+            - name: VCT_ENV
+              value: production
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 18080
+            initialDelaySeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: 18080
+            initialDelaySeconds: 5
+  strategy:
+    canary:
+      # Traffic splitting steps
+      steps:
+        - setWeight: 5
+        - pause: { duration: 2m }
+        - analysis:
+            templates:
+              - templateName: vct-canary-analysis
+        - setWeight: 20
+        - pause: { duration: 5m }
+        - analysis:
+            templates:
+              - templateName: vct-canary-analysis
+        - setWeight: 50
+        - pause: { duration: 5m }
+        - analysis:
+            templates:
+              - templateName: vct-canary-analysis
+        - setWeight: 80
+        - pause: { duration: 3m }
+
+      # Canary service for traffic splitting
+      canaryService: vct-api-canary-svc
+      stableService: vct-api-stable-svc
+
+      # Traffic routing via Nginx
+      trafficRouting:
+        nginx:
+          stableIngress: vct-api-ingress
+          annotationPrefix: nginx.ingress.kubernetes.io
+
+      # Anti-affinity: don't schedule canary on same node as stable
+      antiAffinity:
+        preferredDuringSchedulingIgnoredDuringExecution:
+          weight: 100
+
+      # Auto rollback on failure
+      abortScaleDownDelaySeconds: 30
+---
+# Stable service
+apiVersion: v1
+kind: Service
+metadata:
+  name: vct-api-stable-svc
+  namespace: vct-production
+spec:
+  ports:
+    - port: 18080
+      targetPort: 18080
+  selector:
+    app.kubernetes.io/name: vct-api
+---
+# Canary service
+apiVersion: v1
+kind: Service
+metadata:
+  name: vct-api-canary-svc
+  namespace: vct-production
+spec:
+  ports:
+    - port: 18080
+      targetPort: 18080
+  selector:
+    app.kubernetes.io/name: vct-api

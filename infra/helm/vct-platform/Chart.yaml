@@ -1,0 +1,21 @@
+apiVersion: v2
+name: vct-platform
+description: VCT Platform — Vietnamese Traditional Martial Arts Management
+type: application
+version: 0.1.0
+appVersion: "1.0.0"
+
+keywords:
+  - vct
+  - martial-arts
+  - platform
+  - go
+  - nextjs
+
+home: https://github.com/vct-platform/vct-platform
+sources:
+  - https://github.com/vct-platform/vct-platform
+
+maintainers:
+  - name: VCT Platform Team
+    email: admin@vct-platform.com

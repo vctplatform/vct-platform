@@ -72,14 +72,14 @@ export const Page_club_internal = () => {
             <VCT_Toast isVisible={toast.show} message={toast.msg} type={toast.type} onClose={() => setToast(p => ({ ...p, show: false }))} />
 
             <div className="mb-6">
-                <h1 className="text-2xl font-bold tracking-tight text-[var(--vct-text-primary)]">🏠 Quản Lý Nội Bộ CLB</h1>
-                <p className="text-sm text-[var(--vct-text-secondary)] mt-1">{dashboard?.club_name || 'Câu lạc bộ Võ cổ truyền'}</p>
+                <h1 className="text-2xl font-bold tracking-tight text-(--vct-text-primary)">🏠 Quản Lý Nội Bộ CLB</h1>
+                <p className="text-sm text-(--vct-text-secondary) mt-1">{dashboard?.club_name || 'Câu lạc bộ Võ cổ truyền'}</p>
             </div>
 
             {/* Tab navigation */}
-            <div className="flex gap-1 p-1 mb-6 rounded-xl bg-[var(--vct-bg-elevated)] border border-[var(--vct-border-subtle)] w-fit">
+            <div className="flex gap-1 p-1 mb-6 rounded-xl bg-(--vct-bg-elevated) border border-(--vct-border-subtle) w-fit">
                 {tabs.map(t => (
-                    <button key={t.key} onClick={() => setTab(t.key)} className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all ${tab === t.key ? 'bg-[var(--vct-accent)] text-white shadow-sm' : 'text-[var(--vct-text-secondary)] hover:text-[var(--vct-text-primary)] hover:bg-[var(--vct-bg-hover)]'}`}>
+                    <button key={t.key} onClick={() => setTab(t.key)} className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all ${tab === t.key ? 'bg-(--vct-accent) text-white shadow-sm' : 'text-(--vct-text-secondary) hover:text-(--vct-text-primary) hover:bg-(--vct-bg-hover)'}`}>
                         {t.icon}{t.label}
                     </button>
                 ))}
@@ -101,13 +101,13 @@ export const Page_club_internal = () => {
                     ] as StatItem[]} className="mb-6" />
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div className="rounded-2xl border border-[var(--vct-border-subtle)] bg-[var(--vct-bg-card)] p-5">
-                            <h3 className="text-sm font-bold text-[var(--vct-text-primary)] mb-4 flex items-center gap-2"><VCT_Icons.Users size={16} /> Thành viên mới nhất</h3>
-                            {members.slice(0, 5).map(m => (<div key={m.id} className="flex justify-between items-center py-2 border-b border-[var(--vct-border-subtle)] last:border-0"><div className="text-sm font-medium">{m.full_name}<span className="text-xs opacity-50 ml-2">{MEMBER_TYPE_MAP[m.member_type] || m.member_type}</span></div><VCT_Badge text={(STATUS_MAP[m.status] || { label: m.status }).label} type={(STATUS_MAP[m.status] || { type: 'neutral' }).type} /></div>))}
+                        <div className="rounded-2xl border border-(--vct-border-subtle) bg-(--vct-bg-card) p-5">
+                            <h3 className="text-sm font-bold text-(--vct-text-primary) mb-4 flex items-center gap-2"><VCT_Icons.Users size={16} /> Thành viên mới nhất</h3>
+                            {members.slice(0, 5).map(m => (<div key={m.id} className="flex justify-between items-center py-2 border-b border-(--vct-border-subtle) last:border-0"><div className="text-sm font-medium">{m.full_name}<span className="text-xs opacity-50 ml-2">{MEMBER_TYPE_MAP[m.member_type] || m.member_type}</span></div><VCT_Badge text={(STATUS_MAP[m.status] || { label: m.status }).label} type={(STATUS_MAP[m.status] || { type: 'neutral' }).type} /></div>))}
                         </div>
-                        <div className="rounded-2xl border border-[var(--vct-border-subtle)] bg-[var(--vct-bg-card)] p-5">
-                            <h3 className="text-sm font-bold text-[var(--vct-text-primary)] mb-4 flex items-center gap-2"><VCT_Icons.LayoutGrid size={16} /> Lớp tập</h3>
-                            {classes.slice(0, 5).map(c => (<div key={c.id} className="flex justify-between items-center py-2 border-b border-[var(--vct-border-subtle)] last:border-0"><div className="text-sm font-medium">{c.name}<span className="text-xs opacity-50 ml-2">{LEVEL_MAP[c.level] || c.level} • {c.current_count}/{c.max_students}</span></div><VCT_Badge text={fmtVND(c.monthly_fee)} type="info" /></div>))}
+                        <div className="rounded-2xl border border-(--vct-border-subtle) bg-(--vct-bg-card) p-5">
+                            <h3 className="text-sm font-bold text-(--vct-text-primary) mb-4 flex items-center gap-2"><VCT_Icons.LayoutGrid size={16} /> Lớp tập</h3>
+                            {classes.slice(0, 5).map(c => (<div key={c.id} className="flex justify-between items-center py-2 border-b border-(--vct-border-subtle) last:border-0"><div className="text-sm font-medium">{c.name}<span className="text-xs opacity-50 ml-2">{LEVEL_MAP[c.level] || c.level} • {c.current_count}/{c.max_students}</span></div><VCT_Badge text={fmtVND(c.monthly_fee)} type="info" /></div>))}
                         </div>
                     </div>
                 </>
@@ -121,13 +121,13 @@ export const Page_club_internal = () => {
                         <VCT_Button icon={<VCT_Icons.Plus size={16} />} onClick={() => showToast('Chức năng thêm thành viên đang phát triển', 'info')}>Thêm thành viên</VCT_Button>
                     </VCT_Stack>
                     {members.length === 0 ? <VCT_EmptyState title="Chưa có thành viên" description={loading ? 'Đang tải...' : 'Thêm thành viên đầu tiên.'} icon="👥" /> : (
-                        <div className="overflow-hidden rounded-2xl border border-[var(--vct-border-subtle)] bg-[var(--vct-bg-glass)]">
-                            <table className="w-full border-collapse"><thead><tr className="border-b border-[var(--vct-border-strong)] bg-[var(--vct-bg-card)]">
+                        <div className="overflow-hidden rounded-2xl border border-(--vct-border-subtle) bg-(--vct-bg-glass)">
+                            <table className="w-full border-collapse"><thead><tr className="border-b border-(--vct-border-strong) bg-(--vct-bg-card)">
                                 {['Họ tên', 'Loại', 'Đẳng cấp', 'Lớp', 'SĐT', 'Trạng thái'].map(h => <th key={h} className="px-4 py-3 text-left text-xs font-bold uppercase opacity-50">{h}</th>)}
                             </tr></thead><tbody>
                                     {members.filter(m => !search || m.full_name.toLowerCase().includes(search.toLowerCase())).map(m => {
                                         const st = STATUS_MAP[m.status] || { label: m.status, type: 'neutral' }
-                                        return (<tr key={m.id} className="border-b border-[var(--vct-border-subtle)] hover:bg-[var(--vct-bg-hover)] transition-colors">
+                                        return (<tr key={m.id} className="border-b border-(--vct-border-subtle) hover:bg-(--vct-bg-hover) transition-colors">
                                             <td className="px-4 py-3"><div className="font-semibold text-sm">{m.full_name}</div><div className="text-xs opacity-50">{m.date_of_birth}{m.guardian_name ? ` • PH: ${m.guardian_name}` : ''}</div></td>
                                             <td className="px-4 py-3 text-sm">{MEMBER_TYPE_MAP[m.member_type] || m.member_type}</td>
                                             <td className="px-4 py-3"><VCT_Badge text={m.belt_rank || '—'} type="info" /></td>
@@ -155,15 +155,15 @@ export const Page_club_internal = () => {
                                 const st = STATUS_MAP[c.status] || { label: c.status, type: 'neutral' }
                                 const pct = c.max_students > 0 ? Math.round((c.current_count / c.max_students) * 100) : 0
                                 return (
-                                    <div key={c.id} className="rounded-2xl border border-[var(--vct-border-subtle)] bg-[var(--vct-bg-card)] p-5 hover:shadow-lg transition-shadow">
+                                    <div key={c.id} className="rounded-2xl border border-(--vct-border-subtle) bg-(--vct-bg-card) p-5 hover:shadow-lg transition-shadow">
                                         <div className="flex justify-between items-start mb-3"><h3 className="font-bold text-sm">{c.name}</h3><VCT_Badge text={st.label} type={st.type} /></div>
-                                        <div className="text-xs text-[var(--vct-text-secondary)] space-y-1 mb-3">
-                                            <div>📊 Cấp độ: <span className="font-medium text-[var(--vct-text-primary)]">{LEVEL_MAP[c.level] || c.level}</span></div>
-                                            <div>👤 HLV: <span className="font-medium text-[var(--vct-text-primary)]">{c.coach_name || '—'}</span></div>
-                                            <div>💰 Học phí: <span className="font-medium text-[var(--vct-text-primary)]">{fmtVND(c.monthly_fee)}/tháng</span></div>
+                                        <div className="text-xs text-(--vct-text-secondary) space-y-1 mb-3">
+                                            <div>📊 Cấp độ: <span className="font-medium text-(--vct-text-primary)">{LEVEL_MAP[c.level] || c.level}</span></div>
+                                            <div>👤 HLV: <span className="font-medium text-(--vct-text-primary)">{c.coach_name || '—'}</span></div>
+                                            <div>💰 Học phí: <span className="font-medium text-(--vct-text-primary)">{fmtVND(c.monthly_fee)}/tháng</span></div>
                                         </div>
-                                        <div className="text-xs text-[var(--vct-text-secondary)] mb-1">Sĩ số: {c.current_count}/{c.max_students} ({pct}%)</div>
-                                        <div className="w-full h-2 rounded-full bg-[var(--vct-bg-elevated)] overflow-hidden"><div className="h-full rounded-full bg-[var(--vct-accent)] transition-all" style={{ width: `${Math.min(pct, 100)}%` }} /></div>
+                                        <div className="text-xs text-(--vct-text-secondary) mb-1">Sĩ số: {c.current_count}/{c.max_students} ({pct}%)</div>
+                                        <div className="w-full h-2 rounded-full bg-(--vct-bg-elevated) overflow-hidden"><div className="h-full rounded-full bg-(--vct-accent) transition-all" style={{ width: `${Math.min(pct, 100)}%` }} /></div>
                                     </div>
                                 )
                             })}
@@ -185,12 +185,12 @@ export const Page_club_internal = () => {
                         <VCT_Button icon={<VCT_Icons.Plus size={16} />} onClick={() => showToast('Chức năng ghi thu/chi đang phát triển', 'info')}>Ghi thu/chi</VCT_Button>
                     </VCT_Stack>
                     {finances.length === 0 ? <VCT_EmptyState title="Chưa có giao dịch" description="Thêm bản ghi tài chính đầu tiên." icon="💰" /> : (
-                        <div className="overflow-hidden rounded-2xl border border-[var(--vct-border-subtle)] bg-[var(--vct-bg-glass)]">
-                            <table className="w-full border-collapse"><thead><tr className="border-b border-[var(--vct-border-strong)] bg-[var(--vct-bg-card)]">
+                        <div className="overflow-hidden rounded-2xl border border-(--vct-border-subtle) bg-(--vct-bg-glass)">
+                            <table className="w-full border-collapse"><thead><tr className="border-b border-(--vct-border-strong) bg-(--vct-bg-card)">
                                 {['Ngày', 'Loại', 'Danh mục', 'Mô tả', 'Thành viên', 'Số tiền'].map(h => <th key={h} className="px-4 py-3 text-left text-xs font-bold uppercase opacity-50">{h}</th>)}
                             </tr></thead><tbody>
                                     {finances.filter(f => !search || f.description.toLowerCase().includes(search.toLowerCase())).map(f => (
-                                        <tr key={f.id} className="border-b border-[var(--vct-border-subtle)] hover:bg-[var(--vct-bg-hover)] transition-colors">
+                                        <tr key={f.id} className="border-b border-(--vct-border-subtle) hover:bg-(--vct-bg-hover) transition-colors">
                                             <td className="px-4 py-3 text-sm">{f.date}</td>
                                             <td className="px-4 py-3"><VCT_Badge text={f.type === 'income' ? 'Thu' : 'Chi'} type={f.type === 'income' ? 'success' : 'danger'} /></td>
                                             <td className="px-4 py-3 text-sm">{CATEGORY_MAP[f.category] || f.category}</td>

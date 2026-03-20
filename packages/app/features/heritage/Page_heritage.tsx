@@ -47,15 +47,15 @@ const TreeNode = ({ node }: { node: any }) => {
     return (
         <div className="flex flex-col items-center">
             {/* Node Card */}
-            <div className="bg-[var(--vct-bg-elevated)] border border-[var(--vct-border-subtle)] hover:border-[var(--vct-accent-cyan)] transition-colors rounded-xl p-4 w-[280px] shadow-sm relative group cursor-pointer z-10">
+            <div className="bg-(--vct-bg-elevated) border border-(--vct-border-subtle) hover:border-(--vct-accent-cyan) transition-colors rounded-xl p-4 w-[280px] shadow-sm relative group cursor-pointer z-10">
                 <div className="flex items-start gap-4">
-                    <div className="w-12 h-12 rounded-full bg-[var(--vct-border-strong)] flex items-center justify-center shrink-0 border-2 border-[var(--vct-bg-card)] shadow-inner">
-                        <VCT_Icons.User className="text-[var(--vct-text-secondary)]" size={20} />
+                    <div className="w-12 h-12 rounded-full bg-(--vct-border-strong) flex items-center justify-center shrink-0 border-2 border-(--vct-bg-card) shadow-inner">
+                        <VCT_Icons.User className="text-(--vct-text-secondary)" size={20} />
                     </div>
                     <div>
-                        <div className="font-bold text-[var(--vct-text-primary)] text-sm">{node.name}</div>
-                        <div className="text-[11px] font-semibold text-[var(--vct-accent-cyan)] mt-0.5">{node.title}</div>
-                        <div className="text-[10px] text-[var(--vct-text-tertiary)] mt-1 flex items-center gap-1">
+                        <div className="font-bold text-(--vct-text-primary) text-sm">{node.name}</div>
+                        <div className="text-[11px] font-semibold text-(--vct-accent-cyan) mt-0.5">{node.title}</div>
+                        <div className="text-[10px] text-(--vct-text-tertiary) mt-1 flex items-center gap-1">
                             <VCT_Icons.Clock size={10} /> Thời kỳ: {node.era}
                         </div>
                     </div>
@@ -66,18 +66,18 @@ const TreeNode = ({ node }: { node: any }) => {
             {hasChildren && (
                 <div className="relative flex flex-col items-center mt-4">
                     {/* Vertical line down from parent */}
-                    <div className="w-px h-6 bg-[var(--vct-border-strong)] absolute -top-4"></div>
+                    <div className="w-px h-6 bg-(--vct-border-strong) absolute -top-4"></div>
 
                     {/* Horizontal connecting line */}
                     {node.children.length > 1 && (
-                        <div className="absolute top-2 left-1/2 -translate-x-1/2 w-[calc(100%-280px)] h-px bg-[var(--vct-border-strong)]"></div>
+                        <div className="absolute top-2 left-1/2 -translate-x-1/2 w-[calc(100%-280px)] h-px bg-(--vct-border-strong)"></div>
                     )}
 
                     <div className="flex flex-row gap-8 pt-2">
                         {node.children.map((child: any) => (
                             <div key={child.id} className="relative flex flex-col items-center">
                                 {/* Vertical line down to child */}
-                                <div className="w-px h-6 bg-[var(--vct-border-strong)] absolute -top-8"></div>
+                                <div className="w-px h-6 bg-(--vct-border-strong) absolute -top-8"></div>
                                 <TreeNode node={child} />
                             </div>
                         ))}
@@ -131,16 +131,16 @@ export const Page_heritage = () => {
             <VCT_StatRow items={kpis} className="mb-8" />
 
             {(beltsLoading || lineageLoading) && (
-                <div className="text-center py-6 text-[var(--vct-text-tertiary)] text-sm animate-pulse">
+                <div className="text-center py-6 text-(--vct-text-tertiary) text-sm animate-pulse">
                     Đang tải dữ liệu di sản...
                 </div>
             )}
 
             {/* ── TOOLBAR ── */}
-            <div className="mb-8 flex flex-wrap items-center justify-between gap-4 bg-[var(--vct-bg-elevated)] p-4 rounded-xl border border-[var(--vct-border-subtle)]">
+            <div className="mb-8 flex flex-wrap items-center justify-between gap-4 bg-(--vct-bg-elevated) p-4 rounded-xl border border-(--vct-border-subtle)">
                 <div className="flex gap-4 items-center">
-                    <h2 className="font-bold text-lg text-[var(--vct-text-primary)]">Cây Phả Hệ Môn Phái</h2>
-                    <div className="h-6 w-px bg-[var(--vct-border-strong)]"></div>
+                    <h2 className="font-bold text-lg text-(--vct-text-primary)">Cây Phả Hệ Môn Phái</h2>
+                    <div className="h-6 w-px bg-(--vct-border-strong)"></div>
                     <VCT_Button variant="outline" size="sm" icon={<VCT_Icons.ZoomIn size={14} />}>Phóng to</VCT_Button>
                     <VCT_Button variant="outline" size="sm" icon={<VCT_Icons.ZoomOut size={14} />}>Thu nhỏ</VCT_Button>
                 </div>
@@ -150,7 +150,7 @@ export const Page_heritage = () => {
             </div>
 
             {/* ── TREE VIEWER ── */}
-            <div className="bg-[var(--vct-bg-card)] border border-[var(--vct-border-strong)] rounded-2xl overflow-hidden p-8 min-h-[600px] flex items-start justify-center overflow-x-auto relative">
+            <div className="bg-(--vct-bg-card) border border-(--vct-border-strong) rounded-2xl overflow-hidden p-8 min-h-[600px] flex items-start justify-center overflow-x-auto relative">
                 {/* Background Grid Pattern */}
                 <div className="absolute inset-0" style={{ backgroundImage: 'radial-gradient(var(--vct-border-strong) 1px, transparent 1px)', backgroundSize: '24px 24px', opacity: 0.3 }}></div>
 

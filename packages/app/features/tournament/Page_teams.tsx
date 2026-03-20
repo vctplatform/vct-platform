@@ -1,4 +1,5 @@
 'use client';
+'use client';
 import * as React from 'react';
 import { useState, useMemo, useCallback, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -11,7 +12,7 @@ import {
 import { VCT_PageContainer, VCT_StatRow } from '../components/vct-ui';
 import type { StatItem } from '../components/VCT_StatRow';
 import { VCT_Icons } from '../components/vct-icons';
-import { getVDVsByDoan, genId } from '../data/mock-data';
+import { genId } from '../hooks/useTournamentAPI';
 import { TOURNAMENT_CONFIG } from '../data/tournament-config';
 import { TRANG_THAI_DOAN_MAP, DOC_CHECKLIST, type DonVi, type TrangThaiDoan } from '../data/types';
 import { repositories, useEntityCollection } from '../data/repository';
@@ -140,6 +141,7 @@ const ExpandPanel = ({ team, onDocToggle, onStatusChange }: { team: DonVi; onDoc
 export const Page_teams = () => {
     const { currentUser } = useAuth();
     const { items: teams, setItems: setTeamsState } = useEntityCollection(repositories.teams.mock);
+    const { items: athletes } = useEntityCollection(repositories.athletes.mock);
     const [search, setSearch] = useState('');
     const [statusFilter, setStatusFilter] = useState<string | null>(null);
     const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
@@ -272,8 +274,7 @@ export const Page_teams = () => {
             return;
         }
         if (!deleteTarget) return;
-        const vdvCount = getVDVsByDoan(deleteTarget.id).length;
-        if (vdvCount > 0) { showToast(`Không thể xóa! Đoàn "${deleteTarget.ten}" có ${vdvCount} VĐV`, 'error'); setDeleteTarget(null); return; }
+        if (deleteTarget.so_vdv > 0) { showToast(`Không thể xóa! Đoàn "${deleteTarget.ten}" có ${deleteTarget.so_vdv} VĐV`, 'error'); setDeleteTarget(null); return; }
         setTeams(prev => prev.filter(t => t.id !== deleteTarget.id));
         setSelectedIds(prev => { const n = new Set(prev); n.delete(deleteTarget.id); return n; });
         showToast(`Đã xóa "${deleteTarget.ten}"`, 'success');
@@ -336,8 +337,8 @@ export const Page_teams = () => {
     // ── Table columns ──
     const columns = [
         {
-            key: 'checkbox', label: <input type="checkbox" checked={selectedIds.size === filtered.length && filtered.length > 0} onChange={toggleSelectAll} style={{ width: 16, height: 16, accentColor: '#22d3ee' }} />, align: 'center' as const,
-            render: (r: DonVi) => <input type="checkbox" checked={selectedIds.has(r.id)} onChange={() => toggleSelect(r.id)} onClick={(e: any) => e.stopPropagation()} style={{ width: 16, height: 16, accentColor: '#22d3ee' }} />
+            key: 'checkbox', label: <input type="checkbox" aria-label="Chọn tất cả" checked={selectedIds.size === filtered.length && filtered.length > 0} onChange={toggleSelectAll} style={{ width: 16, height: 16, accentColor: '#22d3ee' }} />, align: 'center' as const,
+            render: (r: DonVi) => <input type="checkbox" aria-label={`Chọn ${r.ten}`} checked={selectedIds.has(r.id)} onChange={() => toggleSelect(r.id)} onClick={(e: any) => e.stopPropagation()} style={{ width: 16, height: 16, accentColor: '#22d3ee' }} />
         },
         {
             key: 'ten', label: 'Đơn vị', render: (r: DonVi) => (
@@ -424,10 +425,10 @@ export const Page_teams = () => {
             {filtered.length === 0 ? (
                 <VCT_EmptyState title="Không tìm thấy đơn vị" description={search || statusFilter ? 'Thử thay đổi bộ lọc hoặc từ khóa tìm kiếm.' : 'Chưa có đơn vị nào. Bấm "Thêm đơn vị" để bắt đầu.'} actionLabel="Thêm đơn vị" onAction={openAddModal} icon="🏢" />
             ) : (
-                <div className="overflow-hidden rounded-2xl border border-[var(--vct-border-subtle)] bg-[var(--vct-bg-glass)]">
+                <div className="overflow-hidden rounded-2xl border border-(--vct-border-subtle) bg-(--vct-bg-glass)">
                     <table className="w-full border-collapse">
                         <thead>
-                            <tr className="border-b border-[var(--vct-border-strong)] bg-[var(--vct-bg-card)]">
+                            <tr className="border-b border-(--vct-border-strong) bg-(--vct-bg-card)">
                                 {columns.map((col, i) => (
                                     <th key={i} style={{ padding: '14px 16px', textAlign: (col.align || 'left') as React.CSSProperties['textAlign'], fontSize: 11, fontWeight: 700, textTransform: 'uppercase', opacity: 0.5, position: 'sticky', top: 0, background: 'var(--vct-bg-card)', zIndex: 2 }}>
                                         {col.label}
@@ -465,7 +466,7 @@ export const Page_teams = () => {
                         </tbody>
                     </table>
                     {/* Summary footer */}
-                    <div className="flex gap-6 border-t-2 border-[var(--vct-border-strong)] bg-[var(--vct-bg-card)] px-4 py-3 text-xs font-bold opacity-60">
+                    <div className="flex gap-6 border-t-2 border-(--vct-border-strong) bg-(--vct-bg-card) px-4 py-3 text-xs font-bold opacity-60">
                         <span>Hiện {filtered.length}/{teams.length} đơn vị</span>
                         <span>Tổng VĐV: {filtered.reduce((s, t) => s + t.so_vdv, 0)}</span>
                         <span>♂ {filtered.reduce((s, t) => s + t.nam, 0)} — ♀ {filtered.reduce((s, t) => s + t.nu, 0)}</span>

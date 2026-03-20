@@ -36,8 +36,8 @@ export const Page_provincial_discipline = () => {
         <VCT_PageContainer size="wide" animated>
             <VCT_Toast isVisible={toast.show} message={toast.msg} type={toast.type} onClose={() => setToast(p => ({ ...p, show: false }))} />
             <div className="mb-6">
-                <h1 className="text-2xl font-bold tracking-tight text-[var(--vct-text-primary)]">⚠️ Kỷ Luật & Xử Phạt</h1>
-                <p className="text-sm text-[var(--vct-text-secondary)] mt-1">Quản lý các vụ vi phạm kỷ luật cấp tỉnh</p>
+                <h1 className="text-2xl font-bold tracking-tight text-(--vct-text-primary)">⚠️ Kỷ Luật & Xử Phạt</h1>
+                <p className="text-sm text-(--vct-text-secondary) mt-1">Quản lý các vụ vi phạm kỷ luật cấp tỉnh</p>
             </div>
 
             <VCT_StatRow items={[
@@ -58,11 +58,11 @@ export const Page_provincial_discipline = () => {
                         const sev = SEVERITY_MAP[c.severity] || { label: c.severity, type: 'neutral' }
                         const st = STATUS_MAP[c.status] || { label: c.status, type: 'neutral' }
                         return (
-                            <div key={c.id} className="rounded-2xl border border-[var(--vct-border-subtle)] bg-[var(--vct-bg-glass)] p-5">
+                            <div key={c.id} className="rounded-2xl border border-(--vct-border-subtle) bg-(--vct-bg-glass) p-5">
                                 <div className="flex items-start justify-between mb-2">
                                     <div>
                                         <div className="font-bold text-sm">{c.subject_name} <span className="text-xs opacity-50">({c.subject_type === 'athlete' ? 'VĐV' : c.subject_type === 'coach' ? 'HLV' : c.subject_type})</span></div>
-                                        <div className="text-xs text-[var(--vct-text-secondary)] mt-1">{c.violation}</div>
+                                        <div className="text-xs text-(--vct-text-secondary) mt-1">{c.violation}</div>
                                     </div>
                                     <VCT_Stack direction="row" gap={6}>
                                         <VCT_Badge text={sev.label} type={sev.type} />

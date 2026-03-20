@@ -1,0 +1,67 @@
+# ════════════════════════════════════════
+# VCT Platform — Production Configuration
+# Hardened settings with full observability
+# ════════════════════════════════════════
+
+env: production
+version: "${BUILD_VERSION}"
+
+server:
+  addr: ":18080"
+  read_timeout: 10s
+  write_timeout: 10s
+  idle_timeout: 30s
+  shutdown_timeout: 30s
+  cors_origins:
+    - "https://vct-platform.com"
+    - "https://www.vct-platform.com"
+    - "https://admin.vct-platform.com"
+
+database:
+  url: "${VCT_POSTGRES_URL}"
+  max_open_conns: 25
+  max_idle_conns: 10
+  conn_max_lifetime: 15m
+  conn_max_idle_time: 5m
+  auto_migrate: false  # NEVER auto-migrate in production
+
+redis:
+  addr: "${VCT_REDIS_ADDR}"
+  password: "${VCT_REDIS_PASSWORD}"
+  db: 0
+  pool_size: 20
+  read_timeout: 2s
+  write_timeout: 2s
+
+auth:
+  jwt_secret: "${VCT_JWT_SECRET}"
+  token_expiry: 1h
+  refresh_expiry: 168h  # 7 days
+  bcrypt_cost: 14       # strong hashing
+
+nats:
+  url: "${VCT_NATS_URL}"
+  token: "${VCT_NATS_TOKEN}"
+
+storage:
+  driver: gcs
+  bucket: vct-production-uploads
+  region: asia-southeast1
+
+otel:
+  enabled: true
+  endpoint: "${VCT_OTEL_ENDPOINT}"
+  service_name: vct-api
+  sample_rate: 0.1  # sample 10% in production
+
+logging:
+  level: warn  # only warn+ in production
+  format: json
+
+limits:
+  rate_anonymous: 5
+  rate_user: 20
+  rate_admin: 100
+  rate_api_key: 50
+  max_body_size: 1048576    # 1MB
+  max_upload_size: 10485760 # 10MB

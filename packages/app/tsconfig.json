@@ -18,8 +18,10 @@
     "jsx": "react-jsx",
     "incremental": true,
     "typeRoots": [
-      "../../node_modules/@types"
+      "../../node_modules/@types",
+      "./node_modules/@types"
     ],
+    "types": ["jest"],
     "baseUrl": ".",
     "paths": {
       "app/*": [

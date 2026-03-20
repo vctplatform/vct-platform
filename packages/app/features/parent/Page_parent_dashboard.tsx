@@ -853,7 +853,7 @@ function AttendanceTab({ linkedChildren, apiFetch }: { linkedChildren: ChildLink
                         <div className="text-xs font-bold text-white/40 uppercase tracking-wider mb-3">Lịch 28 ngày gần nhất</div>
                         <div className="grid grid-cols-7 gap-1.5">
                             {heatmapDays.map((d, i) => {
-                                const bgColor = d.status === 'present' ? 'bg-emerald-500' : d.status === 'late' ? 'bg-amber-500' : d.status === 'absent' ? 'bg-red-500' : 'bg-white/[0.06]'
+                                const bgColor = d.status === 'present' ? 'bg-emerald-500' : d.status === 'late' ? 'bg-amber-500' : d.status === 'absent' ? 'bg-red-500' : 'bg-white/6'
                                 const opacity = d.status === 'none' ? 'opacity-30' : 'opacity-90'
                                 return (
                                     <motion.div

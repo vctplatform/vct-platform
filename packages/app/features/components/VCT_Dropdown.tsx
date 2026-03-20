@@ -100,7 +100,7 @@ export function VCT_Dropdown({ trigger, items, align = 'right', className }: VCT
             {open && (
                 <div
                     role="menu"
-                    className={`absolute top-full z-[100] mt-1.5 min-w-[200px] rounded-xl border border-[var(--vct-border-subtle)] bg-[var(--vct-bg-elevated)] py-1 shadow-[var(--vct-shadow-xl)] animate-[vct-scale-in_0.15s_var(--vct-ease-out)_both] ${align === 'right' ? 'right-0 origin-top-right' : 'left-0 origin-top-left'}`}
+                    className={`absolute top-full z-[100] mt-1.5 min-w-[200px] rounded-xl border border-(--vct-border-subtle) bg-(--vct-bg-elevated) py-1 shadow-(--vct-shadow-xl) animate-[vct-scale-in_0.15s_var(--vct-ease-out)_both] ${align === 'right' ? 'right-0 origin-top-right' : 'left-0 origin-top-left'}`}
                 >
                     {items.map((item, i) => (
                         <button
@@ -116,10 +116,10 @@ export function VCT_Dropdown({ trigger, items, align = 'right', className }: VCT
                             }}
                             className={`flex w-full items-center gap-2.5 border-none px-3 py-2.5 text-left text-sm transition ${item.disabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'
                                 } ${item.danger
-                                    ? 'text-[var(--vct-danger)] hover:bg-red-500/10'
-                                    : 'text-[var(--vct-text-primary)] hover:bg-[var(--vct-bg-hover)]'
-                                } ${i === focusedIdx ? 'bg-[var(--vct-bg-hover)]' : 'bg-transparent'
-                                } ${i === 0 ? 'border-b border-[var(--vct-border-subtle)] pb-2.5 mb-1 font-semibold text-xs' : 'font-medium'
+                                    ? 'text-(--vct-danger) hover:bg-red-500/10'
+                                    : 'text-(--vct-text-primary) hover:bg-(--vct-bg-hover)'
+                                } ${i === focusedIdx ? 'bg-(--vct-bg-hover)' : 'bg-transparent'
+                                } ${i === 0 ? 'border-b border-(--vct-border-subtle) pb-2.5 mb-1 font-semibold text-xs' : 'font-medium'
                                 }`}
                             onMouseEnter={() => setFocusedIdx(i)}
                             onMouseLeave={() => setFocusedIdx(-1)}

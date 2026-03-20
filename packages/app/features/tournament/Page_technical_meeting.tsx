@@ -73,7 +73,7 @@ export const Page_technical_meeting = () => {
             <VCT_Toast isVisible={toast.show} message={toast.msg} type={toast.type} onClose={hideToast} />
 
             {(registrationStore.uiState.error || athleteStore.uiState.error || teamStore.uiState.error) && (
-                <div className="mb-4 rounded-xl border border-red-500/25 bg-red-500/[0.08] px-3.5 py-3 text-[13px] font-bold text-red-500">
+                <div className="mb-4 rounded-xl border border-red-500/25 bg-red-500/8 px-3.5 py-3 text-[13px] font-bold text-red-500">
                     Không thể tải đủ dữ liệu họp chuyên môn.
                 </div>
             )}

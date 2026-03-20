@@ -129,7 +129,7 @@ const RoleSwitcher = ({
         id="vct-role-switcher"
         value={role}
         onChange={(event) => onChange(event.target.value as UserRole)}
-        className="w-full cursor-pointer rounded-lg border border-vct-border bg-vct-elevated px-2.5 py-2 text-xs font-bold text-[var(--vct-text-secondary)]"
+        className="w-full cursor-pointer rounded-lg border border-vct-border bg-vct-elevated px-2.5 py-2 text-xs font-bold text-(--vct-text-secondary)"
       >
         {USER_ROLE_OPTIONS.map((item) => (
           <option key={item.value} value={item.value}>
@@ -152,7 +152,7 @@ const AccessDenied = ({
   return (
     <div className="mx-auto mt-20 grid max-w-3xl gap-3 rounded-2xl border border-red-500/30 bg-red-500/10 p-6">
       <h2 className="m-0 text-2xl font-black text-red-500">{t('shell.accessDeniedTitle')}</h2>
-      <p className="m-0 leading-7 text-[var(--vct-text-secondary)]">
+      <p className="m-0 leading-7 text-(--vct-text-secondary)">
         {t('shell.accessDeniedDesc')}
       </p>
       <div className="flex flex-wrap items-center gap-3">
@@ -333,7 +333,7 @@ const ShellLayout = ({ children }: { children: React.ReactNode }) => {
   if (isHydrating || !isAuthenticated) {
     return (
       <VCT_Provider>
-        <div className="grid min-h-dvh place-items-center bg-vct-bg text-[var(--vct-text-secondary)]">
+        <div className="grid min-h-dvh place-items-center bg-vct-bg text-(--vct-text-secondary)">
           <div className="w-full max-w-md px-6 text-center">
             <div className="mx-auto mb-6 h-12 w-12 rounded-2xl vct-skeleton" />
             <div className="mb-2 text-lg font-black">{t('shell.authenticating')}</div>
@@ -356,7 +356,7 @@ const ShellLayout = ({ children }: { children: React.ReactNode }) => {
   const renderHeader = (showHamburger: boolean) => (
     <header
       role="banner"
-      className={`relative z-50 vct-glass flex shrink-0 items-center justify-between border-b border-vct-border shadow-[var(--vct-shadow-sm)] ${isMobile ? 'h-14 gap-2 px-4' : 'h-14 gap-4 px-6'}`}
+      className={`relative z-50 vct-glass flex shrink-0 items-center justify-between border-b border-vct-border shadow-(--vct-shadow-sm) ${isMobile ? 'h-14 gap-2 px-4' : 'h-14 gap-4 px-6'}`}
     >
       {/* ── Left: mobile hamburger + breadcrumbs ── */}
       <div className="flex min-w-0 items-center gap-3">

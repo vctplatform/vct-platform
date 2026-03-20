@@ -54,7 +54,7 @@ export const Page_federation_certifications = () => {
 
     useEffect(() => {
         certsApi.execute('/certifications')
-    }, []) // eslint-disable-line react-hooks/exhaustive-deps
+    }, [])  
 
     const certs = certsApi.data?.length ? certsApi.data : FALLBACK_CERTS
 
@@ -71,8 +71,8 @@ export const Page_federation_certifications = () => {
     return (
         <VCT_PageContainer size="wide" animated>
             <div className="mb-6">
-                <h1 className="text-2xl font-bold tracking-tight text-[var(--vct-text-primary)]">Chứng chỉ & Giấy phép</h1>
-                <p className="text-sm text-[var(--vct-text-secondary)] mt-1">Cấp phát, quản lý và xác minh chứng chỉ HLV, trọng tài, đăng ký CLB và chứng nhận đai.</p>
+                <h1 className="text-2xl font-bold tracking-tight text-(--vct-text-primary)">Chứng chỉ & Giấy phép</h1>
+                <p className="text-sm text-(--vct-text-secondary) mt-1">Cấp phát, quản lý và xác minh chứng chỉ HLV, trọng tài, đăng ký CLB và chứng nhận đai.</p>
             </div>
 
             <VCT_StatRow items={[
@@ -87,7 +87,7 @@ export const Page_federation_certifications = () => {
                     <div className="w-full max-w-[300px]">
                         <VCT_SearchInput value={search} onChange={setSearch} onClear={() => setSearch('')} placeholder="Tìm người, số chứng chỉ, mã xác minh..." />
                     </div>
-                    <select value={typeFilter} onChange={(e) => setTypeFilter(e.target.value)} className="bg-[var(--vct-bg-elevated)] border border-[var(--vct-border-subtle)] text-[var(--vct-text-primary)] text-sm rounded-lg px-3 py-2 outline-none">
+                    <select value={typeFilter} onChange={(e) => setTypeFilter(e.target.value)} className="bg-(--vct-bg-elevated) border border-(--vct-border-subtle) text-(--vct-text-primary) text-sm rounded-lg px-3 py-2 outline-none">
                         <option value="">Tất cả loại</option>
                         {Object.entries(CERT_TYPE_MAP).map(([k, v]) => <option key={k} value={k}>{v.label}</option>)}
                     </select>
@@ -103,18 +103,18 @@ export const Page_federation_certifications = () => {
                         const ct = CERT_TYPE_MAP[cert.type]
                         const st = STATUS_MAP[cert.status]
                         return (
-                            <div key={cert.id} className="rounded-2xl border border-[var(--vct-border-subtle)] bg-[var(--vct-bg-glass)] p-5 hover:border-[var(--vct-accent-cyan)] transition-colors cursor-pointer" style={{ borderTop: `3px solid ${ct.color}` }}>
+                            <div key={cert.id} className="rounded-2xl border border-(--vct-border-subtle) bg-(--vct-bg-glass) p-5 hover:border-(--vct-accent-cyan) transition-colors cursor-pointer" style={{ borderTop: `3px solid ${ct.color}` }}>
                                 <VCT_Stack direction="row" justify="space-between" align="center" className="mb-3">
                                     <span className="text-2xl">{ct.icon}</span>
                                     <VCT_Badge text={st.label} type={st.type} />
                                 </VCT_Stack>
-                                <div className="font-bold text-sm text-[var(--vct-text-primary)]">{ct.label}</div>
+                                <div className="font-bold text-sm text-(--vct-text-primary)">{ct.label}</div>
                                 <div className="text-xs opacity-60 font-mono mt-1">{cert.cert_number}</div>
-                                <div className="mt-3 pt-3 border-t border-[var(--vct-border-subtle)]">
+                                <div className="mt-3 pt-3 border-t border-(--vct-border-subtle)">
                                     <div className="text-sm"><strong>{cert.holder_name}</strong></div>
                                     <div className="text-xs opacity-50 mt-1">Cấp: {cert.issued_at} • Hạn: {cert.valid_until}</div>
                                     <div className="mt-2 flex items-center gap-2">
-                                        <span className="text-[10px] font-mono px-2 py-1 rounded bg-[var(--vct-bg-elevated)] opacity-60">{cert.verify_code}</span>
+                                        <span className="text-[10px] font-mono px-2 py-1 rounded bg-(--vct-bg-elevated) opacity-60">{cert.verify_code}</span>
                                     </div>
                                 </div>
                             </div>

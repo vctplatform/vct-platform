@@ -7,15 +7,15 @@ import (
 	"github.com/resend/resend-go/v3"
 )
 
-// Service sends transactional emails via Resend.
-type Service struct {
+// ResendProvider sends transactional emails via Resend.
+type ResendProvider struct {
 	client *resend.Client
 	from   string
 }
 
-// NewService creates a Resend email service.
-// If apiKey is empty the service will log emails instead of sending.
-func NewService(apiKey, fromAddress string) *Service {
+// NewResendProvider creates a Resend-backed email provider.
+// If apiKey is empty the provider will log emails instead of sending.
+func NewResendProvider(apiKey, fromAddress string) *ResendProvider {
 	if fromAddress == "" {
 		fromAddress = "onboarding@resend.dev"
 	}
@@ -23,11 +23,11 @@ func NewService(apiKey, fromAddress string) *Service {
 	if apiKey != "" {
 		client = resend.NewClient(apiKey)
 	}
-	return &Service{client: client, from: fromAddress}
+	return &ResendProvider{client: client, from: fromAddress}
 }
 
 // SendOTP sends a 6-digit OTP code to the given email address.
-func (s *Service) SendOTP(to, code, displayName string) error {
+func (r *ResendProvider) SendOTP(to, code, displayName string) error {
 	subject := fmt.Sprintf("[VCT Platform] Mã xác thực: %s", code)
 	html := fmt.Sprintf(`
 		<div style="font-family:'Inter',Arial,sans-serif;max-width:480px;margin:0 auto;padding:32px 24px;background:#0a101e;border-radius:16px;color:#e2e8f0">
@@ -45,13 +45,13 @@ func (s *Service) SendOTP(to, code, displayName string) error {
 		</div>
 	`, displayName, code)
 
-	if s.client == nil {
+	if r.client == nil {
 		log.Printf("[email] (dry-run) OTP %s → %s", code, to)
 		return nil
 	}
 
-	_, err := s.client.Emails.Send(&resend.SendEmailRequest{
-		From:    s.from,
+	_, err := r.client.Emails.Send(&resend.SendEmailRequest{
+		From:    r.from,
 		To:      []string{to},
 		Subject: subject,
 		Html:    html,

@@ -1,442 +1,193 @@
 package realtime
 
 import (
+	"context"
 	"encoding/json"
+	"log/slog"
 	"net/http"
-	"strings"
 	"sync"
-	"time"
 
 	"github.com/gorilla/websocket"
 )
 
-// ── Event Types ───────────────────────────────────────────────
-
-type EntityEvent struct {
-	Type      string         `json:"type"`
-	Entity    string         `json:"entity"`
-	Action    string         `json:"action"`
-	ItemID    string         `json:"itemId,omitempty"`
-	Channel   string         `json:"channel,omitempty"`
-	Payload   map[string]any `json:"payload,omitempty"`
-	Timestamp time.Time      `json:"timestamp"`
+var upgrader = websocket.Upgrader{
+	ReadBufferSize:  1024,
+	WriteBufferSize: 1024,
+	// In production, you should check origin
+	CheckOrigin: func(r *http.Request) bool { return true },
 }
 
-type presenceInfo struct {
-	UserID   string `json:"userId"`
-	Username string `json:"username"`
-	Role     string `json:"role"`
-}
-
-// ── Client ────────────────────────────────────────────────────
-
-type clientConn struct {
-	conn          *websocket.Conn
-	mu            sync.Mutex
-	channels      map[string]bool // channels the client subscribed to
-	presence      *presenceInfo   // who this client is (set after auth)
-	authenticated bool            // true after successful first-message auth
-}
-
-// ── Hub ───────────────────────────────────────────────────────
-
-// AuthValidator is a callback to validate JWT tokens for WebSocket auth.
-// Returns nil if the token is valid, error otherwise.
-type AuthValidator func(token string) error
-
+// Hub maintains the set of active clients and broadcasts messages.
 type Hub struct {
-	mu             sync.RWMutex
-	clients        map[*websocket.Conn]*clientConn
-	channels       map[string]map[*websocket.Conn]bool // channel → set of conns
-	allowedOrigins map[string]struct{}
-	upgrader       websocket.Upgrader
-	authValidator  AuthValidator // optional: if set, clients must auth before commands
+	logger *slog.Logger
+
+	// Registered clients.
+	clients map[*Client]bool
+
+	// Channels mapping client to joined rooms (Channel -> Client -> true)
+	channels map[string]map[*Client]bool
+
+	// Inbound messages from the clients.
+	broadcast chan Message
+
+	// Register requests from the clients.
+	register chan *Client
+
+	// Unregister requests from clients.
+	unregister chan *Client
+
+	mu sync.RWMutex
 }
 
-func NewHub(allowedOrigins []string) *Hub {
-	originSet := make(map[string]struct{}, len(allowedOrigins))
-	for _, origin := range allowedOrigins {
-		trimmed := strings.TrimSpace(origin)
-		if trimmed == "" {
-			continue
-		}
-		originSet[trimmed] = struct{}{}
+// NewHub creates a new WebSocket hub.
+func NewHub(logger *slog.Logger) *Hub {
+	return &Hub{
+		broadcast:  make(chan Message, 256),
+		register:   make(chan *Client),
+		unregister: make(chan *Client),
+		clients:    make(map[*Client]bool),
+		channels:   make(map[string]map[*Client]bool),
+		logger:     logger.With(slog.String("component", "websocket_hub")),
 	}
-
-	hub := &Hub{
-		clients:        make(map[*websocket.Conn]*clientConn),
-		channels:       make(map[string]map[*websocket.Conn]bool),
-		allowedOrigins: originSet,
-	}
-	hub.upgrader = websocket.Upgrader{
-		CheckOrigin: func(r *http.Request) bool {
-			return hub.isAllowedOrigin(strings.TrimSpace(r.Header.Get("Origin")))
-		},
-	}
-	return hub
 }
 
-// ── WebSocket Handler ─────────────────────────────────────────
-
-func (h *Hub) ServeWS(w http.ResponseWriter, r *http.Request) error {
-	conn, err := h.upgrader.Upgrade(w, r, nil)
-	if err != nil {
-		return err
-	}
-
-	client := &clientConn{
-		conn:     conn,
-		channels: make(map[string]bool),
-	}
-	h.mu.Lock()
-	h.clients[conn] = client
-	h.mu.Unlock()
-
-	// Welcome message
-	_ = h.write(conn, EntityEvent{
-		Type:      "system.hello",
-		Action:    "connected",
-		Timestamp: time.Now().UTC(),
-		Payload: map[string]any{
-			"message": "Connected to VCT realtime channel",
-		},
-	})
-
-	// Ping/pong keepalive
-	conn.SetPongHandler(func(string) error {
-		return conn.SetReadDeadline(time.Now().Add(60 * time.Second))
-	})
-
-	// Read loop — handles subscribe/unsubscribe commands
-	go func() {
-		defer h.removeClient(conn)
-		_ = conn.SetReadDeadline(time.Now().Add(60 * time.Second))
-		for {
-			_, msg, readErr := conn.ReadMessage()
-			if readErr != nil {
-				return
-			}
-			h.handleClientMessage(conn, msg)
-		}
-	}()
-
-	// Ping ticker
-	go func() {
-		ticker := time.NewTicker(30 * time.Second)
-		defer ticker.Stop()
-		for range ticker.C {
-			h.mu.RLock()
-			_, ok := h.clients[conn]
-			h.mu.RUnlock()
-			if !ok {
-				return
-			}
-			client.mu.Lock()
-			_ = client.conn.SetWriteDeadline(time.Now().Add(5 * time.Second))
-			err := client.conn.WriteMessage(websocket.PingMessage, nil)
-			client.mu.Unlock()
-			if err != nil {
-				return
-			}
-		}
-	}()
-
-	return nil
-}
-
-// ── Client Commands ───────────────────────────────────────────
-
-type clientCommand struct {
-	Action  string `json:"action"`          // auth | subscribe | unsubscribe | presence
-	Channel string `json:"channel"`         // e.g. "scoring:match-123"
-	Token   string `json:"token,omitempty"` // JWT for auth action
-	UserID  string `json:"userId,omitempty"`
-	Name    string `json:"name,omitempty"`
-	Role    string `json:"role,omitempty"`
-}
-
-func (h *Hub) handleClientMessage(conn *websocket.Conn, raw []byte) {
-	var cmd clientCommand
-	if err := json.Unmarshal(raw, &cmd); err != nil {
-		return
-	}
-
-	// Handle auth command first — always allowed
-	if cmd.Action == "auth" {
-		h.handleAuth(conn, cmd.Token)
-		return
-	}
-
-	// Gate other commands behind authentication if authValidator is set
-	if h.authValidator != nil {
-		h.mu.RLock()
-		client, exists := h.clients[conn]
-		h.mu.RUnlock()
-		if !exists || !client.authenticated {
-			_ = h.write(conn, EntityEvent{
-				Type:      "system.error",
-				Action:    "auth_required",
-				Timestamp: time.Now().UTC(),
-				Payload:   map[string]any{"message": "Authentication required. Send {\"action\":\"auth\",\"token\":\"xxx\"} first."},
-			})
+// Run starts the hub's main event loop.
+func (h *Hub) Run(ctx context.Context) {
+	h.logger.Info("websocket hub started")
+	for {
+		select {
+		case <-ctx.Done():
+			h.logger.Info("websocket hub stopping")
 			return
+		case client := <-h.register:
+			h.mu.Lock()
+			h.clients[client] = true
+			h.mu.Unlock()
+			h.logger.Debug("client connected", "user_id", client.userID)
+
+		case client := <-h.unregister:
+			h.mu.Lock()
+			if _, ok := h.clients[client]; ok {
+				delete(h.clients, client)
+				close(client.send)
+				// Remove client from all channels
+				client.mu.RLock()
+				for channel := range client.channels {
+					delete(h.channels[channel], client)
+					if len(h.channels[channel]) == 0 {
+						delete(h.channels, channel)
+					}
+				}
+				client.mu.RUnlock()
+			}
+			h.mu.Unlock()
+			h.logger.Debug("client disconnected", "user_id", client.userID)
+
+		case message := <-h.broadcast:
+			h.mu.RLock()
+			clientsInChannel, ok := h.channels[message.Channel]
+			if !ok {
+				h.mu.RUnlock()
+				continue
+			}
+
+			payload, err := json.Marshal(message)
+			if err != nil {
+				h.logger.Error("failed to marshal broadcast message", "error", err)
+				h.mu.RUnlock()
+				continue
+			}
+
+			for client := range clientsInChannel {
+				select {
+				case client.send <- payload:
+				default:
+					// Send buffer is full, drop the client
+					h.logger.Warn("client send buffer full, dropping connection")
+					go func(c *Client) { h.unregister <- c }(client)
+				}
+			}
+			h.mu.RUnlock()
 		}
 	}
-
-	switch cmd.Action {
-	case "subscribe":
-		h.subscribe(conn, cmd.Channel)
-	case "unsubscribe":
-		h.unsubscribe(conn, cmd.Channel)
-	case "presence":
-		h.setPresence(conn, cmd.UserID, cmd.Name, cmd.Role)
-	}
 }
 
-func (h *Hub) handleAuth(conn *websocket.Conn, token string) {
-	h.mu.RLock()
-	client, exists := h.clients[conn]
-	h.mu.RUnlock()
-	if !exists {
-		return
-	}
-
-	// If no validator configured, auto-accept
-	if h.authValidator == nil {
-		client.authenticated = true
-		_ = h.write(conn, EntityEvent{
-			Type:      "system.auth",
-			Action:    "authenticated",
-			Timestamp: time.Now().UTC(),
-		})
-		return
-	}
-
-	if err := h.authValidator(token); err != nil {
-		_ = h.write(conn, EntityEvent{
-			Type:      "system.error",
-			Action:    "auth_failed",
-			Timestamp: time.Now().UTC(),
-			Payload:   map[string]any{"message": "Invalid token"},
-		})
-		return
-	}
-
-	client.authenticated = true
-	_ = h.write(conn, EntityEvent{
-		Type:      "system.auth",
-		Action:    "authenticated",
-		Timestamp: time.Now().UTC(),
-	})
-}
-
-// SetAuthValidator sets the callback to validate JWT tokens for WS first-message auth.
-func (h *Hub) SetAuthValidator(validator AuthValidator) {
-	h.authValidator = validator
-}
-
-func (h *Hub) subscribe(conn *websocket.Conn, channel string) {
-	if channel == "" {
-		return
-	}
+// Subscribe adds a client to a channel.
+func (h *Hub) Subscribe(client *Client, channel string) {
 	h.mu.Lock()
 	defer h.mu.Unlock()
-
-	client, ok := h.clients[conn]
-	if !ok {
-		return
-	}
-	client.channels[channel] = true
 
 	if h.channels[channel] == nil {
-		h.channels[channel] = make(map[*websocket.Conn]bool)
+		h.channels[channel] = make(map[*Client]bool)
 	}
-	h.channels[channel][conn] = true
+	h.channels[channel][client] = true
+
+	client.mu.Lock()
+	client.channels[channel] = true
+	client.mu.Unlock()
+
+	h.logger.Debug("client subscribed", "channel", channel, "user_id", client.userID)
 }
 
-func (h *Hub) unsubscribe(conn *websocket.Conn, channel string) {
+// Unsubscribe removes a client from a channel.
+func (h *Hub) Unsubscribe(client *Client, channel string) {
 	h.mu.Lock()
 	defer h.mu.Unlock()
 
-	client, ok := h.clients[conn]
-	if !ok {
-		return
-	}
-	delete(client.channels, channel)
-
-	if subs := h.channels[channel]; subs != nil {
-		delete(subs, conn)
-		if len(subs) == 0 {
+	if clients, ok := h.channels[channel]; ok {
+		delete(clients, client)
+		if len(clients) == 0 {
 			delete(h.channels, channel)
 		}
 	}
+
+	client.mu.Lock()
+	delete(client.channels, channel)
+	client.mu.Unlock()
+
+	h.logger.Debug("client unsubscribed", "channel", channel, "user_id", client.userID)
 }
 
-func (h *Hub) setPresence(conn *websocket.Conn, userID, name, role string) {
-	h.mu.Lock()
-	defer h.mu.Unlock()
-
-	client, ok := h.clients[conn]
-	if !ok {
-		return
+// Broadcast sends a message to all clients subscribed to the specified channel.
+func (h *Hub) Broadcast(message Message) {
+	select {
+	case h.broadcast <- message:
+	default:
+		h.logger.Warn("hub broadcast channel full, message dropped")
 	}
-	client.presence = &presenceInfo{UserID: userID, Username: name, Role: role}
 }
 
-// ── Broadcast ─────────────────────────────────────────────────
-
-// Broadcast sends event to ALL connected clients.
-func (h *Hub) Broadcast(event EntityEvent) {
-	h.prepareEvent(&event)
-	body, err := json.Marshal(event)
+// ServeWS handles WebSocket requests from peers.
+func (h *Hub) ServeWS(w http.ResponseWriter, r *http.Request, userID string) {
+	conn, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
+		h.logger.Error("websocket upgrade failed", "error", err)
 		return
 	}
 
-	h.mu.RLock()
-	conns := make([]*websocket.Conn, 0, len(h.clients))
-	for conn := range h.clients {
-		conns = append(conns, conn)
+	client := &Client{
+		hub:      h,
+		conn:     conn,
+		send:     make(chan []byte, 256),
+		userID:   userID,
+		channels: make(map[string]bool),
+		logger:   h.logger,
 	}
-	h.mu.RUnlock()
 
-	for _, conn := range conns {
-		if writeErr := h.writeRaw(conn, body); writeErr != nil {
-			h.removeClient(conn)
-		}
-	}
+	h.register <- client
+
+	go client.writePump()
+	go client.readPump()
 }
 
-// BroadcastToChannel sends event to clients subscribed to a specific channel.
-func (h *Hub) BroadcastToChannel(channel string, event EntityEvent) {
-	h.prepareEvent(&event)
-	event.Channel = channel
-	body, err := json.Marshal(event)
-	if err != nil {
-		return
-	}
-
-	h.mu.RLock()
-	subs := h.channels[channel]
-	conns := make([]*websocket.Conn, 0, len(subs))
-	for conn := range subs {
-		conns = append(conns, conn)
-	}
-	h.mu.RUnlock()
-
-	for _, conn := range conns {
-		if writeErr := h.writeRaw(conn, body); writeErr != nil {
-			h.removeClient(conn)
-		}
-	}
-}
-
-// GetChannelPresence returns who is present in a channel.
-func (h *Hub) GetChannelPresence(channel string) []presenceInfo {
-	h.mu.RLock()
-	defer h.mu.RUnlock()
-
-	subs := h.channels[channel]
-	result := make([]presenceInfo, 0, len(subs))
-	for conn := range subs {
-		client, ok := h.clients[conn]
-		if ok && client.presence != nil {
-			result = append(result, *client.presence)
-		}
-	}
-	return result
-}
-
-func (h *Hub) CountClients() int {
+func (h *Hub) ActiveConnections() int {
 	h.mu.RLock()
 	defer h.mu.RUnlock()
 	return len(h.clients)
 }
 
-// Close gracefully closes all WebSocket connections and clears internal state.
-func (h *Hub) Close() {
-	h.mu.Lock()
-	conns := make([]*websocket.Conn, 0, len(h.clients))
-	for conn := range h.clients {
-		conns = append(conns, conn)
-	}
-	h.clients = make(map[*websocket.Conn]*clientConn)
-	h.channels = make(map[string]map[*websocket.Conn]bool)
-	h.mu.Unlock()
-
-	for _, conn := range conns {
-		_ = conn.WriteControl(
-			websocket.CloseMessage,
-			websocket.FormatCloseMessage(websocket.CloseGoingAway, "server shutting down"),
-			time.Now().Add(2*time.Second),
-		)
-		_ = conn.Close()
-	}
-}
-
-func (h *Hub) removeClient(conn *websocket.Conn) {
-	h.mu.Lock()
-	client, ok := h.clients[conn]
-	if ok {
-		// Clean up channel subscriptions
-		for ch := range client.channels {
-			if subs := h.channels[ch]; subs != nil {
-				delete(subs, conn)
-				if len(subs) == 0 {
-					delete(h.channels, ch)
-				}
-			}
-		}
-		delete(h.clients, conn)
-	}
-	h.mu.Unlock()
-
-	if ok {
-		client.mu.Lock()
-		_ = client.conn.Close()
-		client.mu.Unlock()
-	}
-}
-
-func (h *Hub) prepareEvent(event *EntityEvent) {
-	if event.Type == "" {
-		event.Type = "entity.changed"
-	}
-	if event.Timestamp.IsZero() {
-		event.Timestamp = time.Now().UTC()
-	}
-}
-
-func (h *Hub) write(conn *websocket.Conn, event EntityEvent) error {
-	payload, err := json.Marshal(event)
-	if err != nil {
-		return err
-	}
-	return h.writeRaw(conn, payload)
-}
-
-func (h *Hub) writeRaw(conn *websocket.Conn, payload []byte) error {
+func (h *Hub) ActiveConnectionsInChannel(channel string) int {
 	h.mu.RLock()
-	client, ok := h.clients[conn]
-	h.mu.RUnlock()
-	if !ok {
-		return websocket.ErrCloseSent
-	}
-
-	client.mu.Lock()
-	defer client.mu.Unlock()
-
-	_ = client.conn.SetWriteDeadline(time.Now().Add(5 * time.Second))
-	return client.conn.WriteMessage(websocket.TextMessage, payload)
-}
-
-func (h *Hub) isAllowedOrigin(origin string) bool {
-	if origin == "" {
-		return true
-	}
-	if _, allowAll := h.allowedOrigins["*"]; allowAll {
-		return true
-	}
-	_, ok := h.allowedOrigins[origin]
-	return ok
+	defer h.mu.RUnlock()
+	return len(h.channels[channel])
 }

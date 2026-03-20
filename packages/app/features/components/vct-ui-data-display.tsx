@@ -212,7 +212,7 @@ export const VCT_KpiCard = ({
 }: VCTKpiCardProps) => (
   <article
     className={cn(
-      'rounded-2xl border border-vct-border bg-vct-elevated p-4 shadow-[var(--vct-shadow-sm)]',
+      'rounded-2xl border border-vct-border bg-vct-elevated p-4 shadow-(--vct-shadow-sm)',
       className ?? ''
     )}
     style={style}
@@ -484,7 +484,7 @@ export const VCT_BulkActionsBar = ({
   return (
     <div
       className={cn(
-        'sticky bottom-4 z-30 flex flex-wrap items-center gap-2 rounded-2xl border border-vct-border bg-vct-elevated p-3 shadow-[var(--vct-shadow-lg)]',
+        'sticky bottom-4 z-30 flex flex-wrap items-center gap-2 rounded-2xl border border-vct-border bg-vct-elevated p-3 shadow-(--vct-shadow-lg)',
         className ?? ''
       )}
     >

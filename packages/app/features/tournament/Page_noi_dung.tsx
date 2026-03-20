@@ -8,7 +8,7 @@ import {
     VCT_SegmentedControl, VCT_SearchInput, VCT_ConfirmDialog, VCT_EmptyState
 } from '../components/vct-ui';
 import { VCT_Icons } from '../components/vct-icons';
-import { genId } from '../data/mock-data';
+import { genId } from '../hooks/useTournamentAPI';
 import type { NoiDungQuyen, HangCan, LuaTuoi, HinhThucQuyen, TrangThaiND } from '../data/types';
 import { repositories, useEntityCollection } from '../data/repository';
 import { useRouteActionGuard } from '../hooks/use-route-action-guard';

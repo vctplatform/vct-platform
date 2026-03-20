@@ -44,16 +44,6 @@ const DIFF_MAP: Record<string, { label: string; color: string }> = {
     cao_cap: { label: 'Cao cấp', color: '#ef4444' }
 }
 
-const MOCK_TECHS: Technique[] = [
-    { id: 'T-001', name: 'Trung bình tấn', category: 'tan_phap', difficulty: 'co_ban', has_video: true, description: 'Hai chân dang rộng bằng vai, hạ thấp trọng tâm.', tags: ['cơ bản', 'tấn'] },
-    { id: 'T-002', name: 'Đinh tấn', category: 'tan_phap', difficulty: 'co_ban', has_video: true, description: 'Một chân trước cong, chân sau thẳng.', tags: ['cơ bản', 'tấn'] },
-    { id: 'T-003', name: 'Đấm thẳng', category: 'thu_phap', difficulty: 'co_ban', has_video: true, description: 'Phát lực từ hông, đấm thẳng tay.', tags: ['cơ bản', 'tay'] },
-    { id: 'T-004', name: 'Đá vòng cầu', category: 'cuoc_phap', difficulty: 'co_ban', has_video: true, description: 'Vung chân từ ngoài vào trong.', tags: ['cước', 'quét'] },
-    { id: 'T-005', name: 'Đá bay', category: 'cuoc_phap', difficulty: 'trung_cap', has_video: false, description: 'Kết hợp bật nhảy và đá trên không.', tags: ['cước', 'nhảy'] },
-    { id: 'T-006', name: 'Múa kiếm', category: 'binh_khi', difficulty: 'cao_cap', has_video: true, description: 'Các đường nét múa kiếm tinh xảo.', tags: ['binh khí', 'kiếm'] },
-    { id: 'T-007', name: 'Chop (Chặt)', category: 'thu_phap', difficulty: 'co_ban', has_video: false, description: 'Dùng cạnh bàn tay chặt mạnh.', tags: ['tay', 'cứng'] }
-]
-
 const BLANK_FORM: Partial<Technique> = {
     name: '', category: 'tan_phap', difficulty: 'co_ban', has_video: false, description: '', tags: []
 }
@@ -72,7 +62,7 @@ const VideoPlayer = ({ technique, onClose }: { technique: Technique, onClose: ()
                             <VCT_Icons.Play size={36} color="#fff" />
                         </div>
                         <div className="absolute bottom-4 left-4 right-4 h-1 bg-white/20 rounded-full overflow-hidden">
-                            <div className="w-1/3 h-full bg-[var(--vct-accent-cyan)] shadow-[0_0_10px_var(--vct-accent-cyan)]"></div>
+                            <div className="w-1/3 h-full bg-(--vct-accent-cyan) shadow-[0_0_10px_var(--vct-accent-cyan)]"></div>
                         </div>
                     </>
                 ) : (
@@ -82,12 +72,12 @@ const VideoPlayer = ({ technique, onClose }: { technique: Technique, onClose: ()
                     </div>
                 )}
             </div>
-            <div className="mt-4 flex gap-4 text-sm text-[var(--vct-text-secondary)]">
+            <div className="mt-4 flex gap-4 text-sm text-(--vct-text-secondary)">
                 <span className="flex items-center gap-1"><VCT_Icons.Info size={16} /> Nhóm: {CAT_MAP[technique.category]}</span>
                 <span className="flex items-center gap-1"><VCT_Icons.Activity size={16} /> Độ khó: {DIFF_MAP[technique.difficulty]?.label ?? 'N/A'}</span>
             </div>
-            <div className="mt-3 p-3 bg-[var(--vct-bg-elevated)] rounded-lg text-sm border border-[var(--vct-border-subtle)]">
-                <strong className="text-[var(--vct-text-primary)]">Mô tả:</strong> {technique.description || 'Chưa có mô tả.'}
+            <div className="mt-3 p-3 bg-(--vct-bg-elevated) rounded-lg text-sm border border-(--vct-border-subtle)">
+                <strong className="text-(--vct-text-primary)">Mô tả:</strong> {technique.description || 'Chưa có mô tả.'}
             </div>
         </VCT_Modal>
     )
@@ -99,7 +89,7 @@ const VideoPlayer = ({ technique, onClose }: { technique: Technique, onClose: ()
 export const Page_techniques = () => {
     // ── Real API data ──
     const { data: apiTechniques } = useTechniques()
-    const [techs, setTechs] = useState<Technique[]>(MOCK_TECHS)
+    const [techs, setTechs] = useState<Technique[]>([])
     const [search, setSearch] = useState('')
 
     useEffect(() => {
@@ -214,7 +204,7 @@ export const Page_techniques = () => {
             <VCT_FilterChips filters={activeFilters} onRemove={removeFilter} onClearAll={() => { setCategoryFilter(null); setSearch(''); }} />
 
             {/* ── TABS (Categories) ── */}
-            <div className="mb-5 border-b border-[var(--vct-border-subtle)] pb-2 flex items-center justify-between flex-wrap gap-4">
+            <div className="mb-5 border-b border-(--vct-border-subtle) pb-2 flex items-center justify-between flex-wrap gap-4">
                 <VCT_Tabs
                     tabs={[
                         { key: 'all', label: 'Tất cả' },
@@ -246,24 +236,24 @@ export const Page_techniques = () => {
                                 animate={{ opacity: 1, scale: 1 }}
                                 exit={{ opacity: 0, scale: 0.9 }}
                                 transition={{ duration: 0.2 }}
-                                className="bg-[var(--vct-bg-elevated)] border border-[var(--vct-border-subtle)] rounded-2xl overflow-hidden hover:border-[var(--vct-accent-cyan)] hover:shadow-[0_4px_24px_-8px_var(--vct-accent-cyan)] transition-all flex flex-col group cursor-default"
+                                className="bg-(--vct-bg-elevated) border border-(--vct-border-subtle) rounded-2xl overflow-hidden hover:border-(--vct-accent-cyan) hover:shadow-[0_4px_24px_-8px_var(--vct-accent-cyan)] transition-all flex flex-col group cursor-default"
                             >
                                 {/* Thumbnail / Video trigger */}
                                 <div
-                                    className="aspect-video bg-[var(--vct-bg-card)] relative cursor-pointer overflow-hidden border-b border-[var(--vct-border-subtle)] flex items-center justify-center"
+                                    className="aspect-video bg-(--vct-bg-card) relative cursor-pointer overflow-hidden border-b border-(--vct-border-subtle) flex items-center justify-center"
                                     onClick={() => setPlayingVideo(tech)}
                                 >
                                     {tech.has_video ? (
                                         <>
                                             <div className="absolute inset-0 bg-black/10 group-hover:bg-black/30 transition-colors z-10 duration-300"></div>
                                             <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1555597673-b21d5c935865?auto=format&fit=crop&q=80')] bg-cover bg-center opacity-60 group-hover:scale-110 transition-transform duration-700"></div>
-                                            <div className="w-12 h-12 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center z-20 group-hover:bg-[var(--vct-accent-cyan)] group-hover:text-white transition-all shadow-lg text-[var(--vct-accent-cyan)]">
+                                            <div className="w-12 h-12 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center z-20 group-hover:bg-(--vct-accent-cyan) group-hover:text-white transition-all shadow-lg text-(--vct-accent-cyan)">
                                                 <VCT_Icons.Play size={24} className="ml-1" />
                                             </div>
                                             <div className="absolute bottom-2 right-2 bg-black/60 text-white text-[10px] px-2 py-0.5 rounded-md font-bold z-20 backdrop-blur-md">VIDEO</div>
                                         </>
                                     ) : (
-                                        <div className="flex flex-col items-center opacity-40 group-hover:opacity-100 transition-opacity text-[var(--vct-text-secondary)]">
+                                        <div className="flex flex-col items-center opacity-40 group-hover:opacity-100 transition-opacity text-(--vct-text-secondary)">
                                             <VCT_Icons.Image size={32} />
                                             <span className="text-[10px] mt-2 font-bold uppercase">No Media</span>
                                         </div>
@@ -273,10 +263,10 @@ export const Page_techniques = () => {
                                 {/* Content */}
                                 <div className="p-4 flex-1 flex flex-col">
                                     <div className="flex items-start justify-between gap-2 mb-2">
-                                        <h3 className="font-bold text-[15px] text-[var(--vct-text-primary)] leading-tight">{tech.name}</h3>
+                                        <h3 className="font-bold text-[15px] text-(--vct-text-primary) leading-tight">{tech.name}</h3>
                                         <div className="shrink-0 flex gap-1">
-                                            <button onClick={(e) => { e.stopPropagation(); openEditModal(tech) }} className="p-1.5 text-[var(--vct-text-tertiary)] hover:text-[var(--vct-accent-cyan)] hover:bg-[var(--vct-bg-glass)] rounded-md transition-colors"><VCT_Icons.Edit size={14} /></button>
-                                            <button onClick={(e) => { e.stopPropagation(); setDeleteTarget(tech) }} className="p-1.5 text-[var(--vct-text-tertiary)] hover:text-[#ef4444] hover:bg-[#ef444420] rounded-md transition-colors"><VCT_Icons.Trash size={14} /></button>
+                                            <button onClick={(e) => { e.stopPropagation(); openEditModal(tech) }} className="p-1.5 text-(--vct-text-tertiary) hover:text-(--vct-accent-cyan) hover:bg-(--vct-bg-glass) rounded-md transition-colors"><VCT_Icons.Edit size={14} /></button>
+                                            <button onClick={(e) => { e.stopPropagation(); setDeleteTarget(tech) }} className="p-1.5 text-(--vct-text-tertiary) hover:text-[#ef4444] hover:bg-[#ef444420] rounded-md transition-colors"><VCT_Icons.Trash size={14} /></button>
                                         </div>
                                     </div>
 
@@ -284,19 +274,19 @@ export const Page_techniques = () => {
                                         <span style={{ color: DIFF_MAP[tech.difficulty]?.color ?? '#94a3b8', background: `${DIFF_MAP[tech.difficulty]?.color ?? '#94a3b8'}15`, padding: '2px 8px', borderRadius: 4, fontSize: 10, fontWeight: 700 }}>
                                             {DIFF_MAP[tech.difficulty]?.label ?? tech.difficulty}
                                         </span>
-                                        <span className="text-[11px] font-medium text-[var(--vct-text-secondary)] bg-[var(--vct-bg-base)] px-2 py-0.5 rounded border border-[var(--vct-border-subtle)]">
+                                        <span className="text-[11px] font-medium text-(--vct-text-secondary) bg-(--vct-bg-base) px-2 py-0.5 rounded border border-(--vct-border-subtle)">
                                             {CAT_MAP[tech.category].split(' ')[0]}
                                         </span>
                                     </div>
 
-                                    <p className="text-[12px] text-[var(--vct-text-secondary)] leading-relaxed line-clamp-2 mt-auto mb-3">
+                                    <p className="text-[12px] text-(--vct-text-secondary) leading-relaxed line-clamp-2 mt-auto mb-3">
                                         {tech.description}
                                     </p>
 
                                     {tech.tags.length > 0 && (
-                                        <div className="flex flex-wrap gap-1.5 mt-auto pt-3 border-t border-[var(--vct-border-subtle)]">
+                                        <div className="flex flex-wrap gap-1.5 mt-auto pt-3 border-t border-(--vct-border-subtle)">
                                             {tech.tags.map(tag => (
-                                                <span key={tag} className="text-[10px] text-[var(--vct-text-tertiary)] font-monospace before:content-['#']">
+                                                <span key={tag} className="text-[10px] text-(--vct-text-tertiary) font-monospace before:content-['#']">
                                                     {tag}
                                                 </span>
                                             ))}
@@ -331,7 +321,7 @@ export const Page_techniques = () => {
                             value={form.description}
                             onChange={(e: any) => setForm({ ...form, description: e.target.value })}
                             placeholder="Mô tả kỹ thuật, cách thực hiện..."
-                            className="w-full bg-[var(--vct-bg-elevated)] border border-[var(--vct-border-subtle)] rounded-lg p-3 text-[var(--vct-text-primary)] text-sm outline-none focus:border-[var(--vct-accent-cyan)] transition-colors min-h-[80px] resize-y"
+                            className="w-full bg-(--vct-bg-elevated) border border-(--vct-border-subtle) rounded-lg p-3 text-(--vct-text-primary) text-sm outline-none focus:border-(--vct-accent-cyan) transition-colors min-h-[80px] resize-y"
                         />
                     </VCT_Field>
 
@@ -341,7 +331,7 @@ export const Page_techniques = () => {
                         </VCT_Field>
                         <label className="flex items-center gap-3 cursor-pointer pb-2" style={{ padding: '8px 12px', background: 'var(--vct-bg-elevated)', border: '1px solid var(--vct-border-subtle)', borderRadius: 8, height: 40, marginBottom: 4 }}>
                             <input type="checkbox" checked={form.has_video} onChange={(e) => setForm({ ...form, has_video: e.target.checked })} style={{ accentColor: '#22d3ee', width: 16, height: 16 }} />
-                            <span className="text-sm font-semibold text-[var(--vct-text-primary)]">Có Video</span>
+                            <span className="text-sm font-semibold text-(--vct-text-primary)">Có Video</span>
                         </label>
                     </VCT_Stack>
                 </VCT_Stack>

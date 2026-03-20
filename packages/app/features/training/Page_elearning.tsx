@@ -37,7 +37,7 @@ export const Page_elearning = () => {
                 thumbnail: c.thumbnail_url || 'https://images.unsplash.com/photo-1542360548-fbcd067d264f?auto=format&fit=crop&q=80&w=400',
             }))
         }
-        return MOCK_COURSES
+        return []
     }, [apiCourses])
 
     return (
@@ -60,13 +60,13 @@ export const Page_elearning = () => {
 
             {/* ── LIST VIEW ── */}
             <div className="mb-6">
-                <h2 className="text-lg font-bold text-[var(--vct-text-primary)] flex items-center gap-2 mb-4">
+                <h2 className="text-lg font-bold text-(--vct-text-primary) flex items-center gap-2 mb-4">
                     <VCT_Icons.Book /> Khóa học nổi bật
                 </h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {courses.map(course => (
-                        <div key={course.id} className="bg-[var(--vct-bg-elevated)] border border-[var(--vct-border-strong)] rounded-2xl overflow-hidden hover:border-[var(--vct-accent-cyan)] hover:shadow-[0_4px_24px_-8px_var(--vct-accent-cyan)] transition-all flex flex-col group cursor-pointer">
-                            <div className="aspect-video relative overflow-hidden bg-[var(--vct-bg-card)]">
+                        <div key={course.id} className="bg-(--vct-bg-elevated) border border-(--vct-border-strong) rounded-2xl overflow-hidden hover:border-(--vct-accent-cyan) hover:shadow-[0_4px_24px_-8px_var(--vct-accent-cyan)] transition-all flex flex-col group cursor-pointer">
+                            <div className="aspect-video relative overflow-hidden bg-(--vct-bg-card)">
                                 <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors z-10"></div>
                                 <Image
                                     src={course.thumbnail}
@@ -83,24 +83,24 @@ export const Page_elearning = () => {
                             </div>
 
                             <div className="p-5 flex flex-col flex-1">
-                                <h3 className="text-[15px] font-bold text-[var(--vct-text-primary)] mb-2 leading-tight line-clamp-2">{course.title}</h3>
+                                <h3 className="text-[15px] font-bold text-(--vct-text-primary) mb-2 leading-tight line-clamp-2">{course.title}</h3>
 
-                                <div className="flex items-center gap-4 text-[12px] text-[var(--vct-text-secondary)] mb-4">
+                                <div className="flex items-center gap-4 text-[12px] text-(--vct-text-secondary) mb-4">
                                     <div className="flex items-center gap-1.5"><VCT_Icons.User size={14} /> {course.instructor}</div>
                                     <div className="flex items-center gap-1.5"><VCT_Icons.Layers size={14} /> {course.modules} Modules</div>
                                 </div>
 
                                 <div className="mt-auto">
                                     <div className="flex items-center justify-between text-[11px] mb-2">
-                                        <span className="text-[var(--vct-text-secondary)] font-medium">Tiến độ khóa học chung</span>
-                                        <span className="text-[var(--vct-accent-cyan)] font-bold">{course.progress}%</span>
+                                        <span className="text-(--vct-text-secondary) font-medium">Tiến độ khóa học chung</span>
+                                        <span className="text-(--vct-accent-cyan) font-bold">{course.progress}%</span>
                                     </div>
-                                    <div className="h-1.5 w-full bg-[var(--vct-bg-card)] rounded-full overflow-hidden">
-                                        <div className="h-full bg-[var(--vct-accent-cyan)] rounded-full transition-all duration-1000" style={{ width: `${course.progress}%` }}></div>
+                                    <div className="h-1.5 w-full bg-(--vct-bg-card) rounded-full overflow-hidden">
+                                        <div className="h-full bg-(--vct-accent-cyan) rounded-full transition-all duration-1000" style={{ width: `${course.progress}%` }}></div>
                                     </div>
 
                                     <div className="flex items-center justify-between mt-4">
-                                        <div className="text-[12px] text-[var(--vct-text-tertiary)] flex items-center gap-1">
+                                        <div className="text-[12px] text-(--vct-text-tertiary) flex items-center gap-1">
                                             <VCT_Icons.Users size={14} /> <b>{course.students}</b> học viên
                                         </div>
                                         <VCT_Button size="sm" variant={course.progress > 0 ? 'secondary' : 'primary'}>

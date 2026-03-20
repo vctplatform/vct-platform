@@ -76,7 +76,7 @@ export const Page_command_center = () => {
                         </button>
                         <button
                             onClick={() => router.push('/reports')}
-                            className="flex items-center gap-2 rounded-xl border border-vct-border-strong bg-vct-elevated px-4 py-2.5 text-sm font-bold text-vct-text transition-all hover:border-vct-accent hover:shadow-[var(--vct-shadow-md)] active:scale-[0.97]"
+                            className="flex items-center gap-2 rounded-xl border border-vct-border-strong bg-vct-elevated px-4 py-2.5 text-sm font-bold text-vct-text transition-all hover:border-vct-accent hover:shadow-(--vct-shadow-md) active:scale-[0.97]"
                         >
                             <VCT_Icons.BarChart2 size={16} /> {lang === 'vi' ? 'Xem báo cáo' : 'View Reports'}
                         </button>
@@ -100,7 +100,7 @@ export const Page_command_center = () => {
                         {RECENT_ACTIONS.map((act, i) => (
                             <div
                                 key={i}
-                                className="group flex items-start gap-3 rounded-xl border border-vct-border bg-vct-bg p-3.5 transition-all hover:border-vct-accent/40 hover:shadow-[var(--vct-shadow-sm)] vct-card-press"
+                                className="group flex items-start gap-3 rounded-xl border border-vct-border bg-vct-bg p-3.5 transition-all hover:border-vct-accent/40 hover:shadow-(--vct-shadow-sm) vct-card-press"
                             >
                                 <div
                                     className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl text-lg"
@@ -128,7 +128,7 @@ export const Page_command_center = () => {
                         {UPCOMING.map((ev, i) => (
                             <div
                                 key={i}
-                                className="group rounded-xl border border-vct-border bg-vct-bg p-4 transition-all hover:border-vct-accent/40 hover:shadow-[var(--vct-shadow-sm)] vct-card-press cursor-pointer"
+                                className="group rounded-xl border border-vct-border bg-vct-bg p-4 transition-all hover:border-vct-accent/40 hover:shadow-(--vct-shadow-sm) vct-card-press cursor-pointer"
                             >
                                 <div className="mb-2.5 flex items-start justify-between gap-2">
                                     <div className="text-sm font-bold text-vct-text leading-snug">{ev.title}</div>

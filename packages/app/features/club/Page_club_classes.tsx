@@ -386,7 +386,7 @@ export const Page_club_classes = () => {
         render: (row: ClubClass) => (
           <div>
             <div className="text-sm font-semibold">{row.name}</div>
-            <div className="text-xs text-[var(--vct-text-secondary)]">
+            <div className="text-xs text-(--vct-text-secondary)">
               {row.location}
             </div>
           </div>
@@ -403,7 +403,7 @@ export const Page_club_classes = () => {
         render: (row: ClubClass) => (
           <div>
             <div className="text-sm">{row.coachName}</div>
-            <div className="text-xs text-[var(--vct-text-secondary)]">
+            <div className="text-xs text-(--vct-text-secondary)">
               {row.assistantName ? `Tro giang: ${row.assistantName}` : 'Khong co tro giang'}
             </div>
           </div>
@@ -417,7 +417,7 @@ export const Page_club_classes = () => {
             {row.sessions.map((session, index) => (
               <span
                 key={`${row.id}-${index}`}
-                className="rounded-md bg-[var(--vct-bg-card)] px-2 py-1 text-[11px] text-[var(--vct-text-secondary)]"
+                className="rounded-md bg-(--vct-bg-card) px-2 py-1 text-[11px] text-(--vct-text-secondary)"
               >
                 {DAY_LABEL(session.dayOfWeek)} {session.startTime}-{session.endTime}
               </span>
@@ -431,7 +431,7 @@ export const Page_club_classes = () => {
         render: (row: ClubClass) => (
           <div className="min-w-[120px]">
             <VCT_ProgressBar value={row.currentStudents} max={row.maxStudents} />
-            <div className="mt-1 text-[11px] text-[var(--vct-text-secondary)]">
+            <div className="mt-1 text-[11px] text-(--vct-text-secondary)">
               {row.currentStudents}/{row.maxStudents}
             </div>
           </div>
@@ -442,7 +442,7 @@ export const Page_club_classes = () => {
         label: 'Hoc phi',
         align: 'right' as const,
         render: (row: ClubClass) => (
-          <span className="font-semibold text-[var(--vct-accent-cyan)]">
+          <span className="font-semibold text-(--vct-accent-cyan)">
             {money(row.monthlyFee)}
           </span>
         ),
@@ -481,7 +481,7 @@ export const Page_club_classes = () => {
               <button
                 type="button"
                 onClick={() => openEditModal(row)}
-                className="rounded-md bg-[var(--vct-bg-input)] px-2 py-1 text-xs font-semibold"
+                className="rounded-md bg-(--vct-bg-input) px-2 py-1 text-xs font-semibold"
               >
                 Sua
               </button>
@@ -547,10 +547,10 @@ export const Page_club_classes = () => {
       />
 
       <div className="mb-6">
-        <h1 className="text-2xl font-bold tracking-tight text-[var(--vct-text-primary)]">
+        <h1 className="text-2xl font-bold tracking-tight text-(--vct-text-primary)">
           Quan ly lop hoc CLB
         </h1>
-        <p className="mt-1 text-sm text-[var(--vct-text-secondary)]">
+        <p className="mt-1 text-sm text-(--vct-text-secondary)">
           Quan ly lich hoc, si so, hoc phi va HLV phu trach tung lop.
         </p>
       </div>
@@ -632,7 +632,7 @@ export const Page_club_classes = () => {
           onAction={can('create') ? openCreateModal : undefined}
         />
       ) : (
-        <div className="rounded-2xl border border-[var(--vct-border-subtle)] bg-[var(--vct-bg-glass)] p-2">
+        <div className="rounded-2xl border border-(--vct-border-subtle) bg-(--vct-bg-glass) p-2">
           <VCT_Table columns={columns} data={filteredClasses} rowKey="id" />
         </div>
       )}
@@ -782,7 +782,7 @@ export const Page_club_classes = () => {
           </div>
           <div className="md:col-span-2">
             <div className="mb-2 flex items-center justify-between">
-              <div className="text-sm font-semibold text-[var(--vct-text-primary)]">
+              <div className="text-sm font-semibold text-(--vct-text-primary)">
                 Cac buoi hoc
               </div>
               <VCT_Button size="small" variant="secondary" onClick={addSession}>
@@ -793,7 +793,7 @@ export const Page_club_classes = () => {
               {form.sessions.map((session, index) => (
                 <div
                   key={`session-${index}`}
-                  className="grid grid-cols-1 gap-2 rounded-xl border border-[var(--vct-border-subtle)] bg-[var(--vct-bg-card)] p-3 md:grid-cols-[140px_1fr_1fr_auto]"
+                  className="grid grid-cols-1 gap-2 rounded-xl border border-(--vct-border-subtle) bg-(--vct-bg-card) p-3 md:grid-cols-[140px_1fr_1fr_auto]"
                 >
                   <VCT_Select
                     value={`${session.dayOfWeek}`}

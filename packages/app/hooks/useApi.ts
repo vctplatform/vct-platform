@@ -93,7 +93,7 @@ export function useApi<T>(
     return () => {
       mountedRef.current = false
     }
-  }, []) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [])  
 
   return { ...state, execute, reset, refetch: execute }
 }

@@ -22,13 +22,13 @@ export const ROLE_OPTIONS = [
 ]
 
 export const ROLE_COLORS: Record<string, string> = {
-    SYSTEM_ADMIN: '#ef4444',
-    FEDERATION_ADMIN: '#8b5cf6',
-    CLUB_MANAGER: '#0ea5e9',
-    REFEREE: '#f59e0b',
-    COACH: '#10b981',
-    ATHLETE: '#06b6d4',
-    VIEWER: '#94a3b8',
+    SYSTEM_ADMIN: 'red',
+    FEDERATION_ADMIN: 'violet',
+    CLUB_MANAGER: 'sky',
+    REFEREE: 'amber',
+    COACH: 'emerald',
+    ATHLETE: 'cyan',
+    VIEWER: 'slate',
 }
 
 export const STATUS_MAP: Record<SystemUser['status'], { label: string; type: 'success' | 'warning' | 'danger' | 'neutral' }> = {

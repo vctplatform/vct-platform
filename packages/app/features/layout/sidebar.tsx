@@ -93,7 +93,7 @@ export const VCT_Sidebar = ({
       animate={compactMode ? { x: mobileOpen ? 0 : -340 } : { width: sidebarWidth }}
       transition={{ duration: 0.22, ease: [0.4, 0, 0.2, 1] }}
       className={`${compactMode ? 'fixed inset-y-0 left-0 z-[90]' : 'relative z-30'
-        } flex h-dvh shrink-0 flex-col overflow-hidden border-r border-vct-border bg-[var(--vct-bg-glass-heavy)]`}
+        } flex h-dvh shrink-0 flex-col overflow-hidden border-r border-vct-border bg-(--vct-bg-glass-heavy)`}
       style={{
         width: compactMode ? 304 : sidebarWidth,
         boxShadow: compactMode ? '0 20px 40px rgba(2, 6, 23, 0.3)' : 'none',
@@ -212,7 +212,7 @@ export const VCT_Sidebar = ({
                       : 'justify-start px-4 py-2.5'
                       } ${isActive
                         ? 'bg-vct-accent text-white shadow-[0_6px_16px_rgba(14,165,233,0.3)]'
-                        : 'text-[var(--vct-text-secondary)] hover:border-vct-border hover:bg-vct-elevated'
+                        : 'text-(--vct-text-secondary) hover:border-vct-border hover:bg-vct-elevated'
                       }`}
                   >
                     <IconComponent
@@ -254,7 +254,7 @@ export const VCT_Sidebar = ({
             <div className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-emerald-600 to-cyan-700 text-xs font-black text-white">
               {initials}
             </div>
-            <span className="absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full border-2 border-[var(--vct-bg-elevated)] bg-emerald-400" title="Online" />
+            <span className="absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full border-2 border-(--vct-bg-elevated) bg-emerald-400" title="Online" />
           </div>
           {(!isCollapsed || compactMode) && (
             <div className="min-w-0 flex-1">

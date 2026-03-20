@@ -37,8 +37,8 @@ export const Page_marketplace = () => {
         <VCT_PageContainer size="wide" animated>
             <div className="mb-6 flex flex-wrap items-start justify-between gap-4">
                 <div>
-                    <h1 className="text-2xl font-bold tracking-tight text-[var(--vct-text-primary)]">Sàn Giao Dịch Võ Thuật</h1>
-                    <p className="text-sm text-[var(--vct-text-secondary)] mt-1">Mua bán trang thiết bị, dụng cụ tập luyện & thi đấu.</p>
+                    <h1 className="text-2xl font-bold tracking-tight text-(--vct-text-primary)">Sàn Giao Dịch Võ Thuật</h1>
+                    <p className="text-sm text-(--vct-text-secondary) mt-1">Mua bán trang thiết bị, dụng cụ tập luyện & thi đấu.</p>
                 </div>
                 <VCT_Stack direction="row" gap={12}>
                     <VCT_Button icon={<VCT_Icons.Plus size={16} />}>Đăng sản phẩm</VCT_Button>
@@ -61,9 +61,9 @@ export const Page_marketplace = () => {
             {/* ── GRID ── */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 {filtered.map(product => (
-                    <div key={product.id} className={`bg-[var(--vct-bg-elevated)] border border-[var(--vct-border-strong)] rounded-2xl overflow-hidden hover:border-[var(--vct-accent-cyan)] hover:shadow-[0_4px_24px_-8px_var(--vct-accent-cyan)] transition-all group ${product.status === 'sold' ? 'opacity-60' : ''}`}>
+                    <div key={product.id} className={`bg-(--vct-bg-elevated) border border-(--vct-border-strong) rounded-2xl overflow-hidden hover:border-(--vct-accent-cyan) hover:shadow-[0_4px_24px_-8px_var(--vct-accent-cyan)] transition-all group ${product.status === 'sold' ? 'opacity-60' : ''}`}>
                         {/* Image Area */}
-                        <div className="h-40 bg-[var(--vct-bg-base)] flex items-center justify-center text-6xl relative">
+                        <div className="h-40 bg-(--vct-bg-base) flex items-center justify-center text-6xl relative">
                             {product.image}
                             {product.status === 'sold' && (
                                 <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
@@ -80,9 +80,9 @@ export const Page_marketplace = () => {
                         </div>
                         {/* Details */}
                         <div className="p-4">
-                            <h3 className="font-bold text-sm text-[var(--vct-text-primary)] line-clamp-2 mb-2 group-hover:text-[var(--vct-accent-cyan)] transition-colors">{product.title}</h3>
-                            <div className="text-xl font-black text-[var(--vct-accent-cyan)] mb-3">{product.price.toLocaleString()} <span className="text-[10px] text-[var(--vct-text-tertiary)] font-normal">VNĐ</span></div>
-                            <div className="flex items-center justify-between text-[11px] text-[var(--vct-text-tertiary)]">
+                            <h3 className="font-bold text-sm text-(--vct-text-primary) line-clamp-2 mb-2 group-hover:text-(--vct-accent-cyan) transition-colors">{product.title}</h3>
+                            <div className="text-xl font-black text-(--vct-accent-cyan) mb-3">{product.price.toLocaleString()} <span className="text-[10px] text-(--vct-text-tertiary) font-normal">VNĐ</span></div>
+                            <div className="flex items-center justify-between text-[11px] text-(--vct-text-tertiary)">
                                 <span className="flex items-center gap-1"><VCT_Icons.User size={12} /> {product.seller}</span>
                                 <span className="font-mono">{product.id}</span>
                             </div>

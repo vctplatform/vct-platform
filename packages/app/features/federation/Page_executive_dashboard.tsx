@@ -53,7 +53,7 @@ export function Page_executive_dashboard() {
     useEffect(() => {
         statsApi.execute('/federation/stats')
         pendingApi.execute('/approvals/my-pending')
-    }, []) // eslint-disable-line react-hooks/exhaustive-deps
+    }, [])  
 
     const KPI = statsApi.data ?? FALLBACK_KPI
     const RECENT_APPROVALS = pendingApi.data?.requests ?? FALLBACK_APPROVALS

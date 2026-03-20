@@ -37,7 +37,7 @@ export const VCT_StatRow = ({
         {items.map((stat) => (
             <div
                 key={stat.label}
-                className="group relative overflow-hidden rounded-xl border border-vct-border bg-vct-elevated p-4 transition-all duration-200 hover:border-vct-border-strong hover:shadow-[var(--vct-shadow-md)]"
+                className="group relative overflow-hidden rounded-xl border border-vct-border bg-vct-elevated p-4 transition-all duration-200 hover:border-vct-border-strong hover:shadow-(--vct-shadow-md)"
             >
                 {/* Accent dot */}
                 {stat.color && (

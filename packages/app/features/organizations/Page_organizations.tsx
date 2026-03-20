@@ -249,8 +249,8 @@ export const Page_organizations = () => {
             <VCT_Toast isVisible={toast.show} message={toast.msg} type={toast.type} onClose={() => setToast(prev => ({ ...prev, show: false }))} />
 
             <div className="mb-6">
-                <h1 className="text-2xl font-bold tracking-tight text-[var(--vct-text-primary)]">Liên đoàn & Hội nhóm</h1>
-                <p className="text-sm text-[var(--vct-text-secondary)] mt-1">Quản lý cơ cấu tổ chức, liên đoàn các cấp và mạng lưới hội viên.</p>
+                <h1 className="text-2xl font-bold tracking-tight text-(--vct-text-primary)">Liên đoàn & Hội nhóm</h1>
+                <p className="text-sm text-(--vct-text-secondary) mt-1">Quản lý cơ cấu tổ chức, liên đoàn các cấp và mạng lưới hội viên.</p>
             </div>
 
             {/* ── KPI ROW ── */}
@@ -273,7 +273,7 @@ export const Page_organizations = () => {
                     <select
                         value={typeFilter || ''}
                         onChange={(e) => setTypeFilter(e.target.value || null)}
-                        className="bg-[var(--vct-bg-elevated)] border border-[var(--vct-border-subtle)] text-[var(--vct-text-primary)] text-sm rounded-lg px-3 py-2 outline-none focus:border-[var(--vct-accent-cyan)] transition-colors"
+                        className="bg-(--vct-bg-elevated) border border-(--vct-border-subtle) text-(--vct-text-primary) text-sm rounded-lg px-3 py-2 outline-none focus:border-(--vct-accent-cyan) transition-colors"
                     >
                         <option value="">Tất cả cấp độ</option>
                         {Object.entries(TYPE_MAP).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
@@ -289,10 +289,10 @@ export const Page_organizations = () => {
             {filtered.length === 0 ? (
                 <VCT_EmptyState title="Không có tổ chức nào" description={search || statusFilter ? 'Thử thay đổi bộ lọc hoặc từ khóa tìm kiếm.' : 'Hệ thống chưa có tổ chức nào được ghi nhận. Bấm "Thêm Tổ Chức" để bắt đầu.'} actionLabel="Thêm Tổ Chức" onAction={openAddModal} icon="🏢" />
             ) : (
-                <div className="overflow-hidden rounded-2xl border border-[var(--vct-border-subtle)] bg-[var(--vct-bg-glass)]">
+                <div className="overflow-hidden rounded-2xl border border-(--vct-border-subtle) bg-(--vct-bg-glass)">
                     <table className="w-full border-collapse">
                         <thead>
-                            <tr className="border-b border-[var(--vct-border-strong)] bg-[var(--vct-bg-card)]">
+                            <tr className="border-b border-(--vct-border-strong) bg-(--vct-bg-card)">
                                 {columns.map((col, i) => (
                                     <th key={i} style={{ padding: '14px 16px', textAlign: (col.align || 'left') as React.CSSProperties['textAlign'], fontSize: 11, fontWeight: 700, textTransform: 'uppercase', opacity: 0.5, position: 'sticky', top: 0, background: 'var(--vct-bg-card)', zIndex: 2 }}>
                                         {col.label}
@@ -341,7 +341,7 @@ export const Page_organizations = () => {
                         <VCT_Field label="Trụ sở (Tỉnh/TP)" className="flex-1"><VCT_Input value={form.headquarter} onChange={(e: any) => setForm({ ...form, headquarter: e.target.value })} placeholder="VD: Hà Nội" /></VCT_Field>
                     </VCT_Stack>
 
-                    <div className="h-px w-full bg-[var(--vct-border-subtle)] my-2"></div>
+                    <div className="h-px w-full bg-(--vct-border-subtle) my-2"></div>
                     <div className="text-sm font-bold opacity-70">Người đại diện / Ban chấp hành</div>
 
                     <VCT_Field label="Họ tên người đại diện"><VCT_Input value={form.president} onChange={(e: any) => setForm({ ...form, president: e.target.value })} placeholder="Chủ tịch / Trưởng ban" /></VCT_Field>

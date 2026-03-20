@@ -62,7 +62,7 @@ export const WorkspaceSwitcher = ({
             <button
                 type="button"
                 onClick={() => setIsOpen(p => !p)}
-                className="flex w-full items-center gap-2.5 rounded-xl border border-vct-border bg-vct-input px-3 py-2 transition-colors hover:bg-[var(--vct-bg-elevated)]"
+                className="flex w-full items-center gap-2.5 rounded-xl border border-vct-border bg-vct-input px-3 py-2 transition-colors hover:bg-(--vct-bg-elevated)"
             >
                 <div className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0" style={{ backgroundColor: `${currentMeta.color}25` }}>
                     <CurrentIcon size={14} color={currentMeta.color} />
@@ -87,7 +87,7 @@ export const WorkspaceSwitcher = ({
                         animate={{ opacity: 1, y: 0, scale: 1 }}
                         exit={{ opacity: 0, y: -8, scale: 0.96 }}
                         transition={{ duration: 0.15 }}
-                        className="absolute left-4 right-4 z-[100] mt-2 rounded-xl border border-vct-border bg-[var(--vct-bg-card)] p-2 shadow-2xl"
+                        className="absolute left-4 right-4 z-[100] mt-2 rounded-xl border border-vct-border bg-(--vct-bg-card) p-2 shadow-2xl"
                     >
                         <div className="text-[10px] font-extrabold uppercase tracking-[0.1em] text-vct-text-muted px-2 pt-1 pb-2">
                             Chọn Workspace
@@ -109,7 +109,7 @@ export const WorkspaceSwitcher = ({
                                     className={`flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left transition-colors ${
                                         isCurrent
                                             ? 'bg-vct-accent/10 text-vct-accent'
-                                            : 'text-[var(--vct-text-secondary)] hover:bg-[var(--vct-bg-elevated)]'
+                                            : 'text-(--vct-text-secondary) hover:bg-(--vct-bg-elevated)'
                                     }`}
                                 >
                                     <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0" style={{ backgroundColor: `${meta.color}20` }}>

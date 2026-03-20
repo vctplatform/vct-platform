@@ -1,5 +1,5 @@
 'use client'
-/* eslint-disable -- img tag used intentionally for cross-platform compatibility */
+ 
 
 import { useState, useRef, useCallback, type CSSProperties } from 'react'
 

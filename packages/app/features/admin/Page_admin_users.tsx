@@ -1,5 +1,7 @@
 'use client'
 
+import './admin.module.css'
+
 import * as React from 'react'
 import { useState, useMemo, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
@@ -288,7 +290,7 @@ const Page_admin_users_Content = () => {
                         label: 'Vai trò',
                         sortable: true,
                         render: (u) => (
-                            <span className="text-[11px] font-bold px-2 py-[3px] rounded-md" style={{ color: ROLE_COLORS[u.role] || '#94a3b8', background: `${ROLE_COLORS[u.role] || '#94a3b8'}20` }}>
+                            <span className="admin-role-tag" data-color={ROLE_COLORS[u.role] || 'slate'}>
                                 {getRoleLabel(u.role)}
                             </span>
                         )
@@ -388,7 +390,7 @@ const Page_admin_users_Content = () => {
                         <div className="grid grid-cols-2 gap-4 text-sm">
                             <div><div className="text-[10px] uppercase text-(--vct-text-tertiary) mb-1">ID</div><div className="font-mono text-(--vct-accent-cyan)">{drawerUser.id}</div></div>
                             <div><div className="text-[10px] uppercase text-(--vct-text-tertiary) mb-1">SĐT</div><div className="text-(--vct-text-primary)">{drawerUser.phone}</div></div>
-                            <div><div className="text-[10px] uppercase text-(--vct-text-tertiary) mb-1">Vai trò</div><span style={{ fontSize: 11, fontWeight: 700, padding: '3px 8px', borderRadius: 6, color: ROLE_COLORS[drawerUser.role] || '#94a3b8', background: `${ROLE_COLORS[drawerUser.role] || '#94a3b8'}15` }}>{getRoleLabel(drawerUser.role)}</span></div>
+                            <div><div className="text-[10px] uppercase text-(--vct-text-tertiary) mb-1">Vai trò</div><span className="admin-role-tag" data-color={ROLE_COLORS[drawerUser.role] || 'slate'}>{getRoleLabel(drawerUser.role)}</span></div>
                             <div><div className="text-[10px] uppercase text-(--vct-text-tertiary) mb-1">Phạm vi</div><div className="text-(--vct-text-primary)">{drawerUser.scope}</div></div>
                             <div><div className="text-[10px] uppercase text-(--vct-text-tertiary) mb-1">Đăng nhập cuối</div><div className="text-(--vct-text-primary)">{drawerUser.last_login}</div></div>
                             <div><div className="text-[10px] uppercase text-(--vct-text-tertiary) mb-1">Ngày tạo</div><div className="text-(--vct-text-primary)">{drawerUser.created_at}</div></div>

@@ -1,7 +1,7 @@
 'use client'
 
 import * as React from 'react'
-import { useState, useMemo, useCallback } from 'react'
+import { useState, useMemo } from 'react'
 import {
     VCT_Badge, VCT_Button, VCT_Stack,
     VCT_SearchInput, VCT_Select, VCT_Tabs, VCT_EmptyState,
@@ -143,14 +143,14 @@ const Page_admin_subscriptions_Content = () => {
 
     React.useEffect(() => {
         Promise.all([fetchPlans(), fetchSubs()]).finally(() => setIsLoading(false))
-        // eslint-disable-next-line react-hooks/exhaustive-deps
+         
     }, [])
 
     React.useEffect(() => {
         if (selected && !billingHistory[selected.id]) {
             fetchBilling(selected.id)
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
+         
     }, [selected])
 
     // ── Expiring soon subscriptions ──
@@ -437,8 +437,8 @@ const Page_admin_subscriptions_Content = () => {
                                             <span className="text-(--vct-text-tertiary)">{Math.max(0, daysUntil(selected.current_period_end))} / {Math.ceil((new Date(selected.current_period_end).getTime() - new Date(selected.current_period_start).getTime()) / (1000 * 60 * 60 * 24))} ngày</span>
                                         </div>
                                         <div className="w-full h-2 bg-[#8b5cf620] rounded-full overflow-hidden">
-                                            <div className="h-full bg-linear-to-r from-[#8b5cf6] to-[#a855f7] rounded-full transition-all"
-                                                style={{ width: `${Math.min(100, Math.max(0, 100 - (daysUntil(selected.current_period_end) / Math.max(1, Math.ceil((new Date(selected.current_period_end).getTime() - new Date(selected.current_period_start).getTime()) / (1000 * 60 * 60 * 24))) * 100)))}%` }}
+                                            <div className="admin-progress-width bg-linear-to-r from-[#8b5cf6] to-[#a855f7]"
+                                                style={{ '--_progress-width': `${Math.min(100, Math.max(0, 100 - (daysUntil(selected.current_period_end) / Math.max(1, Math.ceil((new Date(selected.current_period_end).getTime() - new Date(selected.current_period_start).getTime()) / (1000 * 60 * 60 * 24))) * 100)))}%` } as React.CSSProperties}
                                             />
                                         </div>
                                     </div>

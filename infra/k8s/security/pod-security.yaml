@@ -1,0 +1,121 @@
+# ════════════════════════════════════════
+# VCT Platform — Pod Security Standards
+# Enforces restricted security context + RBAC
+# ════════════════════════════════════════
+
+# ── Namespace labels for Pod Security Admission ──
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: vct-production
+  labels:
+    pod-security.kubernetes.io/enforce: restricted
+    pod-security.kubernetes.io/enforce-version: latest
+    pod-security.kubernetes.io/audit: restricted
+    pod-security.kubernetes.io/warn: restricted
+---
+# ── Service Account for API ───────────────
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: vct-api
+  namespace: vct-production
+  labels:
+    app.kubernetes.io/name: vct-api
+automountServiceAccountToken: false
+---
+# ── Role: API can read ConfigMaps + Secrets ──
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: vct-api-role
+  namespace: vct-production
+rules:
+  - apiGroups: [""]
+    resources: ["configmaps"]
+    verbs: ["get", "list", "watch"]
+  - apiGroups: [""]
+    resources: ["secrets"]
+    resourceNames: ["vct-db-credentials", "vct-jwt-secret", "vct-redis-credentials"]
+    verbs: ["get"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: vct-api-binding
+  namespace: vct-production
+subjects:
+  - kind: ServiceAccount
+    name: vct-api
+roleRef:
+  kind: Role
+  name: vct-api-role
+  apiGroup: rbac.authorization.k8s.io
+---
+# ── Service Account for Backup Jobs ──────
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: vct-backup
+  namespace: vct-production
+automountServiceAccountToken: false
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: vct-backup-role
+  namespace: vct-production
+rules:
+  - apiGroups: [""]
+    resources: ["secrets"]
+    resourceNames: ["vct-db-credentials", "vct-backup-credentials"]
+    verbs: ["get"]
+  - apiGroups: [""]
+    resources: ["pods"]
+    verbs: ["get", "list"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: vct-backup-binding
+  namespace: vct-production
+subjects:
+  - kind: ServiceAccount
+    name: vct-backup
+roleRef:
+  kind: Role
+  name: vct-backup-role
+  apiGroup: rbac.authorization.k8s.io
+---
+# ── Pod Security Context Template ─────────
+# Apply this securityContext to all VCT deployments
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: pod-security-template
+  namespace: vct-production
+  labels:
+    app.kubernetes.io/part-of: vct-platform
+data:
+  security-context.yaml: |
+    # Standard security context for all VCT pods
+    # Copy into spec.containers[].securityContext
+    securityContext:
+      runAsNonRoot: true
+      runAsUser: 1000
+      runAsGroup: 1000
+      fsGroup: 1000
+      allowPrivilegeEscalation: false
+      readOnlyRootFilesystem: true
+      capabilities:
+        drop: ["ALL"]
+      seccompProfile:
+        type: RuntimeDefault
+    # Volume for temp files (since rootfs is read-only)
+    volumes:
+      - name: tmp
+        emptyDir:
+          sizeLimit: 100Mi
+    volumeMounts:
+      - name: tmp
+        mountPath: /tmp

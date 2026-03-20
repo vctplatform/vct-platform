@@ -32,7 +32,7 @@ You are the **Skill Evolver** of VCT Platform. You keep all 18+ AI Agent skills 
 | **Next.js** | 14.x | App Router maturity, RSC, Turbopack | nextjs.org/blog |
 | **React** | 19.x | New hooks, compiler, server components | react.dev/blog |
 | **PostgreSQL** | 18+ | New features, performance improvements | postgresql.org |
-| **Expo** | SDK 52+ | New modules, EAS updates | expo.dev/changelog |
+| **Expo** | SDK 54 | New modules, EAS updates, OTA | expo.dev/changelog |
 | **TypeScript** | 5.x | New type features, performance | devblogs.microsoft.com |
 | **pgx** | v5.x | API changes, new features | github.com/jackc/pgx |
 | **Docker** | Latest | Build improvements, security | docs.docker.com |
@@ -220,7 +220,12 @@ Requires: CTO approval
 | vct-ui-ux | 2026-03-13 | ✅ Upgraded | 🟢 |
 | vct-skill-evolver | 2026-03-13 | ✅ Upgraded | 🟢 |
 | vct-cto | 2026-03-13 | ✅ Upgraded | 🟢 |
-| vct-mobile-lead | 2026-03-13 | ✅ Upgraded | 🟢 |
+| vct-mobile-lead | 2026-03-20 | ✅ Upgraded | 🟢 |
+| vct-mobile-build | 2026-03-20 | ✅ New | 🟢 |
+| vct-mobile-testing | 2026-03-20 | ✅ New | 🟢 |
+| vct-mobile-performance | 2026-03-20 | ✅ New | 🟢 |
+| vct-mobile-cicd | 2026-03-20 | ✅ New | 🟢 |
+| vct-mobile-offline | 2026-03-20 | ✅ New | 🟢 |
 
 Legend: 🟢 Current | 🟡 Minor update needed | 🔴 Major update needed
 ```
@@ -236,6 +241,17 @@ Legend: 🟢 Current | 🟡 Minor update needed | 🔴 Major update needed
 | vct-backend-go | +23 domain modules catalog | Reflect actual modules |
 | vct-mobile-lead | +Expo/React Navigation setup, +actual screens | Reflect mobile progress |
 | vct-cto | +production platforms, +workflow cross-refs | Real infrastructure |
+
+### Upgrade Log (2026-03-20)
+| Skill | Changes | Reason |
+|---|---|---|
+| vct-mobile-lead | Full rewrite: Expo 54 stack, delegation matrix, 20+ UI components | Phase 2 mobile build system |
+| vct-mobile-build | NEW: EAS Build, signing, OTA, Metro, deep linking | Mobile build pipeline |
+| vct-mobile-testing | NEW: Jest, Maestro, device matrix, a11y, snapshots | Mobile test automation |
+| vct-mobile-performance | NEW: Hermes, FlatList, bundle, battery, animations | Mobile performance |
+| vct-mobile-cicd | NEW: GitHub Actions + EAS CI, store submission | Mobile CI/CD pipeline |
+| vct-mobile-offline | NEW: OfflineManager, sync queue, conflict resolution | Offline-first architecture |
+| vct-orchestrator | +5 mobile skills in Execution table, +Mobile Feature category | Orchestrator awareness |
 
 ### Staleness Thresholds
 | Threshold | Urgency | Action |

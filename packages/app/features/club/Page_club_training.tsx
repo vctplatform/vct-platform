@@ -459,7 +459,7 @@ export const Page_club_training = () => {
         render: (row: ClubTrainingModule) => (
           <div>
             <div className="text-sm font-semibold">{row.title}</div>
-            <div className="text-xs text-[var(--vct-text-secondary)]">ID: {row.id}</div>
+            <div className="text-xs text-(--vct-text-secondary)">ID: {row.id}</div>
           </div>
         ),
       },
@@ -479,7 +479,7 @@ export const Page_club_training = () => {
         render: (row: ClubTrainingModule) => (
           <div className="text-sm">
             <div>{row.owner}</div>
-            <div className="text-xs text-[var(--vct-text-secondary)]">
+            <div className="text-xs text-(--vct-text-secondary)">
               Cap nhat: {row.updatedAt}
             </div>
           </div>
@@ -489,7 +489,7 @@ export const Page_club_training = () => {
         key: 'duration',
         label: 'Ke hoach',
         render: (row: ClubTrainingModule) => (
-          <span className="text-xs text-[var(--vct-text-secondary)]">
+          <span className="text-xs text-(--vct-text-secondary)">
             {row.durationWeeks} tuan • {row.lessons} bai
           </span>
         ),
@@ -500,7 +500,7 @@ export const Page_club_training = () => {
         render: (row: ClubTrainingModule) => (
           <div className="min-w-[130px]">
             <VCT_ProgressBar value={row.progress} max={100} />
-            <div className="mt-1 text-[11px] text-[var(--vct-text-secondary)]">
+            <div className="mt-1 text-[11px] text-(--vct-text-secondary)">
               {row.progress}%
             </div>
           </div>
@@ -543,7 +543,7 @@ export const Page_club_training = () => {
               <button
                 type="button"
                 onClick={() => openEditModule(row)}
-                className="rounded-md bg-[var(--vct-bg-input)] px-2 py-1 text-xs font-semibold"
+                className="rounded-md bg-(--vct-bg-input) px-2 py-1 text-xs font-semibold"
               >
                 Sua
               </button>
@@ -569,7 +569,7 @@ export const Page_club_training = () => {
         render: (row: ClubBeltExam) => (
           <div>
             <div className="text-sm font-semibold">{row.name}</div>
-            <div className="text-xs text-[var(--vct-text-secondary)]">Ma: {row.id}</div>
+            <div className="text-xs text-(--vct-text-secondary)">Ma: {row.id}</div>
           </div>
         ),
       },
@@ -586,7 +586,7 @@ export const Page_club_training = () => {
         key: 'schedule',
         label: 'Ngay & dia diem',
         render: (row: ClubBeltExam) => (
-          <div className="text-xs text-[var(--vct-text-secondary)]">
+          <div className="text-xs text-(--vct-text-secondary)">
             <div>{row.examDate}</div>
             <div>{row.location}</div>
           </div>
@@ -599,7 +599,7 @@ export const Page_club_training = () => {
           const rate =
             row.candidates > 0 ? Math.round((row.passedCount / row.candidates) * 100) : 0
           return (
-            <div className="text-xs text-[var(--vct-text-secondary)]">
+            <div className="text-xs text-(--vct-text-secondary)">
               <div>
                 Dat: {row.passedCount}/{row.candidates}
               </div>
@@ -634,7 +634,7 @@ export const Page_club_training = () => {
               <button
                 type="button"
                 onClick={() => openEditExam(row)}
-                className="rounded-md bg-[var(--vct-bg-input)] px-2 py-1 text-xs font-semibold"
+                className="rounded-md bg-(--vct-bg-input) px-2 py-1 text-xs font-semibold"
               >
                 Sua
               </button>
@@ -731,10 +731,10 @@ export const Page_club_training = () => {
       />
 
       <div className="mb-6">
-        <h1 className="text-2xl font-bold tracking-tight text-[var(--vct-text-primary)]">
+        <h1 className="text-2xl font-bold tracking-tight text-(--vct-text-primary)">
           Quan ly huan luyen CLB
         </h1>
-        <p className="mt-1 text-sm text-[var(--vct-text-secondary)]">
+        <p className="mt-1 text-sm text-(--vct-text-secondary)">
           Van hanh giao trinh tap luyen va cac ky thi thang dai.
         </p>
       </div>
@@ -858,7 +858,7 @@ export const Page_club_training = () => {
             onAction={can('create') ? openCreateModule : undefined}
           />
         ) : (
-          <div className="rounded-2xl border border-[var(--vct-border-subtle)] bg-[var(--vct-bg-glass)] p-2">
+          <div className="rounded-2xl border border-(--vct-border-subtle) bg-(--vct-bg-glass) p-2">
             <VCT_Table columns={moduleColumns} data={filteredModules} rowKey="id" />
           </div>
         )
@@ -871,7 +871,7 @@ export const Page_club_training = () => {
           onAction={can('create') ? openCreateExam : undefined}
         />
       ) : (
-        <div className="rounded-2xl border border-[var(--vct-border-subtle)] bg-[var(--vct-bg-glass)] p-2">
+        <div className="rounded-2xl border border-(--vct-border-subtle) bg-(--vct-bg-glass) p-2">
           <VCT_Table columns={examColumns} data={filteredExams} rowKey="id" />
         </div>
       )}

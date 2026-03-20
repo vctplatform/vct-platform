@@ -112,7 +112,7 @@ const SkillRadar = ({ skills, size = 200 }: { skills: typeof SKILLS; size?: numb
                 const p = getPoint(i, 1.22)
                 return (
                     <text key={i} x={p.x} y={p.y} textAnchor="middle" dominantBaseline="middle"
-                        className="fill-[var(--vct-text-secondary)]" fontSize={10} fontWeight={600}>
+                        className="fill-(--vct-text-secondary)" fontSize={10} fontWeight={600}>
                         {s.label}
                     </text>
                 )
@@ -171,7 +171,7 @@ export function Page_user_profile() {
     return (
         <VCT_PageContainer size="wide" animated>
             {/* ══════ HERO BANNER ══════ */}
-            <div className="relative overflow-hidden rounded-2xl border border-vct-border bg-[var(--vct-bg-card)]">
+            <div className="relative overflow-hidden rounded-2xl border border-vct-border bg-(--vct-bg-card)">
                 {/* Animated gradient background */}
                 <div className="relative h-40 overflow-hidden">
                     <div className="absolute inset-0" style={{
@@ -202,17 +202,17 @@ export function Page_user_profile() {
                             className="relative h-28 w-28 shrink-0"
                         >
                             <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-vct-accent to-blue-600 shadow-2xl" />
-                            <div className="absolute inset-[3px] rounded-[13px] bg-[var(--vct-bg-card)] flex items-center justify-center">
+                            <div className="absolute inset-[3px] rounded-[13px] bg-(--vct-bg-card) flex items-center justify-center">
                                 <span className="text-4xl font-black bg-gradient-to-br from-vct-accent to-blue-500 bg-clip-text text-transparent">
                                     {initials}
                                 </span>
                             </div>
                             {/* Online indicator */}
-                            <div className="absolute -right-1 -bottom-1 h-5 w-5 rounded-full bg-emerald-500 border-[3px] border-[var(--vct-bg-card)]" />
+                            <div className="absolute -right-1 -bottom-1 h-5 w-5 rounded-full bg-emerald-500 border-[3px] border-(--vct-bg-card)" />
                         </motion.div>
 
                         <div className="flex-1 min-w-0 pb-1">
-                            <h1 className="text-2xl font-black truncate text-[var(--vct-text-primary)]">{userName}</h1>
+                            <h1 className="text-2xl font-black truncate text-(--vct-text-primary)">{userName}</h1>
                             <div className="flex flex-wrap items-center gap-2 mt-1.5">
                                 <span className="inline-flex items-center gap-1.5 text-[11px] font-bold px-2.5 py-1 rounded-full bg-vct-accent/12 text-vct-accent border border-vct-accent/20">
                                     <VCT_Icons.Shield size={11} /> {PROFILE.role}
@@ -221,14 +221,14 @@ export function Page_user_profile() {
                                     <VCT_Icons.Award size={11} /> {PROFILE.belt}
                                 </span>
                             </div>
-                            <div className="flex items-center gap-4 mt-2 text-xs text-[var(--vct-text-secondary)]">
+                            <div className="flex items-center gap-4 mt-2 text-xs text-(--vct-text-secondary)">
                                 <span className="flex items-center gap-1.5"><VCT_Icons.Building size={12} /> {PROFILE.club}</span>
                                 <span className="flex items-center gap-1.5"><VCT_Icons.Calendar size={12} /> Từ {PROFILE.joinedDate}</span>
                             </div>
                         </div>
 
                         <div className="flex gap-2 pb-1">
-                            <a href="/settings" className="flex items-center gap-1.5 rounded-xl border border-vct-border px-4 py-2.5 text-xs font-bold text-[var(--vct-text-secondary)] hover:border-vct-accent hover:text-vct-accent transition bg-[var(--vct-bg-elevated)]">
+                            <a href="/settings" className="flex items-center gap-1.5 rounded-xl border border-vct-border px-4 py-2.5 text-xs font-bold text-(--vct-text-secondary) hover:border-vct-accent hover:text-vct-accent transition bg-(--vct-bg-elevated)">
                                 <VCT_Icons.Settings size={14} /> Cài đặt
                             </a>
                             <button className="flex items-center gap-1.5 rounded-xl bg-vct-accent px-4 py-2.5 text-xs font-bold text-white hover:brightness-110 transition shadow-lg shadow-vct-accent/20">
@@ -248,7 +248,7 @@ export function Page_user_profile() {
                             key={s.label}
                             initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: 0.1 + i * 0.08 }}
-                            className="group relative overflow-hidden rounded-2xl border border-vct-border bg-[var(--vct-bg-elevated)] p-5 transition-all hover:border-vct-accent/40 hover:shadow-lg"
+                            className="group relative overflow-hidden rounded-2xl border border-vct-border bg-(--vct-bg-elevated) p-5 transition-all hover:border-vct-accent/40 hover:shadow-lg"
                         >
                             <div className="absolute top-0 right-0 w-20 h-20 rounded-full opacity-[0.06]" style={{ background: s.color, filter: 'blur(20px)' }} />
                             <div className="flex items-center gap-3 mb-3">
@@ -259,19 +259,19 @@ export function Page_user_profile() {
                             <div className="text-3xl font-black tracking-tight" style={{ color: s.color }}>
                                 <AnimatedCounter target={s.value} fmt={s.fmt} />
                             </div>
-                            <div className="text-[11px] font-semibold text-[var(--vct-text-secondary)] mt-1 uppercase tracking-wider">{s.label}</div>
+                            <div className="text-[11px] font-semibold text-(--vct-text-secondary) mt-1 uppercase tracking-wider">{s.label}</div>
                         </motion.div>
                     )
                 })}
             </div>
 
             {/* ══════ TABS ══════ */}
-            <div className="flex gap-1 rounded-xl border border-vct-border bg-[var(--vct-bg-elevated)] p-1 mt-6 flex-wrap">
+            <div className="flex gap-1 rounded-xl border border-vct-border bg-(--vct-bg-elevated) p-1 mt-6 flex-wrap">
                 {TABS.map(t => {
                     const TabIcon = iconMap[t.icon] ?? VCT_Icons.Activity
                     return (
                         <button key={t.key} onClick={() => setTab(t.key)}
-                            className={`relative flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-bold transition-all ${tab === t.key ? 'text-white' : 'text-[var(--vct-text-secondary)] hover:bg-[var(--vct-bg-base)]'}`}>
+                            className={`relative flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-bold transition-all ${tab === t.key ? 'text-white' : 'text-(--vct-text-secondary) hover:bg-(--vct-bg-base)'}`}>
                             {tab === t.key && (
                                 <motion.div layoutId="profileTab" className="absolute inset-0 rounded-lg bg-vct-accent shadow-lg shadow-vct-accent/25" />
                             )}
@@ -289,8 +289,8 @@ export function Page_user_profile() {
                     <motion.div key="ov" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} className="grid md:grid-cols-5 gap-6 mt-6">
                         {/* Contact Info (3 cols) */}
                         <div className="md:col-span-3 space-y-6">
-                            <div className="rounded-2xl border border-vct-border bg-[var(--vct-bg-elevated)] p-6">
-                                <h3 className="font-bold text-sm mb-5 flex items-center gap-2 text-[var(--vct-text-primary)]">
+                            <div className="rounded-2xl border border-vct-border bg-(--vct-bg-elevated) p-6">
+                                <h3 className="font-bold text-sm mb-5 flex items-center gap-2 text-(--vct-text-primary)">
                                     <VCT_Icons.User size={16} className="text-vct-accent" /> Thông tin liên hệ
                                 </h3>
                                 <div className="grid gap-3">
@@ -304,13 +304,13 @@ export function Page_user_profile() {
                                     ].map(item => {
                                         const ItemIcon = iconMap[item.icon] ?? VCT_Icons.Activity
                                         return (
-                                            <div key={item.l} className="flex items-center gap-3 p-3.5 rounded-xl bg-[var(--vct-bg-base)] border border-[var(--vct-border-subtle)] transition hover:border-vct-accent/30">
+                                            <div key={item.l} className="flex items-center gap-3 p-3.5 rounded-xl bg-(--vct-bg-base) border border-(--vct-border-subtle) transition hover:border-vct-accent/30">
                                                 <div className="w-9 h-9 rounded-lg flex items-center justify-center shrink-0" style={{ background: `${item.color}12` }}>
                                                     <ItemIcon size={15} style={{ color: item.color }} />
                                                 </div>
                                                 <div>
-                                                    <div className="text-[10px] text-[var(--vct-text-secondary)] font-bold uppercase tracking-wider">{item.l}</div>
-                                                    <div className="text-sm font-bold text-[var(--vct-text-primary)]">{item.v}</div>
+                                                    <div className="text-[10px] text-(--vct-text-secondary) font-bold uppercase tracking-wider">{item.l}</div>
+                                                    <div className="text-sm font-bold text-(--vct-text-primary)">{item.v}</div>
                                                 </div>
                                             </div>
                                         )
@@ -321,16 +321,16 @@ export function Page_user_profile() {
 
                         {/* Skill Radar (2 cols) */}
                         <div className="md:col-span-2">
-                            <div className="rounded-2xl border border-vct-border bg-[var(--vct-bg-elevated)] p-6">
-                                <h3 className="font-bold text-sm mb-4 flex items-center gap-2 text-[var(--vct-text-primary)]">
+                            <div className="rounded-2xl border border-vct-border bg-(--vct-bg-elevated) p-6">
+                                <h3 className="font-bold text-sm mb-4 flex items-center gap-2 text-(--vct-text-primary)">
                                     <VCT_Icons.Target size={16} className="text-vct-accent" /> Biểu đồ năng lực
                                 </h3>
                                 <SkillRadar skills={SKILLS} size={220} />
                                 <div className="mt-4 space-y-2">
                                     {SKILLS.map(s => (
                                         <div key={s.label} className="flex items-center gap-3">
-                                            <span className="text-xs font-semibold text-[var(--vct-text-secondary)] w-16">{s.label}</span>
-                                            <div className="flex-1 h-1.5 rounded-full bg-[var(--vct-bg-base)] overflow-hidden">
+                                            <span className="text-xs font-semibold text-(--vct-text-secondary) w-16">{s.label}</span>
+                                            <div className="flex-1 h-1.5 rounded-full bg-(--vct-bg-base) overflow-hidden">
                                                 <motion.div
                                                     className="h-full rounded-full bg-gradient-to-r from-vct-accent to-blue-500"
                                                     initial={{ width: 0 }} animate={{ width: `${s.value}%` }}
@@ -350,11 +350,11 @@ export function Page_user_profile() {
                     <motion.div key="ach" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} className="grid gap-3 mt-6">
                         {ACHIEVEMENTS.map((a, i) => (
                             <motion.div key={i} initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.08 }}
-                                className="group flex items-center gap-4 rounded-2xl border border-vct-border bg-[var(--vct-bg-elevated)] p-5 hover:border-vct-accent/40 hover:shadow-md transition-all">
+                                className="group flex items-center gap-4 rounded-2xl border border-vct-border bg-(--vct-bg-elevated) p-5 hover:border-vct-accent/40 hover:shadow-md transition-all">
                                 <div className="text-4xl shrink-0">{medalMap[a.type]}</div>
                                 <div className="flex-1 min-w-0">
-                                    <div className="font-bold text-[var(--vct-text-primary)]">{a.title}</div>
-                                    <div className="text-xs text-[var(--vct-text-secondary)] mt-1 flex items-center gap-2">
+                                    <div className="font-bold text-(--vct-text-primary)">{a.title}</div>
+                                    <div className="text-xs text-(--vct-text-secondary) mt-1 flex items-center gap-2">
                                         <VCT_Icons.Calendar size={11} /> {a.date}
                                     </div>
                                 </div>
@@ -370,13 +370,13 @@ export function Page_user_profile() {
                     <motion.div key="cert" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} className="grid gap-3 mt-6">
                         {CERTIFICATIONS.map((c, i) => (
                             <motion.div key={i} initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.08 }}
-                                className="group flex items-center gap-4 rounded-2xl border border-vct-border bg-[var(--vct-bg-elevated)] p-5 hover:border-vct-accent/40 hover:shadow-md transition-all">
+                                className="group flex items-center gap-4 rounded-2xl border border-vct-border bg-(--vct-bg-elevated) p-5 hover:border-vct-accent/40 hover:shadow-md transition-all">
                                 <div className="h-14 w-14 rounded-xl bg-gradient-to-br from-vct-accent/15 to-blue-500/10 border border-vct-accent/20 flex items-center justify-center shrink-0">
                                     <VCT_Icons.Award size={22} className="text-vct-accent" />
                                 </div>
                                 <div className="flex-1 min-w-0">
-                                    <div className="font-bold text-[var(--vct-text-primary)] truncate">{c.name}</div>
-                                    <div className="text-xs text-[var(--vct-text-secondary)] mt-1 flex items-center gap-2">
+                                    <div className="font-bold text-(--vct-text-primary) truncate">{c.name}</div>
+                                    <div className="text-xs text-(--vct-text-secondary) mt-1 flex items-center gap-2">
                                         <VCT_Icons.Building size={11} /> {c.org} · {c.year}
                                     </div>
                                 </div>
@@ -402,7 +402,7 @@ export function Page_user_profile() {
                                         <React.Fragment key={i}>
                                             {showDateHeader && (
                                                 <div className="relative -ml-8 mb-2 mt-2">
-                                                    <span className="text-[10px] font-bold uppercase tracking-widest text-[var(--vct-text-secondary)] bg-[var(--vct-bg-base)] px-2 py-1 rounded-md border border-[var(--vct-border-subtle)]">
+                                                    <span className="text-[10px] font-bold uppercase tracking-widest text-(--vct-text-secondary) bg-(--vct-bg-base) px-2 py-1 rounded-md border border-(--vct-border-subtle)">
                                                         {item.date}
                                                     </span>
                                                 </div>
@@ -413,17 +413,17 @@ export function Page_user_profile() {
                                                 className="relative group"
                                             >
                                                 {/* Dot on timeline */}
-                                                <div className="absolute -left-8 top-4 w-[11px] h-[11px] rounded-full border-2 border-[var(--vct-bg-base)]" style={{ background: item.color }} />
+                                                <div className="absolute -left-8 top-4 w-[11px] h-[11px] rounded-full border-2 border-(--vct-bg-base)" style={{ background: item.color }} />
 
-                                                <div className="flex items-start gap-3 rounded-2xl border border-vct-border bg-[var(--vct-bg-elevated)] p-4 hover:border-vct-accent/30 hover:shadow-sm transition-all">
+                                                <div className="flex items-start gap-3 rounded-2xl border border-vct-border bg-(--vct-bg-elevated) p-4 hover:border-vct-accent/30 hover:shadow-sm transition-all">
                                                     <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0" style={{ background: `${item.color}12` }}>
                                                         <TimeIcon size={16} style={{ color: item.color }} />
                                                     </div>
                                                     <div className="flex-1 min-w-0">
-                                                        <div className="text-sm font-bold text-[var(--vct-text-primary)]">{item.text}</div>
-                                                        <div className="text-[10px] text-[var(--vct-text-secondary)] mt-1">{item.time}</div>
+                                                        <div className="text-sm font-bold text-(--vct-text-primary)">{item.text}</div>
+                                                        <div className="text-[10px] text-(--vct-text-secondary) mt-1">{item.time}</div>
                                                     </div>
-                                                    <VCT_Icons.ChevronRight size={14} className="shrink-0 text-[var(--vct-text-secondary)] opacity-0 group-hover:opacity-60 transition" />
+                                                    <VCT_Icons.ChevronRight size={14} className="shrink-0 text-(--vct-text-secondary) opacity-0 group-hover:opacity-60 transition" />
                                                 </div>
                                             </motion.div>
                                         </React.Fragment>

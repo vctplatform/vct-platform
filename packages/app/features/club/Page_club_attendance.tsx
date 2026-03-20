@@ -49,8 +49,8 @@ const AttendanceChart = ({ records }: { records: ClubAttendance[] }) => {
   ]
 
   return (
-    <div className="rounded-2xl border border-[var(--vct-border-subtle)] bg-[var(--vct-bg-glass)] p-4">
-      <h3 className="mb-3 text-sm font-semibold text-[var(--vct-text-primary)]">Phân bố trạng thái</h3>
+    <div className="rounded-2xl border border-(--vct-border-subtle) bg-(--vct-bg-glass) p-4">
+      <h3 className="mb-3 text-sm font-semibold text-(--vct-text-primary)">Phân bố trạng thái</h3>
       <svg viewBox="0 0 300 120" className="w-full" style={{ maxHeight: 120 }}>
         {bars.map((bar, i) => {
           const barW = 50
@@ -280,7 +280,7 @@ export const Page_club_attendance = () => {
       render: (row: ClubAttendance) => (
         <div>
           <div className="text-sm font-semibold">{row.memberName}</div>
-          <div className="text-xs text-[var(--vct-text-secondary)]">{row.className}</div>
+          <div className="text-xs text-(--vct-text-secondary)">{row.className}</div>
         </div>
       ),
     },
@@ -293,7 +293,7 @@ export const Page_club_attendance = () => {
         return <VCT_Badge text={ATTENDANCE_STATUS_LABEL[row.status]} type={tone} />
       },
     },
-    { key: 'notes', label: 'Ghi chú', render: (row: ClubAttendance) => <span className="text-xs text-[var(--vct-text-secondary)]">{row.notes || '—'}</span> },
+    { key: 'notes', label: 'Ghi chú', render: (row: ClubAttendance) => <span className="text-xs text-(--vct-text-secondary)">{row.notes || '—'}</span> },
     { key: 'recordedBy', label: 'Người ghi', render: (row: ClubAttendance) => <span className="text-sm">{row.recordedBy}</span> },
     {
       key: 'actions',
@@ -316,8 +316,8 @@ export const Page_club_attendance = () => {
       <VCT_Toast isVisible={toast.show} message={toast.msg} type={toast.type} onClose={() => setToast((prev) => ({ ...prev, show: false }))} />
 
       <div className="mb-6">
-        <h1 className="text-2xl font-bold tracking-tight text-[var(--vct-text-primary)]">Điểm danh</h1>
-        <p className="mt-1 text-sm text-[var(--vct-text-secondary)]">Ghi nhận và theo dõi tình hình tham dự buổi tập của thành viên.</p>
+        <h1 className="text-2xl font-bold tracking-tight text-(--vct-text-primary)">Điểm danh</h1>
+        <p className="mt-1 text-sm text-(--vct-text-secondary)">Ghi nhận và theo dõi tình hình tham dự buổi tập của thành viên.</p>
       </div>
 
       <VCT_StatRow items={stats} className="mb-6" />
@@ -379,7 +379,7 @@ export const Page_club_attendance = () => {
       {filteredRecords.length === 0 ? (
         <VCT_EmptyState icon="📋" title="Không có bản ghi" description="Thử đổi bộ lọc hoặc ghi nhận điểm danh mới." actionLabel={can('create') ? 'Ghi nhận' : undefined} onAction={can('create') ? openCreateModal : undefined} />
       ) : (
-        <div className="rounded-2xl border border-[var(--vct-border-subtle)] bg-[var(--vct-bg-glass)] p-2">
+        <div className="rounded-2xl border border-(--vct-border-subtle) bg-(--vct-bg-glass) p-2">
           <VCT_Table columns={columns} data={filteredRecords} rowKey="id" />
         </div>
       )}
@@ -460,14 +460,14 @@ export const Page_club_attendance = () => {
           </VCT_Field>
         </div>
         {bulkMembers.length === 0 ? (
-          <p className="rounded-xl bg-[var(--vct-bg-active)] p-4 text-center text-sm text-[var(--vct-text-secondary)]">
+          <p className="rounded-xl bg-(--vct-bg-active) p-4 text-center text-sm text-(--vct-text-secondary)">
             Chọn lớp để hiển thị danh sách thành viên
           </p>
         ) : (
           <div className="max-h-[400px] space-y-2 overflow-y-auto">
             {bulkMembers.map((m) => (
-              <div key={m.memberId} className="flex items-center justify-between rounded-xl bg-[var(--vct-bg-active)] px-4 py-2">
-                <span className="text-sm font-medium text-[var(--vct-text-primary)]">{m.memberName}</span>
+              <div key={m.memberId} className="flex items-center justify-between rounded-xl bg-(--vct-bg-active) px-4 py-2">
+                <span className="text-sm font-medium text-(--vct-text-primary)">{m.memberName}</span>
                 <VCT_Select
                   value={bulkStatuses[m.memberId] || 'present'}
                   onChange={(v) => setBulkStatuses(prev => ({ ...prev, [m.memberId]: v as AttendanceStatus }))}

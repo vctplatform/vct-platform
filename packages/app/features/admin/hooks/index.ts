@@ -10,3 +10,6 @@ export type { AuditEntry } from './useAdminAuditLog'
 export { useAdminShortcuts } from './useAdminShortcuts'
 export { useAdminToast } from './useAdminToast'
 export { useFormValidation } from './useFormValidation'
+export { useAdminRBAC } from './useAdminRBAC'
+export type { AdminPermission } from './useAdminRBAC'
+

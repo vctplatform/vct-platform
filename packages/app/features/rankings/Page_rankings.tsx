@@ -95,7 +95,7 @@ export const Page_rankings = () => {
             ] as StatItem[]} className="mb-6" />
 
             {isLoading && (
-                <div className="text-center py-6 text-[var(--vct-text-tertiary)] text-sm animate-pulse">
+                <div className="text-center py-6 text-(--vct-text-tertiary) text-sm animate-pulse">
                     Đang tải bảng xếp hạng...
                 </div>
             )}
@@ -108,10 +108,10 @@ export const Page_rankings = () => {
                         <div className="w-16 h-16 rounded-full bg-gradient-to-br from-gray-300 to-gray-500 flex items-center justify-center font-bold text-white text-xl shadow-[0_0_20px_rgba(156,163,175,0.4)] mb-3 border-2 border-gray-400">
                             {filtered[1]?.name[0]}
                         </div>
-                        <div className="bg-[var(--vct-bg-elevated)] border border-[var(--vct-border-subtle)] w-full text-center p-4 rounded-t-xl shrink-0 h-[100px] flex flex-col items-center justify-start relative">
+                        <div className="bg-(--vct-bg-elevated) border border-(--vct-border-subtle) w-full text-center p-4 rounded-t-xl shrink-0 h-[100px] flex flex-col items-center justify-start relative">
                             <div className="absolute -top-3 bg-gray-400 text-white text-[10px] font-black px-2 py-0.5 rounded shadow-lg">#2</div>
-                            <div className="font-bold text-[var(--vct-text-primary)] text-sm line-clamp-1">{filtered[1]?.name}</div>
-                            <div className="text-[11px] text-[var(--vct-text-secondary)] mt-1">{filtered[1]?.club}</div>
+                            <div className="font-bold text-(--vct-text-primary) text-sm line-clamp-1">{filtered[1]?.name}</div>
+                            <div className="text-[11px] text-(--vct-text-secondary) mt-1">{filtered[1]?.club}</div>
                             <div className="text-[#22d3ee] font-black mt-1 text-lg">{filtered[1]?.points.toLocaleString()} PTS</div>
                         </div>
                     </div>
@@ -122,10 +122,10 @@ export const Page_rankings = () => {
                         <div className="w-20 h-20 rounded-full bg-gradient-to-br from-yellow-300 to-yellow-600 flex items-center justify-center font-black text-white text-2xl shadow-[0_0_30px_rgba(250,204,21,0.5)] mb-3 border-2 border-yellow-400">
                             {filtered[0]?.name[0]}
                         </div>
-                        <div className="bg-gradient-to-t from-[var(--vct-bg-card)] to-[var(--vct-bg-elevated)] border border-yellow-500/30 w-full text-center p-4 rounded-t-xl shrink-0 h-[140px] flex flex-col items-center justify-start relative shadow-[0_-5px_30px_rgba(250,204,21,0.1)]">
+                        <div className="bg-gradient-to-t from-(--vct-bg-card) to-(--vct-bg-elevated) border border-yellow-500/30 w-full text-center p-4 rounded-t-xl shrink-0 h-[140px] flex flex-col items-center justify-start relative shadow-[0_-5px_30px_rgba(250,204,21,0.1)]">
                             <div className="absolute -top-3 bg-yellow-500 text-white text-xs font-black px-2.5 py-0.5 rounded shadow-lg">#1</div>
-                            <div className="font-bold text-[var(--vct-text-primary)] text-base line-clamp-1">{filtered[0]?.name}</div>
-                            <div className="text-[12px] text-[var(--vct-text-secondary)] mt-1">{filtered[0]?.club}</div>
+                            <div className="font-bold text-(--vct-text-primary) text-base line-clamp-1">{filtered[0]?.name}</div>
+                            <div className="text-[12px] text-(--vct-text-secondary) mt-1">{filtered[0]?.club}</div>
                             <div className="text-yellow-400 font-black mt-2 text-2xl drop-shadow-md">{filtered[0]?.points.toLocaleString()} PTS</div>
                         </div>
                     </div>
@@ -135,10 +135,10 @@ export const Page_rankings = () => {
                         <div className="w-16 h-16 rounded-full bg-gradient-to-br from-orange-400 to-orange-700 flex items-center justify-center font-bold text-white text-xl shadow-[0_0_20px_rgba(234,88,12,0.4)] mb-3 border-2 border-orange-500">
                             {filtered[2]?.name[0]}
                         </div>
-                        <div className="bg-[var(--vct-bg-elevated)] border border-[var(--vct-border-subtle)] w-full text-center p-4 rounded-t-xl shrink-0 h-[80px] flex flex-col items-center justify-start relative">
+                        <div className="bg-(--vct-bg-elevated) border border-(--vct-border-subtle) w-full text-center p-4 rounded-t-xl shrink-0 h-[80px] flex flex-col items-center justify-start relative">
                             <div className="absolute -top-3 bg-orange-600 text-white text-[10px] font-black px-2 py-0.5 rounded shadow-lg">#3</div>
-                            <div className="font-bold text-[var(--vct-text-primary)] text-sm line-clamp-1">{filtered[2]?.name}</div>
-                            <div className="text-[11px] text-[var(--vct-text-secondary)] mt-1">{filtered[2]?.club}</div>
+                            <div className="font-bold text-(--vct-text-primary) text-sm line-clamp-1">{filtered[2]?.name}</div>
+                            <div className="text-[11px] text-(--vct-text-secondary) mt-1">{filtered[2]?.club}</div>
                             <div className="text-[#22d3ee] font-black mt-1 text-base">{filtered[2]?.points.toLocaleString()} PTS</div>
                         </div>
                     </div>
@@ -146,7 +146,7 @@ export const Page_rankings = () => {
             )}
 
             {/* ── TOOLBAR ── */}
-            <div className="mb-6 flex flex-wrap items-center justify-between gap-4 bg-[var(--vct-bg-elevated)] p-2 rounded-xl border border-[var(--vct-border-subtle)]">
+            <div className="mb-6 flex flex-wrap items-center justify-between gap-4 bg-(--vct-bg-elevated) p-2 rounded-xl border border-(--vct-border-subtle)">
                 <div className="flex-1 overflow-x-auto">
                     <VCT_Tabs
                         tabs={CATEGORIES.map(c => ({ key: c.id, label: c.label }))}
@@ -160,10 +160,10 @@ export const Page_rankings = () => {
             </div>
 
             {/* ── LIST ── */}
-            <div className="bg-[var(--vct-bg-card)] border border-[var(--vct-border-strong)] rounded-2xl overflow-hidden">
+            <div className="bg-(--vct-bg-card) border border-(--vct-border-strong) rounded-2xl overflow-hidden">
                 <table className="w-full text-left border-collapse">
                     <thead>
-                        <tr className="bg-[var(--vct-bg-elevated)] border-b border-[var(--vct-border-strong)] text-[11px] uppercase tracking-wider text-[var(--vct-text-tertiary)] font-bold">
+                        <tr className="bg-(--vct-bg-elevated) border-b border-(--vct-border-strong) text-[11px] uppercase tracking-wider text-(--vct-text-tertiary) font-bold">
                             <th className="p-4 w-16 text-center">Hạng</th>
                             <th className="p-4 w-20 text-center">#</th>
                             <th className="p-4">Vận động viên</th>
@@ -172,11 +172,11 @@ export const Page_rankings = () => {
                             <th className="p-4 w-48 text-center pt-2">Phong độ (Biểu đồ)</th>
                         </tr>
                     </thead>
-                    <tbody className="divide-y divide-[var(--vct-border-subtle)]">
+                    <tbody className="divide-y divide-(--vct-border-subtle)">
                         {filtered.map(athlete => (
                             <tr key={athlete.id} className="hover:bg-white/5 transition-colors">
                                 <td className="p-4 text-center">
-                                    <div className="font-black text-xl text-[var(--vct-text-secondary)]">{athlete.rank}</div>
+                                    <div className="font-black text-xl text-(--vct-text-secondary)">{athlete.rank}</div>
                                 </td>
                                 <td className="p-4 text-center">
                                     {athlete.change > 0 ? (
@@ -188,25 +188,25 @@ export const Page_rankings = () => {
                                             <VCT_Icons.TrendingDown size={12} /> {Math.abs(athlete.change)}
                                         </div>
                                     ) : (
-                                        <div className="flex items-center justify-center text-[var(--vct-text-tertiary)] font-bold text-xl">-</div>
+                                        <div className="flex items-center justify-center text-(--vct-text-tertiary) font-bold text-xl">-</div>
                                     )}
                                 </td>
                                 <td className="p-4">
                                     <div className="flex items-center gap-3">
-                                        <div className="w-8 h-8 rounded-full bg-[var(--vct-border-strong)] flex items-center justify-center font-bold text-white text-xs shrink-0">
+                                        <div className="w-8 h-8 rounded-full bg-(--vct-border-strong) flex items-center justify-center font-bold text-white text-xs shrink-0">
                                             {athlete.name[0]}
                                         </div>
                                         <div>
-                                            <div className="font-bold text-sm text-[var(--vct-text-primary)]">{athlete.name}</div>
-                                            <div className="text-[10px] text-[var(--vct-text-tertiary)] font-mono">{athlete.id}</div>
+                                            <div className="font-bold text-sm text-(--vct-text-primary)">{athlete.name}</div>
+                                            <div className="text-[10px] text-(--vct-text-tertiary) font-mono">{athlete.id}</div>
                                         </div>
                                     </div>
                                 </td>
-                                <td className="p-4 text-sm text-[var(--vct-text-secondary)]">
+                                <td className="p-4 text-sm text-(--vct-text-secondary)">
                                     {athlete.club}
                                 </td>
                                 <td className="p-4 text-right">
-                                    <div className="font-black text-base text-[var(--vct-accent-cyan)]">{athlete.points.toLocaleString()} <span className="text-[10px] text-[var(--vct-text-tertiary)] font-normal uppercase">pts</span></div>
+                                    <div className="font-black text-base text-(--vct-accent-cyan)">{athlete.points.toLocaleString()} <span className="text-[10px] text-(--vct-text-tertiary) font-normal uppercase">pts</span></div>
                                 </td>
                                 <td className="p-4 px-6 flex items-center justify-center">
                                     <div className="flex items-end gap-1 h-8">
@@ -214,8 +214,8 @@ export const Page_rankings = () => {
                                             const maxVal = Math.max(...(athlete.history || [1]))
                                             const height = (val / maxVal) * 100;
                                             return (
-                                                <div key={i} className="w-4 bg-[var(--vct-border-strong)] rounded-sm relative group overflow-hidden">
-                                                    <div className="absolute bottom-0 w-full bg-[var(--vct-accent-cyan)] transition-all duration-500" style={{ height: `${height}%` }}></div>
+                                                <div key={i} className="w-4 bg-(--vct-border-strong) rounded-sm relative group overflow-hidden">
+                                                    <div className="absolute bottom-0 w-full bg-(--vct-accent-cyan) transition-all duration-500" style={{ height: `${height}%` }}></div>
                                                 </div>
                                             )
                                         })}

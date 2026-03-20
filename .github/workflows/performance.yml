@@ -1,0 +1,110 @@
+# ════════════════════════════════════════
+# VCT Platform — Performance CI Pipeline
+# Runs on: push to main, PRs, manual trigger
+# ════════════════════════════════════════
+
+name: Performance Tests
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'backend/**'
+      - 'tests/load/**'
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      test_type:
+        description: 'Test type to run'
+        required: true
+        default: 'smoke'
+        type: choice
+        options:
+          - smoke
+          - load
+          - stress
+
+concurrency:
+  group: perf-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # ── Go Benchmarks ───────────────────────
+  go-benchmark:
+    name: Go Benchmarks
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.26'
+          cache-dependency-path: backend/go.sum
+
+      - name: Run benchmarks
+        working-directory: backend
+        run: |
+          go test -bench=. -benchmem -count=5 -benchtime=3s \
+            ./tests/benchmark/... \
+            | tee benchmark-results.txt
+
+      - name: Upload benchmark results
+        uses: actions/upload-artifact@v4
+        with:
+          name: benchmark-results
+          path: backend/benchmark-results.txt
+
+  # ── k6 Load Tests ──────────────────────
+  k6-test:
+    name: k6 ${{ github.event.inputs.test_type || 'smoke' }}
+    runs-on: ubuntu-latest
+    needs: go-benchmark
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_DB: vct_test
+          POSTGRES_USER: vct_user
+          POSTGRES_PASSWORD: test_password
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.26'
+          cache-dependency-path: backend/go.sum
+
+      - name: Build and start API
+        working-directory: backend
+        env:
+          VCT_BACKEND_ADDR: ":18080"
+          VCT_POSTGRES_URL: "postgres://vct_user:test_password@localhost:5432/vct_test?sslmode=disable"
+          VCT_STORAGE_DRIVER: postgres
+          VCT_DB_AUTO_MIGRATE: "true"
+        run: |
+          go build -o ./bin/server ./cmd/server
+          ./bin/server &
+          sleep 5
+          curl -f http://localhost:18080/healthz || exit 1
+
+      - uses: grafana/k6-action@v0.3.1
+        with:
+          filename: tests/load/${{ github.event.inputs.test_type || 'smoke' }}.js
+        env:
+          BASE_URL: http://localhost:18080
+
+      - name: Upload k6 results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: k6-results
+          path: tests/load/results/

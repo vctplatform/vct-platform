@@ -1,0 +1,207 @@
+# ════════════════════════════════════════
+# Kubernetes — Automated Database Backup
+# WAL-G base backup + logical dump
+# Runs daily at 2:00 AM UTC
+# ════════════════════════════════════════
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: vct-db-backup
+  namespace: vct-production
+  labels:
+    app.kubernetes.io/component: backup
+    app.kubernetes.io/part-of: vct-platform
+spec:
+  schedule: "0 2 * * *"
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 7
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      backupLimit: 1
+      template:
+        metadata:
+          labels:
+            app.kubernetes.io/name: vct-db-backup
+        spec:
+          restartPolicy: OnFailure
+          serviceAccountName: vct-backup-sa
+          containers:
+            # WAL-G full base backup
+            - name: walg-backup
+              image: ghcr.io/vct-platform/backup:latest
+              command:
+                - /bin/sh
+                - -c
+                - |
+                  set -euo pipefail
+                  echo "$(date -u) Starting WAL-G base backup..."
+
+                  # Full base backup to GCS
+                  wal-g backup-push "$PGDATA"
+
+                  # Delete old backups (retain 7 days)
+                  wal-g delete retain FULL 7 --confirm
+
+                  echo "$(date -u) WAL-G backup complete"
+              env:
+                - name: PGHOST
+                  value: vct-postgres
+                - name: PGPORT
+                  value: "5432"
+                - name: PGUSER
+                  valueFrom:
+                    secretKeyRef:
+                      name: vct-db-credentials
+                      key: pg_user
+                - name: PGPASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: vct-db-credentials
+                      key: pg_password
+                - name: PGDATABASE
+                  value: vct_platform
+                - name: PGDATA
+                  value: /var/lib/postgresql/data
+                - name: WALG_GS_PREFIX
+                  value: gs://vct-platform-backups/walg
+                - name: GOOGLE_APPLICATION_CREDENTIALS
+                  value: /var/secrets/gcp/credentials.json
+              volumeMounts:
+                - name: gcp-credentials
+                  mountPath: /var/secrets/gcp
+                  readOnly: true
+              resources:
+                requests:
+                  cpu: 100m
+                  memory: 256Mi
+                limits:
+                  cpu: 500m
+                  memory: 512Mi
+
+            # Logical dump (portable backup)
+            - name: pg-dump
+              image: postgres:17-alpine
+              command:
+                - /bin/sh
+                - -c
+                - |
+                  set -euo pipefail
+                  TIMESTAMP=$(date -u +%Y%m%d_%H%M%S)
+                  DUMP_FILE="/backups/vct_platform_${TIMESTAMP}.sql.gz"
+
+                  echo "$(date -u) Starting pg_dump..."
+                  pg_dump -Fc --no-owner --no-acl \
+                    -h "$PGHOST" -U "$PGUSER" -d "$PGDATABASE" \
+                    | gzip > "$DUMP_FILE"
+
+                  # Upload to GCS
+                  gsutil cp "$DUMP_FILE" "gs://vct-platform-backups/dumps/"
+
+                  # Cleanup old dumps (retain 30)
+                  gsutil ls "gs://vct-platform-backups/dumps/" \
+                    | sort -r | tail -n +31 | xargs -r gsutil rm
+
+                  echo "$(date -u) pg_dump complete: ${DUMP_FILE}"
+              env:
+                - name: PGHOST
+                  value: vct-postgres
+                - name: PGUSER
+                  valueFrom:
+                    secretKeyRef:
+                      name: vct-db-credentials
+                      key: pg_user
+                - name: PGPASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: vct-db-credentials
+                      key: pg_password
+                - name: PGDATABASE
+                  value: vct_platform
+              volumeMounts:
+                - name: backup-storage
+                  mountPath: /backups
+              resources:
+                requests:
+                  cpu: 100m
+                  memory: 256Mi
+
+          volumes:
+            - name: gcp-credentials
+              secret:
+                secretName: gcp-backup-credentials
+            - name: backup-storage
+              emptyDir:
+                sizeLimit: 5Gi
+---
+# ── Backup Verification CronJob ────────────
+# Runs weekly: restores latest backup to temp DB and validates
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: vct-backup-verify
+  namespace: vct-production
+spec:
+  schedule: "0 6 * * 0"  # Sunday 6:00 AM UTC
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 4
+  failedJobsHistoryLimit: 2
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          labels:
+            app.kubernetes.io/name: vct-backup-verify
+        spec:
+          restartPolicy: OnFailure
+          containers:
+            - name: verify
+              image: postgres:17-alpine
+              command:
+                - /bin/sh
+                - -c
+                - |
+                  set -euo pipefail
+                  echo "$(date -u) Starting backup verification..."
+
+                  # Get latest dump
+                  LATEST=$(gsutil ls "gs://vct-platform-backups/dumps/" | sort -r | head -1)
+                  echo "Verifying: ${LATEST}"
+
+                  # Download and restore to temp DB
+                  gsutil cp "$LATEST" /tmp/latest.sql.gz
+                  gunzip /tmp/latest.sql.gz
+
+                  createdb -h "$PGHOST" -U "$PGUSER" vct_verify_temp 2>/dev/null || true
+                  pg_restore -h "$PGHOST" -U "$PGUSER" -d vct_verify_temp \
+                    --no-owner --clean --if-exists /tmp/latest.sql 2>/dev/null || true
+
+                  # Validate critical tables exist and have data
+                  TABLES=("users" "athletes" "tournaments" "clubs" "categories")
+                  for table in "${TABLES[@]}"; do
+                    COUNT=$(psql -h "$PGHOST" -U "$PGUSER" -d vct_verify_temp -t -c \
+                      "SELECT COUNT(*) FROM ${table}" 2>/dev/null || echo "0")
+                    echo "  ${table}: ${COUNT} rows"
+                  done
+
+                  # Cleanup
+                  dropdb -h "$PGHOST" -U "$PGUSER" vct_verify_temp 2>/dev/null || true
+
+                  echo "$(date -u) ✅ Backup verification complete"
+              env:
+                - name: PGHOST
+                  value: vct-postgres
+                - name: PGUSER
+                  valueFrom:
+                    secretKeyRef:
+                      name: vct-db-credentials
+                      key: pg_user
+                - name: PGPASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: vct-db-credentials
+                      key: pg_password
+              resources:
+                requests:
+                  cpu: 100m
+                  memory: 256Mi

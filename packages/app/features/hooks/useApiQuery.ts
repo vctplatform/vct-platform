@@ -3,11 +3,13 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { apiClient, ApiClientError } from '../data/api-client'
 import { useAuth } from '../auth/AuthProvider'
 
-interface UseApiQueryOptions {
+interface UseApiQueryOptions<T = any> {
     /** Skip the query (useful for conditional fetching) */
     enabled?: boolean
     /** Refetch interval in milliseconds */
     refetchInterval?: number
+    /** Initial fallback data */
+    fallbackData?: T
 }
 
 interface UseApiQueryResult<T> {
@@ -28,14 +30,14 @@ interface UseApiQueryResult<T> {
  */
 export function useApiQuery<T>(
     path: string,
-    options: UseApiQueryOptions = {}
+    options: UseApiQueryOptions<T> = {}
 ): UseApiQueryResult<T> {
-    const { enabled = true, refetchInterval } = options
+    const { enabled = true, refetchInterval, fallbackData } = options
     const { token } = useAuth()
 
-    const [data, setData] = useState<T | null>(null)
+    const [data, setData] = useState<T | null>(fallbackData ?? null)
     const [error, setError] = useState<ApiClientError | Error | null>(null)
-    const [isLoading, setIsLoading] = useState(enabled)
+    const [isLoading, setIsLoading] = useState(enabled && data === null)
     const abortRef = useRef<AbortController | null>(null)
 
     const fetchData = useCallback(async () => {

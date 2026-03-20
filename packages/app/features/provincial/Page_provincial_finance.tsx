@@ -52,14 +52,14 @@ export const Page_provincial_finance = () => {
         <VCT_PageContainer size="wide" animated>
             <VCT_Toast isVisible={toast.show} message={toast.msg} type={toast.type} onClose={() => setToast(p => ({ ...p, show: false }))} />
             <div className="mb-6">
-                <h1 className="text-2xl font-bold tracking-tight text-[var(--vct-text-primary)]">💰 Tài Chính Liên Đoàn</h1>
-                <p className="text-sm text-[var(--vct-text-secondary)] mt-1">Quản lý thu chi, hội phí, ngân sách liên đoàn tỉnh</p>
+                <h1 className="text-2xl font-bold tracking-tight text-(--vct-text-primary)">💰 Tài Chính Liên Đoàn</h1>
+                <p className="text-sm text-(--vct-text-secondary) mt-1">Quản lý thu chi, hội phí, ngân sách liên đoàn tỉnh</p>
             </div>
 
             <VCT_StatRow items={kpi} className="mb-6" />
 
             <VCT_Stack direction="row" gap={16} align="center" justify="space-between" className="mb-5">
-                <h2 className="text-lg font-bold text-[var(--vct-text-primary)]">Sổ Thu Chi</h2>
+                <h2 className="text-lg font-bold text-(--vct-text-primary)">Sổ Thu Chi</h2>
                 <VCT_Stack direction="row" gap={8}>
                     <VCT_Button variant="secondary" icon={<VCT_Icons.Download size={16} />} onClick={() => showToast('Đang xuất báo cáo...', 'info')}>Xuất Excel</VCT_Button>
                     <VCT_Button icon={<VCT_Icons.Plus size={16} />} onClick={() => showToast('Chức năng đang phát triển', 'info')}>Tạo Phiếu</VCT_Button>
@@ -69,14 +69,14 @@ export const Page_provincial_finance = () => {
             {entries.length === 0 ? (
                 <VCT_EmptyState title="Chưa có bút toán nào" description={loading ? 'Đang tải...' : 'Chưa có giao dịch thu chi.'} icon="💰" />
             ) : (
-                <div className="overflow-hidden rounded-2xl border border-[var(--vct-border-subtle)] bg-[var(--vct-bg-glass)]">
+                <div className="overflow-hidden rounded-2xl border border-(--vct-border-subtle) bg-(--vct-bg-glass)">
                     <table className="w-full border-collapse">
-                        <thead><tr className="border-b border-[var(--vct-border-strong)] bg-[var(--vct-bg-card)]">
+                        <thead><tr className="border-b border-(--vct-border-strong) bg-(--vct-bg-card)">
                             {['Ngày', 'Loại', 'Danh mục', 'Nội dung', 'Số tiền', 'Số phiếu'].map(h => <th key={h} className="px-4 py-3 text-left text-xs font-bold uppercase opacity-50">{h}</th>)}
                         </tr></thead>
                         <tbody>
                             {entries.map(e => (
-                                <tr key={e.id} className="border-b border-[var(--vct-border-subtle)] hover:bg-[var(--vct-bg-hover)] transition-colors">
+                                <tr key={e.id} className="border-b border-(--vct-border-subtle) hover:bg-(--vct-bg-hover) transition-colors">
                                     <td className="px-4 py-3 text-sm">{e.date}</td>
                                     <td className="px-4 py-3">
                                         <VCT_Badge text={e.type === 'income' ? 'Thu' : 'Chi'} type={e.type === 'income' ? 'success' : 'error'} />

@@ -10,8 +10,8 @@ import {
 import { VCT_PageContainer, VCT_StatRow } from '../components/vct-ui';
 import type { StatItem } from '../components/VCT_StatRow';
 import { VCT_Icons } from '../components/vct-icons';
-import { TRONG_TAIS, SAN_DAUS, genId } from '../data/mock-data';
-import { CAP_BAC_TT_MAP, type TrongTai } from '../data/types';
+import { genId, useTrongTais, useSanDaus } from '../hooks/useTournamentAPI';
+import { CAP_BAC_TT_MAP, type TrongTai, type SanDau } from '../data/types';
 import { repositories, useEntityCollection, type RefereeAssignmentRecord } from '../data/repository';
 import { useRouteActionGuard } from '../hooks/use-route-action-guard';
 
@@ -32,7 +32,7 @@ const PHIEN_LABELS: Record<string, string> = { sang: '🌅 Sáng', chieu: '☀�
 // ════════════════════════════════════════
 function autoAssign(
     ttList: TrongTai[],
-    sans: typeof SAN_DAUS,
+    sans: SanDau[],
     ngay: string
 ): Assignment[] {
     const result: Assignment[] = [];
@@ -69,6 +69,10 @@ function autoAssign(
 // PAGE COMPONENT
 // ════════════════════════════════════════
 export const Page_referee_assignments = () => {
+    const { data: apiTrongTais } = useTrongTais();
+    const { data: apiSanDaus } = useSanDaus();
+    const trongTais = apiTrongTais || [];
+    const sanDaus = apiSanDaus || [];
     const { items: assignments, setItems: setAssignmentsState } = useEntityCollection(repositories.refereeAssignments.mock);
     const [showModal, setShowModal] = useState(false);
     const [showAutoModal, setShowAutoModal] = useState(false);
@@ -98,11 +102,11 @@ export const Page_referee_assignments = () => {
         });
     }, [setAssignmentsState]);
 
-    const ttsActive = TRONG_TAIS.filter(t => t.trang_thai === 'xac_nhan');
-    const sanActive = SAN_DAUS;
+    const ttsActive = trongTais.filter(t => t.trang_thai === 'xac_nhan');
+    const sanActive = sanDaus;
 
-    const getTT = (id: string) => TRONG_TAIS.find(t => t.id === id);
-    const getSan = (id: string) => SAN_DAUS.find(s => s.id === id);
+    const getTT = (id: string) => trongTais.find(t => t.id === id);
+    const getSan = (id: string) => sanDaus.find(s => s.id === id);
 
     // Group by sàn
     const bySan = useMemo(() => {
@@ -145,11 +149,11 @@ export const Page_referee_assignments = () => {
         if (!requireAction('assign', 'phân công tự động')) return;
         setIsAutoAssigning(true);
         setTimeout(() => {
-            const newAssignments = autoAssign(ttsActive, SAN_DAUS, '2026-08-15');
+            const newAssignments = autoAssign(ttsActive, sanDaus, '2026-08-15');
             setAssignments(newAssignments);
             setShowAutoModal(false);
             setIsAutoAssigning(false);
-            showToast(`Phân công tự động ${newAssignments.length} lượt trọng tài cho ${SAN_DAUS.filter(s => s.trang_thai !== 'bao_tri').length} sàn`);
+            showToast(`Phân công tự động ${newAssignments.length} lượt trọng tài cho ${sanDaus.filter(s => s.trang_thai !== 'bao_tri').length} sàn`);
         }, 1200);
     }, [requireAction, setAssignments, showToast, ttsActive]);
 
@@ -356,11 +360,11 @@ export const Page_referee_assignments = () => {
                             <div style={{ fontSize: 11, color: 'var(--vct-text-tertiary)' }}>TT sẵn sàng</div>
                         </div>
                         <div className="text-center">
-                            <div style={{ fontSize: 20, fontWeight: 900 }}>{SAN_DAUS.filter(s => s.trang_thai !== 'bao_tri').length}</div>
+                            <div style={{ fontSize: 20, fontWeight: 900 }}>{sanDaus.filter(s => s.trang_thai !== 'bao_tri').length}</div>
                             <div style={{ fontSize: 11, color: 'var(--vct-text-tertiary)' }}>Sàn khả dụng</div>
                         </div>
                         <div className="text-center">
-                            <div style={{ fontSize: 20, fontWeight: 900 }}>{SAN_DAUS.filter(s => s.trang_thai !== 'bao_tri').length * 3 * 2}</div>
+                            <div style={{ fontSize: 20, fontWeight: 900 }}>{sanDaus.filter(s => s.trang_thai !== 'bao_tri').length * 3 * 2}</div>
                             <div style={{ fontSize: 11, color: 'var(--vct-text-tertiary)' }}>Slot dự kiến</div>
                         </div>
                     </div>

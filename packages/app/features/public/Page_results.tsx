@@ -35,7 +35,7 @@ export function Page_ResultsDashboard() {
     const filteredEvents = DEMO_EVENTS.filter(e => e.name.toLowerCase().includes(search.toLowerCase()))
 
     const MedalTable = () => (
-        <div className="bg-white dark:bg-gray-800 rounded-xl border border-[var(--vct-border-subtle)] overflow-hidden shadow-sm">
+        <div className="bg-white dark:bg-gray-800 rounded-xl border border-(--vct-border-subtle) overflow-hidden shadow-sm">
             <VCT_Table
                 columns={[
                     { key: 'rank', label: 'Hạng', width: 80, align: 'center' },
@@ -44,7 +44,7 @@ export function Page_ResultsDashboard() {
                     { key: 'gold', label: '🥇 Vàng', align: 'center', render: (row) => <span className="text-yellow-600 dark:text-yellow-500 font-bold">{row.gold}</span> },
                     { key: 'silver', label: '🥈 Bạc', align: 'center', render: (row) => <span className="text-gray-500 dark:text-gray-400 font-bold">{row.silver}</span> },
                     { key: 'bronze', label: '🥉 Đồng', align: 'center', render: (row) => <span className="text-orange-700 dark:text-orange-600 font-bold">{row.bronze}</span> },
-                    { key: 'total', label: 'Tổng', align: 'center', render: (row) => <span className="font-black text-[var(--vct-text-primary)]">{row.total}</span> },
+                    { key: 'total', label: 'Tổng', align: 'center', render: (row) => <span className="font-black text-(--vct-text-primary)">{row.total}</span> },
                 ]}
                 data={DEMO_MEDALS}
             />
@@ -67,7 +67,7 @@ export function Page_ResultsDashboard() {
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: idx * 0.05 }}
-                        className="p-5 rounded-xl border border-[var(--vct-border-subtle)] bg-white dark:bg-gray-800 shadow-sm"
+                        className="p-5 rounded-xl border border-(--vct-border-subtle) bg-white dark:bg-gray-800 shadow-sm"
                     >
                         <div className="flex justify-between items-start mb-4">
                             <VCT_Text variant="h3">{item.name}</VCT_Text>

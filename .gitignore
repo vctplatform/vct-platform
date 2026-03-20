@@ -101,6 +101,14 @@ tsconfig.tsbuildinfo
 .env
 .env.local
 .env.*.local
+.env.production
+
+# Database backups
+backups/
+
+# SSL certificates
+infra/docker/postgres/*.key
+infra/docker/postgres/*.crt
 
 # Go build cache
 .gocache/

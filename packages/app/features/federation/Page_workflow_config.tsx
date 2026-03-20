@@ -232,7 +232,7 @@ export function Page_workflow_config() {
                                         >
                                             <button
                                                 onClick={() => setExpandedCode(isExpanded ? null : wf.code)}
-                                                className="flex items-center gap-3 w-full px-4 py-3.5 bg-transparent border-none text-left cursor-pointer text-vct-text hover:bg-white/[0.02] transition-colors"
+                                                className="flex items-center gap-3 w-full px-4 py-3.5 bg-transparent border-none text-left cursor-pointer text-vct-text hover:bg-white/2 transition-colors"
                                             >
                                                 <span
                                                     className="inline-flex items-center justify-center w-7 h-7 rounded-lg text-xs font-bold flex-shrink-0"
@@ -259,7 +259,7 @@ export function Page_workflow_config() {
                                                         transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
                                                         className="overflow-hidden"
                                                     >
-                                                        <div className="px-4 pb-4 border-t border-white/[0.06]">
+                                                        <div className="px-4 pb-4 border-t border-white/6">
                                                             {/* ── Step Chain SVG ── */}
                                                             <div className="flex items-center gap-0 py-4 overflow-x-auto">
                                                                 {wf.steps.map((s, si) => (
@@ -279,7 +279,7 @@ export function Page_workflow_config() {
                                                                                 style={{ background: `${meta.color}20`, color: meta.color }}
                                                                             >{s.step}</div>
                                                                             <div className="text-[13px] font-semibold text-vct-text mb-1">{s.name}</div>
-                                                                            <div className="text-[11px] px-2 py-0.5 rounded-md bg-white/[0.06] text-vct-text-muted">
+                                                                            <div className="text-[11px] px-2 py-0.5 rounded-md bg-white/6 text-vct-text-muted">
                                                                                 {ROLE_LABELS[s.role] || s.role}
                                                                             </div>
                                                                             {s.requires_all !== undefined && (

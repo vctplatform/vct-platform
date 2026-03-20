@@ -144,8 +144,8 @@ const Page_admin_rankings_Content = () => {
 
     return (
         <AdminPageShell
-            title="Xếp hạng & Thăng cấp"
-            subtitle="Bảng xếp hạng ELO và quản lý kỳ thi thăng cấp đai"
+            title={t('admin.rankings.title')}
+            subtitle={t('admin.rankings.subtitle')}
             icon={<VCT_Icons.Trophy size={28} className="text-[#f59e0b]" />}
             stats={stats}
         >
@@ -175,8 +175,7 @@ const Page_admin_rankings_Content = () => {
                                 sortable: true,
                                 align: 'center',
                                 render: (a) => (
-                                    <span className={`inline-flex items-center justify-center w-8 h-8 rounded-full font-black text-sm ${a.rank <= 3 ? 'text-white' : 'text-(--vct-text-primary) bg-(--vct-bg-base)'}`}
-                                        style={a.rank === 1 ? { background: 'linear-gradient(135deg, #f59e0b, #d97706)' } : a.rank === 2 ? { background: 'linear-gradient(135deg, #94a3b8, #64748b)' } : a.rank === 3 ? { background: 'linear-gradient(135deg, #cd7f32, #a0522d)' } : {}}>
+                                    <span className={`inline-flex items-center justify-center w-8 h-8 rounded-full font-black text-sm ${a.rank === 1 ? 'admin-rank-bg-1 text-white' : a.rank === 2 ? 'admin-rank-bg-2 text-white' : a.rank === 3 ? 'admin-rank-bg-3 text-white' : 'text-(--vct-text-primary) bg-(--vct-bg-base)'}`}>
                                         {a.rank}
                                     </span>
                                 )
@@ -308,7 +307,7 @@ const Page_admin_rankings_Content = () => {
                 {selected && (
                     <VCT_Stack gap={20}>
                         <div className="flex items-center gap-3">
-                            <span className="inline-flex items-center justify-center w-10 h-10 rounded-full font-black text-white" style={{ background: 'linear-gradient(135deg, #f59e0b, #d97706)' }}>#{selected.rank}</span>
+                            <span className="admin-rank-circle">#{selected.rank}</span>
                             <div>
                                 <div className="font-bold text-lg text-(--vct-text-primary)">{selected.name}</div>
                                 <div className="text-sm text-(--vct-text-tertiary)">{selected.club}</div>

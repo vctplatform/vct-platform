@@ -87,7 +87,7 @@ export const Page_belt_exams = () => {
             ] as StatItem[]} className="mb-6" />
 
             {/* ── TABS & TOOLBAR ── */}
-            <div className="mb-6 flex flex-wrap items-center justify-between gap-4 border-b border-[var(--vct-border-subtle)] pb-4">
+            <div className="mb-6 flex flex-wrap items-center justify-between gap-4 border-b border-(--vct-border-subtle) pb-4">
                 <VCT_Tabs
                     tabs={[
                         { key: 'all', label: 'Tất cả kỳ thi' },
@@ -109,33 +109,33 @@ export const Page_belt_exams = () => {
             ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {filtered.map(exam => (
-                        <div key={exam.id} className="bg-[var(--vct-bg-elevated)] border border-[var(--vct-border-strong)] rounded-2xl p-5 hover:border-[var(--vct-accent-cyan)] hover:shadow-[0_4px_24px_-8px_var(--vct-accent-cyan)] transition-all flex flex-col group">
+                        <div key={exam.id} className="bg-(--vct-bg-elevated) border border-(--vct-border-strong) rounded-2xl p-5 hover:border-(--vct-accent-cyan) hover:shadow-[0_4px_24px_-8px_var(--vct-accent-cyan)] transition-all flex flex-col group">
                             <div className="flex items-start justify-between mb-4">
                                 {STATUS_MAP[exam.status].render}
-                                <button className="p-1.5 text-[var(--vct-text-tertiary)] hover:text-white rounded-md transition-colors">
+                                <button className="p-1.5 text-(--vct-text-tertiary) hover:text-white rounded-md transition-colors">
                                     <VCT_Icons.MoreVertical size={16} />
                                 </button>
                             </div>
 
-                            <h3 className="text-lg font-bold text-[var(--vct-text-primary)] mb-3 leading-tight line-clamp-2">{exam.title}</h3>
+                            <h3 className="text-lg font-bold text-(--vct-text-primary) mb-3 leading-tight line-clamp-2">{exam.title}</h3>
 
-                            <div className="flex flex-col gap-2 text-[13px] text-[var(--vct-text-secondary)] mb-4 flex-1">
+                            <div className="flex flex-col gap-2 text-[13px] text-(--vct-text-secondary) mb-4 flex-1">
                                 <div className="flex items-center gap-2"><VCT_Icons.Calendar size={14} className="text-[#0ea5e9]" /> {exam.date}</div>
                                 <div className="flex items-start gap-2"><VCT_Icons.MapPin size={14} className="text-[#f59e0b] shrink-0 mt-0.5" /> <span className="line-clamp-2">{exam.location}</span></div>
                                 <div className="flex items-center gap-2 mt-1">
                                     <VCT_Icons.Layers size={14} className="text-[#8b5cf6]" />
                                     <div className="flex flex-wrap gap-1">
                                         {exam.levels.map(l => (
-                                            <span key={l} className="bg-[var(--vct-bg-base)] border border-[var(--vct-border-subtle)] px-1.5 py-0.5 rounded text-[10px] font-bold text-[var(--vct-text-primary)] uppercase">{l}</span>
+                                            <span key={l} className="bg-(--vct-bg-base) border border-(--vct-border-subtle) px-1.5 py-0.5 rounded text-[10px] font-bold text-(--vct-text-primary) uppercase">{l}</span>
                                         ))}
                                     </div>
                                 </div>
                             </div>
 
-                            <div className="pt-4 border-t border-[var(--vct-border-strong)] flex items-center justify-between">
+                            <div className="pt-4 border-t border-(--vct-border-strong) flex items-center justify-between">
                                 <div>
-                                    <div className="text-[10px] text-[var(--vct-text-tertiary)] uppercase font-bold mb-0.5">Thí sinh</div>
-                                    <div className="text-xl font-black text-white">{exam.candidates_count} <span className="text-xs font-normal text-[var(--vct-text-secondary)]">người</span></div>
+                                    <div className="text-[10px] text-(--vct-text-tertiary) uppercase font-bold mb-0.5">Thí sinh</div>
+                                    <div className="text-xl font-black text-white">{exam.candidates_count} <span className="text-xs font-normal text-(--vct-text-secondary)">người</span></div>
                                 </div>
                                 <VCT_Button variant="secondary" size="sm">Cấu hình Hội đồng</VCT_Button>
                             </div>

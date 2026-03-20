@@ -177,8 +177,8 @@ export const Page_provincial_referees = () => {
 
             {/* Header */}
             <div className="mb-6">
-                <h1 className="text-2xl font-bold tracking-tight text-[var(--vct-text-primary)]">⚖️ Quản Lý Trọng Tài</h1>
-                <p className="text-sm text-[var(--vct-text-secondary)] mt-1">Danh sách trọng tài thuộc liên đoàn tỉnh — quản lý hồ sơ, chứng chỉ và phê duyệt</p>
+                <h1 className="text-2xl font-bold tracking-tight text-(--vct-text-primary)">⚖️ Quản Lý Trọng Tài</h1>
+                <p className="text-sm text-(--vct-text-secondary) mt-1">Danh sách trọng tài thuộc liên đoàn tỉnh — quản lý hồ sơ, chứng chỉ và phê duyệt</p>
             </div>
 
             {/* Stats Row */}
@@ -190,12 +190,12 @@ export const Page_provincial_referees = () => {
             ] as StatItem[]} className="mb-6" />
 
             {/* Tabs */}
-            <div className="flex gap-1 mb-5 p-1 rounded-xl bg-[var(--vct-bg-card)] border border-[var(--vct-border-subtle)] w-fit">
+            <div className="flex gap-1 mb-5 p-1 rounded-xl bg-(--vct-bg-card) border border-(--vct-border-subtle) w-fit">
                 {TABS.map(t => (
                     <button key={t.key} onClick={() => setTab(t.key)}
                         className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs font-semibold transition-all ${tab === t.key
-                            ? 'bg-[var(--vct-primary)] text-white shadow-md'
-                            : 'text-[var(--vct-text-secondary)] hover:bg-[var(--vct-bg-hover)]'
+                            ? 'bg-(--vct-primary) text-white shadow-md'
+                            : 'text-(--vct-text-secondary) hover:bg-(--vct-bg-hover)'
                             }`}>
                         {t.icon}{t.label}
                         {t.key !== 'all' && <span className="ml-1 text-[10px] opacity-70">
@@ -212,12 +212,12 @@ export const Page_provincial_referees = () => {
                         <VCT_SearchInput value={search} onChange={setSearch} onClear={() => setSearch('')} placeholder="Tìm trọng tài, SĐT, email..." />
                     </div>
                     <select value={filterRank} onChange={e => setFilterRank(e.target.value)}
-                        className="px-3 py-2 rounded-lg border border-[var(--vct-border-subtle)] bg-[var(--vct-bg-card)] text-sm text-[var(--vct-text-primary)] outline-none transition-colors hover:border-[var(--vct-primary)]">
+                        className="px-3 py-2 rounded-lg border border-(--vct-border-subtle) bg-(--vct-bg-card) text-sm text-(--vct-text-primary) outline-none transition-colors hover:border-(--vct-primary)">
                         <option value="">Tất cả cấp bậc</option>
                         {Object.entries(RANK_MAP).map(([k, v]) => <option key={k} value={k}>{v.label}</option>)}
                     </select>
                     <select value={filterExpertise} onChange={e => setFilterExpertise(e.target.value)}
-                        className="px-3 py-2 rounded-lg border border-[var(--vct-border-subtle)] bg-[var(--vct-bg-card)] text-sm text-[var(--vct-text-primary)] outline-none transition-colors hover:border-[var(--vct-primary)]">
+                        className="px-3 py-2 rounded-lg border border-(--vct-border-subtle) bg-(--vct-bg-card) text-sm text-(--vct-text-primary) outline-none transition-colors hover:border-(--vct-primary)">
                         <option value="">Tất cả chuyên môn</option>
                         {Object.entries(EXPERTISE_MAP).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
                     </select>
@@ -229,9 +229,9 @@ export const Page_provincial_referees = () => {
             {filtered.length === 0 ? (
                 <VCT_EmptyState title="Không tìm thấy trọng tài" description={loading ? 'Đang tải...' : 'Thử thay đổi bộ lọc hoặc thêm trọng tài mới.'} icon="⚖️" />
             ) : (
-                <div className="overflow-hidden rounded-2xl border border-[var(--vct-border-subtle)] bg-[var(--vct-bg-glass)]">
+                <div className="overflow-hidden rounded-2xl border border-(--vct-border-subtle) bg-(--vct-bg-glass)">
                     <table className="w-full border-collapse">
-                        <thead><tr className="border-b border-[var(--vct-border-strong)] bg-[var(--vct-bg-card)]">
+                        <thead><tr className="border-b border-(--vct-border-strong) bg-(--vct-bg-card)">
                             {['Trọng tài', 'Cấp bậc', 'Chuyên môn', 'Kinh nghiệm', 'Liên hệ', 'Trạng thái', 'Thao tác'].map(h =>
                                 <th key={h} className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider opacity-50">{h}</th>
                             )}
@@ -239,14 +239,14 @@ export const Page_provincial_referees = () => {
                         <tbody>
                             {filtered.map(r => (
                                 <React.Fragment key={r.id}>
-                                    <tr className={`border-b border-[var(--vct-border-subtle)] hover:bg-[var(--vct-bg-hover)] transition-colors cursor-pointer ${expandedId === r.id ? 'bg-[var(--vct-bg-hover)]' : ''}`}
+                                    <tr className={`border-b border-(--vct-border-subtle) hover:bg-(--vct-bg-hover) transition-colors cursor-pointer ${expandedId === r.id ? 'bg-(--vct-bg-hover)' : ''}`}
                                         onClick={() => toggleExpand(r.id)}>
                                         <td className="px-4 py-3">
                                             <VCT_Stack direction="row" gap={10} align="center">
                                                 <VCT_AvatarLetter name={r.full_name} size={38} />
                                                 <div>
-                                                    <div className="font-semibold text-sm text-[var(--vct-text-primary)]">{r.full_name}</div>
-                                                    <div className="text-[11px] text-[var(--vct-text-tertiary)]">
+                                                    <div className="font-semibold text-sm text-(--vct-text-primary)">{r.full_name}</div>
+                                                    <div className="text-[11px] text-(--vct-text-tertiary)">
                                                         {r.gender === 'nam' ? '♂ Nam' : '♀ Nữ'}{r.date_of_birth ? ` · ${r.date_of_birth}` : ''}
                                                     </div>
                                                 </div>
@@ -263,8 +263,8 @@ export const Page_provincial_referees = () => {
                                         <td className="px-4 py-3 text-sm">{EXPERTISE_MAP[r.expertise] || r.expertise || '—'}</td>
                                         <td className="px-4 py-3 text-sm">{r.experience_years ? `${r.experience_years} năm` : '—'}</td>
                                         <td className="px-4 py-3">
-                                            <div className="text-xs text-[var(--vct-text-secondary)]">{r.phone || '—'}</div>
-                                            {r.email && <div className="text-[10px] text-[var(--vct-text-tertiary)]">{r.email}</div>}
+                                            <div className="text-xs text-(--vct-text-secondary)">{r.phone || '—'}</div>
+                                            {r.email && <div className="text-[10px] text-(--vct-text-tertiary)">{r.email}</div>}
                                         </td>
                                         <td className="px-4 py-3">
                                             <VCT_Badge text={STATUS_MAP[r.status]?.label || r.status} type={STATUS_MAP[r.status]?.type || 'neutral'} />
@@ -280,16 +280,16 @@ export const Page_provincial_referees = () => {
                                                     </>
                                                 )}
                                                 <button onClick={() => { setEditRef(r); setShowModal(true) }} title="Chỉnh sửa"
-                                                    className="p-1.5 rounded-lg text-[var(--vct-text-tertiary)] hover:text-[var(--vct-primary)] hover:bg-[var(--vct-primary-ghost)] transition-colors"><VCT_Icons.Edit size={15} /></button>
+                                                    className="p-1.5 rounded-lg text-(--vct-text-tertiary) hover:text-(--vct-primary) hover:bg-(--vct-primary-ghost) transition-colors"><VCT_Icons.Edit size={15} /></button>
                                                 <button onClick={() => setDeleteId(r.id)} title="Xoá"
-                                                    className="p-1.5 rounded-lg text-[var(--vct-text-tertiary)] hover:text-red-500 hover:bg-red-500/10 transition-colors"><VCT_Icons.Trash size={15} /></button>
+                                                    className="p-1.5 rounded-lg text-(--vct-text-tertiary) hover:text-red-500 hover:bg-red-500/10 transition-colors"><VCT_Icons.Trash size={15} /></button>
                                             </VCT_Stack>
                                         </td>
                                     </tr>
 
                                     {/* Expanded Detail Row */}
                                     {expandedId === r.id && (
-                                        <tr><td colSpan={7} className="px-6 py-4 bg-[var(--vct-bg-card)] border-b border-[var(--vct-border-subtle)]">
+                                        <tr><td colSpan={7} className="px-6 py-4 bg-(--vct-bg-card) border-b border-(--vct-border-subtle)">
                                             <div className="grid grid-cols-3 gap-6">
                                                 {/* Personal Info */}
                                                 <div>
@@ -308,7 +308,7 @@ export const Page_provincial_referees = () => {
                                                     ) : (
                                                         <div className="space-y-2">
                                                             {certs.map(c => (
-                                                                <div key={c.id} className="flex items-center gap-3 px-3 py-2 rounded-lg bg-[var(--vct-bg-glass)] border border-[var(--vct-border-subtle)]">
+                                                                <div key={c.id} className="flex items-center gap-3 px-3 py-2 rounded-lg bg-(--vct-bg-glass) border border-(--vct-border-subtle)">
                                                                     <VCT_Icons.Award size={16} className="opacity-50" />
                                                                     <div className="flex-1 min-w-0">
                                                                         <div className="text-sm font-medium truncate">{c.name}</div>
@@ -331,7 +331,7 @@ export const Page_provincial_referees = () => {
             )}
 
             {/* Summary */}
-            <div className="mt-4 text-xs text-[var(--vct-text-tertiary)] text-right">
+            <div className="mt-4 text-xs text-(--vct-text-tertiary) text-right">
                 Hiển thị {filtered.length}/{referees.length} trọng tài
             </div>
 
@@ -341,9 +341,9 @@ export const Page_provincial_referees = () => {
             {/* Delete Confirmation */}
             {deleteId && (
                 <div className="fixed inset-0 z-[999] flex items-center justify-center bg-black/50 backdrop-blur-sm" onClick={() => setDeleteId(null)}>
-                    <div className="bg-[var(--vct-bg-card)] rounded-2xl p-6 w-full max-w-sm shadow-2xl border border-[var(--vct-border-subtle)]" onClick={e => e.stopPropagation()}>
+                    <div className="bg-(--vct-bg-card) rounded-2xl p-6 w-full max-w-sm shadow-2xl border border-(--vct-border-subtle)" onClick={e => e.stopPropagation()}>
                         <h3 className="text-lg font-bold mb-2">Xác nhận xoá</h3>
-                        <p className="text-sm text-[var(--vct-text-secondary)] mb-5">Bạn chắc chắn muốn xoá trọng tài này? Hành động không thể hoàn tác.</p>
+                        <p className="text-sm text-(--vct-text-secondary) mb-5">Bạn chắc chắn muốn xoá trọng tài này? Hành động không thể hoàn tác.</p>
                         <VCT_Stack direction="row" gap={10} justify="flex-end">
                             <VCT_Button variant="ghost" onClick={() => setDeleteId(null)}>Huỷ</VCT_Button>
                             <VCT_Button variant="danger" onClick={handleDelete}>Xoá</VCT_Button>
@@ -374,12 +374,12 @@ function RefereeModal({ referee, onSave, onClose }: { referee: Referee | null; o
 
     const set = (key: string, val: string | number) => setForm(p => ({ ...p, [key]: val }))
 
-    const inputCls = "w-full px-3 py-2 rounded-lg border border-[var(--vct-border-subtle)] bg-[var(--vct-bg-glass)] text-sm text-[var(--vct-text-primary)] outline-none transition-colors focus:border-[var(--vct-primary)] focus:ring-2 focus:ring-[var(--vct-primary-ghost)]"
-    const labelCls = "block text-xs font-semibold text-[var(--vct-text-secondary)] mb-1.5"
+    const inputCls = "w-full px-3 py-2 rounded-lg border border-(--vct-border-subtle) bg-(--vct-bg-glass) text-sm text-(--vct-text-primary) outline-none transition-colors focus:border-(--vct-primary) focus:ring-2 focus:ring-(--vct-primary-ghost)"
+    const labelCls = "block text-xs font-semibold text-(--vct-text-secondary) mb-1.5"
 
     return (
         <div className="fixed inset-0 z-[999] flex items-center justify-center bg-black/50 backdrop-blur-sm" onClick={onClose}>
-            <div className="bg-[var(--vct-bg-card)] rounded-2xl p-6 w-full max-w-lg shadow-2xl border border-[var(--vct-border-subtle)] max-h-[90vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
+            <div className="bg-(--vct-bg-card) rounded-2xl p-6 w-full max-w-lg shadow-2xl border border-(--vct-border-subtle) max-h-[90vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
                 <h3 className="text-lg font-bold mb-5">{referee ? '✏️ Chỉnh sửa Trọng Tài' : '➕ Thêm Trọng Tài Mới'}</h3>
 
                 <div className="grid grid-cols-2 gap-4 mb-6">

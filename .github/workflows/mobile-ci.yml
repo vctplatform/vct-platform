@@ -1,0 +1,72 @@
+name: Mobile CI
+on:
+  pull_request:
+    paths:
+      - 'apps/expo/**'
+      - 'packages/app/**'
+      - 'packages/ui/**'
+      - 'packages/shared-types/**'
+
+concurrency:
+  group: mobile-ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  typecheck:
+    name: TypeScript Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'npm'
+      - run: npm ci
+      - run: cd apps/expo && npx tsc --noEmit
+
+  test:
+    name: Mobile Unit Tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'npm'
+      - run: npm ci
+      - run: npx jest --config jest.config.mobile.js --coverage --passWithNoTests
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: mobile-coverage
+          path: coverage/
+
+  lint:
+    name: ESLint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'npm'
+      - run: npm ci
+      - run: npx eslint packages/app/features/mobile/ --max-warnings=0 || true
+
+  eas-preview:
+    name: EAS Preview Build (Android)
+    needs: [typecheck, test, lint]
+    runs-on: ubuntu-latest
+    if: github.event.pull_request.draft == false
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'npm'
+      - uses: expo/expo-github-action@v8
+        with:
+          eas-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
+      - run: npm ci
+      - run: cd apps/expo && eas build --profile preview --platform android --non-interactive --no-wait

@@ -228,10 +228,10 @@ export const Page_club_dashboard = () => {
       />
 
       <div className="mb-6">
-        <h1 className="text-2xl font-bold tracking-tight text-[var(--vct-text-primary)]">
+        <h1 className="text-2xl font-bold tracking-tight text-(--vct-text-primary)">
           Dashboard CLB
         </h1>
-        <p className="mt-1 text-sm text-[var(--vct-text-secondary)]">
+        <p className="mt-1 text-sm text-(--vct-text-secondary)">
           Tong quan hoat dong thanh vien, lop hoc, giai dau va tai chinh.
         </p>
       </div>
@@ -249,7 +249,7 @@ export const Page_club_dashboard = () => {
       <div className="mb-6 grid grid-cols-1 gap-4 lg:grid-cols-3">
         <VCT_Card title="Canh bao van hanh" className="lg:col-span-2">
           {alerts.length === 0 ? (
-            <div className="text-sm text-[var(--vct-text-secondary)]">
+            <div className="text-sm text-(--vct-text-secondary)">
               Khong co canh bao quan trong.
             </div>
           ) : (
@@ -257,9 +257,9 @@ export const Page_club_dashboard = () => {
               {alerts.map((alert) => (
                 <div
                   key={alert.id}
-                  className="flex items-center justify-between rounded-xl border border-[var(--vct-border-subtle)] bg-[var(--vct-bg-elevated)] px-3 py-2"
+                  className="flex items-center justify-between rounded-xl border border-(--vct-border-subtle) bg-(--vct-bg-elevated) px-3 py-2"
                 >
-                  <span className="text-sm text-[var(--vct-text-primary)]">{alert.label}</span>
+                  <span className="text-sm text-(--vct-text-primary)">{alert.label}</span>
                   <VCT_Badge
                     text={alert.tone === 'error' ? 'Can xu ly' : 'Theo doi'}
                     type={alert.tone === 'error' ? 'danger' : alert.tone}
@@ -281,15 +281,15 @@ export const Page_club_dashboard = () => {
               return (
                 <div key={item.id}>
                   <div className="mb-1 flex items-center justify-between text-xs">
-                    <span className="font-semibold text-[var(--vct-text-primary)]">
+                    <span className="font-semibold text-(--vct-text-primary)">
                       {item.name}
                     </span>
-                    <span className="text-[var(--vct-text-secondary)]">
+                    <span className="text-(--vct-text-secondary)">
                       {item.currentStudents}/{item.maxStudents}
                     </span>
                   </div>
                   <VCT_ProgressBar value={item.currentStudents} max={item.maxStudents} />
-                  <div className="mt-1 text-[11px] text-[var(--vct-text-secondary)]">
+                  <div className="mt-1 text-[11px] text-(--vct-text-secondary)">
                     {percent}% cong suat
                   </div>
                 </div>
@@ -304,16 +304,16 @@ export const Page_club_dashboard = () => {
           <a
             key={action.id}
             href={action.href}
-            className="rounded-2xl border border-[var(--vct-border-subtle)] bg-[var(--vct-bg-glass)] p-4 transition hover:border-[var(--vct-accent-cyan)]/35 hover:bg-[var(--vct-bg-hover)]"
+            className="rounded-2xl border border-(--vct-border-subtle) bg-(--vct-bg-glass) p-4 transition hover:border-(--vct-accent-cyan)/35 hover:bg-(--vct-bg-hover)"
           >
             <VCT_Stack direction="row" align="center" justify="space-between" gap={8}>
-              <span className="text-[var(--vct-accent-cyan)]">{action.icon}</span>
+              <span className="text-(--vct-accent-cyan)">{action.icon}</span>
               <VCT_Icons.ChevronRight size={16} />
             </VCT_Stack>
-            <div className="mt-3 text-sm font-bold text-[var(--vct-text-primary)]">
+            <div className="mt-3 text-sm font-bold text-(--vct-text-primary)">
               {action.label}
             </div>
-            <div className="mt-1 text-xs text-[var(--vct-text-secondary)]">
+            <div className="mt-1 text-xs text-(--vct-text-secondary)">
               {action.desc}
             </div>
           </a>
@@ -323,7 +323,7 @@ export const Page_club_dashboard = () => {
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
         <VCT_Card title="Lop hoc hom nay">
           {todayClasses.length === 0 ? (
-            <div className="text-sm text-[var(--vct-text-secondary)]">
+            <div className="text-sm text-(--vct-text-secondary)">
               Khong co buoi hoc trong ngay.
             </div>
           ) : (
@@ -331,19 +331,19 @@ export const Page_club_dashboard = () => {
               {todayClasses.map((item) => (
                 <div
                   key={item.id}
-                  className="rounded-xl border border-[var(--vct-border-subtle)] bg-[var(--vct-bg-elevated)] p-3"
+                  className="rounded-xl border border-(--vct-border-subtle) bg-(--vct-bg-elevated) p-3"
                 >
-                  <div className="text-sm font-semibold text-[var(--vct-text-primary)]">
+                  <div className="text-sm font-semibold text-(--vct-text-primary)">
                     {item.name}
                   </div>
-                  <div className="mt-1 text-xs text-[var(--vct-text-secondary)]">
+                  <div className="mt-1 text-xs text-(--vct-text-secondary)">
                     HLV: {item.coachName}
                   </div>
                   <div className="mt-2 flex flex-wrap gap-2">
                     {item.sessions.map((session, index) => (
                       <span
                         key={`${item.id}-${index}`}
-                        className="rounded-md bg-[var(--vct-bg-card)] px-2 py-1 text-[11px] text-[var(--vct-text-secondary)]"
+                        className="rounded-md bg-(--vct-bg-card) px-2 py-1 text-[11px] text-(--vct-text-secondary)"
                       >
                         {DAY_LABEL(session.dayOfWeek)} {session.startTime}-{session.endTime}
                       </span>
@@ -363,14 +363,14 @@ export const Page_club_dashboard = () => {
               .map((item) => (
                 <div
                   key={item.id}
-                  className="rounded-xl border border-[var(--vct-border-subtle)] bg-[var(--vct-bg-elevated)] p-3"
+                  className="rounded-xl border border-(--vct-border-subtle) bg-(--vct-bg-elevated) p-3"
                 >
                   <div className="flex items-start justify-between gap-3">
                     <div>
-                      <div className="text-sm font-semibold text-[var(--vct-text-primary)]">
+                      <div className="text-sm font-semibold text-(--vct-text-primary)">
                         {item.name}
                       </div>
-                      <div className="mt-1 text-xs text-[var(--vct-text-secondary)]">
+                      <div className="mt-1 text-xs text-(--vct-text-secondary)">
                         {item.startDate} - {item.endDate} • {item.location}
                       </div>
                     </div>
@@ -379,7 +379,7 @@ export const Page_club_dashboard = () => {
                       type={item.status === 'ongoing' ? 'success' : 'info'}
                     />
                   </div>
-                  <div className="mt-2 text-xs text-[var(--vct-text-secondary)]">
+                  <div className="mt-2 text-xs text-(--vct-text-secondary)">
                     {item.registeredAthletes} VDV • {item.events} noi dung
                   </div>
                 </div>

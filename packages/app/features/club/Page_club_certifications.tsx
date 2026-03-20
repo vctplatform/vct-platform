@@ -308,7 +308,7 @@ export const Page_club_certifications = () => {
         render: (row: ClubCertificationRecord) => (
           <div>
             <div className="text-sm font-semibold">{row.memberName}</div>
-            <div className="text-xs text-[var(--vct-text-secondary)]">{row.examCode}</div>
+            <div className="text-xs text-(--vct-text-secondary)">{row.examCode}</div>
           </div>
         ),
       },
@@ -348,7 +348,7 @@ export const Page_club_certifications = () => {
               <button
                 type="button"
                 onClick={() => openEditModal(row)}
-                className="rounded-md bg-[var(--vct-bg-input)] px-2 py-1 text-xs font-semibold"
+                className="rounded-md bg-(--vct-bg-input) px-2 py-1 text-xs font-semibold"
               >
                 Sua
               </button>
@@ -439,10 +439,10 @@ export const Page_club_certifications = () => {
       />
 
       <div className="mb-6">
-        <h1 className="text-2xl font-bold tracking-tight text-[var(--vct-text-primary)]">
+        <h1 className="text-2xl font-bold tracking-tight text-(--vct-text-primary)">
           Quan ly chung nhan va dang cap
         </h1>
-        <p className="mt-1 text-sm text-[var(--vct-text-secondary)]">
+        <p className="mt-1 text-sm text-(--vct-text-secondary)">
           Theo doi lich su thang dai, ket qua ky thi va phan bo dang cap CLB.
         </p>
       </div>
@@ -455,14 +455,14 @@ export const Page_club_certifications = () => {
           return (
             <div
               key={item.rank}
-              className="rounded-2xl border border-[var(--vct-border-subtle)] bg-[var(--vct-bg-glass)] p-3 text-center"
+              className="rounded-2xl border border-(--vct-border-subtle) bg-(--vct-bg-glass) p-3 text-center"
             >
               <div className="text-2xl">{BELT_EMOJI[item.rank]}</div>
-              <div className="mt-1 text-lg font-bold text-[var(--vct-text-primary)]">
+              <div className="mt-1 text-lg font-bold text-(--vct-text-primary)">
                 {item.count}
               </div>
-              <div className="text-xs text-[var(--vct-text-secondary)]">{BELT_LABEL[item.rank]}</div>
-              <div className="mt-1 text-[10px] text-[var(--vct-text-secondary)]">{percent}%</div>
+              <div className="text-xs text-(--vct-text-secondary)">{BELT_LABEL[item.rank]}</div>
+              <div className="mt-1 text-[10px] text-(--vct-text-secondary)">{percent}%</div>
             </div>
           )
         })}
@@ -513,7 +513,7 @@ export const Page_club_certifications = () => {
           onAction={can('create') ? openCreateModal : undefined}
         />
       ) : (
-        <div className="rounded-2xl border border-[var(--vct-border-subtle)] bg-[var(--vct-bg-glass)] p-2">
+        <div className="rounded-2xl border border-(--vct-border-subtle) bg-(--vct-bg-glass) p-2">
           <VCT_Table columns={columns} data={filteredRecords} rowKey="id" />
         </div>
       )}

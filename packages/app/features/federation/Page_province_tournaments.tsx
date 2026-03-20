@@ -35,8 +35,8 @@ export const Page_province_tournaments = () => {
     return (
         <VCT_PageContainer size="wide" animated>
             <div className="mb-6">
-                <h1 className="text-2xl font-bold tracking-tight text-[var(--vct-text-primary)]">Giải đấu cấp tỉnh</h1>
-                <p className="text-sm text-[var(--vct-text-secondary)] mt-1">Quản lý và theo dõi các giải đấu Võ cổ truyền do tỉnh tổ chức.</p>
+                <h1 className="text-2xl font-bold tracking-tight text-(--vct-text-primary)">Giải đấu cấp tỉnh</h1>
+                <p className="text-sm text-(--vct-text-secondary) mt-1">Quản lý và theo dõi các giải đấu Võ cổ truyền do tỉnh tổ chức.</p>
             </div>
 
             <VCT_StatRow items={[
@@ -48,7 +48,7 @@ export const Page_province_tournaments = () => {
 
             {/* Filters */}
             <div className="flex flex-wrap gap-3 mb-6">
-                <select value={statusFilter} onChange={e => setStatusFilter(e.target.value)} className="px-4 py-2 rounded-xl border border-[var(--vct-border-subtle)] bg-[var(--vct-bg-glass)] text-sm text-[var(--vct-text-primary)] outline-none">
+                <select value={statusFilter} onChange={e => setStatusFilter(e.target.value)} className="px-4 py-2 rounded-xl border border-(--vct-border-subtle) bg-(--vct-bg-glass) text-sm text-(--vct-text-primary) outline-none">
                     <option value="ALL">Tất cả trạng thái</option>
                     <option value="UPCOMING">Sắp diễn ra</option>
                     <option value="ONGOING">Đang diễn ra</option>
@@ -61,17 +61,17 @@ export const Page_province_tournaments = () => {
                 {filtered.map(t => {
                     const s = STATUS_MAP[t.status] ?? { label: t.status, color: '#888', icon: '❓' }
                     return (
-                        <div key={t.id} className="rounded-2xl border border-[var(--vct-border-subtle)] bg-[var(--vct-bg-card)] p-5 hover:border-[var(--vct-accent-cyan)] transition-colors">
+                        <div key={t.id} className="rounded-2xl border border-(--vct-border-subtle) bg-(--vct-bg-card) p-5 hover:border-(--vct-accent-cyan) transition-colors">
                             <div className="flex items-start justify-between mb-3">
                                 <div>
-                                    <h3 className="font-bold text-[var(--vct-text-primary)] text-lg">{t.name}</h3>
-                                    <span className="text-xs text-[var(--vct-text-secondary)]">{t.type}</span>
+                                    <h3 className="font-bold text-(--vct-text-primary) text-lg">{t.name}</h3>
+                                    <span className="text-xs text-(--vct-text-secondary)">{t.type}</span>
                                 </div>
                                 <span className="text-xs font-bold px-3 py-1 rounded-lg" style={{ background: `${s.color}22`, color: s.color }}>
                                     {s.icon} {s.label}
                                 </span>
                             </div>
-                            <div className="flex flex-wrap gap-6 text-sm text-[var(--vct-text-secondary)]">
+                            <div className="flex flex-wrap gap-6 text-sm text-(--vct-text-secondary)">
                                 <div className="flex items-center gap-1.5">
                                     <VCT_Icons.Calendar size={14} /> {t.date}
                                 </div>

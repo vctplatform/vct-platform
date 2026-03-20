@@ -322,14 +322,14 @@ export const Page_provincial_vo_sinh = () => {
             <label className="text-xs font-semibold opacity-60">{label}{opts?.required && <span className="text-red-500 ml-0.5">*</span>}</label>
             {opts?.options ? (
                 <select value={(form[key] as string) || ''} onChange={e => setForm(p => ({ ...p, [key]: e.target.value }))}
-                    className="bg-[var(--vct-bg-elevated)] border border-[var(--vct-border-subtle)] text-[var(--vct-text-primary)] text-sm rounded-lg px-3 py-2 outline-none">
+                    className="bg-(--vct-bg-elevated) border border-(--vct-border-subtle) text-(--vct-text-primary) text-sm rounded-lg px-3 py-2 outline-none">
                     {opts.options.map(o => <option key={o.v} value={o.v}>{o.l}</option>)}
                 </select>
             ) : (
                 <input type={type}
                     value={(form[key] as string | number) ?? ''}
                     onChange={e => setForm(p => ({ ...p, [key]: type === 'number' ? parseFloat(e.target.value) || 0 : e.target.value }))}
-                    className="bg-[var(--vct-bg-elevated)] border border-[var(--vct-border-subtle)] text-[var(--vct-text-primary)] text-sm rounded-lg px-3 py-2 outline-none focus:border-[var(--vct-accent)] transition-colors"
+                    className="bg-(--vct-bg-elevated) border border-(--vct-border-subtle) text-(--vct-text-primary) text-sm rounded-lg px-3 py-2 outline-none focus:border-(--vct-accent) transition-colors"
                 />
             )}
         </div>
@@ -360,7 +360,7 @@ export const Page_provincial_vo_sinh = () => {
                 {formField('SĐT phụ huynh', 'parent_phone')}
             </div>
             {formField('Ghi chú', 'notes')}
-            <div className="flex justify-end gap-3 pt-3 border-t border-[var(--vct-border-subtle)]">
+            <div className="flex justify-end gap-3 pt-3 border-t border-(--vct-border-subtle)">
                 <VCT_Button variant="ghost" onClick={() => { setModalMode(selectedVS ? 'detail' : null); setForm(emptyForm()) }}>Hủy</VCT_Button>
                 <VCT_Button onClick={onSave} disabled={saving}>{saving ? 'Đang lưu...' : 'Lưu'}</VCT_Button>
             </div>
@@ -377,7 +377,7 @@ export const Page_provincial_vo_sinh = () => {
             <DetailField label="SĐT" value={v.phone} />
             <DetailField label="Email" value={v.email} />
             <DetailField label="Địa chỉ" value={v.address} span />
-            <div className="col-span-2 border-t border-[var(--vct-border-subtle)] pt-3 mt-1">
+            <div className="col-span-2 border-t border-(--vct-border-subtle) pt-3 mt-1">
                 <div className="text-xs font-bold uppercase opacity-50 mb-2">Thông tin võ thuật</div>
             </div>
             <DetailField label="CLB / Võ đường" value={v.club_name} />
@@ -390,7 +390,7 @@ export const Page_provincial_vo_sinh = () => {
             <DetailField label="Trạng thái" value={STATUS_MAP[v.status]?.label || v.status}
                 badge badgeType={STATUS_MAP[v.status]?.type} />
             {(v.parent_name || v.parent_phone) && <>
-                <div className="col-span-2 border-t border-[var(--vct-border-subtle)] pt-3 mt-1">
+                <div className="col-span-2 border-t border-(--vct-border-subtle) pt-3 mt-1">
                     <div className="text-xs font-bold uppercase opacity-50 mb-2">Phụ huynh / Giám hộ</div>
                 </div>
                 <DetailField label="Họ tên phụ huynh" value={v.parent_name} />
@@ -406,14 +406,14 @@ export const Page_provincial_vo_sinh = () => {
         const sorted = [...beltHistory].sort((a, b) => a.exam_date.localeCompare(b.exam_date))
         return (
             <div className="relative pl-6">
-                <div className="absolute left-[11px] top-2 bottom-2 w-0.5 bg-[var(--vct-border-subtle)]" />
+                <div className="absolute left-[11px] top-2 bottom-2 w-0.5 bg-(--vct-border-subtle)" />
                 {sorted.map((h) => {
                     const toColor = BELT_COLORS[h.to_belt] || '#6b7280'
                     return (
                         <div key={h.id} className="relative mb-6 last:mb-0">
-                            <div className="absolute -left-6 top-1 w-4 h-4 rounded-full border-2 border-[var(--vct-bg-card)]"
+                            <div className="absolute -left-6 top-1 w-4 h-4 rounded-full border-2 border-(--vct-bg-card)"
                                 style={{ background: toColor }} />
-                            <div className="ml-2 p-3 rounded-xl border border-[var(--vct-border-subtle)] bg-[var(--vct-bg-card)] hover:border-[var(--vct-accent)] transition-colors">
+                            <div className="ml-2 p-3 rounded-xl border border-(--vct-border-subtle) bg-(--vct-bg-card) hover:border-(--vct-accent) transition-colors">
                                 <div className="flex items-center justify-between mb-1">
                                     <div className="flex items-center gap-2">
                                         <span className="inline-flex items-center gap-1 text-xs font-semibold px-2 py-0.5 rounded-full"
@@ -442,18 +442,18 @@ export const Page_provincial_vo_sinh = () => {
 
     // ── Loading Skeleton ─────────────────────────────────────
     const renderSkeleton = () => (
-        <div className="overflow-hidden rounded-2xl border border-[var(--vct-border-subtle)] bg-[var(--vct-bg-glass)]">
+        <div className="overflow-hidden rounded-2xl border border-(--vct-border-subtle) bg-(--vct-bg-glass)">
             {Array.from({ length: 6 }).map((_, i) => (
-                <div key={i} className="flex items-center gap-4 px-4 py-4 border-b border-[var(--vct-border-subtle)] animate-pulse">
-                    <div className="w-9 h-9 rounded-full bg-[var(--vct-bg-elevated)]" />
+                <div key={i} className="flex items-center gap-4 px-4 py-4 border-b border-(--vct-border-subtle) animate-pulse">
+                    <div className="w-9 h-9 rounded-full bg-(--vct-bg-elevated)" />
                     <div className="flex-1 space-y-2">
-                        <div className="h-3 w-36 bg-[var(--vct-bg-elevated)] rounded" />
-                        <div className="h-2.5 w-24 bg-[var(--vct-bg-elevated)] rounded" />
+                        <div className="h-3 w-36 bg-(--vct-bg-elevated) rounded" />
+                        <div className="h-2.5 w-24 bg-(--vct-bg-elevated) rounded" />
                     </div>
-                    <div className="h-3 w-28 bg-[var(--vct-bg-elevated)] rounded" />
-                    <div className="h-6 w-16 bg-[var(--vct-bg-elevated)] rounded-full" />
-                    <div className="h-3 w-20 bg-[var(--vct-bg-elevated)] rounded" />
-                    <div className="h-6 w-14 bg-[var(--vct-bg-elevated)] rounded-full" />
+                    <div className="h-3 w-28 bg-(--vct-bg-elevated) rounded" />
+                    <div className="h-6 w-16 bg-(--vct-bg-elevated) rounded-full" />
+                    <div className="h-3 w-20 bg-(--vct-bg-elevated) rounded" />
+                    <div className="h-6 w-14 bg-(--vct-bg-elevated) rounded-full" />
                 </div>
             ))}
         </div>
@@ -464,8 +464,8 @@ export const Page_provincial_vo_sinh = () => {
         <VCT_PageContainer size="wide" animated>
             <VCT_Toast isVisible={toast.show} message={toast.msg} type={toast.type} onClose={() => setToast(p => ({ ...p, show: false }))} />
             <div className="mb-6">
-                <h1 className="text-2xl font-bold tracking-tight text-[var(--vct-text-primary)]">🥋 Quản Lý Võ Sinh</h1>
-                <p className="text-sm text-[var(--vct-text-secondary)] mt-1">Danh sách học viên, võ sinh tập luyện tại các CLB/Võ đường</p>
+                <h1 className="text-2xl font-bold tracking-tight text-(--vct-text-primary)">🥋 Quản Lý Võ Sinh</h1>
+                <p className="text-sm text-(--vct-text-secondary) mt-1">Danh sách học viên, võ sinh tập luyện tại các CLB/Võ đường</p>
             </div>
 
             {/* ── KPI Stats ────────────────────────────── */}
@@ -479,7 +479,7 @@ export const Page_provincial_vo_sinh = () => {
 
             {/* ── Belt Distribution ────────────────────── */}
             {stats && Object.keys(stats.by_belt || {}).length > 0 && (
-                <div className="mb-6 p-4 rounded-2xl border border-[var(--vct-border-subtle)] bg-[var(--vct-bg-glass)]">
+                <div className="mb-6 p-4 rounded-2xl border border-(--vct-border-subtle) bg-(--vct-bg-glass)">
                     <div className="text-xs font-bold uppercase opacity-50 mb-3">📊 Phân bổ đẳng cấp</div>
                     <div className="flex gap-2 flex-wrap">
                         {Object.entries(stats.by_belt).map(([belt, count]) => {
@@ -502,7 +502,7 @@ export const Page_provincial_vo_sinh = () => {
             {stats && (Object.keys(stats.by_age_group || {}).length > 0 || Object.keys(stats.by_club || {}).length > 0) && (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                     {Object.keys(stats.by_age_group || {}).length > 0 && (
-                        <div className="p-4 rounded-2xl border border-[var(--vct-border-subtle)] bg-[var(--vct-bg-glass)]">
+                        <div className="p-4 rounded-2xl border border-(--vct-border-subtle) bg-(--vct-bg-glass)">
                             <div className="text-xs font-bold uppercase opacity-50 mb-3">👥 Lứa tuổi</div>
                             <div className="space-y-2">
                                 {Object.entries(stats.by_age_group).map(([group, count]) => {
@@ -514,8 +514,8 @@ export const Page_provincial_vo_sinh = () => {
                                                 <span>{AGE_LABELS[group] || group}</span>
                                                 <span className="font-bold">{count} ({pct}%)</span>
                                             </div>
-                                            <div className="h-2 rounded-full bg-[var(--vct-bg-elevated)] overflow-hidden">
-                                                <div className="h-full rounded-full bg-[var(--vct-accent)] transition-all" style={{ width: `${pct}%` }} />
+                                            <div className="h-2 rounded-full bg-(--vct-bg-elevated) overflow-hidden">
+                                                <div className="h-full rounded-full bg-(--vct-accent) transition-all" style={{ width: `${pct}%` }} />
                                             </div>
                                         </div>
                                     )
@@ -524,7 +524,7 @@ export const Page_provincial_vo_sinh = () => {
                         </div>
                     )}
                     {Object.keys(stats.by_club || {}).length > 0 && (
-                        <div className="p-4 rounded-2xl border border-[var(--vct-border-subtle)] bg-[var(--vct-bg-glass)]">
+                        <div className="p-4 rounded-2xl border border-(--vct-border-subtle) bg-(--vct-bg-glass)">
                             <div className="text-xs font-bold uppercase opacity-50 mb-3">🏢 CLB / Võ đường</div>
                             <div className="space-y-2">
                                 {Object.entries(stats.by_club).sort((a, b) => b[1] - a[1]).map(([club, count]) => {
@@ -536,7 +536,7 @@ export const Page_provincial_vo_sinh = () => {
                                                 <span className="truncate max-w-[70%]">{club}</span>
                                                 <span className="font-bold">{count} ({pct}%)</span>
                                             </div>
-                                            <div className="h-2 rounded-full bg-[var(--vct-bg-elevated)] overflow-hidden">
+                                            <div className="h-2 rounded-full bg-(--vct-bg-elevated) overflow-hidden">
                                                 <div className="h-full rounded-full bg-blue-500 transition-all" style={{ width: `${pct}%` }} />
                                             </div>
                                         </div>
@@ -554,19 +554,19 @@ export const Page_provincial_vo_sinh = () => {
             <VCT_Stack direction="row" gap={16} align="center" justify="space-between" className="mb-5 flex-wrap">
                 <VCT_Stack direction="row" gap={10} align="center" className="flex-1 min-w-[300px] flex-wrap">
                     <div className="w-full max-w-[260px]"><VCT_SearchInput value={search} onChange={setSearch} onClear={() => setSearch('')} placeholder="Tìm võ sinh, CLB, HLV, SĐT..." /></div>
-                    <select value={genderFilter || ''} onChange={e => setGenderFilter(e.target.value || null)} className="bg-[var(--vct-bg-elevated)] border border-[var(--vct-border-subtle)] text-[var(--vct-text-primary)] text-sm rounded-lg px-3 py-2 outline-none">
+                    <select value={genderFilter || ''} onChange={e => setGenderFilter(e.target.value || null)} className="bg-(--vct-bg-elevated) border border-(--vct-border-subtle) text-(--vct-text-primary) text-sm rounded-lg px-3 py-2 outline-none">
                         <option value="">Giới tính</option><option value="nam">Nam</option><option value="nu">Nữ</option>
                     </select>
-                    <select value={beltFilter || ''} onChange={e => setBeltFilter(e.target.value || null)} className="bg-[var(--vct-bg-elevated)] border border-[var(--vct-border-subtle)] text-[var(--vct-text-primary)] text-sm rounded-lg px-3 py-2 outline-none">
+                    <select value={beltFilter || ''} onChange={e => setBeltFilter(e.target.value || null)} className="bg-(--vct-bg-elevated) border border-(--vct-border-subtle) text-(--vct-text-primary) text-sm rounded-lg px-3 py-2 outline-none">
                         <option value="">Tất cả đai</option>
                         {uniqueBelts.map(b => <option key={b.value} value={b.value}>{b.label}</option>)}
                     </select>
-                    <select value={ageFilter || ''} onChange={e => setAgeFilter(e.target.value || null)} className="bg-[var(--vct-bg-elevated)] border border-[var(--vct-border-subtle)] text-[var(--vct-text-primary)] text-sm rounded-lg px-3 py-2 outline-none">
+                    <select value={ageFilter || ''} onChange={e => setAgeFilter(e.target.value || null)} className="bg-(--vct-bg-elevated) border border-(--vct-border-subtle) text-(--vct-text-primary) text-sm rounded-lg px-3 py-2 outline-none">
                         <option value="">Nhóm tuổi</option>
                         <option value="thieu_nhi">Thiếu nhi</option><option value="thieu_nien">Thiếu niên</option>
                         <option value="thanh_nien">Thanh niên</option><option value="trung_nien">Trung niên</option>
                     </select>
-                    <select value={statusFilter || ''} onChange={e => setStatusFilter(e.target.value || null)} className="bg-[var(--vct-bg-elevated)] border border-[var(--vct-border-subtle)] text-[var(--vct-text-primary)] text-sm rounded-lg px-3 py-2 outline-none">
+                    <select value={statusFilter || ''} onChange={e => setStatusFilter(e.target.value || null)} className="bg-(--vct-bg-elevated) border border-(--vct-border-subtle) text-(--vct-text-primary) text-sm rounded-lg px-3 py-2 outline-none">
                         <option value="">Trạng thái</option>
                         <option value="active">Đang tập</option><option value="pending">Chờ duyệt</option><option value="inactive">Ngưng</option>
                     </select>
@@ -586,9 +586,9 @@ export const Page_provincial_vo_sinh = () => {
             {loading ? renderSkeleton() : filtered.length === 0 ? (
                 <VCT_EmptyState title="Không có võ sinh nào" description="Thử thay đổi bộ lọc hoặc thêm võ sinh mới." icon="🥋" />
             ) : (
-                <div className="overflow-hidden rounded-2xl border border-[var(--vct-border-subtle)] bg-[var(--vct-bg-glass)]">
+                <div className="overflow-hidden rounded-2xl border border-(--vct-border-subtle) bg-(--vct-bg-glass)">
                     <table className="w-full border-collapse">
-                        <thead><tr className="border-b border-[var(--vct-border-strong)] bg-[var(--vct-bg-card)]">
+                        <thead><tr className="border-b border-(--vct-border-strong) bg-(--vct-bg-card)">
                             <th className="px-4 py-3 text-left text-xs font-bold uppercase opacity-50 cursor-pointer select-none" onClick={() => toggleSort('full_name')}>
                                 Võ sinh <SortIcon k="full_name" />
                             </th>
@@ -609,7 +609,7 @@ export const Page_provincial_vo_sinh = () => {
                                 const st = STATUS_MAP[v.status] || { label: v.status, type: 'neutral' }
                                 const beltColor = BELT_COLORS[v.belt_rank] || '#64748b'
                                 return (
-                                    <tr key={v.id} className="border-b border-[var(--vct-border-subtle)] hover:bg-[var(--vct-bg-hover)] transition-colors cursor-pointer"
+                                    <tr key={v.id} className="border-b border-(--vct-border-subtle) hover:bg-(--vct-bg-hover) transition-colors cursor-pointer"
                                         onClick={() => openDetail(v)}>
                                         <td className="px-4 py-3">
                                             <VCT_Stack direction="row" gap={10} align="center">
@@ -643,26 +643,26 @@ export const Page_provincial_vo_sinh = () => {
                                         <td className="px-4 py-3 text-center"><VCT_Badge text={st.label} type={st.type} /></td>
                                         <td className="px-4 py-3 text-center" onClick={e => e.stopPropagation()}>
                                             <div className="relative">
-                                                <button className="p-1.5 rounded-lg hover:bg-[var(--vct-bg-elevated)] transition-colors text-[var(--vct-text-secondary)]"
+                                                <button className="p-1.5 rounded-lg hover:bg-(--vct-bg-elevated) transition-colors text-(--vct-text-secondary)"
                                                     onClick={() => setActionMenu(actionMenu === v.id ? null : v.id)}>
                                                     ⋯
                                                 </button>
                                                 {actionMenu === v.id && (
-                                                    <div className="absolute right-0 top-8 z-50 w-48 bg-[var(--vct-bg-card)] border border-[var(--vct-border-subtle)] rounded-xl shadow-xl py-1.5">
-                                                        <button className="w-full text-left px-4 py-2 text-sm hover:bg-[var(--vct-bg-hover)] transition-colors"
+                                                    <div className="absolute right-0 top-8 z-50 w-48 bg-(--vct-bg-card) border border-(--vct-border-subtle) rounded-xl shadow-xl py-1.5">
+                                                        <button className="w-full text-left px-4 py-2 text-sm hover:bg-(--vct-bg-hover) transition-colors"
                                                             onClick={() => { openDetail(v); setActionMenu(null) }}>👁️ Xem chi tiết</button>
-                                                        <button className="w-full text-left px-4 py-2 text-sm hover:bg-[var(--vct-bg-hover)] transition-colors"
+                                                        <button className="w-full text-left px-4 py-2 text-sm hover:bg-(--vct-bg-hover) transition-colors"
                                                             onClick={() => openEdit(v)}>✏️ Sửa thông tin</button>
                                                         {v.status === 'pending' && (
-                                                            <button className="w-full text-left px-4 py-2 text-sm hover:bg-[var(--vct-bg-hover)] transition-colors text-green-500"
+                                                            <button className="w-full text-left px-4 py-2 text-sm hover:bg-(--vct-bg-hover) transition-colors text-green-500"
                                                                 onClick={() => { handleApprove(v.id); setActionMenu(null) }}>✅ Duyệt</button>
                                                         )}
                                                         {v.status === 'active' && (
-                                                            <button className="w-full text-left px-4 py-2 text-sm hover:bg-[var(--vct-bg-hover)] transition-colors text-orange-500"
+                                                            <button className="w-full text-left px-4 py-2 text-sm hover:bg-(--vct-bg-hover) transition-colors text-orange-500"
                                                                 onClick={() => { setConfirmAction({ type: 'deactivate', id: v.id, name: v.full_name }); setActionMenu(null); setModalMode('confirm') }}>⏸️ Ngưng hoạt động</button>
                                                         )}
                                                         {v.status === 'inactive' && (
-                                                            <button className="w-full text-left px-4 py-2 text-sm hover:bg-[var(--vct-bg-hover)] transition-colors text-blue-500"
+                                                            <button className="w-full text-left px-4 py-2 text-sm hover:bg-(--vct-bg-hover) transition-colors text-blue-500"
                                                                 onClick={() => { handleReactivate(v.id); setActionMenu(null) }}>▶️ Kích hoạt lại</button>
                                                         )}
                                                     </div>
@@ -677,7 +677,7 @@ export const Page_provincial_vo_sinh = () => {
                 </div>
             )}
 
-            <div className="mt-4 text-xs text-[var(--vct-text-secondary)] opacity-60 text-right">
+            <div className="mt-4 text-xs text-(--vct-text-secondary) opacity-60 text-right">
                 Hiển thị {filtered.length} / {voSinh.length} võ sinh
             </div>
 
@@ -698,10 +698,10 @@ export const Page_provincial_vo_sinh = () => {
             {/* ── Detail Modal ────────────────────────── */}
             {modalMode === 'detail' && selectedVS && (
                 <ModalOverlay title={selectedVS.full_name} onClose={() => setModalMode(null)} wide>
-                    <div className="flex gap-1 mb-5 p-1 rounded-xl bg-[var(--vct-bg-elevated)]">
+                    <div className="flex gap-1 mb-5 p-1 rounded-xl bg-(--vct-bg-elevated)">
                         {([['info', '📋 Thông tin'], ['belt', '🥋 Lịch sử đai'], ['activity', '📅 Hoạt động']] as [DetailTab, string][]).map(([k, label]) => (
                             <button key={k} onClick={() => setDetailTab(k)}
-                                className={`flex-1 px-4 py-2 text-sm font-semibold rounded-lg transition-colors ${detailTab === k ? 'bg-[var(--vct-bg-card)] text-[var(--vct-text-primary)] shadow-sm' : 'text-[var(--vct-text-secondary)] hover:text-[var(--vct-text-primary)]'}`}>
+                                className={`flex-1 px-4 py-2 text-sm font-semibold rounded-lg transition-colors ${detailTab === k ? 'bg-(--vct-bg-card) text-(--vct-text-primary) shadow-sm' : 'text-(--vct-text-secondary) hover:text-(--vct-text-primary)'}`}>
                                 {label}
                             </button>
                         ))}
@@ -711,7 +711,7 @@ export const Page_provincial_vo_sinh = () => {
                     {detailTab === 'activity' && (
                         <VCT_EmptyState title="Sắp ra mắt" description="Lịch sử tập luyện, điểm danh sẽ hiển thị tại đây trong phiên bản tiếp theo" icon="📅" />
                     )}
-                    <div className="flex justify-end gap-3 pt-4 mt-4 border-t border-[var(--vct-border-subtle)]">
+                    <div className="flex justify-end gap-3 pt-4 mt-4 border-t border-(--vct-border-subtle)">
                         <VCT_Button variant="ghost" onClick={() => openEdit(selectedVS)}>✏️ Sửa</VCT_Button>
                         {selectedVS.status === 'pending' && (
                             <VCT_Button onClick={() => { handleApprove(selectedVS.id); setModalMode(null) }}>✅ Duyệt</VCT_Button>
@@ -728,11 +728,11 @@ export const Page_provincial_vo_sinh = () => {
                 <ModalOverlay title="Xác nhận thao tác" onClose={() => { setModalMode(null); setConfirmAction(null) }}>
                     <div className="text-center py-4">
                         <div className="text-4xl mb-3">⚠️</div>
-                        <p className="text-sm text-[var(--vct-text-primary)] mb-1">
+                        <p className="text-sm text-(--vct-text-primary) mb-1">
                             {confirmAction.type === 'deactivate' && `Bạn có chắc muốn ngưng hoạt động võ sinh`}
                         </p>
-                        <p className="text-base font-bold text-[var(--vct-text-primary)] mb-4">{confirmAction.name}?</p>
-                        <p className="text-xs text-[var(--vct-text-secondary)] mb-6">Thao tác này có thể hoàn tác bằng nút "Kích hoạt lại".</p>
+                        <p className="text-base font-bold text-(--vct-text-primary) mb-4">{confirmAction.name}?</p>
+                        <p className="text-xs text-(--vct-text-secondary) mb-6">Thao tác này có thể hoàn tác bằng nút "Kích hoạt lại".</p>
                         <div className="flex justify-center gap-3">
                             <VCT_Button variant="ghost" onClick={() => { setModalMode(null); setConfirmAction(null) }}>Hủy</VCT_Button>
                             <VCT_Button onClick={() => {
@@ -765,7 +765,7 @@ const DetailField = ({ label, value, span, badge, beltColor, badgeType }: {
         ) : badge && badgeType ? (
             <VCT_Badge text={String(value || '—')} type={badgeType as 'info' | 'success' | 'warning' | 'danger'} />
         ) : (
-            <div className="text-sm text-[var(--vct-text-primary)]">{value || '—'}</div>
+            <div className="text-sm text-(--vct-text-primary)">{value || '—'}</div>
         )}
     </div>
 )
@@ -775,11 +775,11 @@ const ModalOverlay = ({ title, onClose, children, wide }: {
 }) => (
     <div className="fixed inset-0 z-50 flex items-center justify-center" onClick={onClose}>
         <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" />
-        <div className={`relative bg-[var(--vct-bg-card)] border border-[var(--vct-border-subtle)] rounded-2xl shadow-2xl p-6 max-h-[85vh] overflow-y-auto ${wide ? 'w-full max-w-[700px]' : 'w-full max-w-[560px]'}`}
+        <div className={`relative bg-(--vct-bg-card) border border-(--vct-border-subtle) rounded-2xl shadow-2xl p-6 max-h-[85vh] overflow-y-auto ${wide ? 'w-full max-w-[700px]' : 'w-full max-w-[560px]'}`}
             onClick={e => e.stopPropagation()}>
             <div className="flex items-center justify-between mb-5">
-                <h2 className="text-lg font-bold text-[var(--vct-text-primary)]">{title}</h2>
-                <button onClick={onClose} className="p-1.5 rounded-lg hover:bg-[var(--vct-bg-elevated)] text-[var(--vct-text-secondary)] transition-colors">✕</button>
+                <h2 className="text-lg font-bold text-(--vct-text-primary)">{title}</h2>
+                <button onClick={onClose} className="p-1.5 rounded-lg hover:bg-(--vct-bg-elevated) text-(--vct-text-secondary) transition-colors">✕</button>
             </div>
             {children}
         </div>

@@ -56,17 +56,17 @@ const TreeNode: React.FC<{ node: OrgNode; isLast?: boolean }> = ({ node, isLast 
     return (
         <div style={{ marginLeft: node.level > 0 ? 28 : 0 }}>
             <div
-                className="flex items-center gap-3 p-3 rounded-xl border border-[var(--vct-border-subtle)] bg-[var(--vct-bg-glass)] hover:border-[var(--vct-accent-cyan)] transition-all cursor-pointer mb-2"
+                className="flex items-center gap-3 p-3 rounded-xl border border-(--vct-border-subtle) bg-(--vct-bg-glass) hover:border-(--vct-accent-cyan) transition-all cursor-pointer mb-2"
                 onClick={() => hasChildren && setExpanded(!expanded)}
             >
                 {hasChildren && (
-                    <button className="w-6 h-6 rounded-lg bg-[var(--vct-bg-elevated)] flex items-center justify-center text-xs" style={{ color }}>
+                    <button className="w-6 h-6 rounded-lg bg-(--vct-bg-elevated) flex items-center justify-center text-xs" style={{ color }}>
                         {expanded ? '−' : '+'}
                     </button>
                 )}
                 {!hasChildren && <div className="w-6 h-6 rounded-lg flex items-center justify-center" style={{ background: color + '20', color }}><div className="w-2 h-2 rounded-full" style={{ background: color }} /></div>}
                 <div className="flex-1 min-w-0">
-                    <div className="font-bold text-sm text-[var(--vct-text-primary)] truncate">{node.name}</div>
+                    <div className="font-bold text-sm text-(--vct-text-primary) truncate">{node.name}</div>
                     {node.head && <div className="text-xs opacity-50 truncate">{node.head}</div>}
                 </div>
                 <div className="text-[10px] uppercase font-bold px-2 py-1 rounded-full" style={{ background: color + '15', color }}>{node.type}</div>
@@ -86,8 +86,8 @@ export const Page_federation_org_chart = () => {
     return (
         <VCT_PageContainer size="wide" animated>
             <div className="mb-6">
-                <h1 className="text-2xl font-bold tracking-tight text-[var(--vct-text-primary)]">Sơ đồ Tổ chức</h1>
-                <p className="text-sm text-[var(--vct-text-secondary)] mt-1">Cơ cấu tổ chức Liên đoàn Võ cổ truyền Việt Nam — từ trung ương đến địa phương.</p>
+                <h1 className="text-2xl font-bold tracking-tight text-(--vct-text-primary)">Sơ đồ Tổ chức</h1>
+                <p className="text-sm text-(--vct-text-secondary) mt-1">Cơ cấu tổ chức Liên đoàn Võ cổ truyền Việt Nam — từ trung ương đến địa phương.</p>
             </div>
 
             <VCT_StatRow items={[
@@ -97,7 +97,7 @@ export const Page_federation_org_chart = () => {
                 { label: 'Vị trí trống', value: 12, icon: <VCT_Icons.AlertCircle size={18} />, color: '#f59e0b' },
             ] as StatItem[]} className="mb-6" />
 
-            <div className="rounded-2xl border border-[var(--vct-border-subtle)] bg-[var(--vct-bg-card)] p-6">
+            <div className="rounded-2xl border border-(--vct-border-subtle) bg-(--vct-bg-card) p-6">
                 <TreeNode node={ORG_TREE} />
             </div>
         </VCT_PageContainer>

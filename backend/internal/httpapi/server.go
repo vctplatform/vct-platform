@@ -119,7 +119,7 @@ type Server struct {
 	sqlDB *sql.DB
 
 	// ── Email Service (Resend) ────────────────────────────────
-	emailService *email.Service
+	emailService *email.ResendProvider
 }
 
 func New(cfg config.Config) *Server {
@@ -261,7 +261,7 @@ func New(cfg config.Config) *Server {
 		), // overridden below when PG is available
 
 		// ── Email Service (Resend for OTP) ────────────────
-		emailService: email.NewService(cfg.ResendAPIKey, cfg.ResendFromEmail),
+		emailService: email.NewResendProvider(cfg.ResendAPIKey, cfg.ResendFromEmail),
 
 		// ── Wire Customer Support Service ────────────────
 		supportSvc: support.NewService(

@@ -1,0 +1,64 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: vct-staging
+
+namePrefix: stg-
+
+resources:
+  - ../base
+
+patches:
+  # API: 1 replica, lower resources
+  - target:
+      kind: Deployment
+      name: vct-api
+    patch: |
+      - op: replace
+        path: /spec/replicas
+        value: 1
+      - op: replace
+        path: /spec/template/spec/containers/0/resources/requests/cpu
+        value: 50m
+      - op: replace
+        path: /spec/template/spec/containers/0/resources/requests/memory
+        value: 64Mi
+      - op: replace
+        path: /spec/template/spec/containers/0/resources/limits/cpu
+        value: 250m
+      - op: replace
+        path: /spec/template/spec/containers/0/resources/limits/memory
+        value: 256Mi
+      - op: replace
+        path: /spec/template/spec/containers/0/env/0/value
+        value: staging
+
+  # Nginx: 1 replica
+  - target:
+      kind: Deployment
+      name: vct-nginx
+    patch: |
+      - op: replace
+        path: /spec/replicas
+        value: 1
+
+  # Nginx service: NodePort instead of LoadBalancer
+  - target:
+      kind: Service
+      name: vct-nginx
+    patch: |
+      - op: replace
+        path: /spec/type
+        value: NodePort
+
+  # PostgreSQL: smaller storage
+  - target:
+      kind: StatefulSet
+      name: vct-postgres
+    patch: |
+      - op: replace
+        path: /spec/volumeClaimTemplates/0/spec/resources/requests/storage
+        value: 2Gi
+      - op: replace
+        path: /spec/template/spec/containers/0/resources/limits/memory
+        value: 512Mi

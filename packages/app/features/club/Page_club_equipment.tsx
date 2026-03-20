@@ -46,19 +46,19 @@ const EquipmentCategoryChart = ({ items }: { items: ClubEquipment[] }) => {
   const colors = ['#0ea5e9', '#10b981', '#8b5cf6', '#f59e0b', '#ef4444', '#ec4899']
 
   return (
-    <div className="rounded-2xl border border-[var(--vct-border-subtle)] bg-[var(--vct-bg-glass)] p-4">
-      <h3 className="mb-3 text-sm font-semibold text-[var(--vct-text-primary)]">Phân bố theo danh mục</h3>
+    <div className="rounded-2xl border border-(--vct-border-subtle) bg-(--vct-bg-glass) p-4">
+      <h3 className="mb-3 text-sm font-semibold text-(--vct-text-primary)">Phân bố theo danh mục</h3>
       <div className="space-y-2">
         {data.map((d, i) => (
           <div key={d.key} className="flex items-center gap-2">
-            <span className="w-[80px] shrink-0 text-xs text-[var(--vct-text-secondary)]">{d.label}</span>
-            <div className="relative h-5 flex-1 overflow-hidden rounded-full bg-[var(--vct-bg-input)]">
+            <span className="w-[80px] shrink-0 text-xs text-(--vct-text-secondary)">{d.label}</span>
+            <div className="relative h-5 flex-1 overflow-hidden rounded-full bg-(--vct-bg-input)">
               <div
                 className="h-full rounded-full transition-all duration-500"
                 style={{ width: `${(d.value / max) * 100}%`, backgroundColor: colors[i % colors.length] }}
               />
             </div>
-            <span className="w-[32px] text-right text-xs font-semibold text-[var(--vct-text-primary)]">{d.value}</span>
+            <span className="w-[32px] text-right text-xs font-semibold text-(--vct-text-primary)">{d.value}</span>
           </div>
         ))}
       </div>
@@ -81,8 +81,8 @@ const EquipmentConditionChart = ({ items }: { items: ClubEquipment[] }) => {
   const total = data.reduce((s, d) => s + d.value, 0) || 1
 
   return (
-    <div className="rounded-2xl border border-[var(--vct-border-subtle)] bg-[var(--vct-bg-glass)] p-4">
-      <h3 className="mb-3 text-sm font-semibold text-[var(--vct-text-primary)]">Tình trạng thiết bị</h3>
+    <div className="rounded-2xl border border-(--vct-border-subtle) bg-(--vct-bg-glass) p-4">
+      <h3 className="mb-3 text-sm font-semibold text-(--vct-text-primary)">Tình trạng thiết bị</h3>
       <svg viewBox="0 0 200 200" className="mx-auto" style={{ maxWidth: 140, maxHeight: 140 }}>
         {(() => {
           let offset = 0
@@ -112,7 +112,7 @@ const EquipmentConditionChart = ({ items }: { items: ClubEquipment[] }) => {
         {data.map((d) => (
           <div key={d.key} className="flex items-center gap-1 text-xs">
             <span className="h-2 w-2 rounded-full" style={{ backgroundColor: d.color }} />
-            <span className="text-[var(--vct-text-secondary)]">{d.label}: {d.value}</span>
+            <span className="text-(--vct-text-secondary)">{d.label}: {d.value}</span>
           </div>
         ))}
       </div>
@@ -306,7 +306,7 @@ export const Page_club_equipment = () => {
       render: (row: ClubEquipment) => (
         <div>
           <div className="text-sm font-semibold">{row.name}</div>
-          <div className="text-xs text-[var(--vct-text-secondary)]">{EQUIPMENT_CATEGORY_LABEL[row.category]}</div>
+          <div className="text-xs text-(--vct-text-secondary)">{EQUIPMENT_CATEGORY_LABEL[row.category]}</div>
         </div>
       ),
     },
@@ -320,7 +320,7 @@ export const Page_club_equipment = () => {
       },
     },
     { key: 'totalValue', label: 'Giá trị', render: (row: ClubEquipment) => <span className="text-sm">{formatVND(row.totalValue)}</span> },
-    { key: 'supplier', label: 'NCC', render: (row: ClubEquipment) => <span className="text-xs text-[var(--vct-text-secondary)]">{row.supplier || '—'}</span> },
+    { key: 'supplier', label: 'NCC', render: (row: ClubEquipment) => <span className="text-xs text-(--vct-text-secondary)">{row.supplier || '—'}</span> },
     { key: 'purchaseDate', label: 'Ngày mua', render: (row: ClubEquipment) => <span className="text-xs">{row.purchaseDate}</span> },
     {
       key: 'actions',
@@ -328,7 +328,7 @@ export const Page_club_equipment = () => {
       align: 'right' as const,
       render: (row: ClubEquipment) => (
         <div className="flex justify-end gap-1">
-          {can('update') ? <button type="button" onClick={() => openEditModal(row)} className="rounded-md bg-[var(--vct-bg-input)] px-2 py-1 text-xs font-semibold">Sửa</button> : null}
+          {can('update') ? <button type="button" onClick={() => openEditModal(row)} className="rounded-md bg-(--vct-bg-input) px-2 py-1 text-xs font-semibold">Sửa</button> : null}
           {can('delete') ? <button type="button" onClick={() => requestDelete(row)} className="rounded-md bg-red-500/15 px-2 py-1 text-xs font-semibold text-red-500">Xóa</button> : null}
         </div>
       ),
@@ -340,8 +340,8 @@ export const Page_club_equipment = () => {
       <VCT_Toast isVisible={toast.show} message={toast.msg} type={toast.type} onClose={() => setToast((prev) => ({ ...prev, show: false }))} />
 
       <div className="mb-6">
-        <h1 className="text-2xl font-bold tracking-tight text-[var(--vct-text-primary)]">Trang thiết bị</h1>
-        <p className="mt-1 text-sm text-[var(--vct-text-secondary)]">Quản lý, kiểm kê trang thiết bị, bảo hộ, binh khí, võ phục.</p>
+        <h1 className="text-2xl font-bold tracking-tight text-(--vct-text-primary)">Trang thiết bị</h1>
+        <p className="mt-1 text-sm text-(--vct-text-secondary)">Quản lý, kiểm kê trang thiết bị, bảo hộ, binh khí, võ phục.</p>
       </div>
 
       <VCT_StatRow items={stats} className="mb-6" />
@@ -412,7 +412,7 @@ export const Page_club_equipment = () => {
       {filteredItems.length === 0 ? (
         <VCT_EmptyState icon="🛡️" title="Không có thiết bị" description="Thử đổi bộ lọc hoặc thêm thiết bị mới." actionLabel={can('create') ? 'Thêm thiết bị' : undefined} onAction={can('create') ? openCreateModal : undefined} />
       ) : (
-        <div className="rounded-2xl border border-[var(--vct-border-subtle)] bg-[var(--vct-bg-glass)] p-2">
+        <div className="rounded-2xl border border-(--vct-border-subtle) bg-(--vct-bg-glass) p-2">
           <VCT_Table columns={columns} data={filteredItems} rowKey="id" />
         </div>
       )}

@@ -133,7 +133,7 @@ export const Page_dashboard = () => {
     return (
         <VCT_PageContainer size="wide" animated>
             {hasError && (
-                <div className="mb-4 rounded-xl border border-red-500/25 bg-red-500/[0.08] px-4 py-3 text-[13px] font-bold text-red-500">
+                <div className="mb-4 rounded-xl border border-red-500/25 bg-red-500/8 px-4 py-3 text-[13px] font-bold text-red-500">
                     Một số nguồn dữ liệu dashboard chưa tải được. Số liệu có thể chưa đầy đủ.
                 </div>
             )}
@@ -185,7 +185,7 @@ export const Page_dashboard = () => {
                 >
                     <div className="space-y-4">
                         {kpis.san_live.map(san => (
-                            <div key={san.id} className={`relative overflow-hidden rounded-2xl border p-4 transition-all ${san.match ? 'border-red-500/30 bg-red-500/[0.02]' : 'border-vct-border bg-vct-bg'}`}>
+                            <div key={san.id} className={`relative overflow-hidden rounded-2xl border p-4 transition-all ${san.match ? 'border-red-500/30 bg-red-500/2' : 'border-vct-border bg-vct-bg'}`}>
                                 {san.match && <div className="absolute bottom-0 left-0 top-0 w-1 bg-red-500" />}
                                 <div className="flex items-center justify-between" style={{ marginBottom: san.match ? 16 : 0 }}>
                                     <div className="flex items-center gap-3">

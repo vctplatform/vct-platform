@@ -220,6 +220,8 @@
     border-radius: 50%;
     pointer-events: none;
     filter: blur(90px);
+    background-color: rgba(34, 211, 238, 0.33);
+    /* stylelint-disable-next-line plugin/no-unsupported-browser-features */
     background-color: color-mix(in srgb, var(--_hero-accent, #22d3ee) 33%, transparent);
 }
 
@@ -303,6 +305,8 @@
         color-mix(in srgb, var(--_tab-color, #0ea5e9) 12%, transparent),
         color-mix(in srgb, var(--_tab-color, #0ea5e9) 5%, transparent)
     );
+    border-color: rgba(14, 165, 233, 0.4);
+    /* stylelint-disable-next-line plugin/no-unsupported-browser-features */
     border-color: color-mix(in srgb, var(--_tab-color, #0ea5e9) 40%, transparent);
     color: var(--_tab-color, #0ea5e9);
 }
@@ -468,3 +472,143 @@
     top: 0;
 }
 
+/* ════════════════════════════════════════
+   Phase E: Inline Style Replacements
+   ════════════════════════════════════════ */
+
+/* ── Dashboard Metric Value (dynamic color) ── */
+.admin-metric-value {
+    font-size: 1.5rem;
+    font-weight: 900;
+    color: var(--_metric-color, var(--vct-text-primary));
+}
+
+/* ── Dashboard Nav Card (dynamic gradient + border) ── */
+.admin-nav-card {
+    border-radius: 0.75rem;
+    padding: 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: left;
+    background: linear-gradient(135deg, rgba(14, 165, 233, 0.08), transparent);
+    background: linear-gradient(135deg, color-mix(in srgb, var(--_nav-color) 8%, transparent), transparent);
+    border: 1px solid rgba(14, 165, 233, 0.18);
+    border: 1px solid color-mix(in srgb, var(--_nav-color) 18%, transparent);
+}
+.admin-nav-card:hover {
+    transform: scale(1.02);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+    border-color: var(--_nav-color);
+}
+
+/* ── MetricGrid Section Title (dynamic color via CSS var) ── */
+.admin-section-title {
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--_section-color, var(--vct-text-primary));
+}
+
+/* ── Role Badge (dynamic color) ── */
+.admin-role-tag {
+    font-size: 11px;
+    font-weight: 700;
+    padding: 3px 8px;
+    border-radius: 6px;
+    color: var(--_role-color, #94a3b8);
+    background: color-mix(in srgb, var(--_role-color, #94a3b8) 12%, transparent);
+}
+
+/* ── Progress bar width (dynamic via CSS var) ── */
+.admin-progress-width {
+    height: 100%;
+    border-radius: 9999px;
+    transition: width 0.3s ease;
+    width: var(--_progress-width, 0%);
+    background: var(--_progress-color, var(--vct-accent-cyan));
+}
+
+/* ════════════════════════════════════════
+   Data-Color Attribute Selectors
+   Eliminates inline style={{ '--_xxx': color }}
+   Usage: data-color="emerald" instead of style
+   ════════════════════════════════════════ */
+
+/* ── Color Palette (used across admin components) ── */
+[data-color="emerald"]  { --_metric-color: #10b981; --_section-color: #10b981; --_nav-color: #10b981; --_role-color: #10b981; --_ring-color: #10b981; --_grade-color: #10b981; --_label-color: #10b981; --_slider-color: #10b981; --_fill-color: #10b981; --_skeleton-color: #10b981; }
+[data-color="sky"]      { --_metric-color: #0ea5e9; --_section-color: #0ea5e9; --_nav-color: #0ea5e9; --_role-color: #0ea5e9; --_ring-color: #0ea5e9; --_grade-color: #0ea5e9; --_label-color: #0ea5e9; --_slider-color: #0ea5e9; --_fill-color: #0ea5e9; --_skeleton-color: #0ea5e9; }
+[data-color="amber"]    { --_metric-color: #f59e0b; --_section-color: #f59e0b; --_nav-color: #f59e0b; --_role-color: #f59e0b; --_ring-color: #f59e0b; --_grade-color: #f59e0b; --_label-color: #f59e0b; --_slider-color: #f59e0b; --_fill-color: #f59e0b; --_skeleton-color: #f59e0b; }
+[data-color="violet"]   { --_metric-color: #8b5cf6; --_section-color: #8b5cf6; --_nav-color: #8b5cf6; --_role-color: #8b5cf6; --_ring-color: #8b5cf6; --_grade-color: #8b5cf6; --_label-color: #8b5cf6; --_slider-color: #8b5cf6; --_fill-color: #8b5cf6; --_skeleton-color: #8b5cf6; }
+[data-color="rose"]     { --_metric-color: #f43f5e; --_section-color: #f43f5e; --_nav-color: #f43f5e; --_role-color: #f43f5e; --_ring-color: #f43f5e; --_grade-color: #f43f5e; --_label-color: #f43f5e; --_slider-color: #f43f5e; --_fill-color: #f43f5e; --_skeleton-color: #f43f5e; }
+[data-color="cyan"]     { --_metric-color: #22d3ee; --_section-color: #22d3ee; --_nav-color: #22d3ee; --_role-color: #22d3ee; --_ring-color: #22d3ee; --_grade-color: #22d3ee; --_label-color: #22d3ee; --_slider-color: #22d3ee; --_fill-color: #22d3ee; --_skeleton-color: #22d3ee; }
+[data-color="orange"]   { --_metric-color: #f97316; --_section-color: #f97316; --_nav-color: #f97316; --_role-color: #f97316; --_ring-color: #f97316; --_grade-color: #f97316; --_label-color: #f97316; --_slider-color: #f97316; --_fill-color: #f97316; --_skeleton-color: #f97316; }
+[data-color="slate"]    { --_metric-color: #94a3b8; --_section-color: #94a3b8; --_nav-color: #94a3b8; --_role-color: #94a3b8; --_ring-color: #94a3b8; --_grade-color: #94a3b8; --_label-color: #94a3b8; --_slider-color: #94a3b8; --_fill-color: #94a3b8; --_skeleton-color: #94a3b8; }
+[data-color="pink"]     { --_metric-color: #ec4899; --_section-color: #ec4899; --_nav-color: #ec4899; --_role-color: #ec4899; --_ring-color: #ec4899; --_grade-color: #ec4899; --_label-color: #ec4899; --_slider-color: #ec4899; --_fill-color: #ec4899; --_skeleton-color: #ec4899; }
+[data-color="teal"]     { --_metric-color: #14b8a6; --_section-color: #14b8a6; --_nav-color: #14b8a6; --_role-color: #14b8a6; --_ring-color: #14b8a6; --_grade-color: #14b8a6; --_label-color: #14b8a6; --_slider-color: #14b8a6; --_fill-color: #14b8a6; --_skeleton-color: #14b8a6; }
+[data-color="indigo"]   { --_metric-color: #6366f1; --_section-color: #6366f1; --_nav-color: #6366f1; --_role-color: #6366f1; --_ring-color: #6366f1; --_grade-color: #6366f1; --_label-color: #6366f1; --_slider-color: #6366f1; --_fill-color: #6366f1; --_skeleton-color: #6366f1; }
+[data-color="red"]      { --_metric-color: #ef4444; --_section-color: #ef4444; --_nav-color: #ef4444; --_role-color: #ef4444; --_ring-color: #ef4444; --_grade-color: #ef4444; --_label-color: #ef4444; --_slider-color: #ef4444; --_fill-color: #ef4444; --_skeleton-color: #ef4444; }
+[data-color="green"]    { --_metric-color: #22c55e; --_section-color: #22c55e; --_nav-color: #22c55e; --_role-color: #22c55e; --_ring-color: #22c55e; --_grade-color: #22c55e; --_label-color: #22c55e; --_slider-color: #22c55e; --_fill-color: #22c55e; --_skeleton-color: #22c55e; }
+[data-color="red-dark"] { --_metric-color: #dc2626; --_section-color: #dc2626; --_nav-color: #dc2626; --_role-color: #dc2626; --_ring-color: #dc2626; --_grade-color: #dc2626; --_label-color: #dc2626; --_slider-color: #dc2626; --_fill-color: #dc2626; --_skeleton-color: #dc2626; }
+
+/* ════════════════════════════════════════
+   Phase F: Navigation & Utility Classes
+   ════════════════════════════════════════ */
+
+/* ── Nav Card Icon (gradient circle) ── */
+.admin-nav-icon {
+    width: 2.75rem;
+    height: 2.75rem;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    flex-shrink: 0;
+    background-color: var(--_nav-color, #0ea5e9);
+    box-shadow: 0 8px 16px -4px color-mix(in srgb, var(--_nav-color, #0ea5e9) 40%, transparent);
+}
+
+/* ── Equipment/Progress Bar (dynamic width + color) ── */
+.admin-bar-fill {
+    height: 100%;
+    border-radius: 9999px;
+    transition: all 0.5s ease;
+    width: var(--_bar-width, 0%);
+    background-color: var(--_bar-color, #10b981);
+}
+
+/* ── Rank Badge (golden gradient circle) ── */
+.admin-rank-circle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 50%;
+    font-weight: 900;
+    color: white;
+}
+.admin-rank-bg-1 { background: linear-gradient(135deg, #f59e0b, #d97706); }
+.admin-rank-bg-2 { background: linear-gradient(135deg, #94a3b8, #64748b); }
+.admin-rank-bg-3 { background: linear-gradient(135deg, #cd7f32, #a0522d); }
+
+/* ── Dynamic accent badge (for user detail) ── */
+.admin-accent-badge {
+    border-radius: 9999px;
+    padding: 0.25rem 0.75rem;
+    color: var(--_accent-color, #8b5cf6);
+    background: color-mix(in srgb, var(--_accent-color, #8b5cf6) 13%, transparent);
+}
+
+/* ── Progress bar fill (feature flags, dynamic width + color) ── */
+.admin-progress-bar__fill {
+    height: 100%;
+    border-radius: 9999px;
+    transition: width 0.3s ease;
+    width: var(--_fill-width, 0%);
+    background: var(--_fill-color, var(--vct-accent-cyan));
+}

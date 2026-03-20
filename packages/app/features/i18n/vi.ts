@@ -817,4 +817,8 @@ export const vi: Record<string, string> = {
     'admin.refdata.search': 'Tìm danh mục...',
     'admin.refdata.noResults': 'Không có danh mục nào',
     'admin.refdata.create': 'Thêm mục mới',
+
+    // ── Audit Log ──
+    'admin.audit.title': 'Nhật ký Hệ thống',
+    'admin.audit.subtitle': 'Theo dõi mọi hoạt động quản trị — tạo, sửa, xoá, phê duyệt',
 }

@@ -72,9 +72,9 @@ export const VCT_Slider = ({
                 </div>
             ) : null}
 
-            {/* Slider track */}
             <div className="relative flex items-center">
                 <input
+                    aria-label={typeof label === 'string' ? label : 'Trượt để chọn giá trị'}
                     type="range"
                     min={min}
                     max={max}
@@ -153,7 +153,8 @@ export const VCT_Slider = ({
           transform: scale(1.15);
         }
         .vct-slider-input:focus-visible::-webkit-slider-thumb {
-          box-shadow: 0 0 0 3px color-mix(in srgb, var(--slider-color) 30%, transparent);
+          outline: 3px solid var(--slider-color);
+          outline-offset: 2px;
         }
       `}</style>
         </div>

@@ -1,0 +1,144 @@
+# ════════════════════════════════════════
+# VCT Platform — Helm Values
+# ════════════════════════════════════════
+
+global:
+  environment: production
+  domain: vct-platform.com
+  imagePullPolicy: IfNotPresent
+
+# ── API Backend ───────────────────────────
+api:
+  replicaCount: 2
+  image:
+    repository: ghcr.io/vct-platform/backend
+    tag: latest
+  service:
+    type: ClusterIP
+    port: 18080
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+  env:
+    VCT_ENV: production
+    VCT_BACKEND_ADDR: ":18080"
+    VCT_STORAGE_DRIVER: postgres
+    VCT_POSTGRES_PROVIDER: selfhost
+    VCT_DB_AUTO_MIGRATE: "false"
+    VCT_CACHE_TTL: "30s"
+    VCT_CACHE_MAX_ENTRIES: "2000"
+    NATS_URL: "nats://vct-nats:4222"
+  autoscaling:
+    enabled: true
+    minReplicas: 2
+    maxReplicas: 10
+    targetCPUUtilization: 70
+    targetMemoryUtilization: 80
+
+# ── PostgreSQL ────────────────────────────
+postgres:
+  enabled: true
+  image:
+    repository: postgres
+    tag: "17-alpine"
+  storage:
+    size: 10Gi
+    storageClassName: ""
+  resources:
+    requests:
+      cpu: 250m
+      memory: 256Mi
+    limits:
+      cpu: "2"
+      memory: 1Gi
+  auth:
+    database: vct_platform
+    existingSecret: vct-secrets
+    secretKeys:
+      username: postgres-user
+      password: postgres-password
+
+# ── Redis ─────────────────────────────────
+redis:
+  enabled: true
+  image:
+    repository: redis
+    tag: "7-alpine"
+  resources:
+    requests:
+      cpu: 50m
+      memory: 64Mi
+    limits:
+      cpu: 200m
+      memory: 256Mi
+  config:
+    maxmemory: "200mb"
+    maxmemoryPolicy: "allkeys-lru"
+
+# ── Nginx Gateway ─────────────────────────
+nginx:
+  replicaCount: 2
+  image:
+    repository: ghcr.io/vct-platform/nginx
+    tag: latest
+  service:
+    type: LoadBalancer
+    httpPort: 80
+    httpsPort: 443
+
+# ── Ingress ───────────────────────────────
+ingress:
+  enabled: true
+  className: nginx
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    nginx.ingress.kubernetes.io/proxy-body-size: "10m"
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/rate-limit: "10"
+  hosts:
+    - host: api.vct-platform.com
+      paths:
+        - path: /
+          service: api
+          port: 18080
+    - host: vct-platform.com
+      paths:
+        - path: /
+          service: nginx
+          port: 80
+  tls:
+    - secretName: vct-tls-cert
+      hosts:
+        - vct-platform.com
+        - api.vct-platform.com
+
+# ── Pod Disruption Budget ─────────────────
+podDisruptionBudget:
+  enabled: true
+  api:
+    minAvailable: 1
+  nginx:
+    minAvailable: 1
+
+# ── Secrets ───────────────────────────────
+secrets:
+  # Use ExternalSecrets in production
+  useExternalSecrets: false
+  values:
+    postgres-url: "postgres://vct_user:CHANGE_ME@vct-postgres:5432/vct_platform?sslmode=disable"
+    postgres-user: "vct_user"
+    postgres-password: "CHANGE_ME"
+    jwt-secret: "CHANGE_ME_MINIMUM_32_CHARACTERS_LONG"
+    redis-url: "redis://vct-redis:6379"
+
+# ── Monitoring ────────────────────────────
+monitoring:
+  enabled: false
+  prometheus:
+    scrape: true
+    port: 18080
+    path: /metrics

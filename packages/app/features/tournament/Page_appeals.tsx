@@ -10,7 +10,7 @@ import {
 import { VCT_PageContainer, VCT_StatRow } from '../components/vct-ui';
 import type { StatItem } from '../components/VCT_StatRow';
 import { VCT_Icons } from '../components/vct-icons';
-import { genId } from '../data/mock-data';
+import { genId } from '../hooks/useTournamentAPI';
 import { TRANG_THAI_KN_MAP, type KhieuNai, type TrangThaiKN, type LoaiKN } from '../data/types';
 import { repositories, useEntityCollection } from '../data/repository';
 import { useToast } from '../hooks/use-toast';
@@ -73,7 +73,7 @@ export const Page_appeals = () => {
         <VCT_PageContainer size="wide" animated>
             <VCT_Toast isVisible={toast.show} message={toast.msg} type={toast.type} onClose={hideToast} />
             {uiState.error && (
-                <div className="mb-4 rounded-xl border border-red-500/25 bg-red-500/[0.08] px-3.5 py-3 text-[13px] font-bold text-red-500">
+                <div className="mb-4 rounded-xl border border-red-500/25 bg-red-500/8 px-3.5 py-3 text-[13px] font-bold text-red-500">
                     Không thể tải khiếu nại: {uiState.error}
                 </div>
             )}

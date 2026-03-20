@@ -1,0 +1,120 @@
+# ════════════════════════════════════════
+# VCT Platform — Prometheus ServiceMonitor
+# Requires: prometheus-operator CRD installed
+# ════════════════════════════════════════
+
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: vct-api
+  labels:
+    app.kubernetes.io/name: vct-api
+    app.kubernetes.io/part-of: vct-platform
+    release: prometheus  # matches Prometheus operator selector
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: vct-api
+  endpoints:
+    - port: http
+      path: /metrics
+      interval: 15s
+      scrapeTimeout: 10s
+      honorLabels: true
+  namespaceSelector:
+    matchNames:
+      - vct-platform
+      - vct-staging
+      - vct-production
+
+---
+# ════════════════════════════════════════
+# Prometheus Alerting Rules
+# ════════════════════════════════════════
+
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: vct-api-alerts
+  labels:
+    app.kubernetes.io/part-of: vct-platform
+    release: prometheus
+spec:
+  groups:
+    - name: vct-api.rules
+      rules:
+        # ── High Error Rate ──
+        - alert: VCTHighErrorRate
+          expr: |
+            (
+              sum(rate(http_requests_total{job="vct-api",code=~"5.."}[5m]))
+              /
+              sum(rate(http_requests_total{job="vct-api"}[5m]))
+            ) > 0.05
+          for: 5m
+          labels:
+            severity: critical
+            team: backend
+          annotations:
+            summary: "VCT API error rate > 5%"
+            description: "{{ $value | humanizePercentage }} of requests are failing (5xx) over the last 5 minutes."
+            runbook_url: "https://github.com/vct-platform/runbooks/blob/main/high-error-rate.md"
+
+        # ── High Latency (P99) ──
+        - alert: VCTHighLatencyP99
+          expr: |
+            histogram_quantile(0.99,
+              sum(rate(http_request_duration_seconds_bucket{job="vct-api"}[5m])) by (le)
+            ) > 2.0
+          for: 5m
+          labels:
+            severity: warning
+            team: backend
+          annotations:
+            summary: "VCT API P99 latency > 2s"
+            description: "99th percentile latency is {{ $value | humanizeDuration }}."
+
+        # ── Pod Restart ──
+        - alert: VCTPodRestarting
+          expr: |
+            increase(kube_pod_container_status_restarts_total{
+              namespace=~"vct-.*",
+              container="api"
+            }[1h]) > 3
+          for: 10m
+          labels:
+            severity: warning
+            team: platform
+          annotations:
+            summary: "VCT API pod restarting frequently"
+            description: "Pod {{ $labels.pod }} has restarted {{ $value }} times in the last hour."
+
+        # ── Memory Usage ──
+        - alert: VCTHighMemoryUsage
+          expr: |
+            (
+              container_memory_working_set_bytes{namespace=~"vct-.*",container="api"}
+              /
+              container_spec_memory_limit_bytes{namespace=~"vct-.*",container="api"}
+            ) > 0.85
+          for: 5m
+          labels:
+            severity: warning
+            team: backend
+          annotations:
+            summary: "VCT API memory usage > 85%"
+            description: "Container {{ $labels.container }} in pod {{ $labels.pod }} is using {{ $value | humanizePercentage }} of its memory limit."
+
+        # ── Database Connection Pool ──
+        - alert: VCTDatabaseConnectionPoolExhausted
+          expr: |
+            go_sql_open_connections{job="vct-api"}
+            /
+            go_sql_max_open_connections{job="vct-api"} > 0.9
+          for: 5m
+          labels:
+            severity: critical
+            team: backend
+          annotations:
+            summary: "Database connection pool > 90% utilized"
+            description: "{{ $value | humanizePercentage }} of database connections are in use."

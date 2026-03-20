@@ -79,7 +79,7 @@ export function PermissionGate({
                         borderRadius: 'inherit',
                     },
                 },
-                React.createElement(VCT_Icons.Lock, { size: 14, className: 'text-[var(--vct-text-tertiary)]' })
+                React.createElement(VCT_Icons.Lock, { size: 14, className: 'text-(--vct-text-tertiary)' })
             )
         )
     }

@@ -199,7 +199,7 @@ export const Page_combat = () => {
                     </VCT_Stack>
 
                     {/* Scoreboard */}
-                    <div className="relative overflow-hidden rounded-2xl p-6 bg-[var(--vct-bg-elevated)] border-2 border-[var(--vct-border-subtle)] bg-white/5 backdrop-blur-md shadow-inner flex items-center justify-center gap-8">
+                    <div className="relative overflow-hidden rounded-2xl p-6 bg-(--vct-bg-elevated) border-2 border-(--vct-border-subtle) bg-white/5 backdrop-blur-md shadow-inner flex items-center justify-center gap-8">
                         {isLive && <motion.div animate={{ opacity: [0.03, 0.08, 0.03] }} transition={{ duration: 2, repeat: Infinity }} className="absolute inset-0 bg-gradient-to-r from-blue-500/10 via-transparent to-red-500/10" />}
                         {/* Blue */}
                         <div style={{ textAlign: 'center', flex: 1 }}>
@@ -335,7 +335,7 @@ export const Page_combat = () => {
             <VCT_Toast isVisible={toast.show} message={toast.msg} type={toast.type} onClose={hideToast} />
 
             {uiState.error && (
-                <div className="mb-4 rounded-xl border border-red-500/25 bg-red-500/[0.08] px-3.5 py-3 text-[13px] font-bold text-red-500">
+                <div className="mb-4 rounded-xl border border-red-500/25 bg-red-500/8 px-3.5 py-3 text-[13px] font-bold text-red-500">
                     Không thể tải dữ liệu đối kháng: {uiState.error}
                 </div>
             )}
@@ -360,7 +360,7 @@ export const Page_combat = () => {
                     {/* Danh sách trận đấu (Left side) */}
                     <div className="flex-1">
                         <div className="flex items-center justify-between mb-4">
-                            <h2 className="text-sm font-bold uppercase text-[var(--vct-text-tertiary)] tracking-wider">Danh sách trận đấu ({filtered.length})</h2>
+                            <h2 className="text-sm font-bold uppercase text-(--vct-text-tertiary) tracking-wider">Danh sách trận đấu ({filtered.length})</h2>
                         </div>
                         <VCT_Stack gap={16}>
                             {filtered.map(m => (
@@ -385,7 +385,7 @@ export const Page_combat = () => {
                                     </h2>
                                     <VCT_Button variant="secondary" onClick={() => setActiveMatch(null)} style={{ padding: '4px 12px', fontSize: 11 }}>Đóng</VCT_Button>
                                 </div>
-                                <div className="rounded-2xl border border-[var(--vct-border-subtle)] bg-[var(--vct-bg-glass)] shadow-xl overflow-hidden backdrop-blur-xl">
+                                <div className="rounded-2xl border border-(--vct-border-subtle) bg-(--vct-bg-glass) shadow-xl overflow-hidden backdrop-blur-xl">
                                     {renderMatchCard(activeMatchData, true)}
                                 </div>
                             </div>

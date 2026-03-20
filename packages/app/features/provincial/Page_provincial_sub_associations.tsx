@@ -106,8 +106,8 @@ export const Page_provincial_sub_associations = () => {
             <VCT_Toast isVisible={toast.show} message={toast.msg} type={toast.type} onClose={() => setToast(prev => ({ ...prev, show: false }))} />
 
             <div className="mb-6">
-                <h1 className="text-2xl font-bold tracking-tight text-[var(--vct-text-primary)]">📌 Quản Lý Chi Hội Phường/Xã</h1>
-                <p className="text-sm text-[var(--vct-text-secondary)] mt-1">Danh sách Chi hội Võ cổ truyền cấp phường/xã trực thuộc Hội quận/huyện</p>
+                <h1 className="text-2xl font-bold tracking-tight text-(--vct-text-primary)">📌 Quản Lý Chi Hội Phường/Xã</h1>
+                <p className="text-sm text-(--vct-text-secondary) mt-1">Danh sách Chi hội Võ cổ truyền cấp phường/xã trực thuộc Hội quận/huyện</p>
             </div>
 
             <VCT_StatRow items={[
@@ -134,12 +134,12 @@ export const Page_provincial_sub_associations = () => {
                         <VCT_SearchInput value={search} onChange={setSearch} onClear={() => setSearch('')} placeholder="Tìm Chi hội, phường/xã..." />
                     </div>
                     <select value={assocFilter || ''} onChange={(e) => setAssocFilter(e.target.value || null)}
-                        className="bg-[var(--vct-bg-elevated)] border border-[var(--vct-border-subtle)] text-[var(--vct-text-primary)] text-sm rounded-lg px-3 py-2 outline-none focus:border-[var(--vct-accent-cyan)] transition-colors">
+                        className="bg-(--vct-bg-elevated) border border-(--vct-border-subtle) text-(--vct-text-primary) text-sm rounded-lg px-3 py-2 outline-none focus:border-(--vct-accent-cyan) transition-colors">
                         <option value="">Tất cả Hội</option>
                         {associations.map(a => <option key={a.id} value={a.id}>{a.name}</option>)}
                     </select>
                     <select value={statusFilter || ''} onChange={(e) => setStatusFilter(e.target.value || null)}
-                        className="bg-[var(--vct-bg-elevated)] border border-[var(--vct-border-subtle)] text-[var(--vct-text-primary)] text-sm rounded-lg px-3 py-2 outline-none focus:border-[var(--vct-accent-cyan)] transition-colors">
+                        className="bg-(--vct-bg-elevated) border border-(--vct-border-subtle) text-(--vct-text-primary) text-sm rounded-lg px-3 py-2 outline-none focus:border-(--vct-accent-cyan) transition-colors">
                         <option value="">Tất cả trạng thái</option>
                         {Object.entries(STATUS_MAP).map(([k, v]) => <option key={k} value={k}>{v.label}</option>)}
                     </select>
@@ -150,10 +150,10 @@ export const Page_provincial_sub_associations = () => {
             {filtered.length === 0 ? (
                 <VCT_EmptyState title="Không có Chi hội nào" description={loading ? 'Đang tải...' : 'Thử thay đổi bộ lọc.'} icon="📌" />
             ) : (
-                <div className="overflow-hidden rounded-2xl border border-[var(--vct-border-subtle)] bg-[var(--vct-bg-glass)]">
+                <div className="overflow-hidden rounded-2xl border border-(--vct-border-subtle) bg-(--vct-bg-glass)">
                     <table className="w-full border-collapse">
                         <thead>
-                            <tr className="border-b border-[var(--vct-border-strong)] bg-[var(--vct-bg-card)]">
+                            <tr className="border-b border-(--vct-border-strong) bg-(--vct-bg-card)">
                                 {['Chi hội', 'Phường/Xã', 'Thuộc Hội', 'Chi hội trưởng', 'CLB', 'VĐV', 'Trạng thái'].map(h => (
                                     <th key={h} className="px-4 py-3 text-left text-xs font-bold uppercase opacity-50">{h}</th>
                                 ))}
@@ -163,7 +163,7 @@ export const Page_provincial_sub_associations = () => {
                             {filtered.map(sa => {
                                 const st = STATUS_MAP[sa.status] || { label: sa.status, type: 'neutral' }
                                 return (
-                                    <tr key={sa.id} className="border-b border-[var(--vct-border-subtle)] hover:bg-[var(--vct-bg-hover)] transition-colors">
+                                    <tr key={sa.id} className="border-b border-(--vct-border-subtle) hover:bg-(--vct-bg-hover) transition-colors">
                                         <td className="px-4 py-3">
                                             <VCT_Stack direction="row" gap={10} align="center">
                                                 <VCT_AvatarLetter name={sa.name} size={36} />
@@ -175,7 +175,7 @@ export const Page_provincial_sub_associations = () => {
                                         </td>
                                         <td className="px-4 py-3 text-sm">{sa.ward}</td>
                                         <td className="px-4 py-3 text-sm">
-                                            <span className="text-xs px-2 py-1 rounded-full bg-[var(--vct-bg-elevated)] text-[var(--vct-text-secondary)]">
+                                            <span className="text-xs px-2 py-1 rounded-full bg-(--vct-bg-elevated) text-(--vct-text-secondary)">
                                                 {sa.association_name}
                                             </span>
                                         </td>

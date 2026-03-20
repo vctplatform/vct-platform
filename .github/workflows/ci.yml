@@ -6,6 +6,10 @@ on:
   pull_request:
     branches: [main, develop]
 
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   quality:
     name: Code Quality
@@ -50,17 +54,24 @@ jobs:
           working-directory: backend
 
       - name: Go test
-        run: cd backend && go test ./...
+        run: cd backend && go test -race -coverprofile=coverage.out ./...
 
       - name: Go build
         run: cd backend && go build -o /dev/null ./cmd/server
+
+      - name: Upload Coverage
+        if: github.event_name == 'push'
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-coverage
+          path: backend/coverage.out
 
   backend-db-smoke:
     name: Backend DB Smoke (Migrate/Seed)
     runs-on: ubuntu-latest
     services:
       postgres:
-        image: postgres:16
+        image: postgres:17-alpine
         env:
           POSTGRES_DB: vct
           POSTGRES_USER: postgres
@@ -90,3 +101,98 @@ jobs:
         env:
           VCT_POSTGRES_URL: postgres://postgres:postgres@localhost:5432/vct?sslmode=disable
         run: node scripts/run-backend-db-smoke.mjs
+
+  security:
+    name: Security Scan
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.26'
+          cache-dependency-path: backend/go.sum
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - name: Go Vulnerability Check
+        working-directory: backend
+        run: |
+          go install golang.org/x/vuln/cmd/govulncheck@latest
+          govulncheck ./...
+
+      - name: NPM Audit
+        run: npm audit --audit-level=high || true
+
+  compose-check:
+    name: Compose Validation
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate docker-compose.yml
+        env:
+          POSTGRES_DB: test
+          POSTGRES_USER: test
+          POSTGRES_PASSWORD: test
+          VCT_JWT_SECRET: test-secret-minimum-32-characters-long-ci
+        run: docker compose config --quiet
+
+      - name: Validate docker-compose.prod.yml
+        env:
+          DB_PASSWORD: test
+          REDIS_PASSWORD: test
+          MINIO_ACCESS_KEY: test
+          MINIO_SECRET_KEY: test12345678901234
+          MEILI_MASTER_KEY: test
+          VCT_JWT_SECRET: test-secret-minimum-32-characters-long-ci
+        run: docker compose -f docker-compose.prod.yml config --quiet
+
+  k8s-validate:
+    name: K8s Manifest Validation
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup kubectl
+        uses: azure/setup-kubectl@v4
+        with:
+          version: 'v1.31.0'
+
+      - name: Install kubeconform
+        run: |
+          curl -sL https://github.com/yannh/kubeconform/releases/download/v0.6.7/kubeconform-linux-amd64.tar.gz \
+            | tar xz -C /usr/local/bin
+
+      - name: Validate base manifests
+        run: |
+          kubectl kustomize infra/k8s/base \
+            | kubeconform \
+                -strict \
+                -summary \
+                -ignore-missing-schemas \
+                -kubernetes-version 1.31.0
+
+      - name: Validate staging overlay
+        run: |
+          kubectl kustomize infra/k8s/staging \
+            | kubeconform \
+                -strict \
+                -summary \
+                -ignore-missing-schemas \
+                -kubernetes-version 1.31.0
+
+      - name: Validate production overlay
+        run: |
+          kubectl kustomize infra/k8s/production \
+            | kubeconform \
+                -strict \
+                -summary \
+                -ignore-missing-schemas \
+                -kubernetes-version 1.31.0
+

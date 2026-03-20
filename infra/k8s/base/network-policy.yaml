@@ -1,0 +1,168 @@
+# ════════════════════════════════════════
+# VCT Platform — Kubernetes NetworkPolicy
+# Zero-trust: deny all, then allow explicitly
+# ════════════════════════════════════════
+
+# ── Default Deny All ──────────────────────
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: default-deny-all
+  labels:
+    app.kubernetes.io/part-of: vct-platform
+spec:
+  podSelector: {}
+  policyTypes:
+    - Ingress
+    - Egress
+
+---
+# ── API Pod: Allow ingress from Nginx, egress to Postgres/Redis/NATS/DNS ──
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-api
+  labels:
+    app.kubernetes.io/part-of: vct-platform
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: vct-api
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    # From Nginx reverse proxy
+    - from:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/name: vct-nginx
+      ports:
+        - protocol: TCP
+          port: 18080
+    # From Prometheus scraping /metrics
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: monitoring
+      ports:
+        - protocol: TCP
+          port: 18080
+  egress:
+    # To PostgreSQL
+    - to:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/name: vct-postgres
+      ports:
+        - protocol: TCP
+          port: 5432
+    # To Redis
+    - to:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/name: vct-redis
+      ports:
+        - protocol: TCP
+          port: 6379
+    # To NATS
+    - to:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/name: vct-nats
+      ports:
+        - protocol: TCP
+          port: 4222
+    # DNS resolution (kube-dns)
+    - to: []
+      ports:
+        - protocol: UDP
+          port: 53
+        - protocol: TCP
+          port: 53
+    # HTTPS egress (external APIs, OTel collector)
+    - to: []
+      ports:
+        - protocol: TCP
+          port: 443
+
+---
+# ── PostgreSQL: Allow ingress ONLY from API ──
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-postgres
+  labels:
+    app.kubernetes.io/part-of: vct-platform
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: vct-postgres
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/name: vct-api
+      ports:
+        - protocol: TCP
+          port: 5432
+
+---
+# ── Redis: Allow ingress ONLY from API ──
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-redis
+  labels:
+    app.kubernetes.io/part-of: vct-platform
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: vct-redis
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/name: vct-api
+      ports:
+        - protocol: TCP
+          port: 6379
+
+---
+# ── Nginx: Allow ingress from any (public), egress to API ──
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-nginx
+  labels:
+    app.kubernetes.io/part-of: vct-platform
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: vct-nginx
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    - ports:
+        - protocol: TCP
+          port: 80
+        - protocol: TCP
+          port: 443
+  egress:
+    - to:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/name: vct-api
+      ports:
+        - protocol: TCP
+          port: 18080
+    # DNS
+    - to: []
+      ports:
+        - protocol: UDP
+          port: 53

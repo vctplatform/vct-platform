@@ -192,7 +192,7 @@ export const Page_forms = () => {
             <VCT_Toast isVisible={toast.show} message={toast.msg} type={toast.type} onClose={hideToast} />
 
             {uiState.error && (
-                <div className="mb-4 rounded-xl border border-red-500/25 bg-red-500/[0.08] px-3.5 py-3 text-[13px] font-bold text-red-500">
+                <div className="mb-4 rounded-xl border border-red-500/25 bg-red-500/8 px-3.5 py-3 text-[13px] font-bold text-red-500">
                     Không thể tải dữ liệu thi quyền: {uiState.error}
                 </div>
             )}
@@ -289,10 +289,10 @@ export const Page_forms = () => {
             {filtered.length === 0 ? (
                 <VCT_EmptyState title="Không có lượt thi" description="Thử thay đổi bộ lọc." icon="🥋" />
             ) : (
-                <div className="overflow-hidden rounded-2xl border border-[var(--vct-border-subtle)] bg-[var(--vct-bg-glass)]">
+                <div className="overflow-hidden rounded-2xl border border-(--vct-border-subtle) bg-(--vct-bg-glass)">
                     <table className="w-full border-collapse">
                         <thead>
-                            <tr className="border-b border-[var(--vct-border-strong)] bg-[var(--vct-bg-card)]">
+                            <tr className="border-b border-(--vct-border-strong) bg-(--vct-bg-card)">
                                 {['#', 'VĐV', 'Đoàn', 'Nội dung', 'GĐ1', 'GĐ2', 'GĐ3', 'GĐ4', 'GĐ5', 'Điểm Tổng', 'Trạng thái', ''].map((h, i) => (
                                     <th key={i} style={{ padding: '12px 10px', textAlign: i >= 4 && i <= 9 ? 'center' : 'left', fontSize: 11, fontWeight: 700, textTransform: 'uppercase', opacity: 0.5 }}>{h}</th>
                                 ))}

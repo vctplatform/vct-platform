@@ -141,7 +141,7 @@ export function Page_RefereeScoringPortal() {
     const totalBlue = rounds.reduce((s, r) => s + r.blue, 0) + blueScore
 
     return (
-        <div className="min-h-screen bg-[var(--vct-bg-base)] p-3 select-none">
+        <div className="min-h-screen bg-(--vct-bg-base) p-3 select-none">
             {/* ── Match Info Bar ──────────────────────────────────── */}
             <div className="flex items-center justify-between mb-3 px-2">
                 <div className="flex items-center gap-2">

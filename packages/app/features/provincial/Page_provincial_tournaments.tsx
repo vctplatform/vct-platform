@@ -52,8 +52,8 @@ export const Page_provincial_tournaments = () => {
         <VCT_PageContainer size="wide" animated>
             <VCT_Toast isVisible={toast.show} message={toast.msg} type={toast.type} onClose={() => setToast(p => ({ ...p, show: false }))} />
             <div className="mb-6">
-                <h1 className="text-2xl font-bold tracking-tight text-[var(--vct-text-primary)]">🏆 Giải Đấu Cấp Tỉnh</h1>
-                <p className="text-sm text-[var(--vct-text-secondary)] mt-1">Quản lý giải đấu, đăng ký đội, kết quả thi đấu</p>
+                <h1 className="text-2xl font-bold tracking-tight text-(--vct-text-primary)">🏆 Giải Đấu Cấp Tỉnh</h1>
+                <p className="text-sm text-(--vct-text-secondary) mt-1">Quản lý giải đấu, đăng ký đội, kết quả thi đấu</p>
             </div>
 
             <VCT_StatRow items={[
@@ -75,11 +75,11 @@ export const Page_provincial_tournaments = () => {
                     {filtered.map(t => {
                         const st = STATUS_MAP[t.status] || { label: t.status, type: 'neutral', color: '#94a3b8' }
                         return (
-                            <div key={t.id} className="rounded-2xl border border-[var(--vct-border-subtle)] bg-[var(--vct-bg-glass)] p-5 hover:border-[var(--vct-accent-cyan)] transition-all" style={{ borderLeftWidth: 4, borderLeftColor: st.color }}>
+                            <div key={t.id} className="rounded-2xl border border-(--vct-border-subtle) bg-(--vct-bg-glass) p-5 hover:border-(--vct-accent-cyan) transition-all" style={{ borderLeftWidth: 4, borderLeftColor: st.color }}>
                                 <div className="flex items-start justify-between mb-3">
                                     <div>
-                                        <div className="font-bold text-base text-[var(--vct-text-primary)]">{t.name}</div>
-                                        <div className="text-xs text-[var(--vct-text-secondary)] mt-1">
+                                        <div className="font-bold text-base text-(--vct-text-primary)">{t.name}</div>
+                                        <div className="text-xs text-(--vct-text-secondary) mt-1">
                                             📍 {t.venue} • 📅 {t.start_date} → {t.end_date}
                                         </div>
                                     </div>
@@ -91,7 +91,7 @@ export const Page_provincial_tournaments = () => {
                                 </div>
                                 {t.categories && t.categories.length > 0 && (
                                     <div className="mt-3 flex flex-wrap gap-1.5">
-                                        {t.categories.map(c => <span key={c} className="text-[10px] px-2 py-0.5 rounded-full bg-[var(--vct-bg-elevated)] text-[var(--vct-text-secondary)] border border-[var(--vct-border-subtle)]">{c}</span>)}
+                                        {t.categories.map(c => <span key={c} className="text-[10px] px-2 py-0.5 rounded-full bg-(--vct-bg-elevated) text-(--vct-text-secondary) border border-(--vct-border-subtle)">{c}</span>)}
                                     </div>
                                 )}
                             </div>

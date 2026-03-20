@@ -80,7 +80,7 @@ export const VCT_LoadingOverlay = ({
           exit={{ opacity: 0 }}
         >
           <motion.div
-            className="grid place-items-center gap-2 rounded-2xl border border-vct-border bg-vct-elevated px-6 py-5 shadow-[var(--vct-shadow-lg)]"
+            className="grid place-items-center gap-2 rounded-2xl border border-vct-border bg-vct-elevated px-6 py-5 shadow-(--vct-shadow-lg)"
             initial={{ scale: 0.96, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.96, opacity: 0 }}
@@ -158,7 +158,7 @@ export const VCT_Modal = ({
             aria-modal="true"
             aria-labelledby={title ? titleId : undefined}
             className={cn(
-              'fixed left-1/2 top-1/2 z-[410] w-[calc(100vw-24px)] max-h-[min(90vh,900px)] -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-2xl border border-vct-border bg-vct-elevated shadow-[var(--vct-shadow-xl)]',
+              'fixed left-1/2 top-1/2 z-[410] w-[calc(100vw-24px)] max-h-[min(90vh,900px)] -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-2xl border border-vct-border bg-vct-elevated shadow-(--vct-shadow-xl)',
               className ?? ''
             )}
             style={{ maxWidth: width, ...style }}
@@ -217,7 +217,7 @@ export const VCT_Toast = ({
           role="status"
           aria-live="polite"
           className={cn(
-            'fixed bottom-4 right-4 z-[500] max-w-[420px] rounded-xl border px-3 py-2 text-sm font-semibold shadow-[var(--vct-shadow-lg)]',
+            'fixed bottom-4 right-4 z-[500] max-w-[420px] rounded-xl border px-3 py-2 text-sm font-semibold shadow-(--vct-shadow-lg)',
             TOAST_TONE_CLASS[tone],
             className ?? ''
           )}

@@ -11,7 +11,7 @@ import {
 import { VCT_PageContainer, VCT_StatRow } from '../components/vct-ui';
 import type { StatItem } from '../components/VCT_StatRow';
 import { VCT_Icons } from '../components/vct-icons';
-import { genId } from '../data/mock-data';
+import { genId } from '../hooks/useTournamentAPI';
 import { TRANG_THAI_TT_MAP, CAP_BAC_TT_MAP, type TrongTai, type TrangThaiTT, type CapBacTT, type ChuyenMonTT } from '../data/types';
 import { repositories, useEntityCollection } from '../data/repository';
 import { useToast } from '../hooks/use-toast';
@@ -120,7 +120,7 @@ export const Page_referees = () => {
         <VCT_PageContainer size="wide" animated>
             <VCT_Toast isVisible={toast.show} message={toast.msg} type={toast.type} onClose={hideToast} />
             {uiState.error && (
-                <div className="mb-4 rounded-xl border border-red-500/25 bg-red-500/[0.08] px-3.5 py-3 text-[13px] font-bold text-red-500">
+                <div className="mb-4 rounded-xl border border-red-500/25 bg-red-500/10 px-3.5 py-3 text-sm font-bold text-red-500">
                     Không thể tải danh sách trọng tài: {uiState.error}
                 </div>
             )}
@@ -152,10 +152,10 @@ export const Page_referees = () => {
             {filtered.length === 0 ? (
                 <VCT_EmptyState title="Không tìm thấy trọng tài" description="Thử thay đổi bộ lọc." actionLabel="Thêm trọng tài" onAction={openAdd} icon="⚖️" />
             ) : (
-                <div className="overflow-hidden rounded-2xl border border-[var(--vct-border-subtle)] bg-[var(--vct-bg-glass)]">
+                <div className="overflow-hidden rounded-2xl border border-vct-border-subtle bg-vct-bg-glass">
                     <table className="w-full border-collapse">
                         <thead>
-                            <tr className="border-b border-[var(--vct-border-strong)] bg-[var(--vct-bg-card)]">
+                            <tr className="border-b border-vct-border-strong bg-vct-bg-card">
                                 <th style={{ padding: '12px 16px', width: 40 }}><input type="checkbox" onChange={() => setSelectedIds(p => p.size === filtered.length ? new Set() : new Set(filtered.map(r => r.id)))} checked={selectedIds.size === filtered.length && filtered.length > 0} style={{ accentColor: '#22d3ee' }} /></th>
                                 {['Trọng tài', 'Đơn vị', 'Cấp bậc', 'Chuyên môn', 'Kinh nghiệm', 'Trạng thái', ''].map((h, i) => (
                                     <th key={i} className="px-4 py-3 text-left text-[11px] font-bold uppercase opacity-50">{h}</th>

@@ -40,8 +40,8 @@ export const Page_provincial_coaches = () => {
         <VCT_PageContainer size="wide" animated>
             <VCT_Toast isVisible={toast.show} message={toast.msg} type={toast.type} onClose={() => setToast(p => ({ ...p, show: false }))} />
             <div className="mb-6">
-                <h1 className="text-2xl font-bold tracking-tight text-[var(--vct-text-primary)]">👨‍🏫 Quản Lý Huấn Luyện Viên</h1>
-                <p className="text-sm text-[var(--vct-text-secondary)] mt-1">Danh sách HLV thuộc liên đoàn tỉnh</p>
+                <h1 className="text-2xl font-bold tracking-tight text-(--vct-text-primary)">👨‍🏫 Quản Lý Huấn Luyện Viên</h1>
+                <p className="text-sm text-(--vct-text-secondary) mt-1">Danh sách HLV thuộc liên đoàn tỉnh</p>
             </div>
 
             <VCT_StatRow items={[
@@ -58,14 +58,14 @@ export const Page_provincial_coaches = () => {
             {filtered.length === 0 ? (
                 <VCT_EmptyState title="Không có HLV nào" description={loading ? 'Đang tải...' : 'Không tìm thấy dữ liệu.'} icon="👨‍🏫" />
             ) : (
-                <div className="overflow-hidden rounded-2xl border border-[var(--vct-border-subtle)] bg-[var(--vct-bg-glass)]">
+                <div className="overflow-hidden rounded-2xl border border-(--vct-border-subtle) bg-(--vct-bg-glass)">
                     <table className="w-full border-collapse">
-                        <thead><tr className="border-b border-[var(--vct-border-strong)] bg-[var(--vct-bg-card)]">
+                        <thead><tr className="border-b border-(--vct-border-strong) bg-(--vct-bg-card)">
                             {['HLV', 'CLB', 'Đẳng cấp', 'Cấp HLV', 'Kinh nghiệm', 'Chuyên môn', 'Trạng thái'].map(h => <th key={h} className="px-4 py-3 text-left text-xs font-bold uppercase opacity-50">{h}</th>)}
                         </tr></thead>
                         <tbody>
                             {filtered.map(c => (
-                                <tr key={c.id} className="border-b border-[var(--vct-border-subtle)] hover:bg-[var(--vct-bg-hover)] transition-colors">
+                                <tr key={c.id} className="border-b border-(--vct-border-subtle) hover:bg-(--vct-bg-hover) transition-colors">
                                     <td className="px-4 py-3"><VCT_Stack direction="row" gap={10} align="center"><VCT_AvatarLetter name={c.full_name} size={36} /><div className="font-semibold text-sm">{c.full_name}</div></VCT_Stack></td>
                                     <td className="px-4 py-3 text-sm">{c.club_name}</td>
                                     <td className="px-4 py-3"><VCT_Badge text={c.belt_rank || '—'} type="info" /></td>

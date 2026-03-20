@@ -11,7 +11,7 @@ import { VCT_PageContainer, VCT_StatRow } from '../components/vct-ui';
 import type { StatItem } from '../components/VCT_StatRow';
 import { VCT_Icons } from '../components/vct-icons';
 
-import { genId } from '../data/mock-data';
+import { genId } from '../hooks/useTournamentAPI';
 import type { SanDau, TrangThaiSan, TrangThaiTrangBi } from '../data/types';
 import { repositories, useEntityCollection } from '../data/repository';
 import { useToast } from '../hooks/use-toast';
@@ -268,7 +268,7 @@ export const Page_san_dau = () => {
 
             {/* ── ARENA GRID ── */}
             {uiState.error && (
-                <div className="mb-4 rounded-xl border border-red-500/25 bg-red-500/[0.08] px-3.5 py-3 text-[13px] font-bold text-red-500">
+                <div className="mb-4 rounded-xl border border-red-500/25 bg-red-500/8 px-3.5 py-3 text-[13px] font-bold text-red-500">
                     Không thể tải dữ liệu sàn đấu: {uiState.error}
                 </div>
             )}

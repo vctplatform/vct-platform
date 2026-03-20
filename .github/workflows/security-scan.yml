@@ -1,0 +1,102 @@
+# ════════════════════════════════════════
+# VCT Platform — Security Scan CI Pipeline
+# Runs Trivy container scanning, kubesec, and policy checks
+# ════════════════════════════════════════
+name: Security Scan
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'infra/**'
+      - 'backend/Dockerfile'
+      - '.github/workflows/security-scan.yml'
+  pull_request:
+    branches: [main]
+  schedule:
+    - cron: '0 6 * * 1'  # Weekly Monday 6AM UTC
+
+jobs:
+  container-scan:
+    name: Container Image Scan
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build backend image
+        run: docker build -t vct-api:scan ./backend
+
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: 'vct-api:scan'
+          format: 'sarif'
+          output: 'trivy-results.sarif'
+          severity: 'CRITICAL,HIGH'
+          exit-code: '1'
+
+      - name: Upload Trivy scan results
+        uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: 'trivy-results.sarif'
+
+  k8s-manifests:
+    name: K8s Manifest Security
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install kubesec
+        run: |
+          curl -sSL https://github.com/controlplaneio/kubesec/releases/latest/download/kubesec_linux_amd64.tar.gz | tar xz
+          sudo mv kubesec /usr/local/bin/
+
+      - name: Scan deployment manifests
+        run: |
+          echo "── Scanning K8s manifests ──"
+          FAIL=0
+          for f in infra/k8s/base/*.yaml infra/k8s/security/*.yaml; do
+            echo "Scanning: $f"
+            result=$(kubesec scan "$f" 2>/dev/null || true)
+            score=$(echo "$result" | jq -r '.[0].score // 0')
+            if [ "$score" -lt 0 ]; then
+              echo "❌ FAIL: $f (score: $score)"
+              FAIL=1
+            else
+              echo "✅ PASS: $f (score: $score)"
+            fi
+          done
+          exit $FAIL
+
+  network-policy-check:
+    name: Network Policy Audit
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Verify default-deny exists
+        run: |
+          if grep -q "default-deny-all" infra/k8s/security/network-policies.yaml; then
+            echo "✅ Default deny-all network policy found"
+          else
+            echo "❌ Missing default deny-all policy"
+            exit 1
+          fi
+
+      - name: Count network policies
+        run: |
+          count=$(grep -c "kind: NetworkPolicy" infra/k8s/security/network-policies.yaml)
+          echo "Found $count network policies"
+          if [ "$count" -lt 4 ]; then
+            echo "⚠️ Warning: fewer than 4 network policies"
+          fi
+
+      - name: Check pod security labels
+        run: |
+          if grep -q "pod-security.kubernetes.io/enforce: restricted" infra/k8s/security/pod-security.yaml; then
+            echo "✅ Restricted pod security standard enforced"
+          else
+            echo "❌ Pod security standard not set to restricted"
+            exit 1
+          fi

@@ -49,8 +49,8 @@ export const Page_province_athletes = () => {
     return (
         <VCT_PageContainer size="wide" animated>
             <div className="mb-6">
-                <h1 className="text-2xl font-bold tracking-tight text-[var(--vct-text-primary)]">Quản lý VĐV</h1>
-                <p className="text-sm text-[var(--vct-text-secondary)] mt-1">Danh sách Vận động viên đăng ký thi đấu thuộc tỉnh.</p>
+                <h1 className="text-2xl font-bold tracking-tight text-(--vct-text-primary)">Quản lý VĐV</h1>
+                <p className="text-sm text-(--vct-text-secondary) mt-1">Danh sách Vận động viên đăng ký thi đấu thuộc tỉnh.</p>
             </div>
 
             <VCT_StatRow items={[
@@ -67,55 +67,55 @@ export const Page_province_athletes = () => {
                     placeholder="Tìm VĐV theo tên..."
                     value={search}
                     onChange={e => setSearch(e.target.value)}
-                    className="flex-1 min-w-[200px] px-4 py-2 rounded-xl border border-[var(--vct-border-subtle)] bg-[var(--vct-bg-glass)] text-sm text-[var(--vct-text-primary)] outline-none focus:border-[var(--vct-accent-cyan)]"
+                    className="flex-1 min-w-[200px] px-4 py-2 rounded-xl border border-(--vct-border-subtle) bg-(--vct-bg-glass) text-sm text-(--vct-text-primary) outline-none focus:border-(--vct-accent-cyan)"
                 />
-                <select value={genderFilter} onChange={e => setGenderFilter(e.target.value)} className="px-4 py-2 rounded-xl border border-[var(--vct-border-subtle)] bg-[var(--vct-bg-glass)] text-sm text-[var(--vct-text-primary)] outline-none">
+                <select value={genderFilter} onChange={e => setGenderFilter(e.target.value)} className="px-4 py-2 rounded-xl border border-(--vct-border-subtle) bg-(--vct-bg-glass) text-sm text-(--vct-text-primary) outline-none">
                     <option value="ALL">Tất cả giới tính</option>
                     <option value="Nam">Nam</option>
                     <option value="Nữ">Nữ</option>
                 </select>
-                <select value={clubFilter} onChange={e => setClubFilter(e.target.value)} className="px-4 py-2 rounded-xl border border-[var(--vct-border-subtle)] bg-[var(--vct-bg-glass)] text-sm text-[var(--vct-text-primary)] outline-none">
+                <select value={clubFilter} onChange={e => setClubFilter(e.target.value)} className="px-4 py-2 rounded-xl border border-(--vct-border-subtle) bg-(--vct-bg-glass) text-sm text-(--vct-text-primary) outline-none">
                     <option value="ALL">Tất cả CLB</option>
                     {clubs.map(c => <option key={c} value={c}>{c}</option>)}
                 </select>
             </div>
 
             {/* Table */}
-            <div className="rounded-2xl border border-[var(--vct-border-subtle)] overflow-hidden">
+            <div className="rounded-2xl border border-(--vct-border-subtle) overflow-hidden">
                 <div className="overflow-x-auto">
                     <table className="w-full text-sm">
                         <thead>
-                            <tr className="bg-[var(--vct-bg-glass)]">
-                                <th className="text-left p-3 font-bold text-[var(--vct-text-secondary)]">VĐV</th>
-                                <th className="text-left p-3 font-bold text-[var(--vct-text-secondary)]">CLB</th>
-                                <th className="text-center p-3 font-bold text-[var(--vct-text-secondary)]">Giới tính</th>
-                                <th className="text-center p-3 font-bold text-[var(--vct-text-secondary)]">Cấp đai</th>
-                                <th className="text-center p-3 font-bold text-[var(--vct-text-secondary)]">Cân nặng</th>
-                                <th className="text-center p-3 font-bold text-[var(--vct-text-secondary)]">Trạng thái</th>
-                                <th className="text-left p-3 font-bold text-[var(--vct-text-secondary)]">Thành tích</th>
+                            <tr className="bg-(--vct-bg-glass)">
+                                <th className="text-left p-3 font-bold text-(--vct-text-secondary)">VĐV</th>
+                                <th className="text-left p-3 font-bold text-(--vct-text-secondary)">CLB</th>
+                                <th className="text-center p-3 font-bold text-(--vct-text-secondary)">Giới tính</th>
+                                <th className="text-center p-3 font-bold text-(--vct-text-secondary)">Cấp đai</th>
+                                <th className="text-center p-3 font-bold text-(--vct-text-secondary)">Cân nặng</th>
+                                <th className="text-center p-3 font-bold text-(--vct-text-secondary)">Trạng thái</th>
+                                <th className="text-left p-3 font-bold text-(--vct-text-secondary)">Thành tích</th>
                             </tr>
                         </thead>
                         <tbody>
                             {filtered.map(a => (
-                                <tr key={a.id} className="border-t border-[var(--vct-border-subtle)] hover:bg-[var(--vct-bg-glass)] transition-colors">
+                                <tr key={a.id} className="border-t border-(--vct-border-subtle) hover:bg-(--vct-bg-glass) transition-colors">
                                     <td className="p-3">
-                                        <div className="font-bold text-[var(--vct-text-primary)]">{a.fullName}</div>
-                                        <div className="text-xs text-[var(--vct-text-secondary)]">{a.dob}</div>
+                                        <div className="font-bold text-(--vct-text-primary)">{a.fullName}</div>
+                                        <div className="text-xs text-(--vct-text-secondary)">{a.dob}</div>
                                     </td>
-                                    <td className="p-3 text-[var(--vct-text-secondary)]">{a.clubName}</td>
-                                    <td className="p-3 text-center text-[var(--vct-text-secondary)]">{a.gender}</td>
+                                    <td className="p-3 text-(--vct-text-secondary)">{a.clubName}</td>
+                                    <td className="p-3 text-center text-(--vct-text-secondary)">{a.gender}</td>
                                     <td className="p-3 text-center">
                                         <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg text-xs font-bold" style={{ background: '#f59e0b22', color: '#f59e0b' }}>
                                             {a.beltName}
                                         </span>
                                     </td>
-                                    <td className="p-3 text-center text-[var(--vct-text-secondary)]">{a.weightKg} kg</td>
+                                    <td className="p-3 text-center text-(--vct-text-secondary)">{a.weightKg} kg</td>
                                     <td className="p-3 text-center">
                                         <span className="text-xs font-bold px-2 py-1 rounded-lg" style={{ background: `${(STATUS_MAP[a.status]?.color ?? '#888')}22`, color: STATUS_MAP[a.status]?.color ?? '#888' }}>
                                             {STATUS_MAP[a.status]?.label ?? a.status}
                                         </span>
                                     </td>
-                                    <td className="p-3 text-[var(--vct-text-secondary)] max-w-[180px] truncate">{a.achievements || '—'}</td>
+                                    <td className="p-3 text-(--vct-text-secondary) max-w-[180px] truncate">{a.achievements || '—'}</td>
                                 </tr>
                             ))}
                         </tbody>

@@ -57,7 +57,7 @@ export const Page_federation_approvals = () => {
 
     useEffect(() => {
         approvalsApi.execute('/approvals/my-pending')
-    }, []) // eslint-disable-line react-hooks/exhaustive-deps
+    }, [])  
 
     const approvals = approvalsApi.data?.requests?.length ? approvalsApi.data.requests : FALLBACK_APPROVALS
 
@@ -124,8 +124,8 @@ export const Page_federation_approvals = () => {
         <VCT_PageContainer size="wide" animated>
             <ToastContainer />
             <div className="mb-6">
-                <h1 className="text-2xl font-bold tracking-tight text-[var(--vct-text-primary)]">Trung tâm Phê duyệt</h1>
-                <p className="text-sm text-[var(--vct-text-secondary)] mt-1">Xử lý yêu cầu đăng ký, phê duyệt văn bản, nhân sự và ngân sách.</p>
+                <h1 className="text-2xl font-bold tracking-tight text-(--vct-text-primary)">Trung tâm Phê duyệt</h1>
+                <p className="text-sm text-(--vct-text-secondary) mt-1">Xử lý yêu cầu đăng ký, phê duyệt văn bản, nhân sự và ngân sách.</p>
             </div>
 
             <VCT_StatRow items={[
@@ -159,7 +159,7 @@ export const Page_federation_approvals = () => {
                         const st = STATUS_MAP[a.status]
                         const progress = (a.current_step_num / a.total_steps) * 100
                         return (
-                            <div key={a.id} className="rounded-2xl border border-[var(--vct-border-subtle)] bg-[var(--vct-bg-glass)] p-4 hover:border-[var(--vct-accent-cyan)] transition-colors cursor-pointer">
+                            <div key={a.id} className="rounded-2xl border border-(--vct-border-subtle) bg-(--vct-bg-glass) p-4 hover:border-(--vct-accent-cyan) transition-colors cursor-pointer">
                                 <VCT_Stack direction="row" justify="space-between" align="flex-start">
                                     <VCT_Stack direction="row" gap={12} align="flex-start" className="flex-1 min-w-0">
                                         <span className="text-2xl">{tp.icon}</span>
@@ -168,14 +168,14 @@ export const Page_federation_approvals = () => {
                                                 <span className="text-xs px-2 py-0.5 rounded" style={{ background: tp.color + '15', color: tp.color }}>{tp.label}</span>
                                                 {a.priority === 'urgent' && <span className="text-xs px-2 py-0.5 rounded bg-[#ef4444]/10 text-[#ef4444] font-bold">🔥 Khẩn</span>}
                                             </div>
-                                            <div className="font-bold text-sm text-[var(--vct-text-primary)]">{a.title}</div>
+                                            <div className="font-bold text-sm text-(--vct-text-primary)">{a.title}</div>
                                             <div className="text-xs opacity-50 mt-1">Người gửi: {a.requester} • {a.submitted_at}</div>
                                             <div className="mt-3">
                                                 <div className="flex items-center justify-between text-[10px] mb-1">
                                                     <span className="opacity-60">{a.current_step}</span>
                                                     <span className="font-bold">{a.current_step_num}/{a.total_steps}</span>
                                                 </div>
-                                                <div className="h-1.5 rounded-full bg-[var(--vct-bg-elevated)] overflow-hidden">
+                                                <div className="h-1.5 rounded-full bg-(--vct-bg-elevated) overflow-hidden">
                                                     <div className="h-full rounded-full transition-all" style={{ width: `${progress}%`, background: tp.color }} />
                                                 </div>
                                             </div>

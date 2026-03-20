@@ -100,6 +100,10 @@ export function useUpdateCurriculum(id: string) {
     return useApiMutation<Partial<Curriculum>, Curriculum>('PATCH', `/api/v1/training_curriculums/${id}`)
 }
 
+export function useDeleteCurriculum(id: string) {
+    return useApiMutation<void, void>('DELETE', `/api/v1/training_curriculums/${id}`)
+}
+
 export function useRecordAttendance() {
     return useApiMutation<Partial<AttendanceRecord>, AttendanceRecord>('POST', '/api/v1/training_attendance')
 }
