@@ -6,6 +6,7 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
+	"log/slog"
 	"net/http"
 	"runtime"
 	"strings"
@@ -149,7 +150,7 @@ func New(cfg config.Config) *Server {
 		cachedStore:      cachedStore,
 		storageDriver:    storageDriver,
 		storageProvider:  storageProvider,
-		realtimeHub:      realtime.NewHub(cfg.AllowedOrigins),
+		realtimeHub:      realtime.NewHub(slog.Default(), cfg.AllowedOrigins...),
 		allowedEntities:  defaultEntitySet(),
 		allowedOrigins:   originSet,
 		rateLimiter:      newRateLimiter(10, time.Second, 100), // 100 burst, 10/s refill
@@ -280,6 +281,10 @@ func New(cfg config.Config) *Server {
 			nil, // invoice repo — will wire when invoice store is available
 			newUUID,
 		),
+	}
+
+	if s.realtimeHub != nil {
+		go s.realtimeHub.Run(context.Background())
 	}
 
 	// Wire JWT validation into WebSocket hub for first-message auth

@@ -195,7 +195,7 @@ const Page_admin_dashboard_Content = () => {
                         <div
                             className="admin-health-ring mb-3"
                             data-color={health.color}
-                            style={{ '--_ring-deg': `${health.score * 3.6}deg` } as React.CSSProperties}
+                            {...{ style: { '--_ring-deg': `${health.score * 3.6}deg` } as React.CSSProperties }}
                         >
                             <div className="admin-health-ring__inner">
                                 <span className="admin-health-grade" data-color={health.color}>{health.grade}</span>

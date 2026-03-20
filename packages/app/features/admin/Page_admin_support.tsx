@@ -497,12 +497,12 @@ const Page_admin_support_Content = () => {
                             <div
                                 key={cat.id}
                                 className="admin-nav-card"
-                                style={{ '--_nav-color': cat.mauSac } as React.CSSProperties}
+                                {...{ style: { '--_nav-color': cat.mauSac } as React.CSSProperties }}
                             >
                                 <div className="flex items-start gap-4">
                                     <div
                                         className="admin-nav-icon"
-                                        style={{ '--_nav-color': cat.mauSac } as React.CSSProperties}
+                                        {...{ style: { '--_nav-color': cat.mauSac } as React.CSSProperties }}
                                     >
                                         <IconComponent size={22} />
                                     </div>

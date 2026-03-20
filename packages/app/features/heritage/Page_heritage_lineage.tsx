@@ -180,7 +180,7 @@ export function Page_heritage_lineage() {
             {/* Detail Sidebar */}
             <AnimatePresence>
                 {selectedNode && (
-                    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-[100] flex justify-end" onClick={() => setSelectedNode(null)}>
+                    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z- flex justify-end" onClick={() => setSelectedNode(null)}>
                         <div className="absolute inset-0 bg-black/40" />
                         <motion.div initial={{ x: 400 }} animate={{ x: 0 }} exit={{ x: 400 }} transition={{ type: 'spring', damping: 25 }}
                             onClick={e => e.stopPropagation()} className="relative w-full max-w-md bg-vct-bg border-l border-vct-border p-6 overflow-y-auto">

@@ -123,7 +123,7 @@ export const VCT_Sheet = ({
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
                         transition={{ duration: 0.2 }}
-                        className="fixed inset-0 z-[60] bg-black/50 backdrop-blur-sm"
+                        className="fixed inset-0 z- bg-black/50 backdrop-blur-sm"
                         onClick={onClose}
                         aria-hidden="true"
                     />
@@ -136,7 +136,7 @@ export const VCT_Sheet = ({
                         transition={{ type: 'spring', damping: 30, stiffness: 300 }}
                         className={cn(
                             config.panelClass,
-                            'z-[61] flex flex-col bg-vct-bg border-vct-border shadow-2xl',
+                            'z- flex flex-col bg-vct-bg border-vct-border shadow-2xl',
                             side === 'bottom'
                                 ? 'border-t rounded-t-2xl'
                                 : side === 'left'

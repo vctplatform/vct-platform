@@ -1,0 +1,41 @@
+﻿node.exe : npm error 
+Lifecycle script 
+`lint` failed with 
+error:
+At line:1 char:1
++ & "C:\nvm4w\nodejs/no
+de.exe" "C:\Users\hbtun
+\AppData\Roaming\npm/no
+de ...
++ ~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~
+~~
+    + CategoryInfo     
+         : NotSpecifi  
+  ed: (npm error Lif   
+ ec...led with erro    
+r::String) [], Rem    
+oteException
+    + FullyQualifiedEr 
+   rorId : NativeComm  
+  andError
+ 
+npm error workspace 
+app@0.0.0
+npm error location 
+D:\VCT PLATFORM\vct-pla
+tform\packages\app
+npm error Missing 
+script: "lint"
+npm error
+npm error Did you mean 
+this?
+npm error   npm link # 
+Symlink a package 
+folder
+npm error
+npm error To see a 
+list of scripts, run:
+npm error   npm run 
+--workspace=app@0.0.0

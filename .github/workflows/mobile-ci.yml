@@ -58,6 +58,8 @@ jobs:
     needs: [typecheck, test, lint]
     runs-on: ubuntu-latest
     if: github.event.pull_request.draft == false
+    env:
+      EXPO_TOKEN: ${{ secrets.EXPO_TOKEN || '' }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -67,6 +69,6 @@ jobs:
       - uses: expo/expo-github-action@v8
         with:
           eas-version: latest
-          token: ${{ secrets.EXPO_TOKEN }}
+          token: ${{ env.EXPO_TOKEN }}
       - run: npm ci
       - run: cd apps/expo && eas build --profile preview --platform android --non-interactive --no-wait

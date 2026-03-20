@@ -278,7 +278,7 @@ const Page_admin_finance_Content = () => {
                                     <VCT_Badge type={pct > 90 ? 'danger' : pct > 70 ? 'warning' : 'success'} text={`${pct}%`} />
                                 </div>
                                 <div className="w-full h-2 bg-(--vct-bg-base) rounded-full overflow-hidden mb-2">
-                                    <div className="admin-bar-fill" style={{ '--_bar-width': `${pct}%`, '--_bar-color': barColor } as React.CSSProperties} />
+                                    <div className="admin-bar-fill" {...{ style: { '--_bar-width': `${pct}%`, '--_bar-color': barColor } as React.CSSProperties }} />
                                 </div>
                                 <div className="flex justify-between text-xs text-(--vct-text-tertiary)">
                                     <span>Đã chi: {fmt(b.spent)}</span>

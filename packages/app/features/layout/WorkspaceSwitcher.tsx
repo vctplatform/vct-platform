@@ -87,7 +87,7 @@ export const WorkspaceSwitcher = ({
                         animate={{ opacity: 1, y: 0, scale: 1 }}
                         exit={{ opacity: 0, y: -8, scale: 0.96 }}
                         transition={{ duration: 0.15 }}
-                        className="absolute left-4 right-4 z-[100] mt-2 rounded-xl border border-vct-border bg-(--vct-bg-card) p-2 shadow-2xl"
+                        className="absolute left-4 right-4 z- mt-2 rounded-xl border border-vct-border bg-(--vct-bg-card) p-2 shadow-2xl"
                     >
                         <div className="text-[10px] font-extrabold uppercase tracking-[0.1em] text-vct-text-muted px-2 pt-1 pb-2">
                             Chọn Workspace

@@ -90,7 +90,7 @@ export function Page_heritage_techniques() {
             {/* Detail Modal */}
             <AnimatePresence>
                 {selected && (
-                    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-[100] flex items-center justify-center p-4" onClick={() => setSelected(null)}>
+                    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z- flex items-center justify-center p-4" onClick={() => setSelected(null)}>
                         <div className="absolute inset-0 bg-black/40" />
                         <motion.div initial={{ scale: 0.95, y: 20 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.95, y: 20 }}
                             onClick={e => e.stopPropagation()} className="relative w-full max-w-lg max-h-[80vh] overflow-y-auto bg-vct-bg border border-vct-border rounded-2xl p-6">

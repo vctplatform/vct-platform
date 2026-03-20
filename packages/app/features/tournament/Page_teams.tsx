@@ -44,36 +44,36 @@ const ExpandPanel = ({ team, onDocToggle, onStatusChange }: { team: DonVi; onDoc
     const feeRemain = team.le_phi.tong - team.le_phi.da_dong;
 
     return (
-        <div style={{ padding: '20px 24px', background: 'var(--vct-bg-base)', borderTop: '1px dashed var(--vct-border-subtle)' }}>
+        <div {...{ style: { padding: '20px 24px', background: 'var(--vct-bg-base)', borderTop: '1px dashed var(--vct-border-subtle)' } }}>
             {/* Mini tabs */}
-            <div style={{ display: 'flex', gap: 4, marginBottom: 16 }}>
+            <div {...{ style: { display: 'flex', gap: 4, marginBottom: 16 } }}>
                 {['info', 'docs', 'finance', 'history'].map(t => (
-                    <button key={t} onClick={() => setTab(t)} style={{
+                    <button key={t} onClick={() => setTab(t)} {...{ style: {
                         padding: '6px 14px', border: 'none', borderRadius: 8, cursor: 'pointer', fontSize: 12, fontWeight: tab === t ? 800 : 600,
                         background: tab === t ? 'var(--vct-accent-cyan)' : 'var(--vct-bg-elevated)', color: tab === t ? '#fff' : 'var(--vct-text-secondary)', fontFamily: 'inherit',
-                    }}>
+                    } }}>
                         {{ info: '📋 Thông tin', docs: '📁 Hồ sơ', finance: '💰 Tài chính', history: '📜 Lịch sử' }[t]}
                     </button>
                 ))}
             </div>
 
             {tab === 'info' && (
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 16 }}>
-                    <div><span className="text-[11px] opacity-50">Loại</span><div style={{ fontWeight: 700, fontSize: 13 }}>{team.loai === 'doan_tinh' ? 'Đoàn tỉnh/TP' : team.loai === 'clb' ? 'CLB' : 'Cá nhân'}</div></div>
-                    <div><span className="text-[11px] opacity-50">Tỉnh/TP</span><div style={{ fontWeight: 700, fontSize: 13 }}>{team.tinh}</div></div>
-                    <div><span className="text-[11px] opacity-50">Trưởng đoàn</span><div style={{ fontWeight: 700, fontSize: 13 }}>{team.truong_doan}</div></div>
-                    <div><span className="text-[11px] opacity-50">SĐT</span><div style={{ fontWeight: 700, fontSize: 13 }}>{team.sdt}</div></div>
-                    <div><span className="text-[11px] opacity-50">Email</span><div style={{ fontWeight: 700, fontSize: 13 }}>{team.email}</div></div>
-                    <div><span className="text-[11px] opacity-50">Địa chỉ</span><div style={{ fontWeight: 700, fontSize: 13 }}>{team.dia_chi}</div></div>
-                    <div><span className="text-[11px] opacity-50">VĐV</span><div style={{ fontWeight: 700, fontSize: 13 }}>{team.so_vdv} <span style={{ opacity: 0.5 }}>({team.nam}♂ {team.nu}♀)</span></div></div>
-                    <div><span className="text-[11px] opacity-50">HLV</span><div style={{ fontWeight: 700, fontSize: 13 }}>{team.hlv}</div></div>
-                    <div><span className="text-[11px] opacity-50">Thành tích</span><div style={{ fontWeight: 700, fontSize: 13 }}>{team.thanh_tich || '—'}</div></div>
-                    {team.ghi_chu && <div style={{ gridColumn: '1 / -1' }}><span className="text-[11px] opacity-50">Ghi chú</span><div style={{ fontWeight: 600, fontSize: 13, color: '#f59e0b' }}>{team.ghi_chu}</div></div>}
-                    <div style={{ gridColumn: '1 / -1' }}>
-                        <span style={{ fontSize: 11, opacity: 0.5, marginBottom: 4, display: 'block' }}>Chuyển trạng thái</span>
-                        <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+                <div {...{ style: { display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 16 } }}>
+                    <div><span className="text-[11px] opacity-50">Loại</span><div {...{ style: { fontWeight: 700, fontSize: 13 } }}>{team.loai === 'doan_tinh' ? 'Đoàn tỉnh/TP' : team.loai === 'clb' ? 'CLB' : 'Cá nhân'}</div></div>
+                    <div><span className="text-[11px] opacity-50">Tỉnh/TP</span><div {...{ style: { fontWeight: 700, fontSize: 13 } }}>{team.tinh}</div></div>
+                    <div><span className="text-[11px] opacity-50">Trưởng đoàn</span><div {...{ style: { fontWeight: 700, fontSize: 13 } }}>{team.truong_doan}</div></div>
+                    <div><span className="text-[11px] opacity-50">SĐT</span><div {...{ style: { fontWeight: 700, fontSize: 13 } }}>{team.sdt}</div></div>
+                    <div><span className="text-[11px] opacity-50">Email</span><div {...{ style: { fontWeight: 700, fontSize: 13 } }}>{team.email}</div></div>
+                    <div><span className="text-[11px] opacity-50">Địa chỉ</span><div {...{ style: { fontWeight: 700, fontSize: 13 } }}>{team.dia_chi}</div></div>
+                    <div><span className="text-[11px] opacity-50">VĐV</span><div {...{ style: { fontWeight: 700, fontSize: 13 } }}>{team.so_vdv} <span {...{ style: { opacity: 0.5 } }}>({team.nam}♂ {team.nu}♀)</span></div></div>
+                    <div><span className="text-[11px] opacity-50">HLV</span><div {...{ style: { fontWeight: 700, fontSize: 13 } }}>{team.hlv}</div></div>
+                    <div><span className="text-[11px] opacity-50">Thành tích</span><div {...{ style: { fontWeight: 700, fontSize: 13 } }}>{team.thanh_tich || '—'}</div></div>
+                    {team.ghi_chu && <div {...{ style: { gridColumn: '1 / -1' } }}><span className="text-[11px] opacity-50">Ghi chú</span><div {...{ style: { fontWeight: 600, fontSize: 13, color: '#f59e0b' } }}>{team.ghi_chu}</div></div>}
+                    <div {...{ style: { gridColumn: '1 / -1' } }}>
+                        <span {...{ style: { fontSize: 11, opacity: 0.5, marginBottom: 4, display: 'block' } }}>Chuyển trạng thái</span>
+                        <div {...{ style: { display: 'flex', gap: 6, flexWrap: 'wrap' } }}>
                             {PIPELINE_STAGES.filter(s => s.key !== team.trang_thai).map(s => (
-                                <button key={s.key} onClick={() => onStatusChange(s.key as TrangThaiDoan)} style={{ padding: '4px 10px', borderRadius: 8, border: `1px solid ${s.color}40`, background: `${s.color}10`, color: s.color, fontSize: 11, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit' }}>
+                                <button key={s.key} onClick={() => onStatusChange(s.key as TrangThaiDoan)} {...{ style: { padding: '4px 10px', borderRadius: 8, border: `1px solid ${s.color}40`, background: `${s.color}10`, color: s.color, fontSize: 11, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit' } }}>
                                     → {s.label}
                                 </button>
                             ))}
@@ -85,11 +85,11 @@ const ExpandPanel = ({ team, onDocToggle, onStatusChange }: { team: DonVi; onDoc
             {tab === 'docs' && (
                 <div>
                     <VCT_ProgressBar value={docDone} max={6} showLabel />
-                    <div style={{ display: 'grid', gap: 8, marginTop: 12 }}>
+                    <div {...{ style: { display: 'grid', gap: 8, marginTop: 12 } }}>
                         {DOC_CHECKLIST.map((doc, i) => (
-                            <label key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 12px', borderRadius: 10, background: 'var(--vct-bg-elevated)', cursor: 'pointer', border: '1px solid var(--vct-border-subtle)' }}>
-                                <input type="checkbox" checked={!!team.docs[i]} onChange={() => onDocToggle(i)} style={{ width: 18, height: 18, accentColor: '#22d3ee' }} />
-                                <span style={{ fontSize: 13, fontWeight: team.docs[i] ? 700 : 500, textDecoration: team.docs[i] ? 'line-through' : 'none', opacity: team.docs[i] ? 0.6 : 1 }}>{doc}</span>
+                            <label key={i} {...{ style: { display: 'flex', alignItems: 'center', gap: 10, padding: '8px 12px', borderRadius: 10, background: 'var(--vct-bg-elevated)', cursor: 'pointer', border: '1px solid var(--vct-border-subtle)' } }}>
+                                <input type="checkbox" checked={!!team.docs[i]} onChange={() => onDocToggle(i)} {...{ style: { width: 18, height: 18, accentColor: '#22d3ee' } }} />
+                                <span {...{ style: { fontSize: 13, fontWeight: team.docs[i] ? 700 : 500, textDecoration: team.docs[i] ? 'line-through' : 'none', opacity: team.docs[i] ? 0.6 : 1 } }}>{doc}</span>
                                 {team.docs[i] ? <VCT_Icons.Check size={14} color="#10b981" /> : <VCT_Icons.Clock size={14} color="#f59e0b" />}
                             </label>
                         ))}
@@ -99,18 +99,18 @@ const ExpandPanel = ({ team, onDocToggle, onStatusChange }: { team: DonVi; onDoc
 
             {tab === 'finance' && (
                 <div>
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 16, marginBottom: 16 }}>
-                        <div style={{ padding: 16, borderRadius: 12, background: 'var(--vct-bg-elevated)', textAlign: 'center' }}>
+                    <div {...{ style: { display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 16, marginBottom: 16 } }}>
+                        <div {...{ style: { padding: 16, borderRadius: 12, background: 'var(--vct-bg-elevated)', textAlign: 'center' } }}>
                             <div className="text-[11px] opacity-50">Tổng lệ phí</div>
-                            <div style={{ fontSize: 20, fontWeight: 900, color: 'var(--vct-accent-cyan)' }}>{(team.le_phi.tong / 1000000).toFixed(1)}M</div>
+                            <div {...{ style: { fontSize: 20, fontWeight: 900, color: 'var(--vct-accent-cyan)' } }}>{(team.le_phi.tong / 1000000).toFixed(1)}M</div>
                         </div>
-                        <div style={{ padding: 16, borderRadius: 12, background: 'var(--vct-bg-elevated)', textAlign: 'center' }}>
+                        <div {...{ style: { padding: 16, borderRadius: 12, background: 'var(--vct-bg-elevated)', textAlign: 'center' } }}>
                             <div className="text-[11px] opacity-50">Đã đóng</div>
-                            <div style={{ fontSize: 20, fontWeight: 900, color: '#10b981' }}>{(team.le_phi.da_dong / 1000000).toFixed(1)}M</div>
+                            <div {...{ style: { fontSize: 20, fontWeight: 900, color: '#10b981' } }}>{(team.le_phi.da_dong / 1000000).toFixed(1)}M</div>
                         </div>
-                        <div style={{ padding: 16, borderRadius: 12, background: 'var(--vct-bg-elevated)', textAlign: 'center' }}>
+                        <div {...{ style: { padding: 16, borderRadius: 12, background: 'var(--vct-bg-elevated)', textAlign: 'center' } }}>
                             <div className="text-[11px] opacity-50">Còn thiếu</div>
-                            <div style={{ fontSize: 20, fontWeight: 900, color: feeRemain > 0 ? '#ef4444' : '#10b981' }}>{feeRemain > 0 ? `${(feeRemain / 1000000).toFixed(1)}M` : '✓'}</div>
+                            <div {...{ style: { fontSize: 20, fontWeight: 900, color: feeRemain > 0 ? '#ef4444' : '#10b981' } }}>{feeRemain > 0 ? `${(feeRemain / 1000000).toFixed(1)}M` : '✓'}</div>
                         </div>
                     </div>
                     <VCT_ProgressBar value={team.le_phi.da_dong} max={team.le_phi.tong} showLabel />
@@ -118,14 +118,14 @@ const ExpandPanel = ({ team, onDocToggle, onStatusChange }: { team: DonVi; onDoc
             )}
 
             {tab === 'history' && (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                    {team.audit.length === 0 ? <div style={{ opacity: 0.4, fontSize: 13 }}>Chưa có lịch sử</div> :
+                <div {...{ style: { display: 'flex', flexDirection: 'column', gap: 8 } }}>
+                    {team.audit.length === 0 ? <div {...{ style: { opacity: 0.4, fontSize: 13 } }}>Chưa có lịch sử</div> :
                         team.audit.map((a, i) => (
-                            <div key={i} style={{ display: 'flex', gap: 12, alignItems: 'center', padding: '8px 12px', borderRadius: 8, background: 'var(--vct-bg-elevated)' }}>
+                            <div key={i} {...{ style: { display: 'flex', gap: 12, alignItems: 'center', padding: '8px 12px', borderRadius: 8, background: 'var(--vct-bg-elevated)' } }}>
                                 <VCT_Icons.Clock size={14} color="var(--vct-text-tertiary)" />
-                                <span style={{ fontSize: 11, fontFamily: 'monospace', opacity: 0.5, minWidth: 100 }}>{a.time}</span>
-                                <span style={{ fontSize: 13, fontWeight: 600 }}>{a.action}</span>
-                                <span style={{ fontSize: 11, opacity: 0.5, marginLeft: 'auto' }}>bởi {a.by}</span>
+                                <span {...{ style: { fontSize: 11, fontFamily: 'monospace', opacity: 0.5, minWidth: 100 } }}>{a.time}</span>
+                                <span {...{ style: { fontSize: 13, fontWeight: 600 } }}>{a.action}</span>
+                                <span {...{ style: { fontSize: 11, opacity: 0.5, marginLeft: 'auto' } }}>bởi {a.by}</span>
                             </div>
                         ))
                     }
@@ -337,14 +337,14 @@ export const Page_teams = () => {
     // ── Table columns ──
     const columns = [
         {
-            key: 'checkbox', label: <input type="checkbox" aria-label="Chọn tất cả" checked={selectedIds.size === filtered.length && filtered.length > 0} onChange={toggleSelectAll} style={{ width: 16, height: 16, accentColor: '#22d3ee' }} />, align: 'center' as const,
-            render: (r: DonVi) => <input type="checkbox" aria-label={`Chọn ${r.ten}`} checked={selectedIds.has(r.id)} onChange={() => toggleSelect(r.id)} onClick={(e: any) => e.stopPropagation()} style={{ width: 16, height: 16, accentColor: '#22d3ee' }} />
+            key: 'checkbox', label: <input type="checkbox" aria-label="Chọn tất cả" checked={selectedIds.size === filtered.length && filtered.length > 0} onChange={toggleSelectAll} {...{ style: { width: 16, height: 16, accentColor: '#22d3ee' } }} />, align: 'center' as const,
+            render: (r: DonVi) => <input type="checkbox" aria-label={`Chọn ${r.ten}`} checked={selectedIds.has(r.id)} onChange={() => toggleSelect(r.id)} onClick={(e: any) => e.stopPropagation()} {...{ style: { width: 16, height: 16, accentColor: '#22d3ee' } }} />
         },
         {
             key: 'ten', label: 'Đơn vị', render: (r: DonVi) => (
                 <VCT_Stack direction="row" gap={10} align="center">
                     <VCT_AvatarLetter name={r.ten} size={32} />
-                    <div><div style={{ fontWeight: 700, fontSize: 13 }}>{r.ten}</div><div style={{ fontSize: 11, opacity: 0.5, fontFamily: 'monospace' }}>{r.ma}</div></div>
+                    <div><div {...{ style: { fontWeight: 700, fontSize: 13 } }}>{r.ten}</div><div {...{ style: { fontSize: 11, opacity: 0.5, fontFamily: 'monospace' } }}>{r.ma}</div></div>
                 </VCT_Stack>
             )
         },
@@ -352,8 +352,8 @@ export const Page_teams = () => {
         {
             key: 'so_vdv', label: 'VĐV', align: 'center' as const, render: (r: DonVi) => (
                 <div className="text-center">
-                    <span style={{ fontWeight: 800, color: 'var(--vct-accent-cyan)' }}>{r.so_vdv}</span>
-                    <span style={{ fontSize: 10, opacity: 0.5, marginLeft: 4 }}>/ {TOURNAMENT_CONFIG.quota.max_vdv_per_doan}</span>
+                    <span {...{ style: { fontWeight: 800, color: 'var(--vct-accent-cyan)' } }}>{r.so_vdv}</span>
+                    <span {...{ style: { fontSize: 10, opacity: 0.5, marginLeft: 4 } }}>/ {TOURNAMENT_CONFIG.quota.max_vdv_per_doan}</span>
                     <VCT_ProgressBar value={r.so_vdv} max={TOURNAMENT_CONFIG.quota.max_vdv_per_doan} height={3} />
                 </div>
             )
@@ -361,7 +361,7 @@ export const Page_teams = () => {
         {
             key: 'docs', label: 'Hồ sơ', align: 'center' as const, render: (r: DonVi) => {
                 const done = Object.values(r.docs).filter(Boolean).length;
-                return <div className="text-center"><span style={{ fontWeight: 700, color: done === 6 ? '#10b981' : '#f59e0b' }}>{done}/6</span></div>;
+                return <div className="text-center"><span {...{ style: { fontWeight: 700, color: done === 6 ? '#10b981' : '#f59e0b' } }}>{done}/6</span></div>;
             }
         },
         {
@@ -380,12 +380,12 @@ export const Page_teams = () => {
             key: 'actions', label: '', align: 'right' as const, render: (r: DonVi) => (
                 <VCT_Stack direction="row" gap={4} justify="flex-end">
                     {permissions.canUpdate && (
-                        <button onClick={(e: any) => { e.stopPropagation(); openEditModal(r); }} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--vct-text-tertiary)', padding: 4 }} aria-label={`Chỉnh sửa ${r.ten}`}>
+                        <button onClick={(e: any) => { e.stopPropagation(); openEditModal(r); }} {...{ style: { background: 'none', border: 'none', cursor: 'pointer', color: 'var(--vct-text-tertiary)', padding: 4 } }} aria-label={`Chỉnh sửa ${r.ten}`}>
                             <VCT_Icons.Edit size={14} />
                         </button>
                     )}
                     {permissions.canDelete && (
-                        <button onClick={(e: any) => { e.stopPropagation(); setDeleteTarget(r); }} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#ef4444', padding: 4 }} aria-label={`Xóa ${r.ten}`}>
+                        <button onClick={(e: any) => { e.stopPropagation(); setDeleteTarget(r); }} {...{ style: { background: 'none', border: 'none', cursor: 'pointer', color: '#ef4444', padding: 4 } }} aria-label={`Xóa ${r.ten}`}>
                             <VCT_Icons.Trash size={14} />
                         </button>
                     )}
@@ -430,7 +430,7 @@ export const Page_teams = () => {
                         <thead>
                             <tr className="border-b border-(--vct-border-strong) bg-(--vct-bg-card)">
                                 {columns.map((col, i) => (
-                                    <th key={i} style={{ padding: '14px 16px', textAlign: (col.align || 'left') as React.CSSProperties['textAlign'], fontSize: 11, fontWeight: 700, textTransform: 'uppercase', opacity: 0.5, position: 'sticky', top: 0, background: 'var(--vct-bg-card)', zIndex: 2 }}>
+                                    <th key={i} {...{ style: { padding: '14px 16px', textAlign: (col.align || 'left') as React.CSSProperties['textAlign'], fontSize: 11, fontWeight: 700, textTransform: 'uppercase', opacity: 0.5, position: 'sticky', top: 0, background: 'var(--vct-bg-card)', zIndex: 2 } }}>
                                         {col.label}
                                     </th>
                                 ))}
@@ -442,9 +442,9 @@ export const Page_teams = () => {
                                 return (
                                     <React.Fragment key={team.id}>
                                         <tr onClick={() => setExpandedId(expandedId === team.id ? null : team.id)}
-                                            style={{ borderBottom: '1px solid var(--vct-border-subtle)', cursor: 'pointer', background: selectedIds.has(team.id) ? 'rgba(34, 211, 238, 0.05)' : idx % 2 === 0 ? 'transparent' : 'rgba(128,128,128,0.02)', borderLeft: `3px solid ${stColor}`, transition: 'background 0.15s' }}>
+                                            {...{ style: { borderBottom: '1px solid var(--vct-border-subtle)', cursor: 'pointer', background: selectedIds.has(team.id) ? 'rgba(34, 211, 238, 0.05)' : idx % 2 === 0 ? 'transparent' : 'rgba(128,128,128,0.02)', borderLeft: `3px solid ${stColor}`, transition: 'background 0.15s' } }}>
                                             {columns.map((col, ci) => (
-                                                <td key={ci} style={{ padding: '14px 16px', fontSize: 13, textAlign: (col.align || 'left') as React.CSSProperties['textAlign'] }}>
+                                                <td key={ci} {...{ style: { padding: '14px 16px', fontSize: 13, textAlign: (col.align || 'left') as React.CSSProperties['textAlign'] } }}>
                                                     {col.render ? col.render(team) : (team as unknown as Record<string, React.ReactNode>)[col.key]}
                                                 </td>
                                             ))}
@@ -452,7 +452,7 @@ export const Page_teams = () => {
                                         <AnimatePresence>
                                             {expandedId === team.id && (
                                                 <tr>
-                                                    <td colSpan={columns.length} style={{ padding: 0 }}>
+                                                    <td colSpan={columns.length} {...{ style: { padding: 0 } }}>
                                                         <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.25 }}>
                                                             <ExpandPanel team={team} onDocToggle={(i) => handleDocToggle(team.id, i)} onStatusChange={(st) => handleStatusChange(team.id, st)} />
                                                         </motion.div>

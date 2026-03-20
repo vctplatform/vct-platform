@@ -438,7 +438,7 @@ const Page_admin_subscriptions_Content = () => {
                                         </div>
                                         <div className="w-full h-2 bg-[#8b5cf620] rounded-full overflow-hidden">
                                             <div className="admin-progress-width bg-linear-to-r from-[#8b5cf6] to-[#a855f7]"
-                                                style={{ '--_progress-width': `${Math.min(100, Math.max(0, 100 - (daysUntil(selected.current_period_end) / Math.max(1, Math.ceil((new Date(selected.current_period_end).getTime() - new Date(selected.current_period_start).getTime()) / (1000 * 60 * 60 * 24))) * 100)))}%` } as React.CSSProperties}
+                                                {...{ style: { '--_progress-width': `${Math.min(100, Math.max(0, 100 - (daysUntil(selected.current_period_end) / Math.max(1, Math.ceil((new Date(selected.current_period_end).getTime() - new Date(selected.current_period_start).getTime()) / (1000 * 60 * 60 * 24))) * 100)))}%` } as React.CSSProperties }}
                                             />
                                         </div>
                                     </div>

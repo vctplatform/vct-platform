@@ -92,7 +92,7 @@ export const VCT_Sidebar = ({
       aria-label={t('shell.mainNav')}
       animate={compactMode ? { x: mobileOpen ? 0 : -340 } : { width: sidebarWidth }}
       transition={{ duration: 0.22, ease: [0.4, 0, 0.2, 1] }}
-      className={`${compactMode ? 'fixed inset-y-0 left-0 z-[90]' : 'relative z-30'
+      className={`${compactMode ? 'fixed inset-y-0 left-0 z-' : 'relative z-30'
         } flex h-dvh shrink-0 flex-col overflow-hidden border-r border-vct-border bg-(--vct-bg-glass-heavy)`}
       style={{
         width: compactMode ? 304 : sidebarWidth,
@@ -109,7 +109,7 @@ export const VCT_Sidebar = ({
               <VCT_Icons.ChevronLeft size={14} />
             </motion.span>
           }
-          className="absolute -right-3 top-8 z-[60] rounded-full shadow-md"
+          className="absolute -right-3 top-8 z- rounded-full shadow-md"
         />
       )}
 

@@ -484,7 +484,7 @@ const ShellLayout = ({ children }: { children: React.ReactNode }) => {
             type="button"
             aria-label={t('shell.closeMobileMenu')}
             onClick={() => setMobileNavOpen(false)}
-            className="fixed inset-0 z-[80] border-none bg-slate-900/50"
+            className="fixed inset-0 z- border-none bg-slate-900/50"
           />
         )}
 

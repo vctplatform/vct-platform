@@ -1,9 +1,11 @@
 import { readFileSync, existsSync } from 'node:fs'
+import { spawnSync } from 'node:child_process'
 import { resolve } from 'node:path'
 import { pathToFileURL } from 'node:url'
 import assert from 'node:assert/strict'
 
 const root = process.cwd()
+const smokeOnly = process.argv.includes('--smoke-only')
 
 const requiredFiles = [
   'packages/app/features/layout/route-registry.ts',
@@ -129,12 +131,13 @@ assert.match(
 )
 
 const adapters = readFileSync(resolve(root, 'packages/app/features/data/repository/adapters.ts'), 'utf8')
-assert.match(adapters, /arenas:\s*{/, 'Adapters should expose arenas repository')
-assert.match(adapters, /referees:\s*{/, 'Adapters should expose referees repository')
-assert.match(adapters, /appeals:\s*{/, 'Adapters should expose appeals repository')
-assert.match(adapters, /weighIns:\s*{/, 'Adapters should expose weigh-ins repository')
-assert.match(adapters, /combatMatches:\s*{/, 'Adapters should expose combat matches repository')
-assert.match(adapters, /formPerformances:\s*{/, 'Adapters should expose form performances repository')
+assert.match(adapters, /const createRepositoryBundle = <T extends \{ id: string \}>/, 'Adapters should define repository bundle helper')
+assert.match(adapters, /arenas:\s*createRepositoryBundle<SanDau>\(/, 'Adapters should expose arenas repository bundle')
+assert.match(adapters, /referees:\s*createRepositoryBundle<TrongTai>\(/, 'Adapters should expose referees repository bundle')
+assert.match(adapters, /appeals:\s*createRepositoryBundle<KhieuNai>\(/, 'Adapters should expose appeals repository bundle')
+assert.match(adapters, /weighIns:\s*createRepositoryBundle<CanKy>\(/, 'Adapters should expose weigh-ins repository bundle')
+assert.match(adapters, /combatMatches:\s*createRepositoryBundle<TranDauDK>\(/, 'Adapters should expose combat matches repository bundle')
+assert.match(adapters, /formPerformances:\s*createRepositoryBundle<LuotThiQuyen>\(/, 'Adapters should expose form performances repository bundle')
 
 const uiBarrel = readFileSync(resolve(root, 'packages/app/features/components/vct-ui.tsx'), 'utf8')
 assert.match(uiBarrel, /vct-ui-layout/, 'vct-ui barrel should export layout domain')
@@ -266,3 +269,27 @@ const contentPageAfterGuard = readFileSync(resolve(root, 'packages/app/features/
 assert.match(contentPageAfterGuard, /useRouteActionGuard\('\/noi-dung'/, 'Content category page should use route action guard')
 
 console.log('Smoke tests passed')
+
+if (!smokeOnly) {
+  const vitestEntrypoint = resolve(root, 'node_modules/vitest/vitest.mjs')
+  assert.ok(existsSync(vitestEntrypoint), 'Missing Vitest entrypoint')
+
+  const vitestResult = spawnSync(
+    process.execPath,
+    [
+      vitestEntrypoint,
+      'run',
+      '--environment',
+      'jsdom',
+      '--globals',
+      'packages/app/features/admin/__tests__',
+    ],
+    {
+      cwd: root,
+      stdio: 'inherit',
+      env: process.env,
+    }
+  )
+
+  assert.equal(vitestResult.status, 0, 'Vitest suite failed')
+}

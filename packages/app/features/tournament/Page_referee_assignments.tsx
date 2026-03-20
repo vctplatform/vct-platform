@@ -160,13 +160,13 @@ export const Page_referee_assignments = () => {
     // ── Matrix View: TT (rows) x Phiên (cols) ──
     const renderMatrixView = () => (
         <div className="overflow-x-auto">
-            <table style={{ width: '100%', borderCollapse: 'separate', borderSpacing: '0 4px', fontSize: 13 }}>
+            <table {...{ style: { width: '100%', borderCollapse: 'separate', borderSpacing: '0 4px', fontSize: 13 } }}>
                 <thead>
                     <tr>
-                        <th style={{ textAlign: 'left', padding: '8px 12px', fontWeight: 800, fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--vct-text-tertiary)' }}>Trọng tài</th>
-                        <th style={{ textAlign: 'center', padding: '8px 12px', fontWeight: 800, fontSize: 11, textTransform: 'uppercase', color: 'var(--vct-text-tertiary)' }}>Tổng</th>
+                        <th {...{ style: { textAlign: 'left', padding: '8px 12px', fontWeight: 800, fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--vct-text-tertiary)' } }}>Trọng tài</th>
+                        <th {...{ style: { textAlign: 'center', padding: '8px 12px', fontWeight: 800, fontSize: 11, textTransform: 'uppercase', color: 'var(--vct-text-tertiary)' } }}>Tổng</th>
                         {PHIENS.map(p => (
-                            <th key={p} style={{ textAlign: 'center', padding: '8px 12px', fontWeight: 800, fontSize: 11, textTransform: 'uppercase', color: 'var(--vct-text-tertiary)' }}>
+                            <th key={p} {...{ style: { textAlign: 'center', padding: '8px 12px', fontWeight: 800, fontSize: 11, textTransform: 'uppercase', color: 'var(--vct-text-tertiary)' } }}>
                                 {PHIEN_LABELS[p]}
                             </th>
                         ))}
@@ -177,41 +177,41 @@ export const Page_referee_assignments = () => {
                         const count = ttWorkload[tt.id] || 0;
                         const maxCount = Math.max(1, ...Object.values(ttWorkload));
                         return (
-                            <motion.tr key={tt.id} initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ background: 'var(--vct-bg-elevated)' }}>
-                                <td style={{ padding: '10px 12px', borderRadius: '8px 0 0 8px' }}>
+                            <motion.tr key={tt.id} initial={{ opacity: 0 }} animate={{ opacity: 1 }} {...{ style: { background: 'var(--vct-bg-elevated)' } }}>
+                                <td {...{ style: { padding: '10px 12px', borderRadius: '8px 0 0 8px' } }}>
                                     <VCT_Stack direction="row" gap={8} align="center">
                                         <VCT_AvatarLetter name={tt.ho_ten} size={26} />
                                         <div>
-                                            <div style={{ fontWeight: 700, fontSize: 13 }}>{tt.ho_ten}</div>
-                                            <div style={{ fontSize: 10, opacity: 0.5 }}>{CAP_BAC_TT_MAP[tt.cap_bac].label} • {tt.chuyen_mon}</div>
+                                            <div {...{ style: { fontWeight: 700, fontSize: 13 } }}>{tt.ho_ten}</div>
+                                            <div {...{ style: { fontSize: 10, opacity: 0.5 } }}>{CAP_BAC_TT_MAP[tt.cap_bac].label} • {tt.chuyen_mon}</div>
                                         </div>
                                     </VCT_Stack>
                                 </td>
-                                <td style={{ textAlign: 'center', padding: '10px' }}>
-                                    <div style={{ display: 'inline-flex', alignItems: 'center', gap: 4, padding: '2px 8px', borderRadius: 8, background: count > 0 ? 'rgba(16,185,129,0.1)' : 'rgba(245,158,11,0.1)', fontWeight: 800, fontSize: 13, color: count > 0 ? '#10b981' : '#f59e0b' }}>
+                                <td {...{ style: { textAlign: 'center', padding: '10px' } }}>
+                                    <div {...{ style: { display: 'inline-flex', alignItems: 'center', gap: 4, padding: '2px 8px', borderRadius: 8, background: count > 0 ? 'rgba(16,185,129,0.1)' : 'rgba(245,158,11,0.1)', fontWeight: 800, fontSize: 13, color: count > 0 ? '#10b981' : '#f59e0b' } }}>
                                         {count}
                                     </div>
-                                    <div style={{ width: '60%', margin: '4px auto 0', height: 3, borderRadius: 2, background: '#e2e8f0' }}>
-                                        <div style={{ width: `${(count / maxCount) * 100}%`, height: '100%', borderRadius: 2, background: count > 0 ? '#10b981' : '#e2e8f0', transition: 'width 0.3s' }} />
+                                    <div {...{ style: { width: '60%', margin: '4px auto 0', height: 3, borderRadius: 2, background: '#e2e8f0' } }}>
+                                        <div {...{ style: { width: `${(count / maxCount) * 100}%`, height: '100%', borderRadius: 2, background: count > 0 ? '#10b981' : '#e2e8f0', transition: 'width 0.3s' } }} />
                                     </div>
                                 </td>
                                 {PHIENS.map(phien => {
                                     const phienAssigns = assignments.filter(a => a.tt_id === tt.id && a.phien === phien);
                                     return (
-                                        <td key={phien} style={{ textAlign: 'center', padding: '6px', borderRadius: phien === 'toi' ? '0 8px 8px 0' : 0 }}>
+                                        <td key={phien} {...{ style: { textAlign: 'center', padding: '6px', borderRadius: phien === 'toi' ? '0 8px 8px 0' : 0 } }}>
                                             {phienAssigns.length === 0 ? (
-                                                <span style={{ color: '#cbd5e1', fontSize: 16 }}>○</span>
+                                                <span {...{ style: { color: '#cbd5e1', fontSize: 16 } }}>○</span>
                                             ) : phienAssigns.map(a => {
                                                 const san = getSan(a.san_id);
                                                 const vtr = VAI_TRO_OPTIONS.find(v => v.value === a.vai_tro);
                                                 return (
-                                                    <div key={a.id} style={{
+                                                    <div key={a.id} {...{ style: {
                                                         padding: '4px 8px', borderRadius: 8, marginBottom: 2,
                                                         background: a.vai_tro === 'chinh' ? 'rgba(59,130,246,0.1)' : 'rgba(148,163,184,0.1)',
                                                         fontSize: 11, fontWeight: 600,
-                                                    }}>
-                                                        <div style={{ color: a.vai_tro === 'chinh' ? '#3b82f6' : '#64748b' }}>{san?.ten}</div>
-                                                        <div style={{ fontSize: 9, opacity: 0.5 }}>{vtr?.label}</div>
+                                                    } }}>
+                                                        <div {...{ style: { color: a.vai_tro === 'chinh' ? '#3b82f6' : '#64748b' } }}>{san?.ten}</div>
+                                                        <div {...{ style: { fontSize: 9, opacity: 0.5 } }}>{vtr?.label}</div>
                                                     </div>
                                                 );
                                             })}
@@ -280,38 +280,38 @@ export const Page_referee_assignments = () => {
                     {renderMatrixView()}
                 </VCT_Card>
             ) : (
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))', gap: 20 }}>
+                <div {...{ style: { display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))', gap: 20 } }}>
                     {sanActive.map(san => {
                         const sanAssigns = bySan.get(san.id) || [];
                         return (
                             <VCT_Card key={san.id}>
                                 <VCT_Stack direction="row" gap={12} align="center" className="mb-4">
-                                    <div style={{ width: 12, height: 12, borderRadius: '50%', background: san.trang_thai === 'dang_thi_dau' ? '#ef4444' : san.trang_thai === 'san_sang' ? '#10b981' : '#f59e0b' }} />
+                                    <div {...{ style: { width: 12, height: 12, borderRadius: '50%', background: san.trang_thai === 'dang_thi_dau' ? '#ef4444' : san.trang_thai === 'san_sang' ? '#10b981' : '#f59e0b' } }} />
                                     <div className="flex-1">
-                                        <div style={{ fontWeight: 800, fontSize: 15 }}>{san.ten}</div>
+                                        <div {...{ style: { fontWeight: 800, fontSize: 15 } }}>{san.ten}</div>
                                         <div className="text-[11px] opacity-50">{san.vi_tri} • {san.loai}</div>
                                     </div>
                                     <VCT_Badge text={`${sanAssigns.length} TT`} type={sanAssigns.length > 0 ? 'success' : 'warning'} />
                                 </VCT_Stack>
 
                                 {sanAssigns.length === 0 ? (
-                                    <div style={{ padding: 20, textAlign: 'center', opacity: 0.3, fontSize: 13 }}>Chưa phân công trọng tài</div>
+                                    <div {...{ style: { padding: 20, textAlign: 'center', opacity: 0.3, fontSize: 13 } }}>Chưa phân công trọng tài</div>
                                 ) : (
                                     <VCT_Stack gap={8}>
                                         {sanAssigns.map(a => {
                                             const tt = getTT(a.tt_id);
                                             const vtr = VAI_TRO_OPTIONS.find(v => v.value === a.vai_tro);
                                             return (
-                                                <div key={a.id} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 12px', borderRadius: 12, background: 'var(--vct-bg-elevated)', border: '1px solid var(--vct-border-subtle)' }}>
+                                                <div key={a.id} {...{ style: { display: 'flex', alignItems: 'center', gap: 10, padding: '10px 12px', borderRadius: 12, background: 'var(--vct-bg-elevated)', border: '1px solid var(--vct-border-subtle)' } }}>
                                                     <VCT_AvatarLetter name={tt?.ho_ten || '?'} size={28} />
                                                     <div className="flex-1">
-                                                        <div style={{ fontWeight: 700, fontSize: 13 }}>{tt?.ho_ten || '—'}</div>
+                                                        <div {...{ style: { fontWeight: 700, fontSize: 13 } }}>{tt?.ho_ten || '—'}</div>
                                                         <div className="text-[11px] opacity-50">{vtr?.label} • {tt ? CAP_BAC_TT_MAP[tt.cap_bac].label : ''}</div>
                                                     </div>
                                                     <VCT_Badge text={PHIEN_LABELS[a.phien] || a.phien} type="info" />
                                                     <button
                                                         onClick={() => permissions.canDelete ? setDeleteTarget(a) : requireAction('delete', 'hủy phân công')}
-                                                        style={{ background: 'none', border: 'none', cursor: permissions.canDelete ? 'pointer' : 'not-allowed', color: '#ef4444', padding: 4, opacity: permissions.canDelete ? 1 : 0.5 }}
+                                                        {...{ style: { background: 'none', border: 'none', cursor: permissions.canDelete ? 'pointer' : 'not-allowed', color: '#ef4444', padding: 4, opacity: permissions.canDelete ? 1 : 0.5 } }}
                                                         aria-label="Hủy phân công"
                                                         disabled={!permissions.canDelete}
                                                     >
@@ -347,25 +347,25 @@ export const Page_referee_assignments = () => {
 
             {/* Auto-Assign Modal */}
             <VCT_Modal isOpen={showAutoModal} onClose={() => setShowAutoModal(false)} title="⚡ Phân công Trọng tài Tự động">
-                <VCT_Text variant="body" style={{ marginBottom: 16, color: 'var(--vct-text-secondary)' }}>
+                <VCT_Text variant="body" {...{ style: { marginBottom: 16, color: 'var(--vct-text-secondary)' } }}>
                     Thuật toán Round-Robin sẽ phân công đều trọng tài cho tất cả các sàn đấu,
                     mỗi sàn có 1 TT chính + 1 TT phụ, đảm bảo không có xung đột (cùng TT ở 2 sàn 1 phiên).
                 </VCT_Text>
 
-                <div style={{ padding: 16, borderRadius: 12, background: 'rgba(16,185,129,0.05)', border: '1px solid rgba(16,185,129,0.1)', marginBottom: 16 }}>
-                    <VCT_Text variant="small" style={{ fontWeight: 700, color: '#10b981' }}>📊 Tổng quan dự kiến</VCT_Text>
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12, marginTop: 8 }}>
+                <div {...{ style: { padding: 16, borderRadius: 12, background: 'rgba(16,185,129,0.05)', border: '1px solid rgba(16,185,129,0.1)', marginBottom: 16 } }}>
+                    <VCT_Text variant="small" {...{ style: { fontWeight: 700, color: '#10b981' } }}>📊 Tổng quan dự kiến</VCT_Text>
+                    <div {...{ style: { display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12, marginTop: 8 } }}>
                         <div className="text-center">
-                            <div style={{ fontSize: 20, fontWeight: 900 }}>{ttsActive.length}</div>
-                            <div style={{ fontSize: 11, color: 'var(--vct-text-tertiary)' }}>TT sẵn sàng</div>
+                            <div {...{ style: { fontSize: 20, fontWeight: 900 } }}>{ttsActive.length}</div>
+                            <div {...{ style: { fontSize: 11, color: 'var(--vct-text-tertiary)' } }}>TT sẵn sàng</div>
                         </div>
                         <div className="text-center">
-                            <div style={{ fontSize: 20, fontWeight: 900 }}>{sanDaus.filter(s => s.trang_thai !== 'bao_tri').length}</div>
-                            <div style={{ fontSize: 11, color: 'var(--vct-text-tertiary)' }}>Sàn khả dụng</div>
+                            <div {...{ style: { fontSize: 20, fontWeight: 900 } }}>{sanDaus.filter(s => s.trang_thai !== 'bao_tri').length}</div>
+                            <div {...{ style: { fontSize: 11, color: 'var(--vct-text-tertiary)' } }}>Sàn khả dụng</div>
                         </div>
                         <div className="text-center">
-                            <div style={{ fontSize: 20, fontWeight: 900 }}>{sanDaus.filter(s => s.trang_thai !== 'bao_tri').length * 3 * 2}</div>
-                            <div style={{ fontSize: 11, color: 'var(--vct-text-tertiary)' }}>Slot dự kiến</div>
+                            <div {...{ style: { fontSize: 20, fontWeight: 900 } }}>{sanDaus.filter(s => s.trang_thai !== 'bao_tri').length * 3 * 2}</div>
+                            <div {...{ style: { fontSize: 11, color: 'var(--vct-text-tertiary)' } }}>Slot dự kiến</div>
                         </div>
                     </div>
                 </div>

@@ -242,20 +242,15 @@ export const Page_boc_tham = () => {
             {/* ── HERO HEADER ── */}
             <motion.div
                 initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}
-                style={{
-                    padding: '32px 40px', borderRadius: '28px', marginBottom: '28px',
-                    background: 'linear-gradient(135deg, #eff6ff 0%, #dbeafe 50%, #bfdbfe 100%)',
-                    border: '1px solid rgba(59, 130, 246, 0.1)',
-                    boxShadow: '0 10px 30px rgba(59, 130, 246, 0.08)',
-                }}
+                className="px-10 py-8 rounded-[28px] mb-7 bg-linear-135 from-blue-50 via-blue-100 to-blue-200 border border-blue-500/10 shadow-[0_10px_30px_rgba(59,130,246,0.08)]"
             >
                 <VCT_Stack direction="row" justify="space-between" align="center">
                     <div>
                         <VCT_Stack direction="row" align="center" gap={12}>
-                            <span style={{ fontSize: 36 }}>🎲</span>
-                            <VCT_Text variant="h2" style={{ fontWeight: 900, color: '#1e40af', margin: 0 }}>BỐC THĂM XẾP CẶP</VCT_Text>
+                            <span className="text-4xl">🎲</span>
+                            <VCT_Text variant="h2" className="font-black text-blue-800 m-0">BỐC THĂM XẾP CẶP</VCT_Text>
                         </VCT_Stack>
-                        <VCT_Text variant="body" style={{ color: '#3b82f6', marginTop: 4, fontSize: 14 }}>
+                        <VCT_Text variant="body" className="text-blue-500 mt-1 text-sm">
                             Fisher-Yates Shuffle — Ràng buộc cùng đoàn không gặp nhau vòng 1
                         </VCT_Text>
                     </div>
@@ -285,33 +280,36 @@ export const Page_boc_tham = () => {
                 </VCT_Stack>
 
                 {/* VDV List */}
-                <div style={{ marginTop: 20 }}>
-                    <VCT_Text variant="small" style={{ fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 8, color: 'var(--vct-text-tertiary)' }}>
+                <div className="mt-5">
+                    <VCT_Text variant="small" className="font-bold uppercase tracking-wider mb-2 text-(--vct-text-tertiary)">
                         Danh sách VĐV đủ điều kiện ({eligibleVDVs.length})
                     </VCT_Text>
                     {eligibleVDVs.length === 0 ? (
                         <VCT_EmptyState title="Chưa có VĐV" description="Chưa có VĐV đăng ký nội dung này hoặc chưa được duyệt." icon="👤" />
                     ) : (
-                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
-                            {eligibleVDVs.map((v, i) => (
+                        <div className="flex flex-wrap gap-2">
+                            {eligibleVDVs.map((v, i) => {
+                                const teamColor = getTeamColor(v.doan_id);
+                                const cardStyle = {
+                                    border: `2px solid ${teamColor}20`,
+                                    borderLeft: `4px solid ${teamColor}`,
+                                } as React.CSSProperties
+                                const spanStyle = { color: teamColor } as React.CSSProperties
+                                return (
                                 <motion.div
                                     key={v.id}
                                     initial={{ opacity: 0, scale: 0.8 }}
                                     animate={{ opacity: 1, scale: 1 }}
                                     transition={{ delay: i * 0.05 }}
-                                    style={{
-                                        display: 'flex', alignItems: 'center', gap: 8,
-                                        padding: '8px 14px', borderRadius: 12,
-                                        background: 'var(--vct-bg-elevated)',
-                                        border: `2px solid ${getTeamColor(v.doan_id)}20`,
-                                        borderLeft: `4px solid ${getTeamColor(v.doan_id)}`,
-                                    }}
+                                    className="flex items-center gap-2 py-2 px-3.5 rounded-xl bg-(--vct-bg-elevated)"
+                                    {...{ style: cardStyle }}
                                 >
-                                    <span style={{ fontSize: 12, fontWeight: 800, color: getTeamColor(v.doan_id) }}>{v.doan_ten.replace('Đoàn ', '').replace('CLB ', '')}</span>
-                                    <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--vct-text-primary)' }}>{v.ho_ten}</span>
-                                    <span style={{ fontSize: 11, color: 'var(--vct-text-tertiary)' }}>{v.can_nang}kg</span>
+                                    <span className="text-xs font-extrabold" {...{ style: spanStyle }}>{v.doan_ten.replace('Đoàn ', '').replace('CLB ', '')}</span>
+                                    <span className="text-[13px] font-bold text-(--vct-text-primary)">{v.ho_ten}</span>
+                                    <span className="text-[11px] text-(--vct-text-tertiary)">{v.can_nang}kg</span>
                                 </motion.div>
-                            ))}
+                                );
+                            })}
                         </div>
                     )}
                 </div>
@@ -353,7 +351,7 @@ export const Page_boc_tham = () => {
                         headerAction={existingDraw && <VCT_Badge text={`Schema ${existingDraw.schema} • ${existingDraw.timestamp}`} type="info" />}
                     >
                         {/* Bracket Table */}
-                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 12 }}>
+                        <div className="grid grid-cols-2 gap-3">
                             {Array.from({ length: Math.ceil(displaySlots.length / 2) }).map((_, pairIdx) => {
                                 const s1 = displaySlots[pairIdx * 2];
                                 const s2 = displaySlots[pairIdx * 2 + 1];
@@ -363,50 +361,39 @@ export const Page_boc_tham = () => {
                                         initial={{ opacity: 0, x: animPhase === 'shuffle' ? (Math.random() > 0.5 ? 30 : -30) : 0 }}
                                         animate={{ opacity: 1, x: 0 }}
                                         transition={{ delay: animPhase === 'reveal' ? pairIdx * 0.1 : 0, duration: animPhase === 'shuffle' ? 0.15 : 0.4 }}
-                                        style={{
-                                            padding: '16px', borderRadius: 16,
-                                            background: 'var(--vct-bg-glass-heavy)',
-                                            border: '1px solid var(--vct-border-subtle)',
-                                            boxShadow: '0 2px 8px rgba(0,0,0,0.03)',
-                                        }}
+                                        className="p-4 rounded-2xl bg-(--vct-bg-glass-heavy) border border-(--vct-border-subtle) shadow-[0_2px_8px_rgba(0,0,0,0.03)]"
                                     >
-                                        <div style={{ fontSize: 11, fontWeight: 800, color: 'var(--vct-text-tertiary)', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+                                        <div className="text-[11px] font-extrabold text-(--vct-text-tertiary) mb-2 uppercase tracking-widest">
                                             Trận {pairIdx + 1}
                                         </div>
-                                        <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                                        <div className="flex flex-col gap-1">
                                             {/* RED corner */}
-                                            <div style={{
-                                                display: 'flex', alignItems: 'center', gap: 10,
-                                                padding: '10px 14px', borderRadius: 10,
-                                                background: s1?.vdv ? 'linear-gradient(135deg, rgba(239,68,68,0.08), rgba(239,68,68,0.03))' : 'transparent',
-                                                borderLeft: '4px solid #ef4444',
-                                            }}>
-                                                <span style={{ fontSize: 11, fontWeight: 900, color: '#ef4444', fontFamily: 'monospace', minWidth: 24 }}>#{s1?.seed}</span>
+                                            <div className="flex items-center gap-2.5 py-2.5 px-3.5 rounded-xl border-l-4 border-l-red-500"
+                                                {...{ style: { background: s1?.vdv ? 'linear-gradient(135deg, rgba(239,68,68,0.08), rgba(239,68,68,0.03))' : 'transparent' } as React.CSSProperties }}
+                                            >
+                                                <span className="text-[11px] font-black text-red-500 font-mono min-w-[24px]">#{s1?.seed}</span>
                                                 {s1?.vdv ? (
                                                     <>
-                                                        <span style={{ fontWeight: 800, fontSize: 13, color: 'var(--vct-text-primary)', textTransform: 'uppercase' }}>{s1.vdv.ho_ten}</span>
-                                                        <span style={{ fontSize: 11, color: getTeamColor(s1.vdv.doan_id), fontWeight: 700 }}>{s1.vdv.doan_ten}</span>
+                                                        <span className="font-extrabold text-[13px] text-(--vct-text-primary) uppercase">{s1.vdv.ho_ten}</span>
+                                                        <span className="text-[11px] font-bold" {...{ style: { color: getTeamColor(s1.vdv.doan_id) } as React.CSSProperties }}>{s1.vdv.doan_ten}</span>
                                                     </>
                                                 ) : (
-                                                    <span style={{ fontSize: 12, color: '#94a3b8', fontStyle: 'italic' }}>BYE</span>
+                                                    <span className="text-xs text-slate-400 italic">BYE</span>
                                                 )}
                                             </div>
-                                            <div style={{ textAlign: 'center', fontSize: 12, fontWeight: 900, color: '#94a3b8' }}>VS</div>
+                                            <div className="text-center text-xs font-black text-slate-400">VS</div>
                                             {/* BLUE corner */}
-                                            <div style={{
-                                                display: 'flex', alignItems: 'center', gap: 10,
-                                                padding: '10px 14px', borderRadius: 10,
-                                                background: s2?.vdv ? 'linear-gradient(135deg, rgba(59,130,246,0.08), rgba(59,130,246,0.03))' : 'transparent',
-                                                borderLeft: '4px solid #3b82f6',
-                                            }}>
-                                                <span style={{ fontSize: 11, fontWeight: 900, color: '#3b82f6', fontFamily: 'monospace', minWidth: 24 }}>#{s2?.seed}</span>
+                                            <div className="flex items-center gap-2.5 py-2.5 px-3.5 rounded-xl border-l-4 border-l-blue-500"
+                                                {...{ style: { background: s2?.vdv ? 'linear-gradient(135deg, rgba(59,130,246,0.08), rgba(59,130,246,0.03))' : 'transparent' } as React.CSSProperties }}
+                                            >
+                                                <span className="text-[11px] font-black text-blue-500 font-mono min-w-[24px]">#{s2?.seed}</span>
                                                 {s2?.vdv ? (
                                                     <>
-                                                        <span style={{ fontWeight: 800, fontSize: 13, color: 'var(--vct-text-primary)', textTransform: 'uppercase' }}>{s2.vdv.ho_ten}</span>
-                                                        <span style={{ fontSize: 11, color: getTeamColor(s2.vdv.doan_id), fontWeight: 700 }}>{s2.vdv.doan_ten}</span>
+                                                        <span className="font-extrabold text-[13px] text-(--vct-text-primary) uppercase">{s2.vdv.ho_ten}</span>
+                                                        <span className="text-[11px] font-bold" {...{ style: { color: getTeamColor(s2.vdv.doan_id) } as React.CSSProperties }}>{s2.vdv.doan_ten}</span>
                                                     </>
                                                 ) : (
-                                                    <span style={{ fontSize: 12, color: '#94a3b8', fontStyle: 'italic' }}>BYE</span>
+                                                    <span className="text-xs text-slate-400 italic">BYE</span>
                                                 )}
                                             </div>
                                         </div>
@@ -418,27 +405,30 @@ export const Page_boc_tham = () => {
                         {/* Draw History for all contents */}
                         {drawResults.length > 1 && (
                             <div className="mt-6">
-                                <VCT_Text variant="small" style={{ fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 8, color: 'var(--vct-text-tertiary)' }}>
+                                <VCT_Text variant="small" className="font-bold uppercase tracking-wider mb-2 text-(--vct-text-tertiary)">
                                     Tổng hợp bốc thăm ({drawResults.length} nội dung)
                                 </VCT_Text>
-                                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
-                                    {drawResults.map(d => (
-                                        <div key={d.id} style={{
-                                            padding: '8px 14px', borderRadius: 10,
+                                <div className="flex flex-wrap gap-2">
+                                    {drawResults.map(d => {
+                                        const cardBgStyle = {
                                             background: d.status === 'confirmed' ? 'rgba(16,185,129,0.08)' : 'rgba(245,158,11,0.08)',
                                             border: `1px solid ${d.status === 'confirmed' ? 'rgba(16,185,129,0.2)' : 'rgba(245,158,11,0.2)'}`,
-                                            cursor: 'pointer',
-                                        }}
+                                        } as React.CSSProperties;
+                                        return (
+                                        <div key={d.id} 
+                                            className="px-3.5 py-2 rounded-xl cursor-pointer"
+                                            {...{ style: cardBgStyle }}
                                             onClick={() => setSelectedContent(d.nd_id)}
                                         >
-                                            <span style={{ fontSize: 12, fontWeight: 700, color: d.status === 'confirmed' ? '#10b981' : '#f59e0b' }}>
+                                            <span className={`text-xs font-bold ${d.status === 'confirmed' ? 'text-emerald-500' : 'text-amber-500'}`}>
                                                 {d.status === 'confirmed' ? '✓' : '📝'} {d.nd_ten}
                                             </span>
-                                            <span style={{ fontSize: 11, color: 'var(--vct-text-tertiary)', marginLeft: 6 }}>
+                                            <span className="text-[11px] text-(--vct-text-tertiary) ml-1.5">
                                                 {d.slots.filter(s => !s.bye).length} VĐV
                                             </span>
                                         </div>
-                                    ))}
+                                        )
+                                    })}
                                 </div>
                             </div>
                         )}

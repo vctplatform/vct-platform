@@ -78,7 +78,7 @@ export const Page_appeals = () => {
                 </div>
             )}
             {uiState.loading && items.length === 0 && (
-                <div style={{ marginBottom: 16, padding: '12px 14px', borderRadius: 12, border: '1px solid var(--vct-border-subtle)', background: 'var(--vct-bg-elevated)', color: 'var(--vct-text-tertiary)', fontSize: 13, fontWeight: 700 }}>
+                <div {...{ style: { marginBottom: 16, padding: '12px 14px', borderRadius: 12, border: '1px solid var(--vct-border-subtle)', background: 'var(--vct-bg-elevated)', color: 'var(--vct-text-tertiary)', fontSize: 13, fontWeight: 700 } }}>
                     Đang tải danh sách khiếu nại...
                 </div>
             )}
@@ -106,30 +106,30 @@ export const Page_appeals = () => {
                         const lt = LOAI_MAP[item.loai];
                         return (
                             <motion.div key={item.id} layout initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-                                <div style={{ borderRadius: 16, border: '1px solid var(--vct-border-subtle)', overflow: 'hidden', background: 'var(--vct-bg-glass)', borderLeft: `4px solid ${st.color}` }}>
-                                    <div onClick={() => setExpandedId(expandedId === item.id ? null : item.id)} style={{ padding: '16px 20px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 16 }}>
+                                <div {...{ style: { borderRadius: 16, border: '1px solid var(--vct-border-subtle)', overflow: 'hidden', background: 'var(--vct-bg-glass)', borderLeft: `4px solid ${st.color}` } }}>
+                                    <div onClick={() => setExpandedId(expandedId === item.id ? null : item.id)} {...{ style: { padding: '16px 20px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 16 } }}>
                                         <VCT_AvatarLetter name={item.doan_ten} size={32} />
                                         <div className="flex-1">
-                                            <div style={{ fontWeight: 700, fontSize: 14 }}>{item.doan_ten}</div>
+                                            <div {...{ style: { fontWeight: 700, fontSize: 14 } }}>{item.doan_ten}</div>
                                             <div className="text-xs opacity-60">{item.noi_dung_lien_quan}</div>
                                         </div>
                                         <VCT_Badge text={lt.label} type="info" />
                                         <VCT_Badge text={st.label} type={st.type} pulse={item.trang_thai === 'moi'} />
-                                        <span style={{ fontSize: 11, opacity: 0.4, fontFamily: 'monospace' }}>{item.thoi_gian_nop}</span>
+                                        <span {...{ style: { fontSize: 11, opacity: 0.4, fontFamily: 'monospace' } }}>{item.thoi_gian_nop}</span>
                                     </div>
                                     <AnimatePresence>
                                         {expandedId === item.id && (
                                             <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }}>
-                                                <div style={{ padding: '16px 20px', borderTop: '1px dashed var(--vct-border-subtle)', background: 'var(--vct-bg-base)' }}>
-                                                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 16 }}>
-                                                        <div><span className="text-[11px] opacity-50">Lý do</span><div style={{ fontSize: 13, fontWeight: 600 }}>{item.ly_do}</div></div>
-                                                        <div><span className="text-[11px] opacity-50">Bằng chứng</span><div style={{ fontSize: 13, fontWeight: 600 }}>{item.bang_chung || '—'}</div></div>
-                                                        {item.ket_luan && <div><span className="text-[11px] opacity-50">Kết luận</span><div style={{ fontSize: 13, fontWeight: 600, color: '#10b981' }}>{item.ket_luan}</div></div>}
-                                                        {item.nguoi_xu_ly && <div><span className="text-[11px] opacity-50">Người xử lý</span><div style={{ fontSize: 13, fontWeight: 600 }}>{item.nguoi_xu_ly} — {item.thoi_gian_xu_ly}</div></div>}
+                                                <div {...{ style: { padding: '16px 20px', borderTop: '1px dashed var(--vct-border-subtle)', background: 'var(--vct-bg-base)' } }}>
+                                                    <div {...{ style: { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 16 } }}>
+                                                        <div><span className="text-[11px] opacity-50">Lý do</span><div {...{ style: { fontSize: 13, fontWeight: 600 } }}>{item.ly_do}</div></div>
+                                                        <div><span className="text-[11px] opacity-50">Bằng chứng</span><div {...{ style: { fontSize: 13, fontWeight: 600 } }}>{item.bang_chung || '—'}</div></div>
+                                                        {item.ket_luan && <div><span className="text-[11px] opacity-50">Kết luận</span><div {...{ style: { fontSize: 13, fontWeight: 600, color: '#10b981' } }}>{item.ket_luan}</div></div>}
+                                                        {item.nguoi_xu_ly && <div><span className="text-[11px] opacity-50">Người xử lý</span><div {...{ style: { fontSize: 13, fontWeight: 600 } }}>{item.nguoi_xu_ly} — {item.thoi_gian_xu_ly}</div></div>}
                                                     </div>
                                                     {(item.trang_thai === 'moi' || item.trang_thai === 'dang_xu_ly') && (
                                                         <VCT_Stack direction="row" gap={8}>
-                                                            <VCT_Button variant="secondary" onClick={() => { setResolveModal(item); }} style={{ fontSize: 12 }}>📝 Xử lý</VCT_Button>
+                                                            <VCT_Button variant="secondary" onClick={() => { setResolveModal(item); }} {...{ style: { fontSize: 12 } }}>📝 Xử lý</VCT_Button>
                                                         </VCT_Stack>
                                                     )}
                                                 </div>
@@ -160,15 +160,15 @@ export const Page_appeals = () => {
 
             {/* Resolve Modal */}
             <VCT_Modal isOpen={!!resolveModal} onClose={() => setResolveModal(null)} title="Xử lý Khiếu nại" width="500px" footer={
-                <VCT_Stack direction="row" gap={8} style={{ width: '100%' }} justify="flex-end">
+                <VCT_Stack direction="row" gap={8} {...{ style: { width: '100%' } }} justify="flex-end">
                     <VCT_Button variant="secondary" onClick={() => handleResolve('dang_xu_ly')}>⏳ Đang xử lý</VCT_Button>
-                    <VCT_Button variant="secondary" onClick={() => handleResolve('bac_bo')} style={{ color: '#ef4444' }}>✗ Bác bỏ</VCT_Button>
+                    <VCT_Button variant="secondary" onClick={() => handleResolve('bac_bo')} {...{ style: { color: '#ef4444' } }}>✗ Bác bỏ</VCT_Button>
                     <VCT_Button onClick={() => handleResolve('chap_nhan')}>✓ Chấp nhận</VCT_Button>
                 </VCT_Stack>
             }>
                 {resolveModal && (
                     <VCT_Stack gap={16}>
-                        <div style={{ padding: 12, borderRadius: 12, background: 'var(--vct-bg-input)', fontSize: 13 }}>
+                        <div {...{ style: { padding: 12, borderRadius: 12, background: 'var(--vct-bg-input)', fontSize: 13 } }}>
                             <strong>{resolveModal.doan_ten}</strong> — {resolveModal.ly_do}
                         </div>
                         <VCT_Field label="Kết luận / Quyết định">

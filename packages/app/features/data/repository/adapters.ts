@@ -229,125 +229,63 @@ const apiConfig = {
   getAuthToken: getStoredAuthToken,
 }
 
+const createRepositoryBundle = <T extends { id: string }>(
+  storageKey: string,
+  seed: T[],
+  validate: (item: unknown) => item is T,
+  entityName: string
+) => {
+  const api = createApiAdapter<T>(entityName, {
+    ...apiConfig,
+    endpoints: resolveEntityEndpoints(entityName),
+  })
+
+  return {
+    mock: createMockAdapter<T>(storageKey, seed, validate, api),
+    api,
+  }
+}
+
 export const repositories = {
-  teams: {
-    mock: createMockAdapter<DonVi>('vct:teams', DON_VIS, isDonVi),
-    api: createApiAdapter<DonVi>('teams', {
-      ...apiConfig,
-      endpoints: resolveEntityEndpoints('teams'),
-    }),
-  },
-  athletes: {
-    mock: createMockAdapter<VanDongVien>('vct:athletes', VAN_DONG_VIENS, isAthlete),
-    api: createApiAdapter<VanDongVien>('athletes', {
-      ...apiConfig,
-      endpoints: resolveEntityEndpoints('athletes'),
-    }),
-  },
-  registration: {
-    mock: createMockAdapter<DangKy>('vct:registration', DANG_KYS, isRegistration),
-    api: createApiAdapter<DangKy>('registration', {
-      ...apiConfig,
-      endpoints: resolveEntityEndpoints('registration'),
-    }),
-  },
-  results: {
-    mock: createMockAdapter<ResultRecord>('vct:results', RESULTS_SEED, isResult),
-    api: createApiAdapter<ResultRecord>('results', {
-      ...apiConfig,
-      endpoints: resolveEntityEndpoints('results'),
-    }),
-  },
-  schedule: {
-    mock: createMockAdapter<LichThiDau>('vct:schedule', LICH_THI_DAUS, isSchedule),
-    api: createApiAdapter<LichThiDau>('schedule', {
-      ...apiConfig,
-      endpoints: resolveEntityEndpoints('schedule'),
-    }),
-  },
-  arenas: {
-    mock: createMockAdapter<SanDau>('vct:arenas', SAN_DAUS, isArena),
-    api: createApiAdapter<SanDau>('arenas', {
-      ...apiConfig,
-      endpoints: resolveEntityEndpoints('arenas'),
-    }),
-  },
-  referees: {
-    mock: createMockAdapter<TrongTai>('vct:referees', TRONG_TAIS, isReferee),
-    api: createApiAdapter<TrongTai>('referees', {
-      ...apiConfig,
-      endpoints: resolveEntityEndpoints('referees'),
-    }),
-  },
-  appeals: {
-    mock: createMockAdapter<KhieuNai>('vct:appeals', KHIEU_NAIS, isAppeal),
-    api: createApiAdapter<KhieuNai>('appeals', {
-      ...apiConfig,
-      endpoints: resolveEntityEndpoints('appeals'),
-    }),
-  },
-  weighIns: {
-    mock: createMockAdapter<CanKy>('vct:weigh-ins', CAN_KYS, isWeighIn),
-    api: createApiAdapter<CanKy>('weigh-ins', {
-      ...apiConfig,
-      endpoints: resolveEntityEndpoints('weigh-ins'),
-    }),
-  },
-  combatMatches: {
-    mock: createMockAdapter<TranDauDK>('vct:combat-matches', TRAN_DAUS, isCombatMatch),
-    api: createApiAdapter<TranDauDK>('combat-matches', {
-      ...apiConfig,
-      endpoints: resolveEntityEndpoints('combat-matches'),
-    }),
-  },
-  formPerformances: {
-    mock: createMockAdapter<LuotThiQuyen>('vct:form-performances', LUOT_THI_QUYENS, isFormPerformance),
-    api: createApiAdapter<LuotThiQuyen>('form-performances', {
-      ...apiConfig,
-      endpoints: resolveEntityEndpoints('form-performances'),
-    }),
-  },
-  formCategories: {
-    mock: createMockAdapter<NoiDungQuyen>('vct:form-categories', NOI_DUNG_QUYENS, isFormCategory),
-    api: createApiAdapter<NoiDungQuyen>('content-categories', {
-      ...apiConfig,
-      endpoints: resolveEntityEndpoints('content-categories'),
-    }),
-  },
-  combatCategories: {
-    mock: createMockAdapter<HangCan>('vct:combat-categories', HANG_CANS, isCombatCategory),
-    api: createApiAdapter<HangCan>('content-categories', {
-      ...apiConfig,
-      endpoints: resolveEntityEndpoints('content-categories'),
-    }),
-  },
-  ageGroups: {
-    mock: createMockAdapter<LuaTuoi>('vct:age-groups', LUA_TUOIS, isAgeGroup),
-    api: createApiAdapter<LuaTuoi>('content-categories', {
-      ...apiConfig,
-      endpoints: resolveEntityEndpoints('content-categories'),
-    }),
-  },
-  refereeAssignments: {
-    mock: createMockAdapter<RefereeAssignmentRecord>(
-      'vct:referee-assignments',
-      ASSIGNMENT_SEED,
-      isRefereeAssignment
-    ),
-    api: createApiAdapter<RefereeAssignmentRecord>('referee-assignments', {
-      ...apiConfig,
-      endpoints: resolveEntityEndpoints('referee-assignments'),
-    }),
-  },
-  tournamentConfig: {
-    mock: createMockAdapter<TournamentConfigRecord>(
-      'vct:tournament-config',
-      TOURNAMENT_CONFIG_SEED,
-      isTournamentConfig
-    ),
-    api: createApiAdapter<TournamentConfigRecord>('tournament-config', {
-      ...apiConfig,
-      endpoints: resolveEntityEndpoints('tournament-config'),
-    }),
-  },
+  teams: createRepositoryBundle<DonVi>('vct:teams', DON_VIS, isDonVi, 'teams'),
+  athletes: createRepositoryBundle<VanDongVien>('vct:athletes', VAN_DONG_VIENS, isAthlete, 'athletes'),
+  registration: createRepositoryBundle<DangKy>('vct:registration', DANG_KYS, isRegistration, 'registration'),
+  results: createRepositoryBundle<ResultRecord>('vct:results', RESULTS_SEED, isResult, 'results'),
+  schedule: createRepositoryBundle<LichThiDau>('vct:schedule', LICH_THI_DAUS, isSchedule, 'schedule'),
+  arenas: createRepositoryBundle<SanDau>('vct:arenas', SAN_DAUS, isArena, 'arenas'),
+  referees: createRepositoryBundle<TrongTai>('vct:referees', TRONG_TAIS, isReferee, 'referees'),
+  appeals: createRepositoryBundle<KhieuNai>('vct:appeals', KHIEU_NAIS, isAppeal, 'appeals'),
+  weighIns: createRepositoryBundle<CanKy>('vct:weigh-ins', CAN_KYS, isWeighIn, 'weigh-ins'),
+  combatMatches: createRepositoryBundle<TranDauDK>('vct:combat-matches', TRAN_DAUS, isCombatMatch, 'combat-matches'),
+  formPerformances: createRepositoryBundle<LuotThiQuyen>(
+    'vct:form-performances',
+    LUOT_THI_QUYENS,
+    isFormPerformance,
+    'form-performances'
+  ),
+  formCategories: createRepositoryBundle<NoiDungQuyen>(
+    'vct:form-categories',
+    NOI_DUNG_QUYENS,
+    isFormCategory,
+    'content-categories'
+  ),
+  combatCategories: createRepositoryBundle<HangCan>(
+    'vct:combat-categories',
+    HANG_CANS,
+    isCombatCategory,
+    'content-categories'
+  ),
+  ageGroups: createRepositoryBundle<LuaTuoi>('vct:age-groups', LUA_TUOIS, isAgeGroup, 'content-categories'),
+  refereeAssignments: createRepositoryBundle<RefereeAssignmentRecord>(
+    'vct:referee-assignments',
+    ASSIGNMENT_SEED,
+    isRefereeAssignment,
+    'referee-assignments'
+  ),
+  tournamentConfig: createRepositoryBundle<TournamentConfigRecord>(
+    'vct:tournament-config',
+    TOURNAMENT_CONFIG_SEED,
+    isTournamentConfig,
+    'tournament-config'
+  ),
 }

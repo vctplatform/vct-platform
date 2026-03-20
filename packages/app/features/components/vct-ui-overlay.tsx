@@ -72,7 +72,7 @@ export const VCT_LoadingOverlay = ({
       {visible ? (
         <motion.div
           className={cn(
-            'fixed inset-0 z-[400] grid place-items-center bg-slate-950/40 backdrop-blur-[1px]',
+            'fixed inset-0 z- grid place-items-center bg-slate-950/40 backdrop-blur-[1px]',
             className ?? ''
           )}
           initial={{ opacity: 0 }}
@@ -148,7 +148,7 @@ export const VCT_Modal = ({
             type="button"
             aria-label="Close dialog backdrop"
             onClick={onClose}
-            className="fixed inset-0 z-[400] border-none bg-slate-950/50"
+            className="fixed inset-0 z- border-none bg-slate-950/50"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -158,7 +158,7 @@ export const VCT_Modal = ({
             aria-modal="true"
             aria-labelledby={title ? titleId : undefined}
             className={cn(
-              'fixed left-1/2 top-1/2 z-[410] w-[calc(100vw-24px)] max-h-[min(90vh,900px)] -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-2xl border border-vct-border bg-vct-elevated shadow-(--vct-shadow-xl)',
+              'fixed left-1/2 top-1/2 z- w-[calc(100vw-24px)] max-h-[min(90vh,900px)] -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-2xl border border-vct-border bg-vct-elevated shadow-(--vct-shadow-xl)',
               className ?? ''
             )}
             style={{ maxWidth: width, ...style }}
@@ -217,7 +217,7 @@ export const VCT_Toast = ({
           role="status"
           aria-live="polite"
           className={cn(
-            'fixed bottom-4 right-4 z-[500] max-w-[420px] rounded-xl border px-3 py-2 text-sm font-semibold shadow-(--vct-shadow-lg)',
+            'fixed bottom-4 right-4 z- max-w-[420px] rounded-xl border px-3 py-2 text-sm font-semibold shadow-(--vct-shadow-lg)',
             TOAST_TONE_CLASS[tone],
             className ?? ''
           )}

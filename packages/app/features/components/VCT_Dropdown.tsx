@@ -100,7 +100,7 @@ export function VCT_Dropdown({ trigger, items, align = 'right', className }: VCT
             {open && (
                 <div
                     role="menu"
-                    className={`absolute top-full z-[100] mt-1.5 min-w-[200px] rounded-xl border border-(--vct-border-subtle) bg-(--vct-bg-elevated) py-1 shadow-(--vct-shadow-xl) animate-[vct-scale-in_0.15s_var(--vct-ease-out)_both] ${align === 'right' ? 'right-0 origin-top-right' : 'left-0 origin-top-left'}`}
+                    className={`absolute top-full z- mt-1.5 min-w-[200px] rounded-xl border border-(--vct-border-subtle) bg-(--vct-bg-elevated) py-1 shadow-(--vct-shadow-xl) animate-[vct-scale-in_0.15s_var(--vct-ease-out)_both] ${align === 'right' ? 'right-0 origin-top-right' : 'left-0 origin-top-left'}`}
                 >
                     {items.map((item, i) => (
                         <button

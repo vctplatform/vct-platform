@@ -48,15 +48,15 @@ const CurrencyInput = ({ value, onChange, disabled, placeholder }: { value: numb
     };
 
     return (
-        <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+        <div {...{ style: { position: 'relative', display: 'flex', alignItems: 'center' } }}>
             <VCT_Input
                 value={displayValue}
                 onChange={handleRawChange}
                 disabled={disabled}
                 placeholder={placeholder}
-                style={{ paddingRight: '40px', textAlign: 'right', fontWeight: 600 }}
+                {...{ style: { paddingRight: '40px', textAlign: 'right', fontWeight: 600 } }}
             />
-            <span style={{ position: 'absolute', right: '12px', color: 'var(--vct-text-tertiary)', fontWeight: 500, pointerEvents: 'none' }}>đ</span>
+            <span {...{ style: { position: 'absolute', right: '12px', color: 'var(--vct-text-tertiary)', fontWeight: 500, pointerEvents: 'none' } }}>đ</span>
         </div>
     );
 };
@@ -212,7 +212,7 @@ export const Page_giai_dau = () => {
             {/* THÔNG TIN CƠ BẢN */}
             <VCT_Card title="Thông tin cơ bản">
                 <VCT_Stack direction="row" gap={32}>
-                    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 16 }}>
+                    <div {...{ style: { flex: 1, display: 'flex', flexDirection: 'column', gap: 16 } }}>
                         <VCT_Field label="Tên giải đấu *"><VCT_Input value={config.ten_giai} onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleChange('ten_giai', e.target.value)} disabled={!isEditing} /></VCT_Field>
                         <VCT_Stack direction="row" gap={16}>
                             <VCT_Field label="Mã giải *" className="flex-1">
@@ -241,14 +241,14 @@ export const Page_giai_dau = () => {
                             <VCT_Field label="ĐV Đăng cai" className="flex-1"><VCT_Input value={config.dv_dang_cai} onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleChange('dv_dang_cai', e.target.value)} disabled={!isEditing} /></VCT_Field>
                         </VCT_Stack>
                     </div>
-                    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 16 }}>
+                    <div {...{ style: { flex: 1, display: 'flex', flexDirection: 'column', gap: 16 } }}>
                         <VCT_Stack direction="row" gap={16}>
                             <VCT_Field label="Bắt đầu" className="flex-1"><VCT_Input type="date" value={config.ngay_bat_dau} onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleChange('ngay_bat_dau', e.target.value)} disabled={!isEditing} /></VCT_Field>
                             <VCT_Field label="Kết thúc" className="flex-1"><VCT_Input type="date" value={config.ngay_ket_thuc} onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleChange('ngay_ket_thuc', e.target.value)} disabled={!isEditing} /></VCT_Field>
                             <VCT_Field label="Hạn đăng ký" className="flex-1"><VCT_Input type="date" value={config.ngay_dk_cuoi} onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleChange('ngay_dk_cuoi', e.target.value)} disabled={!isEditing} /></VCT_Field>
                         </VCT_Stack>
                         <VCT_Stack direction="row" gap={16}>
-                            <VCT_Field label="Địa điểm" style={{ flex: 2 }}><VCT_Input value={config.dia_diem} onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleChange('dia_diem', e.target.value)} disabled={!isEditing} /></VCT_Field>
+                            <VCT_Field label="Địa điểm" {...{ style: { flex: 2 } }}><VCT_Input value={config.dia_diem} onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleChange('dia_diem', e.target.value)} disabled={!isEditing} /></VCT_Field>
                             <VCT_Field label="Tỉnh/TP" className="flex-1"><VCT_Input value={config.tinh} onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleChange('tinh', e.target.value)} disabled={!isEditing} /></VCT_Field>
                         </VCT_Stack>
                         <VCT_Field label="Địa chỉ cụ thể"><VCT_Input value={config.dia_chi} onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleChange('dia_chi', e.target.value)} disabled={!isEditing} placeholder="Số nhà, đường, phường/xã..." /></VCT_Field>
@@ -347,13 +347,13 @@ export const Page_giai_dau = () => {
                 {/* CỘT 2: CƠ CẤU GIẢI THƯỞNG */}
                 < VCT_Card title="Cơ cấu Giải thưởng" className="flex-1">
                     <VCT_Stack gap={16}>
-                        <div style={{ fontSize: 13, fontWeight: 700, color: '#f59e0b', textTransform: 'uppercase' }}>Thưởng Cá nhân</div>
+                        <div {...{ style: { fontSize: 13, fontWeight: 700, color: '#f59e0b', textTransform: 'uppercase' } }}>Thưởng Cá nhân</div>
                         <VCT_Stack direction="row" gap={12}>
                             <VCT_Field label="🥇 Vàng"><CurrencyInput value={config.giai_thuong.hcv} onChange={(v: number) => handleNestedChange('giai_thuong', 'hcv', v)} disabled={!isEditing} /></VCT_Field>
                             <VCT_Field label="🥈 Bạc"><CurrencyInput value={config.giai_thuong.hcb} onChange={(v: number) => handleNestedChange('giai_thuong', 'hcb', v)} disabled={!isEditing} /></VCT_Field>
                             <VCT_Field label="🥉 Đồng"><CurrencyInput value={config.giai_thuong.hcd} onChange={(v: number) => handleNestedChange('giai_thuong', 'hcd', v)} disabled={!isEditing} /></VCT_Field>
                         </VCT_Stack>
-                        <div style={{ marginTop: 8, fontSize: 13, fontWeight: 700, color: '#10b981', textTransform: 'uppercase' }}>Thưởng Toàn đoàn</div>
+                        <div {...{ style: { marginTop: 8, fontSize: 13, fontWeight: 700, color: '#10b981', textTransform: 'uppercase' } }}>Thưởng Toàn đoàn</div>
                         <VCT_Stack direction="row" gap={12}>
                             <VCT_Field label="🏆 Nhất"><CurrencyInput value={config.giai_thuong_toan_doan.nhat} onChange={(v: number) => handleNestedChange('giai_thuong_toan_doan', 'nhat', v)} disabled={!isEditing} /></VCT_Field>
                             <VCT_Field label="🏆 Nhì"><CurrencyInput value={config.giai_thuong_toan_doan.nhi} onChange={(v: number) => handleNestedChange('giai_thuong_toan_doan', 'nhi', v)} disabled={!isEditing} /></VCT_Field>
@@ -365,10 +365,10 @@ export const Page_giai_dau = () => {
                 {/* CỘT 3: Y TẾ & PHÁP LÝ */}
                 < VCT_Card title="Y tế & Pháp lý" className="flex-1">
                     <VCT_Stack gap={16}>
-                        <div style={{ fontSize: 13, fontWeight: 700, color: '#ef4444', textTransform: 'uppercase' }}>Hỗ trợ Y tế</div>
+                        <div {...{ style: { fontSize: 13, fontWeight: 700, color: '#ef4444', textTransform: 'uppercase' } }}>Hỗ trợ Y tế</div>
                         <VCT_Field label="Bệnh viện trực tuyến & Khoảng cách">
-                            <div style={{ display: 'flex', gap: 8 }}>
-                                <div style={{ flex: 2 }}><VCT_Input value={config.y_te.benh_vien} onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleNestedChange('y_te', 'benh_vien', e.target.value)} disabled={!isEditing} placeholder="Tên BV..." /></div>
+                            <div {...{ style: { display: 'flex', gap: 8 } }}>
+                                <div {...{ style: { flex: 2 } }}><VCT_Input value={config.y_te.benh_vien} onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleNestedChange('y_te', 'benh_vien', e.target.value)} disabled={!isEditing} placeholder="Tên BV..." /></div>
                                 <div className="flex-1"><VCT_Input value={config.y_te.bv_kc} onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleNestedChange('y_te', 'bv_kc', e.target.value)} disabled={!isEditing} placeholder="Khoảng cách..." /></div>
                             </div>
                         </VCT_Field>
@@ -376,7 +376,7 @@ export const Page_giai_dau = () => {
                             <VCT_Field label="Hotline cấp cứu"><VCT_Input value={config.y_te.bv_sdt} onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleNestedChange('y_te', 'bv_sdt', e.target.value)} disabled={!isEditing} /></VCT_Field>
                             <VCT_Field label="Đội ngũ sơ cứu"><VCT_Input value={config.y_te.doi_y_te} onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleNestedChange('y_te', 'doi_y_te', e.target.value)} disabled={!isEditing} /></VCT_Field>
                         </VCT_Stack>
-                        <div style={{ marginTop: 8, fontSize: 13, fontWeight: 700, color: '#3b82f6', textTransform: 'uppercase' }}>Pháp lý</div>
+                        <div {...{ style: { marginTop: 8, fontSize: 13, fontWeight: 700, color: '#3b82f6', textTransform: 'uppercase' } }}>Pháp lý</div>
                         <VCT_Stack direction="row" gap={16}>
                             <VCT_Field label="Quyết định tổ chức"><VCT_Input value={config.phap_ly.qd_to_chuc} onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleNestedChange('phap_ly', 'qd_to_chuc', e.target.value)} disabled={!isEditing} /></VCT_Field>
                             <VCT_Field label="Bảo hiểm VĐV"><VCT_Input value={config.phap_ly.bao_hiem} onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleNestedChange('phap_ly', 'bao_hiem', e.target.value)} disabled={!isEditing} /></VCT_Field>
@@ -389,23 +389,23 @@ export const Page_giai_dau = () => {
             <VCT_Card>
                 <VCT_Stack direction="row" justify="space-between" align="start" className="mb-4">
                     <div>
-                        <VCT_Text variant="h2" style={{ marginBottom: 4 }}>Phương thức Xếp hạng Toàn đoàn</VCT_Text>
-                        <VCT_Text variant="small" style={{ color: 'var(--vct-text-secondary)' }}>
+                        <VCT_Text variant="h2" {...{ style: { marginBottom: 4 } }}>Phương thức Xếp hạng Toàn đoàn</VCT_Text>
+                        <VCT_Text variant="small" {...{ style: { color: 'var(--vct-text-secondary)' } }}>
                             Hệ thống sẽ dựa vào cấu hình này để tổng hợp xếp hạng chung cuộc cho các đơn vị tham gia.
                         </VCT_Text>
                     </div>
-                    <VCT_Stack direction="row" gap={8} style={{ background: 'var(--vct-bg-input)', padding: 4, borderRadius: 8, border: '1px solid var(--vct-border-subtle)' }}>
+                    <VCT_Stack direction="row" gap={8} {...{ style: { background: 'var(--vct-bg-input)', padding: 4, borderRadius: 8, border: '1px solid var(--vct-border-subtle)' } }}>
                         <button
                             disabled={!isEditing}
                             onClick={() => handleChange('cach_tinh_diem_toan_doan', 'theo_huy_chuong')}
-                            style={{
+                            {...{ style: {
                                 padding: '8px 16px', borderRadius: 6, border: 'none', cursor: isEditing ? 'pointer' : 'not-allowed',
                                 background: config.cach_tinh_diem_toan_doan === 'theo_huy_chuong' ? 'var(--vct-surface-overlay)' : 'transparent',
                                 color: config.cach_tinh_diem_toan_doan === 'theo_huy_chuong' ? 'var(--vct-text-primary)' : 'var(--vct-text-tertiary)',
                                 fontWeight: config.cach_tinh_diem_toan_doan === 'theo_huy_chuong' ? 600 : 500,
                                 boxShadow: config.cach_tinh_diem_toan_doan === 'theo_huy_chuong' ? '0 1px 3px rgba(0,0,0,0.1)' : 'none',
                                 transition: 'all 0.2s'
-                            }}
+                            } }}
                         >
                             <VCT_Stack direction="row" gap={8} align="center">
                                 <VCT_Icons.Award size={16} color={config.cach_tinh_diem_toan_doan === 'theo_huy_chuong' ? '#f59e0b' : 'currentColor'} />
@@ -415,14 +415,14 @@ export const Page_giai_dau = () => {
                         <button
                             disabled={!isEditing}
                             onClick={() => handleChange('cach_tinh_diem_toan_doan', 'theo_diem')}
-                            style={{
+                            {...{ style: {
                                 padding: '8px 16px', borderRadius: 6, border: 'none', cursor: isEditing ? 'pointer' : 'not-allowed',
                                 background: config.cach_tinh_diem_toan_doan === 'theo_diem' ? 'var(--vct-surface-overlay)' : 'transparent',
                                 color: config.cach_tinh_diem_toan_doan === 'theo_diem' ? 'var(--vct-text-primary)' : 'var(--vct-text-tertiary)',
                                 fontWeight: config.cach_tinh_diem_toan_doan === 'theo_diem' ? 600 : 500,
                                 boxShadow: config.cach_tinh_diem_toan_doan === 'theo_diem' ? '0 1px 3px rgba(0,0,0,0.1)' : 'none',
                                 transition: 'all 0.2s'
-                            }}
+                            } }}
                         >
                             <VCT_Stack direction="row" gap={8} align="center">
                                 <VCT_Icons.CheckCircle size={16} color={config.cach_tinh_diem_toan_doan === 'theo_diem' ? '#10b981' : 'currentColor'} />
@@ -433,21 +433,21 @@ export const Page_giai_dau = () => {
                 </VCT_Stack>
 
                 {config.cach_tinh_diem_toan_doan === 'theo_huy_chuong' ? (
-                    <div style={{ padding: '24px', background: 'var(--vct-bg-input)', borderRadius: 12, border: '1px solid var(--vct-border-subtle)', display: 'flex', alignItems: 'center', gap: 16 }}>
-                        <div style={{ padding: '16px', borderRadius: '50%', background: 'rgba(245, 158, 11, 0.1)' }}>
+                    <div {...{ style: { padding: '24px', background: 'var(--vct-bg-input)', borderRadius: 12, border: '1px solid var(--vct-border-subtle)', display: 'flex', alignItems: 'center', gap: 16 } }}>
+                        <div {...{ style: { padding: '16px', borderRadius: '50%', background: 'rgba(245, 158, 11, 0.1)' } }}>
                             <VCT_Icons.Award size={32} color="#f59e0b" />
                         </div>
                         <div>
-                            <VCT_Text style={{ fontWeight: 600, fontSize: 15, marginBottom: 4 }}>Xếp hạng theo Chỉ số Huy Chương</VCT_Text>
-                            <VCT_Text variant="small" style={{ color: 'var(--vct-text-secondary)' }}>
+                            <VCT_Text {...{ style: { fontWeight: 600, fontSize: 15, marginBottom: 4 } }}>Xếp hạng theo Chỉ số Huy Chương</VCT_Text>
+                            <VCT_Text variant="small" {...{ style: { color: 'var(--vct-text-secondary)' } }}>
                                 Hệ thống sẽ tự động xếp hạng toàn đoàn dựa trên số lượng Huy chương Vàng. Nếu bằng nhau sẽ xét đến Bạc, và cuối cùng là Đồng.
                             </VCT_Text>
                         </div>
                     </div>
                 ) : (
-                    <div style={{ borderTop: '1px solid var(--vct-border-subtle)', paddingTop: 16, marginTop: 8 }}>
+                    <div {...{ style: { borderTop: '1px solid var(--vct-border-subtle)', paddingTop: 16, marginTop: 8 } }}>
                         <VCT_Stack direction="row" justify="space-between" align="center" className="mb-4">
-                            <VCT_Text variant="small" style={{ color: 'var(--vct-text-secondary)', fontWeight: 500 }}>
+                            <VCT_Text variant="small" {...{ style: { color: 'var(--vct-text-secondary)', fontWeight: 500 } }}>
                                 Cấu hình mức điểm tương ứng cho từng loại thứ hạng
                             </VCT_Text>
                             {isEditing && (
@@ -465,29 +465,29 @@ export const Page_giai_dau = () => {
                         </VCT_Stack>
 
                         {config.diem_xep_hang && config.diem_xep_hang.length > 0 ? (
-                            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12 }}>
+                            <div {...{ style: { display: 'flex', flexWrap: 'wrap', gap: 12 } }}>
                                 {config.diem_xep_hang.map((pt, idx) => (
-                                    <div key={idx} style={{
+                                    <div key={idx} {...{ style: {
                                         display: 'flex', alignItems: 'center', background: 'var(--vct-bg-input)',
                                         border: '1px solid var(--vct-border-subtle)', borderRadius: 12, padding: '8px 16px', gap: 12
-                                    }}>
-                                        <div style={{
+                                    } }}>
+                                        <div {...{ style: {
                                             width: 24, height: 24, borderRadius: '50%', background: pt.thu_hang === 1 ? '#f59e0b' : pt.thu_hang === 2 ? '#94a3b8' : pt.thu_hang === 3 ? '#d97706' : 'var(--vct-border-strong)',
                                             color: pt.thu_hang <= 3 ? '#fff' : 'var(--vct-text-primary)', display: 'flex', justifyContent: 'center', alignItems: 'center', fontSize: 13, fontWeight: 800
-                                        }}>
+                                        } }}>
                                             {pt.thu_hang}
                                         </div>
                                         <div>
-                                            <VCT_Text style={{ fontWeight: 800, fontSize: 16 }}>{pt.diem} <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--vct-text-secondary)' }}>điểm</span></VCT_Text>
-                                            <div style={{ fontSize: 11, color: 'var(--vct-text-tertiary)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Hạng {pt.thu_hang}</div>
+                                            <VCT_Text {...{ style: { fontWeight: 800, fontSize: 16 } }}>{pt.diem} <span {...{ style: { fontSize: 12, fontWeight: 500, color: 'var(--vct-text-secondary)' } }}>điểm</span></VCT_Text>
+                                            <div {...{ style: { fontSize: 11, color: 'var(--vct-text-tertiary)', textTransform: 'uppercase', letterSpacing: '0.05em' } }}>Hạng {pt.thu_hang}</div>
                                         </div>
                                         {isEditing && (
-                                            <div style={{ display: 'flex', flexDirection: 'column', gap: 4, marginLeft: 12, paddingLeft: 12, borderLeft: '1px solid var(--vct-border-subtle)' }}>
+                                            <div {...{ style: { display: 'flex', flexDirection: 'column', gap: 4, marginLeft: 12, paddingLeft: 12, borderLeft: '1px solid var(--vct-border-subtle)' } }}>
                                                 <button
                                                     onClick={() => permissions.canUpdate
                                                         ? setPointModal({ open: true, isEdit: true, index: idx, data: { ...pt } })
                                                         : requireAction('update', 'chỉnh sửa cấu hình điểm')}
-                                                    style={{ background: 'none', border: 'none', color: 'var(--vct-text-tertiary)', cursor: permissions.canUpdate ? 'pointer' : 'not-allowed', padding: 2, opacity: permissions.canUpdate ? 1 : 0.5 }}
+                                                    {...{ style: { background: 'none', border: 'none', color: 'var(--vct-text-tertiary)', cursor: permissions.canUpdate ? 'pointer' : 'not-allowed', padding: 2, opacity: permissions.canUpdate ? 1 : 0.5 } }}
                                                     aria-label="Chỉnh sửa cấu hình điểm"
                                                     disabled={!permissions.canUpdate}
                                                 >
@@ -497,7 +497,7 @@ export const Page_giai_dau = () => {
                                                     onClick={() => permissions.canUpdate
                                                         ? setConfirmDeletePoint({ open: true, index: idx })
                                                         : requireAction('update', 'xóa cấu hình điểm')}
-                                                    style={{ background: 'none', border: 'none', color: '#ef4444', cursor: permissions.canUpdate ? 'pointer' : 'not-allowed', padding: 2, opacity: permissions.canUpdate ? 1 : 0.5 }}
+                                                    {...{ style: { background: 'none', border: 'none', color: '#ef4444', cursor: permissions.canUpdate ? 'pointer' : 'not-allowed', padding: 2, opacity: permissions.canUpdate ? 1 : 0.5 } }}
                                                     aria-label="Xóa cấu hình điểm"
                                                     disabled={!permissions.canUpdate}
                                                 >
@@ -509,8 +509,8 @@ export const Page_giai_dau = () => {
                                 ))}
                             </div>
                         ) : (
-                            <div style={{ padding: '32px', textAlign: 'center', background: 'var(--vct-bg-input)', borderRadius: 12, border: '1px dashed var(--vct-border-strong)' }}>
-                                <VCT_Text variant="small" style={{ color: 'var(--vct-text-tertiary)' }}>Chưa có cấu hình điểm nào. Vui lòng thêm mốc điểm để tự tính xếp hạng đoàn.</VCT_Text>
+                            <div {...{ style: { padding: '32px', textAlign: 'center', background: 'var(--vct-bg-input)', borderRadius: 12, border: '1px dashed var(--vct-border-strong)' } }}>
+                                <VCT_Text variant="small" {...{ style: { color: 'var(--vct-text-tertiary)' } }}>Chưa có cấu hình điểm nào. Vui lòng thêm mốc điểm để tự tính xếp hạng đoàn.</VCT_Text>
                             </div>
                         )}
                     </div>
@@ -536,10 +536,10 @@ export const Page_giai_dau = () => {
                 )}
             </VCT_Stack>
             <VCT_Table data={config.btc} columns={[
-                { key: 'chuc_vu', label: 'Chức vụ', render: (r: (typeof config.btc)[number]) => <VCT_Text style={{ fontWeight: 700, color: r.cap === 1 ? 'var(--vct-accent-cyan)' : 'inherit' }}>{r.chuc_vu}</VCT_Text> },
+                { key: 'chuc_vu', label: 'Chức vụ', render: (r: (typeof config.btc)[number]) => <VCT_Text {...{ style: { fontWeight: 700, color: r.cap === 1 ? 'var(--vct-accent-cyan)' : 'inherit' } }}>{r.chuc_vu}</VCT_Text> },
                 { key: 'ten', label: 'Họ và tên', render: (r: (typeof config.btc)[number]) => <VCT_Text className="font-bold">{r.ten}</VCT_Text> },
                 { key: 'dv', label: 'Đơn vị / Chuyên môn' },
-                { key: 'sdt', label: 'Liên hệ', render: (r: (typeof config.btc)[number]) => <VCT_Text variant="mono">{r.sdt} <span style={{ opacity: 0.4 }}>|</span> {r.email}</VCT_Text> },
+                { key: 'sdt', label: 'Liên hệ', render: (r: (typeof config.btc)[number]) => <VCT_Text variant="mono">{r.sdt} <span {...{ style: { opacity: 0.4 } }}>|</span> {r.email}</VCT_Text> },
                 {
                     key: 'actions', label: '', align: 'right', render: (r: (typeof config.btc)[number], idx: number) => isEditing ? (
                         <VCT_Stack direction="row" gap={8} justify="flex-end">
@@ -547,7 +547,7 @@ export const Page_giai_dau = () => {
                                 onClick={() => permissions.canUpdate
                                     ? setBtcModal({ open: true, isEdit: true, index: idx, data: { ...r } })
                                     : requireAction('update', 'chỉnh sửa thành viên BTC')}
-                                style={{ background: 'none', border: 'none', color: 'var(--vct-text-tertiary)', cursor: permissions.canUpdate ? 'pointer' : 'not-allowed', opacity: permissions.canUpdate ? 1 : 0.5 }}
+                                {...{ style: { background: 'none', border: 'none', color: 'var(--vct-text-tertiary)', cursor: permissions.canUpdate ? 'pointer' : 'not-allowed', opacity: permissions.canUpdate ? 1 : 0.5 } }}
                                 aria-label="Chỉnh sửa thành viên BTC"
                                 disabled={!permissions.canUpdate}
                             >
@@ -557,7 +557,7 @@ export const Page_giai_dau = () => {
                                 onClick={() => permissions.canUpdate
                                     ? setConfirmDeleteBtc({ open: true, index: idx })
                                     : requireAction('update', 'xóa thành viên BTC')}
-                                style={{ background: 'none', border: 'none', color: '#ef4444', cursor: permissions.canUpdate ? 'pointer' : 'not-allowed', opacity: permissions.canUpdate ? 1 : 0.5 }}
+                                {...{ style: { background: 'none', border: 'none', color: '#ef4444', cursor: permissions.canUpdate ? 'pointer' : 'not-allowed', opacity: permissions.canUpdate ? 1 : 0.5 } }}
                                 aria-label="Xóa thành viên BTC"
                                 disabled={!permissions.canUpdate}
                             >
@@ -574,37 +574,37 @@ export const Page_giai_dau = () => {
         <VCT_Stack gap={24} direction="row">
             {/* CHECKLIST */}
             <div className="flex-1">
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+                <div {...{ style: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 } }}>
                     <VCT_Text variant="h2">Checklist Tổ chức</VCT_Text>
                     <VCT_Badge text={`${doneChecklist}/${config.checklist.length} Hoàn tất`} type={pctReady === 100 ? 'success' : 'warning'} />
                 </div>
-                <div style={{ display: 'grid', gap: 10 }}>
+                <div {...{ style: { display: 'grid', gap: 10 } }}>
                     {config.checklist.map(ck => (
-                        <label key={ck.id} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '12px 16px', background: 'var(--vct-bg-elevated)', borderRadius: 12, border: `1px solid ${ck.done ? 'var(--vct-border-subtle)' : 'var(--vct-border-strong)'}`, cursor: isEditing ? 'pointer' : 'default', opacity: isEditing ? 1 : 0.8 }}>
-                            <input type="checkbox" checked={ck.done} onChange={() => toggleChecklist(ck.id)} disabled={!isEditing} style={{ width: 18, height: 18, accentColor: '#22d3ee' }} />
-                            <span style={{ fontSize: 13, fontWeight: ck.done ? 500 : 700, textDecoration: ck.done ? 'line-through' : 'none', opacity: ck.done ? 0.6 : 1 }}>{ck.label}</span>
-                            {ck.done && <VCT_Icons.Check size={16} color="#10b981" style={{ marginLeft: 'auto' }} />}
+                        <label key={ck.id} {...{ style: { display: 'flex', alignItems: 'center', gap: 12, padding: '12px 16px', background: 'var(--vct-bg-elevated)', borderRadius: 12, border: `1px solid ${ck.done ? 'var(--vct-border-subtle)' : 'var(--vct-border-strong)'}`, cursor: isEditing ? 'pointer' : 'default', opacity: isEditing ? 1 : 0.8 } }}>
+                            <input type="checkbox" checked={ck.done} onChange={() => toggleChecklist(ck.id)} disabled={!isEditing} {...{ style: { width: 18, height: 18, accentColor: '#22d3ee' } }} />
+                            <span {...{ style: { fontSize: 13, fontWeight: ck.done ? 500 : 700, textDecoration: ck.done ? 'line-through' : 'none', opacity: ck.done ? 0.6 : 1 } }}>{ck.label}</span>
+                            {ck.done && <VCT_Icons.Check size={16} color="#10b981" {...{ style: { marginLeft: 'auto' } }} />}
                         </label>
                     ))}
                 </div>
             </div>
 
-            <div style={{ width: 1, background: 'var(--vct-border-subtle)' }} />
+            <div {...{ style: { width: 1, background: 'var(--vct-border-subtle)' } }} />
 
             {/* AUDIT LOG */}
             <div className="flex-1">
-                <VCT_Text variant="h2" style={{ marginBottom: 24, paddingBottom: 12, borderBottom: '1px solid var(--vct-border-subtle)' }}>Lịch sử hoạt động</VCT_Text>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 20, position: 'relative', paddingLeft: 8 }}>
-                    <div style={{ position: 'absolute', top: 12, bottom: 12, left: 14, width: 2, background: 'linear-gradient(to bottom, var(--vct-border-strong), transparent)' }} />
+                <VCT_Text variant="h2" {...{ style: { marginBottom: 24, paddingBottom: 12, borderBottom: '1px solid var(--vct-border-subtle)' } }}>Lịch sử hoạt động</VCT_Text>
+                <div {...{ style: { display: 'flex', flexDirection: 'column', gap: 20, position: 'relative', paddingLeft: 8 } }}>
+                    <div {...{ style: { position: 'absolute', top: 12, bottom: 12, left: 14, width: 2, background: 'linear-gradient(to bottom, var(--vct-border-strong), transparent)' } }} />
                     {[...config.audit].reverse().map((a, i) => (
-                        <div key={i} style={{ display: 'flex', gap: 20, position: 'relative', zIndex: 1, alignItems: 'flex-start' }}>
-                            <div style={{ width: 16, height: 16, borderRadius: 8, background: i === 0 ? 'var(--vct-bg-card)' : 'var(--vct-bg-elevated)', border: `3px solid ${i === 0 ? 'var(--vct-accent-cyan)' : 'var(--vct-border-subtle)'}`, marginTop: 4, boxShadow: i === 0 ? '0 0 10px rgba(34, 211, 238, 0.4)' : 'none' }} />
-                            <div style={{ padding: '12px 16px', background: i === 0 ? 'rgba(34, 211, 238, 0.05)' : 'var(--vct-bg-elevated)', borderRadius: 12, border: `1px solid ${i === 0 ? 'rgba(34, 211, 238, 0.2)' : 'var(--vct-border-subtle)'}`, flex: 1 }}>
-                                <div style={{ fontSize: 13, fontWeight: 700, color: i === 0 ? 'var(--vct-text-primary)' : 'var(--vct-text-secondary)', marginBottom: 6 }}>{a.action}</div>
-                                <div style={{ fontSize: 11, color: 'var(--vct-text-tertiary)', display: 'flex', alignItems: 'center', gap: 6 }}>
-                                    <VCT_Icons.Clock size={12} /> <span style={{ fontFamily: 'monospace' }}>{a.time}</span>
+                        <div key={i} {...{ style: { display: 'flex', gap: 20, position: 'relative', zIndex: 1, alignItems: 'flex-start' } }}>
+                            <div {...{ style: { width: 16, height: 16, borderRadius: 8, background: i === 0 ? 'var(--vct-bg-card)' : 'var(--vct-bg-elevated)', border: `3px solid ${i === 0 ? 'var(--vct-accent-cyan)' : 'var(--vct-border-subtle)'}`, marginTop: 4, boxShadow: i === 0 ? '0 0 10px rgba(34, 211, 238, 0.4)' : 'none' } }} />
+                            <div {...{ style: { padding: '12px 16px', background: i === 0 ? 'rgba(34, 211, 238, 0.05)' : 'var(--vct-bg-elevated)', borderRadius: 12, border: `1px solid ${i === 0 ? 'rgba(34, 211, 238, 0.2)' : 'var(--vct-border-subtle)'}`, flex: 1 } }}>
+                                <div {...{ style: { fontSize: 13, fontWeight: 700, color: i === 0 ? 'var(--vct-text-primary)' : 'var(--vct-text-secondary)', marginBottom: 6 } }}>{a.action}</div>
+                                <div {...{ style: { fontSize: 11, color: 'var(--vct-text-tertiary)', display: 'flex', alignItems: 'center', gap: 6 } }}>
+                                    <VCT_Icons.Clock size={12} /> <span {...{ style: { fontFamily: 'monospace' } }}>{a.time}</span>
                                     <span>•</span>
-                                    <span>bởi <strong style={{ color: 'var(--vct-text-secondary)' }}>{a.by}</strong></span>
+                                    <span>bởi <strong {...{ style: { color: 'var(--vct-text-secondary)' } }}>{a.by}</strong></span>
                                 </div>
                             </div>
                         </div>
@@ -615,33 +615,33 @@ export const Page_giai_dau = () => {
     );
 
     return (
-        <div style={{ maxWidth: '1200px', margin: '0 auto', paddingBottom: '100px' }}>
+        <div {...{ style: { maxWidth: '1200px', margin: '0 auto', paddingBottom: '100px' } }}>
             <VCT_Toast isVisible={toast.show} message={toast.msg} type={toast.type} onClose={() => setToast(prev => ({ ...prev, show: false }))} />
 
             {/* 1. HERO BANNER */}
             <motion.div
                 initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.4, ease: 'easeOut' }}
-                style={{
+                {...{ style: {
                     padding: '40px', borderRadius: '32px', marginBottom: '32px', position: 'relative', overflow: 'hidden',
                     background: 'linear-gradient(135deg, #f8fafc 0%, #e2e8f0 50%, #d1d5db 100%)',
                     border: '1px solid rgba(255, 255, 255, 0.6)',
                     boxShadow: '0 20px 40px -10px rgba(0,0,0,0.05)',
-                }}
+                } }}
             >
-                <div style={{ position: 'absolute', top: 0, right: 0, bottom: 0, width: '40%', opacity: 0.1, backgroundImage: 'radial-gradient(circle at 80% 20%, #ffffff, transparent 70%)' }} />
+                <div {...{ style: { position: 'absolute', top: 0, right: 0, bottom: 0, width: '40%', opacity: 0.1, backgroundImage: 'radial-gradient(circle at 80% 20%, #ffffff, transparent 70%)' } }} />
 
-                <VCT_Stack direction="row" justify="space-between" align="flex-start" style={{ position: 'relative', zIndex: 1 }}>
+                <VCT_Stack direction="row" justify="space-between" align="flex-start" {...{ style: { position: 'relative', zIndex: 1 } }}>
                     <div>
-                        <VCT_Stack direction="row" gap={12} align="center" style={{ marginBottom: '12px' }}>
-                            <span style={{ fontSize: '32px' }}>🏆</span>
+                        <VCT_Stack direction="row" gap={12} align="center" {...{ style: { marginBottom: '12px' } }}>
+                            <span {...{ style: { fontSize: '32px' } }}>🏆</span>
                             <VCT_Badge text={st.l} type={st.t as 'info' | 'success' | 'warning' | 'danger'} pulse={config.trang_thai === 'dang_ky' || config.trang_thai === 'thi_dau'} />
-                            <VCT_Badge text={`Cấp ${CAP_DO_LABELS[config.cap_do] || config.cap_do}`} type="info" pulse={false} style={{ paddingLeft: '24px', paddingRight: '24px' }} />
+                            <VCT_Badge text={`Cấp ${CAP_DO_LABELS[config.cap_do] || config.cap_do}`} type="info" pulse={false} {...{ style: { paddingLeft: '24px', paddingRight: '24px' } }} />
                         </VCT_Stack>
 
-                        <VCT_Text variant="h1" style={{ marginBottom: '8px', color: '#1e293b' }}>{config.ten_giai}</VCT_Text>
-                        <VCT_Text variant="mono" style={{ opacity: 0.6, marginBottom: '16px', color: '#475569' }}>{config.ma_giai}</VCT_Text>
+                        <VCT_Text variant="h1" {...{ style: { marginBottom: '8px', color: '#1e293b' } }}>{config.ten_giai}</VCT_Text>
+                        <VCT_Text variant="mono" {...{ style: { opacity: 0.6, marginBottom: '16px', color: '#475569' } }}>{config.ma_giai}</VCT_Text>
 
-                        <VCT_Stack direction="row" gap={16} style={{ color: '#475569', fontWeight: 500 }}>
+                        <VCT_Stack direction="row" gap={16} {...{ style: { color: '#475569', fontWeight: 500 } }}>
                             <VCT_Stack direction="row" gap={6} align="center"><VCT_Icons.MapPin size={14} /> <VCT_Text variant="small">{config.dia_diem}, {config.tinh}</VCT_Text></VCT_Stack>
                             <VCT_Stack direction="row" gap={6} align="center"><VCT_Icons.Clock size={14} /> <VCT_Text variant="small">{config.ngay_bat_dau} → {config.ngay_ket_thuc}</VCT_Text></VCT_Stack>
                         </VCT_Stack>
@@ -649,10 +649,10 @@ export const Page_giai_dau = () => {
 
                     <VCT_Stack align="flex-end" gap={20}>
                         {daysUntil > 0 && (
-                            <div style={{ textAlign: 'center', padding: '20px 40px', borderRadius: '24px', background: 'rgba(255, 255, 255, 0.6)', backdropFilter: 'blur(12px)', border: '1px solid rgba(255,255,255,0.8)', boxShadow: '0 10px 30px rgba(0,0,0,0.05)' }}>
-                                <VCT_Text variant="small" style={{ letterSpacing: '0.15em', marginBottom: '4px', color: '#64748b', textTransform: 'uppercase', fontSize: 11, fontWeight: 700 }}>Khai mạc sau</VCT_Text>
-                                <div style={{ fontSize: '48px', fontWeight: 900, lineHeight: 1, color: '#1e293b', filter: 'drop-shadow(0 2px 10px rgba(0,0,0,0.05))' }}>
-                                    {daysUntil} <span style={{ fontSize: 16, fontWeight: 700, color: '#64748b' }}>ngày</span>
+                            <div {...{ style: { textAlign: 'center', padding: '20px 40px', borderRadius: '24px', background: 'rgba(255, 255, 255, 0.6)', backdropFilter: 'blur(12px)', border: '1px solid rgba(255,255,255,0.8)', boxShadow: '0 10px 30px rgba(0,0,0,0.05)' } }}>
+                                <VCT_Text variant="small" {...{ style: { letterSpacing: '0.15em', marginBottom: '4px', color: '#64748b', textTransform: 'uppercase', fontSize: 11, fontWeight: 700 } }}>Khai mạc sau</VCT_Text>
+                                <div {...{ style: { fontSize: '48px', fontWeight: 900, lineHeight: 1, color: '#1e293b', filter: 'drop-shadow(0 2px 10px rgba(0,0,0,0.05))' } }}>
+                                    {daysUntil} <span {...{ style: { fontSize: 16, fontWeight: 700, color: '#64748b' } }}>ngày</span>
                                 </div>
                             </div>
                         )}
@@ -700,17 +700,17 @@ export const Page_giai_dau = () => {
             </div>
 
             {/* FLOATING ACTION BAR (Trạng thái) */}
-            <div style={{
+            <div {...{ style: {
                 position: 'fixed', bottom: '32px', left: '50%', transform: 'translateX(-50%)', zIndex: 100,
                 display: 'flex', alignItems: 'center', gap: '16px', padding: '16px 24px',
                 background: 'var(--vct-bg-elevated)', borderRadius: '20px', border: '1px solid var(--vct-border-strong)',
                 boxShadow: '0 20px 40px rgba(0,0,0,0.3)', backdropFilter: 'blur(24px)'
-            }}>
+            } }}>
                 <VCT_Stack direction="row" align="center" gap={12}>
                     <VCT_Text variant="small">Tình trạng hệ thống:</VCT_Text>
                     <VCT_Badge text={st.l} type={st.t as 'info' | 'success' | 'warning' | 'danger'} pulse={config.trang_thai === 'dang_ky' || config.trang_thai === 'thi_dau'} />
                 </VCT_Stack>
-                <div style={{ width: 1, height: 24, background: 'var(--vct-border-subtle)' }} />
+                <div {...{ style: { width: 1, height: 24, background: 'var(--vct-border-subtle)' } }} />
                 <VCT_Button
                     variant="primary"
                     onClick={() => permissions.canPublish ? setShowStatusModal(true) : requireAction('publish', 'chuyển trạng thái hệ thống')}
@@ -736,16 +736,16 @@ export const Page_giai_dau = () => {
                             }));
                             showToast(`Đã chuyển hệ thống sang: ${GIAI_STATES[k].l}`, 'success');
                             setShowStatusModal(false);
-                        }} style={{
+                        }} {...{ style: {
                             padding: '16px', borderRadius: '12px', cursor: config.trang_thai === k ? 'default' : 'pointer',
                             border: `2px solid ${config.trang_thai === k ? 'var(--vct-accent-cyan)' : 'var(--vct-border-subtle)'}`,
                             background: config.trang_thai === k ? 'rgba(34, 211, 238, 0.05)' : 'var(--vct-bg-card)',
                             display: 'flex', alignItems: 'center', justifyContent: 'space-between',
                             opacity: permissions.canPublish ? (config.trang_thai === k ? 1 : 0.6) : 0.4,
                             transition: 'all 0.2s'
-                        }}>
+                        } }}>
                             <div>
-                                <VCT_Text variant="h2" style={{ color: config.trang_thai === k ? 'var(--vct-accent-cyan)' : 'inherit', marginBottom: 4 }}>{GIAI_STATES[k].l}</VCT_Text>
+                                <VCT_Text variant="h2" {...{ style: { color: config.trang_thai === k ? 'var(--vct-accent-cyan)' : 'inherit', marginBottom: 4 } }}>{GIAI_STATES[k].l}</VCT_Text>
                                 <VCT_Text variant="small">{GIAI_STATES[k].desc}</VCT_Text>
                             </div>
                             {config.trang_thai === k && <VCT_Icons.Check color="var(--vct-accent-cyan)" />}
@@ -779,7 +779,7 @@ export const Page_giai_dau = () => {
                             <VCT_Field label="Email"><VCT_Input value={btcModal.data.email} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setBtcModal(p => ({ ...p, data: { ...p.data, email: e.target.value } }))} placeholder="abc@email.com" /></VCT_Field>
                         </div>
                     </VCT_Stack>
-                    <div style={{ width: '50%' }}>
+                    <div {...{ style: { width: '50%' } }}>
                         <VCT_Field label="Cấp bậc">
                             <VCT_Select options={[{ value: 1, label: 'Thành viên cốt cán (Cấp 1)' }, { value: 2, label: 'Thành viên thường (Cấp 2)' }]} value={btcModal.data.cap} onChange={(v: string) => setBtcModal(p => ({ ...p, data: { ...p.data, cap: Number(v) } }))} />
                         </VCT_Field>

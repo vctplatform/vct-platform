@@ -125,7 +125,7 @@ export const Page_referees = () => {
                 </div>
             )}
             {uiState.loading && refs.length === 0 && (
-                <div style={{ marginBottom: 16, padding: '12px 14px', borderRadius: 12, border: '1px solid var(--vct-border-subtle)', background: 'var(--vct-bg-elevated)', color: 'var(--vct-text-tertiary)', fontSize: 13, fontWeight: 700 }}>
+                <div {...{ style: { marginBottom: 16, padding: '12px 14px', borderRadius: 12, border: '1px solid var(--vct-border-subtle)', background: 'var(--vct-bg-elevated)', color: 'var(--vct-text-tertiary)', fontSize: 13, fontWeight: 700 } }}>
                     Đang tải dữ liệu trọng tài...
                 </div>
             )}
@@ -142,8 +142,8 @@ export const Page_referees = () => {
             <VCT_FilterChips filters={activeFilters} onRemove={removeFilter} onClearAll={() => { setStatusFilter(null); setCmFilter('all'); setSearch(''); }} />
 
             {/* Toolbar */}
-            <VCT_Stack direction="row" gap={16} align="center" style={{ marginBottom: 20, flexWrap: 'wrap' }}>
-                <div style={{ flex: '1 1 250px', minWidth: 200 }}><VCT_SearchInput value={search} onChange={setSearch} onClear={() => setSearch('')} placeholder="Tìm trọng tài, đơn vị..." /></div>
+            <VCT_Stack direction="row" gap={16} align="center" {...{ style: { marginBottom: 20, flexWrap: 'wrap' } }}>
+                <div {...{ style: { flex: '1 1 250px', minWidth: 200 } }}><VCT_SearchInput value={search} onChange={setSearch} onClear={() => setSearch('')} placeholder="Tìm trọng tài, đơn vị..." /></div>
                 <VCT_SegmentedControl options={[{ value: 'all', label: 'Tất cả' }, { value: 'quyen', label: '🥋 Quyền' }, { value: 'doi_khang', label: '🥊 ĐK' }, { value: 'ca_hai', label: '⚔️ Cả hai' }]} value={cmFilter} onChange={setCmFilter} />
                 <VCT_Button icon={<VCT_Icons.Plus size={16} />} onClick={openAdd}>Thêm trọng tài</VCT_Button>
             </VCT_Stack>
@@ -156,7 +156,7 @@ export const Page_referees = () => {
                     <table className="w-full border-collapse">
                         <thead>
                             <tr className="border-b border-vct-border-strong bg-vct-bg-card">
-                                <th style={{ padding: '12px 16px', width: 40 }}><input type="checkbox" onChange={() => setSelectedIds(p => p.size === filtered.length ? new Set() : new Set(filtered.map(r => r.id)))} checked={selectedIds.size === filtered.length && filtered.length > 0} style={{ accentColor: '#22d3ee' }} /></th>
+                                <th {...{ style: { padding: '12px 16px', width: 40 } }}><input type="checkbox" aria-label="Chọn tất cả" onChange={() => setSelectedIds(p => p.size === filtered.length ? new Set() : new Set(filtered.map(r => r.id)))} checked={selectedIds.size === filtered.length && filtered.length > 0} {...{ style: { accentColor: '#22d3ee' } }} /></th>
                                 {['Trọng tài', 'Đơn vị', 'Cấp bậc', 'Chuyên môn', 'Kinh nghiệm', 'Trạng thái', ''].map((h, i) => (
                                     <th key={i} className="px-4 py-3 text-left text-[11px] font-bold uppercase opacity-50">{h}</th>
                                 ))}
@@ -169,40 +169,40 @@ export const Page_referees = () => {
                                 const st = TRANG_THAI_TT_MAP[r.trang_thai];
                                 return (
                                     <React.Fragment key={r.id}>
-                                        <tr onClick={() => setExpandedId(expandedId === r.id ? null : r.id)} style={{ borderBottom: '1px solid var(--vct-border-subtle)', cursor: 'pointer', background: selectedIds.has(r.id) ? 'rgba(34, 211, 238, 0.05)' : idx % 2 === 0 ? 'transparent' : 'rgba(128,128,128,0.02)', borderLeft: `3px solid ${st.color}`, transition: 'background 0.15s' }}>
-                                            <td className="px-4 py-3"><input type="checkbox" checked={selectedIds.has(r.id)} onChange={() => toggleSelect(r.id)} onClick={(e: any) => e.stopPropagation()} style={{ accentColor: '#22d3ee' }} /></td>
+                                        <tr onClick={() => setExpandedId(expandedId === r.id ? null : r.id)} {...{ style: { borderBottom: '1px solid var(--vct-border-subtle)', cursor: 'pointer', background: selectedIds.has(r.id) ? 'rgba(34, 211, 238, 0.05)' : idx % 2 === 0 ? 'transparent' : 'rgba(128,128,128,0.02)', borderLeft: `3px solid ${st.color}`, transition: 'background 0.15s' } }}>
+                                            <td className="px-4 py-3"><input type="checkbox" aria-label={`Chọn ${r.ho_ten}`} checked={selectedIds.has(r.id)} onChange={() => toggleSelect(r.id)} onClick={(e: any) => e.stopPropagation()} {...{ style: { accentColor: '#22d3ee' } }} /></td>
                                             <td className="px-4 py-3">
                                                 <VCT_Stack direction="row" gap={10} align="center">
                                                     <VCT_AvatarLetter name={r.ho_ten} size={32} />
-                                                    <div><div style={{ fontWeight: 700, fontSize: 13 }}>{r.ho_ten}</div><div className="text-[11px] opacity-50">{r.gioi === 'nam' ? '♂ Nam' : '♀ Nữ'}</div></div>
+                                                    <div><div {...{ style: { fontWeight: 700, fontSize: 13 } }}>{r.ho_ten}</div><div className="text-[11px] opacity-50">{r.gioi === 'nam' ? '♂ Nam' : '♀ Nữ'}</div></div>
                                                 </VCT_Stack>
                                             </td>
-                                            <td style={{ padding: '12px 16px', fontSize: 13 }}>{r.don_vi}</td>
-                                            <td className="px-4 py-3"><span style={{ padding: '3px 10px', borderRadius: 8, background: `${cb.color}15`, color: cb.color, fontSize: 12, fontWeight: 700 }}>{cb.label}</span></td>
-                                            <td className="px-4 py-3"><span style={{ padding: '3px 10px', borderRadius: 8, background: `${cm.color}15`, color: cm.color, fontSize: 12, fontWeight: 700 }}>{cm.label}</span></td>
-                                            <td style={{ padding: '12px 16px', fontSize: 12, opacity: 0.7, maxWidth: 180, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{r.kinh_nghiem || '—'}</td>
+                                            <td {...{ style: { padding: '12px 16px', fontSize: 13 } }}>{r.don_vi}</td>
+                                            <td className="px-4 py-3"><span {...{ style: { padding: '3px 10px', borderRadius: 8, background: `${cb.color}15`, color: cb.color, fontSize: 12, fontWeight: 700 } }}>{cb.label}</span></td>
+                                            <td className="px-4 py-3"><span {...{ style: { padding: '3px 10px', borderRadius: 8, background: `${cm.color}15`, color: cm.color, fontSize: 12, fontWeight: 700 } }}>{cm.label}</span></td>
+                                            <td {...{ style: { padding: '12px 16px', fontSize: 12, opacity: 0.7, maxWidth: 180, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' } }}>{r.kinh_nghiem || '—'}</td>
                                             <td className="px-4 py-3"><VCT_Badge text={st.label} type={st.type} /></td>
                                             <td className="px-4 py-3">
                                                 <VCT_Stack direction="row" gap={4}>
-                                                    <button onClick={(e: any) => { e.stopPropagation(); openEdit(r); }} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--vct-text-tertiary)', padding: 4 }}><VCT_Icons.Edit size={14} /></button>
-                                                    <button onClick={(e: any) => { e.stopPropagation(); setDeleteTarget(r); }} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#ef4444', padding: 4 }}><VCT_Icons.Trash size={14} /></button>
+                                                    <button onClick={(e: any) => { e.stopPropagation(); openEdit(r); }} {...{ style: { background: 'none', border: 'none', cursor: 'pointer', color: 'var(--vct-text-tertiary)', padding: 4 } }} aria-label={`Sửa ${r.ho_ten}`}><VCT_Icons.Edit size={14} /></button>
+                                                    <button onClick={(e: any) => { e.stopPropagation(); setDeleteTarget(r); }} {...{ style: { background: 'none', border: 'none', cursor: 'pointer', color: '#ef4444', padding: 4 } }} aria-label={`Xóa ${r.ho_ten}`}><VCT_Icons.Trash size={14} /></button>
                                                 </VCT_Stack>
                                             </td>
                                         </tr>
                                         <AnimatePresence>
                                             {expandedId === r.id && (
-                                                <tr><td colSpan={8} style={{ padding: 0 }}>
+                                                <tr><td colSpan={8} {...{ style: { padding: 0 } }}>
                                                     <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }}>
-                                                        <div style={{ padding: '20px 24px', background: 'var(--vct-bg-base)', borderTop: '1px dashed var(--vct-border-subtle)', display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: 16 }}>
-                                                            <div><span className="text-[11px] opacity-50">SĐT</span><div style={{ fontWeight: 700, fontSize: 13 }}>{r.sdt}</div></div>
-                                                            <div><span className="text-[11px] opacity-50">Email</span><div style={{ fontWeight: 700, fontSize: 13 }}>{r.email}</div></div>
-                                                            <div><span className="text-[11px] opacity-50">Ngày sinh</span><div style={{ fontWeight: 700, fontSize: 13 }}>{r.ngay_sinh}</div></div>
-                                                            <div><span className="text-[11px] opacity-50">Kinh nghiệm</span><div style={{ fontWeight: 700, fontSize: 13 }}>{r.kinh_nghiem || '—'}</div></div>
-                                                            {r.ghi_chu && <div style={{ gridColumn: '1 / -1' }}><span className="text-[11px] opacity-50">Ghi chú</span><div style={{ fontWeight: 600, fontSize: 13, color: '#f59e0b' }}>{r.ghi_chu}</div></div>}
-                                                            <div style={{ gridColumn: '1 / -1', display: 'flex', gap: 6 }}>
+                                                        <div {...{ style: { padding: '20px 24px', background: 'var(--vct-bg-base)', borderTop: '1px dashed var(--vct-border-subtle)', display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: 16 } }}>
+                                                            <div><span className="text-[11px] opacity-50">SĐT</span><div {...{ style: { fontWeight: 700, fontSize: 13 } }}>{r.sdt}</div></div>
+                                                            <div><span className="text-[11px] opacity-50">Email</span><div {...{ style: { fontWeight: 700, fontSize: 13 } }}>{r.email}</div></div>
+                                                            <div><span className="text-[11px] opacity-50">Ngày sinh</span><div {...{ style: { fontWeight: 700, fontSize: 13 } }}>{r.ngay_sinh}</div></div>
+                                                            <div><span className="text-[11px] opacity-50">Kinh nghiệm</span><div {...{ style: { fontWeight: 700, fontSize: 13 } }}>{r.kinh_nghiem || '—'}</div></div>
+                                                            {r.ghi_chu && <div {...{ style: { gridColumn: '1 / -1' } }}><span className="text-[11px] opacity-50">Ghi chú</span><div {...{ style: { fontWeight: 600, fontSize: 13, color: '#f59e0b' } }}>{r.ghi_chu}</div></div>}
+                                                            <div {...{ style: { gridColumn: '1 / -1', display: 'flex', gap: 6 } }}>
                                                                 {PIPELINE.filter(s => s.key !== r.trang_thai).map(s => (
                                                                     <button key={s.key} onClick={() => { setRefs(p => p.map(x => x.id === r.id ? { ...x, trang_thai: s.key as TrangThaiTT } : x)); showToast(`→ ${s.label}`); }}
-                                                                        style={{ padding: '4px 10px', borderRadius: 8, border: `1px solid ${s.color}40`, background: `${s.color}10`, color: s.color, fontSize: 11, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit' }}>→ {s.label}</button>
+                                                                        {...{ style: { padding: '4px 10px', borderRadius: 8, border: `1px solid ${s.color}40`, background: `${s.color}10`, color: s.color, fontSize: 11, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit' } }}>→ {s.label}</button>
                                                                 ))}
                                                             </div>
                                                         </div>
@@ -215,7 +215,7 @@ export const Page_referees = () => {
                             })}
                         </tbody>
                     </table>
-                    <div style={{ padding: '10px 16px', borderTop: '2px solid var(--vct-border-strong)', background: 'var(--vct-bg-card)', display: 'flex', gap: 24, fontSize: 12, fontWeight: 700, opacity: 0.6 }}>
+                    <div {...{ style: { padding: '10px 16px', borderTop: '2px solid var(--vct-border-strong)', background: 'var(--vct-bg-card)', display: 'flex', gap: 24, fontSize: 12, fontWeight: 700, opacity: 0.6 } }}>
                         <span>Hiện {filtered.length}/{refs.length}</span>
                         <span>♂ {filtered.filter(r => r.gioi === 'nam').length} — ♀ {filtered.filter(r => r.gioi === 'nu').length}</span>
                     </div>
@@ -235,7 +235,7 @@ export const Page_referees = () => {
             }>
                 <VCT_Stack gap={16}>
                     <VCT_Stack direction="row" gap={16}>
-                        <VCT_Field label="Họ tên *" style={{ flex: 2 }}><VCT_Input value={form.ho_ten} onChange={(e: any) => setForm({ ...form, ho_ten: e.target.value })} placeholder="Nguyễn Văn A" /></VCT_Field>
+                        <VCT_Field label="Họ tên *" {...{ style: { flex: 2 } }}><VCT_Input value={form.ho_ten} onChange={(e: any) => setForm({ ...form, ho_ten: e.target.value })} placeholder="Nguyễn Văn A" /></VCT_Field>
                         <VCT_Field label="Giới tính" className="flex-1"><VCT_Select options={[{ value: 'nam', label: 'Nam' }, { value: 'nu', label: 'Nữ' }]} value={form.gioi} onChange={(v: any) => setForm({ ...form, gioi: v })} /></VCT_Field>
                     </VCT_Stack>
                     <VCT_Stack direction="row" gap={16}>

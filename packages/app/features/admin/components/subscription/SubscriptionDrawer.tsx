@@ -1,4 +1,3 @@
-'use client';
 'use client'
 
 import * as React from 'react'
@@ -63,7 +62,7 @@ export const SubscriptionDrawer = ({
                 <div className="flex rounded-xl border border-(--vct-border-strong) overflow-hidden" role="tablist">
                     <button onClick={() => setDrawerTab('info')}
                         role="tab"
-                        aria-selected={drawerTab === 'info' ? true : false}
+                        aria-selected={drawerTab === 'info'}
                         aria-label="Thông tin subscription"
                         className={`flex-1 px-4 py-2 text-sm font-semibold transition-colors ${drawerTab === 'info' ? 'bg-[#8b5cf6] text-white' : 'bg-(--vct-bg-elevated) text-(--vct-text-secondary) hover:bg-(--vct-bg-base)'}`}
                     >
@@ -71,7 +70,7 @@ export const SubscriptionDrawer = ({
                     </button>
                     <button onClick={() => setDrawerTab('billing')}
                         role="tab"
-                        aria-selected={drawerTab === 'billing' ? true : false}
+                        aria-selected={drawerTab === 'billing'}
                         aria-label="Lịch sử thanh toán"
                         className={`flex-1 px-4 py-2 text-sm font-semibold transition-colors ${drawerTab === 'billing' ? 'bg-[#8b5cf6] text-white' : 'bg-(--vct-bg-elevated) text-(--vct-text-secondary) hover:bg-(--vct-bg-base)'}`}
                     >
@@ -88,7 +87,9 @@ export const SubscriptionDrawer = ({
                         </div>
 
                         {/* Trial progress bar */}
-                        {selected.status === 'trial' && (
+                        {selected.status === 'trial' && (() => {
+                            const trialProgressStyle = { '--_progress-width': `${Math.min(100, Math.max(0, 100 - (daysUntil(selected.current_period_end) / Math.max(1, Math.ceil((new Date(selected.current_period_end).getTime() - new Date(selected.current_period_start).getTime()) / (1000 * 60 * 60 * 24))) * 100)))}%` } as React.CSSProperties
+                            return (
                             <div className="p-3 bg-[#8b5cf610] border border-[#8b5cf640] rounded-xl">
                                 <div className="flex items-center justify-between text-xs mb-2">
                                     <span className="text-[#8b5cf6] font-bold">Trial Period</span>
@@ -96,11 +97,12 @@ export const SubscriptionDrawer = ({
                                 </div>
                                 <div className="w-full h-2 bg-[#8b5cf620] rounded-full overflow-hidden">
                                     <div className="admin-progress-width bg-linear-to-r from-[#8b5cf6] to-[#a855f7]"
-                                        style={{ '--_progress-width': `${Math.min(100, Math.max(0, 100 - (daysUntil(selected.current_period_end) / Math.max(1, Math.ceil((new Date(selected.current_period_end).getTime() - new Date(selected.current_period_start).getTime()) / (1000 * 60 * 60 * 24))) * 100)))}%` } as React.CSSProperties}
+                                        {...{ style: trialProgressStyle }}
                                     />
                                 </div>
                             </div>
-                        )}
+                            )
+                        })()}
 
                         <div className="grid grid-cols-2 gap-3">
                             {[

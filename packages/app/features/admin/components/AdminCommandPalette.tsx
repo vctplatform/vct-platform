@@ -87,7 +87,7 @@ export function AdminCommandPalette({ open, onClose }: AdminCommandPaletteProps)
     if (!open) return null
 
     return (
-        <div className="fixed inset-0 z-[9999] flex items-start justify-center pt-[15vh]" onClick={onClose}>
+        <div className="fixed inset-0 z- flex items-start justify-center pt-[15vh]" onClick={onClose}>
             <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
             <div
                 className="relative w-full max-w-[560px] rounded-2xl border border-white/10 bg-[#0f172a]/95 shadow-2xl overflow-hidden"

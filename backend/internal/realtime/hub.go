@@ -3,18 +3,18 @@ package realtime
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"log/slog"
 	"net/http"
+	"strings"
 	"sync"
 
 	"github.com/gorilla/websocket"
 )
 
-var upgrader = websocket.Upgrader{
-	ReadBufferSize:  1024,
-	WriteBufferSize: 1024,
-	// In production, you should check origin
-	CheckOrigin: func(r *http.Request) bool { return true },
+type outboundMessage struct {
+	channel string
+	payload []byte
 }
 
 // Hub maintains the set of active clients and broadcasts messages.
@@ -28,7 +28,7 @@ type Hub struct {
 	channels map[string]map[*Client]bool
 
 	// Inbound messages from the clients.
-	broadcast chan Message
+	broadcast chan outboundMessage
 
 	// Register requests from the clients.
 	register chan *Client
@@ -36,18 +36,36 @@ type Hub struct {
 	// Unregister requests from clients.
 	unregister chan *Client
 
-	mu sync.RWMutex
+	allowedOrigins map[string]struct{}
+	authValidator  func(string) error
+	closeCh        chan struct{}
+	closeOnce      sync.Once
+	mu             sync.RWMutex
 }
 
 // NewHub creates a new WebSocket hub.
-func NewHub(logger *slog.Logger) *Hub {
+func NewHub(logger *slog.Logger, allowedOrigins ...string) *Hub {
+	if logger == nil {
+		logger = slog.Default()
+	}
+
+	originSet := make(map[string]struct{}, len(allowedOrigins))
+	for _, origin := range allowedOrigins {
+		trimmed := strings.TrimSpace(origin)
+		if trimmed != "" {
+			originSet[trimmed] = struct{}{}
+		}
+	}
+
 	return &Hub{
-		broadcast:  make(chan Message, 256),
-		register:   make(chan *Client),
-		unregister: make(chan *Client),
-		clients:    make(map[*Client]bool),
-		channels:   make(map[string]map[*Client]bool),
-		logger:     logger.With(slog.String("component", "websocket_hub")),
+		broadcast:      make(chan outboundMessage, 256),
+		register:       make(chan *Client),
+		unregister:     make(chan *Client),
+		clients:        make(map[*Client]bool),
+		channels:       make(map[string]map[*Client]bool),
+		logger:         logger.With(slog.String("component", "websocket_hub")),
+		allowedOrigins: originSet,
+		closeCh:        make(chan struct{}),
 	}
 }
 
@@ -58,6 +76,9 @@ func (h *Hub) Run(ctx context.Context) {
 		select {
 		case <-ctx.Done():
 			h.logger.Info("websocket hub stopping")
+			return
+		case <-h.closeCh:
+			h.logger.Info("websocket hub closed")
 			return
 		case client := <-h.register:
 			h.mu.Lock()
@@ -85,22 +106,15 @@ func (h *Hub) Run(ctx context.Context) {
 
 		case message := <-h.broadcast:
 			h.mu.RLock()
-			clientsInChannel, ok := h.channels[message.Channel]
+			clientsInChannel, ok := h.channels[message.channel]
 			if !ok {
-				h.mu.RUnlock()
-				continue
-			}
-
-			payload, err := json.Marshal(message)
-			if err != nil {
-				h.logger.Error("failed to marshal broadcast message", "error", err)
 				h.mu.RUnlock()
 				continue
 			}
 
 			for client := range clientsInChannel {
 				select {
-				case client.send <- payload:
+				case client.send <- append([]byte(nil), message.payload...):
 				default:
 					// Send buffer is full, drop the client
 					h.logger.Warn("client send buffer full, dropping connection")
@@ -150,34 +164,92 @@ func (h *Hub) Unsubscribe(client *Client, channel string) {
 
 // Broadcast sends a message to all clients subscribed to the specified channel.
 func (h *Hub) Broadcast(message Message) {
+	payload, err := json.Marshal(message)
+	if err != nil {
+		h.logger.Error("failed to marshal broadcast message", "error", err)
+		return
+	}
+	h.enqueueBroadcast(strings.TrimSpace(message.Channel), payload)
+}
+
+// BroadcastToChannel sends any JSON payload to a specific channel.
+func (h *Hub) BroadcastToChannel(channel string, payload any) {
+	trimmedChannel := strings.TrimSpace(channel)
+	if trimmedChannel == "" {
+		return
+	}
+
+	switch event := payload.(type) {
+	case EntityEvent:
+		event.Channel = trimmedChannel
+		payload = event
+	case *EntityEvent:
+		if event != nil {
+			cloned := *event
+			cloned.Channel = trimmedChannel
+			payload = cloned
+		}
+	}
+
+	bytes, err := json.Marshal(payload)
+	if err != nil {
+		h.logger.Error("failed to marshal channel payload", "channel", trimmedChannel, "error", err)
+		return
+	}
+	h.enqueueBroadcast(trimmedChannel, bytes)
+}
+
+func (h *Hub) enqueueBroadcast(channel string, payload []byte) {
+	if channel == "" {
+		return
+	}
 	select {
-	case h.broadcast <- message:
+	case h.broadcast <- outboundMessage{channel: channel, payload: payload}:
 	default:
 		h.logger.Warn("hub broadcast channel full, message dropped")
 	}
 }
 
 // ServeWS handles WebSocket requests from peers.
-func (h *Hub) ServeWS(w http.ResponseWriter, r *http.Request, userID string) {
+func (h *Hub) ServeWS(w http.ResponseWriter, r *http.Request, userID ...string) error {
+	upgrader := websocket.Upgrader{
+		ReadBufferSize:  1024,
+		WriteBufferSize: 1024,
+		CheckOrigin:     h.checkOrigin,
+	}
+
 	conn, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
 		h.logger.Error("websocket upgrade failed", "error", err)
-		return
+		return fmt.Errorf("upgrade websocket: %w", err)
+	}
+
+	resolvedUserID := ""
+	if len(userID) > 0 {
+		resolvedUserID = strings.TrimSpace(userID[0])
 	}
 
 	client := &Client{
-		hub:      h,
-		conn:     conn,
-		send:     make(chan []byte, 256),
-		userID:   userID,
-		channels: make(map[string]bool),
-		logger:   h.logger,
+		hub:           h,
+		conn:          conn,
+		send:          make(chan []byte, 256),
+		userID:        resolvedUserID,
+		channels:      make(map[string]bool),
+		authenticated: resolvedUserID != "" || !h.requiresAuth(),
+		authRequired:  h.requiresAuth() && resolvedUserID == "",
+		logger:        h.logger,
 	}
 
-	h.register <- client
+	select {
+	case <-h.closeCh:
+		_ = conn.Close()
+		return fmt.Errorf("websocket hub closed")
+	case h.register <- client:
+	}
 
 	go client.writePump()
 	go client.readPump()
+	return nil
 }
 
 func (h *Hub) ActiveConnections() int {
@@ -190,4 +262,83 @@ func (h *Hub) ActiveConnectionsInChannel(channel string) int {
 	h.mu.RLock()
 	defer h.mu.RUnlock()
 	return len(h.channels[channel])
+}
+
+func (h *Hub) CountClients() int {
+	return h.ActiveConnections()
+}
+
+func (h *Hub) SetAuthValidator(validator func(string) error) {
+	h.mu.Lock()
+	defer h.mu.Unlock()
+	h.authValidator = validator
+}
+
+func (h *Hub) validateToken(token string) error {
+	h.mu.RLock()
+	validator := h.authValidator
+	h.mu.RUnlock()
+
+	if validator == nil {
+		return nil
+	}
+	token = strings.TrimSpace(token)
+	if token == "" {
+		return fmt.Errorf("missing auth token")
+	}
+	return validator(token)
+}
+
+func (h *Hub) requiresAuth() bool {
+	h.mu.RLock()
+	defer h.mu.RUnlock()
+	return h.authValidator != nil
+}
+
+func (h *Hub) Close() {
+	h.closeOnce.Do(func() {
+		close(h.closeCh)
+
+		h.mu.Lock()
+		clients := make([]*Client, 0, len(h.clients))
+		for client := range h.clients {
+			clients = append(clients, client)
+		}
+		h.clients = make(map[*Client]bool)
+		h.channels = make(map[string]map[*Client]bool)
+		h.mu.Unlock()
+
+		for _, client := range clients {
+			_ = client.conn.Close()
+		}
+	})
+}
+
+func (h *Hub) checkOrigin(r *http.Request) bool {
+	origin := strings.TrimSpace(r.Header.Get("Origin"))
+	if origin == "" {
+		return true
+	}
+
+	h.mu.RLock()
+	defer h.mu.RUnlock()
+
+	if len(h.allowedOrigins) == 0 {
+		return true
+	}
+	if _, ok := h.allowedOrigins[origin]; ok {
+		return true
+	}
+	for pattern := range h.allowedOrigins {
+		if pattern == "*" {
+			return true
+		}
+		if strings.HasPrefix(pattern, "*.") {
+			suffix := pattern[1:]
+			if strings.HasSuffix(origin, suffix) {
+				return true
+			}
+		}
+	}
+	return false
 }

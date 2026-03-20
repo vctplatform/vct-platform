@@ -51,8 +51,15 @@ export const VCT_Slider = ({
 }: VCTSliderProps) => {
     const pct = max > min ? ((value - min) / (max - min)) * 100 : 0
 
+    const rootStyle = style || {}
+    const valueStyle = { color } as React.CSSProperties
+    const inputStyle = {
+        '--slider-pct': `${pct}%`,
+        '--slider-color': color,
+    } as React.CSSProperties
+
     return (
-        <div className={cn('grid gap-2', className ?? '')} style={style}>
+        <div className={cn('grid gap-2', className ?? '')} {...{ style: rootStyle }}>
             {/* Header row */}
             {(label || showValue) ? (
                 <div className="flex items-center justify-between">
@@ -64,7 +71,7 @@ export const VCT_Slider = ({
                     {showValue ? (
                         <span
                             className="text-sm font-extrabold tabular-nums"
-                            style={{ color }}
+                            {...{ style: valueStyle }}
                         >
                             {value}
                         </span>
@@ -86,12 +93,7 @@ export const VCT_Slider = ({
                         'vct-slider-input w-full cursor-pointer appearance-none bg-transparent',
                         disabled && 'cursor-not-allowed opacity-50'
                     )}
-                    style={
-                        {
-                            '--slider-pct': `${pct}%`,
-                            '--slider-color': color,
-                        } as CSSProperties
-                    }
+                    {...{ style: inputStyle }}
                 />
             </div>
 

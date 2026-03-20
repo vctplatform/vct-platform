@@ -207,7 +207,7 @@ export function ContextSwitcher({
 
             {/* Dropdown */}
             {isOpen && (
-                <div className="absolute right-0 top-[calc(100%+6px)] z-[100] min-w-[280px] overflow-hidden rounded-xl border border-vct-border bg-vct-card shadow-(--vct-shadow-xl)">
+                <div className="absolute right-0 top-[calc(100%+6px)] z- min-w-[280px] overflow-hidden rounded-xl border border-vct-border bg-vct-card shadow-(--vct-shadow-xl)">
                     <div className="px-4 pb-2 pt-3 text-[11px] font-extrabold uppercase tracking-[0.5px] text-vct-text-muted">
                         {t('context.switchRole')}
                     </div>

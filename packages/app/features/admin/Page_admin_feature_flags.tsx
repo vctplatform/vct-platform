@@ -1,4 +1,3 @@
-'use client';
 'use client'
 
 import * as React from 'react'
@@ -188,6 +187,8 @@ const Page_admin_feature_flags_Content = () => {
                 ) : (
                     filtered.map(flag => {
                         const st = STATUS_STYLES[flag.status] || STATUS_STYLES.disabled!
+                        const sliderStyle = { '--_slider-pct': `${flag.rollout_pct}%` } as React.CSSProperties;
+                        const progressStyle = { '--_fill-width': `${flag.rollout_pct}%` } as React.CSSProperties;
                         return (
                             <div key={flag.id} className="bg-(--vct-bg-elevated) border border-(--vct-border-strong) rounded-2xl p-5 hover:border-(--vct-accent-cyan) transition-all">
                                 <div className="flex items-start justify-between gap-4">
@@ -216,7 +217,7 @@ const Page_admin_feature_flags_Content = () => {
                                                 aria-label={`Rollout ${flag.name}`}
                                                 className="admin-rollout-slider"
                                                 data-color={st.color}
-                                                style={{ '--_slider-pct': `${flag.rollout_pct}%` } as React.CSSProperties}
+                                                {...{ style: sliderStyle }}
                                             />
                                         </div>
 
@@ -236,7 +237,7 @@ const Page_admin_feature_flags_Content = () => {
 
                                 {/* Progress bar */}
                                 <div className="mt-3 h-1 rounded-full bg-(--vct-border-strong) overflow-hidden">
-                                    <div className="admin-progress-bar__fill" data-color={st.color} style={{ '--_fill-width': `${flag.rollout_pct}%` } as React.CSSProperties}></div>
+                                    <div className="admin-progress-bar__fill" data-color={st.color} {...{ style: progressStyle }}></div>
                                 </div>
                             </div>
                         )

@@ -229,7 +229,7 @@ const Page_admin_user_detail_Content = ({ userId }: PageAdminUserDetailProps) =>
                     {/* ── HERO SECTION ── */}
                     <section
                         className="admin-hero-card relative mb-8 overflow-hidden rounded-[28px] border border-vct-border p-6 shadow-(--vct-shadow-md) tablet:p-8"
-                        style={{ '--_hero-accent': accentColor } as React.CSSProperties}
+                        {...{ style: { '--_hero-accent': accentColor } as React.CSSProperties }}
                     >
                         <div className="admin-hero-glow" />
                         <div className="pointer-events-none absolute -bottom-20 left-10 h-40 w-40 rounded-full bg-cyan-500/10 blur-[80px]" />
@@ -243,7 +243,7 @@ const Page_admin_user_detail_Content = ({ userId }: PageAdminUserDetailProps) =>
                                             {user.id}
                                         </button>
                                         <VCT_Badge text={statusMeta.label} type={statusMeta.type} pulse={false} />
-                                        <span className="admin-accent-badge" style={{ '--_accent-color': accentColor } as React.CSSProperties}>
+                                        <span className="admin-accent-badge" {...{ style: { '--_accent-color': accentColor } as React.CSSProperties }}>
                                             {roleLabel}
                                         </span>
                                     </div>

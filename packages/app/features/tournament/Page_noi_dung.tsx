@@ -203,7 +203,7 @@ export const Page_noi_dung = () => {
         return (
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
                 <VCT_Stack direction="row" justify="space-between" align="center" className="mb-4">
-                    <div style={{ width: 300 }}><VCT_SearchInput value={search} onChange={setSearch} onClear={() => setSearch('')} placeholder="Tìm bài quyền, lứa tuổi..." /></div>
+                    <div className="w-[300px]"><VCT_SearchInput value={search} onChange={setSearch} onClear={() => setSearch('')} placeholder="Tìm bài quyền, lứa tuổi..." /></div>
                     <VCT_Button icon={<VCT_Icons.Plus size={16} />} onClick={openAddQ} disabled={!permissions.canCreate}>Thêm bài quyền</VCT_Button>
                 </VCT_Stack>
                 {filtered.length === 0 ? <VCT_EmptyState title="Không có dữ liệu" icon="🥋" /> : (
@@ -211,17 +211,17 @@ export const Page_noi_dung = () => {
                         { key: 'ten', label: 'Tên bài quyền', render: (r: any) => <VCT_Text className="font-bold">{r.ten}</VCT_Text> },
                         { key: 'hinh_thuc', label: 'Đội hình', render: (r: any) => HT_MAP[r.hinh_thuc] },
                         { key: 'hinh_thuc_thi_dau', label: 'Hình thức thi đấu', render: (r: any) => r.hinh_thuc_thi_dau === 'dau_loai_ban_ket' ? 'Đấu loại Top 4' : 'Tính điểm' },
-                        { key: 'gioi', label: 'Giới', render: (r: any) => <span style={{ color: GIOI_MAP[r.gioi].c, fontWeight: 600 }}>{GIOI_MAP[r.gioi].l}</span> },
+                        { key: 'gioi', label: 'Giới', render: (r: any) => <span {...{ style: { color: GIOI_MAP[r.gioi].c } }} className="font-semibold">{GIOI_MAP[r.gioi].l}</span> },
                         { key: 'lua_tuoi', label: 'Lứa tuổi' },
                         { key: 'trang_thai', label: 'Trạng thái', render: (r: any) => <VCT_Badge text={ST_MAP[r.trang_thai].l} type={ST_MAP[r.trang_thai].t} /> },
                         {
                             key: 'actions', label: '', align: 'right', render: (r: any) => (
                                 <VCT_Stack direction="row" gap={8} justify="flex-end">
                                     {permissions.canUpdate && (
-                                        <button onClick={() => openEditQ(r)} style={{ background: 'none', border: 'none', color: 'var(--vct-text-tertiary)', cursor: 'pointer' }} aria-label="Sửa bài quyền"><VCT_Icons.Edit size={16} /></button>
+                                        <button onClick={() => openEditQ(r)} className="cursor-pointer border-none bg-transparent text-(--vct-text-tertiary)" aria-label="Sửa bài quyền"><VCT_Icons.Edit size={16} /></button>
                                     )}
                                     {permissions.canDelete && (
-                                        <button onClick={() => setDeleteTarget({ type: 'quyen', id: r.id, name: r.ten })} style={{ background: 'none', border: 'none', color: '#ef4444', cursor: 'pointer' }} aria-label="Xóa bài quyền"><VCT_Icons.Trash size={16} /></button>
+                                        <button onClick={() => setDeleteTarget({ type: 'quyen', id: r.id, name: r.ten })} className="cursor-pointer border-none bg-transparent text-red-500" aria-label="Xóa bài quyền"><VCT_Icons.Trash size={16} /></button>
                                     )}
                                 </VCT_Stack>
                             )
@@ -237,23 +237,23 @@ export const Page_noi_dung = () => {
         return (
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
                 <VCT_Stack direction="row" justify="space-between" align="center" className="mb-4">
-                    <div style={{ width: 300 }}><VCT_SearchInput value={search} onChange={setSearch} onClear={() => setSearch('')} placeholder="Tìm lứa tuổi..." /></div>
+                    <div className="w-[300px]"><VCT_SearchInput value={search} onChange={setSearch} onClear={() => setSearch('')} placeholder="Tìm lứa tuổi..." /></div>
                     <VCT_Button icon={<VCT_Icons.Plus size={16} />} onClick={openAddDK} disabled={!permissions.canCreate}>Thêm hạng cân</VCT_Button>
                 </VCT_Stack>
                 {filtered.length === 0 ? <VCT_EmptyState title="Không có dữ liệu" icon="🥊" /> : (
                     <VCT_Table data={filtered} columns={[
                         { key: 'hang_can', label: 'Hạng cân', render: (r: any) => <VCT_Text className="font-bold">{r.can_den ? `${r.can_tu} - ${r.can_den} kg` : `Trên ${r.can_tu} kg`}</VCT_Text> },
-                        { key: 'gioi', label: 'Giới tính', render: (r: any) => <span style={{ color: GIOI_MAP[r.gioi].c, fontWeight: 600 }}>{GIOI_MAP[r.gioi].l}</span> },
+                        { key: 'gioi', label: 'Giới tính', render: (r: any) => <span {...{ style: { color: GIOI_MAP[r.gioi].c } }} className="font-semibold">{GIOI_MAP[r.gioi].l}</span> },
                         { key: 'lua_tuoi', label: 'Lứa tuổi' },
                         { key: 'trang_thai', label: 'Trạng thái', render: (r: any) => <VCT_Badge text={ST_MAP[r.trang_thai].l} type={ST_MAP[r.trang_thai].t} /> },
                         {
                             key: 'actions', label: '', align: 'right', render: (r: any) => (
                                 <VCT_Stack direction="row" gap={8} justify="flex-end">
                                     {permissions.canUpdate && (
-                                        <button onClick={() => openEditDK(r)} style={{ background: 'none', border: 'none', color: 'var(--vct-text-tertiary)', cursor: 'pointer' }} aria-label="Sửa hạng cân"><VCT_Icons.Edit size={16} /></button>
+                                        <button onClick={() => openEditDK(r)} className="cursor-pointer border-none bg-transparent text-(--vct-text-tertiary)" aria-label="Sửa hạng cân"><VCT_Icons.Edit size={16} /></button>
                                     )}
                                     {permissions.canDelete && (
-                                        <button onClick={() => setDeleteTarget({ type: 'doikhang', id: r.id, name: r.can_den ? `${r.can_tu}-${r.can_den}kg` : `>${r.can_tu}kg` })} style={{ background: 'none', border: 'none', color: '#ef4444', cursor: 'pointer' }} aria-label="Xóa hạng cân"><VCT_Icons.Trash size={16} /></button>
+                                        <button onClick={() => setDeleteTarget({ type: 'doikhang', id: r.id, name: r.can_den ? `${r.can_tu}-${r.can_den}kg` : `>${r.can_tu}kg` })} className="cursor-pointer border-none bg-transparent text-red-500" aria-label="Xóa hạng cân"><VCT_Icons.Trash size={16} /></button>
                                     )}
                                 </VCT_Stack>
                             )
@@ -268,7 +268,7 @@ export const Page_noi_dung = () => {
         return (
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
                 <VCT_Stack direction="row" justify="space-between" align="center" className="mb-4">
-                    <VCT_Text variant="h2">Cấu hình nhóm tuổi (<span style={{ color: '#ef4444' }}>Cảnh báo: Ảnh hưởng toàn hệ thống</span>)</VCT_Text>
+                    <VCT_Text variant="h2">Cấu hình nhóm tuổi (<span className="text-red-500">Cảnh báo: Ảnh hưởng toàn hệ thống</span>)</VCT_Text>
                     <VCT_Button icon={<VCT_Icons.Plus size={16} />} onClick={openAddLT} disabled={!permissions.canCreate}>Thêm lứa tuổi</VCT_Button>
                 </VCT_Stack>
                 {dataLT.length === 0 ? <VCT_EmptyState title="Không có dữ liệu" icon="📅" /> : (
@@ -281,10 +281,10 @@ export const Page_noi_dung = () => {
                             key: 'actions', label: '', align: 'right', render: (r: any) => (
                                 <VCT_Stack direction="row" gap={8} justify="flex-end">
                                     {permissions.canUpdate && (
-                                        <button onClick={() => openEditLT(r)} style={{ background: 'none', border: 'none', color: 'var(--vct-text-tertiary)', cursor: 'pointer' }} aria-label="Sửa lứa tuổi"><VCT_Icons.Edit size={16} /></button>
+                                        <button onClick={() => openEditLT(r)} className="cursor-pointer border-none bg-transparent text-(--vct-text-tertiary)" aria-label="Sửa lứa tuổi"><VCT_Icons.Edit size={16} /></button>
                                     )}
                                     {permissions.canDelete && (
-                                        <button onClick={() => setDeleteTarget({ type: 'luatuoi', id: r.id, name: r.ten })} style={{ background: 'none', border: 'none', color: '#ef4444', cursor: 'pointer' }} aria-label="Xóa lứa tuổi"><VCT_Icons.Trash size={16} /></button>
+                                        <button onClick={() => setDeleteTarget({ type: 'luatuoi', id: r.id, name: r.ten })} className="cursor-pointer border-none bg-transparent text-red-500" aria-label="Xóa lứa tuổi"><VCT_Icons.Trash size={16} /></button>
                                     )}
                                 </VCT_Stack>
                             )
@@ -296,55 +296,55 @@ export const Page_noi_dung = () => {
     };
 
     return (
-        <div style={{ maxWidth: '1200px', margin: '0 auto', paddingBottom: '100px' }}>
+        <div className="mx-auto max-w-[1200px] pb-[100px]">
             <VCT_Toast isVisible={toast.show} message={toast.msg} type={toast.type} onClose={() => setToast(prev => ({ ...prev, show: false }))} />
 
             {/* DASHBOARD TỔNG QUAN */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'minmax(200px, 1fr) minmax(280px, 1.5fr) minmax(280px, 1.5fr)', gap: '16px', marginBottom: '24px' }}>
-                <VCT_Card style={{ background: 'linear-gradient(135deg, rgba(34,211,238,0.1), rgba(139,92,246,0.1))', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', padding: '24px' }}>
-                    <div style={{ fontSize: '48px', fontWeight: 900, background: 'var(--vct-accent-gradient)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', lineHeight: 1 }}>
+            <div className="mb-6 grid grid-cols-[minmax(200px,1fr)_minmax(280px,1.5fr)_minmax(280px,1.5fr)] gap-4">
+                <VCT_Card className="flex flex-col items-center justify-center bg-linear-to-br from-cyan-400/10 to-violet-500/10 p-6">
+                    <div className="bg-(--vct-accent-gradient) bg-clip-text text-[48px] font-black leading-none text-transparent">
                         {dataQuyen.length + dataDK.length}
                     </div>
-                    <VCT_Text variant="small" style={{ marginTop: 8, fontWeight: 700, textTransform: 'uppercase', letterSpacing: 1 }}>Tổng nội dung thi đấu</VCT_Text>
+                    <VCT_Text variant="small" className="mt-2 font-bold uppercase tracking-[1px]">Tổng nội dung thi đấu</VCT_Text>
                 </VCT_Card>
 
                 <VCT_Card>
                     <VCT_Stack direction="row" align="center" gap={12} className="mb-4">
-                        <div style={{ width: 40, height: 40, borderRadius: 12, background: 'rgba(59, 130, 246, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#3b82f6' }}>🥋</div>
-                        <VCT_Text variant="h2" style={{ fontSize: 16 }}>Nội dung Quyền</VCT_Text>
+                        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-500/10 text-blue-500">🥋</div>
+                        <VCT_Text variant="h2" className="text-base">Nội dung Quyền</VCT_Text>
                     </VCT_Stack>
                     <VCT_Stack gap={10}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', padding: '10px 16px', background: 'var(--vct-bg-input)', borderRadius: 8 }}>
-                            <VCT_Text variant="small" style={{ fontWeight: 600 }}>Đang hoạt động</VCT_Text>
-                            <VCT_Text style={{ fontWeight: 800, color: '#10b981' }}>{dataQuyen.filter(q => q.trang_thai === 'active').length}</VCT_Text>
+                        <div className="flex justify-between rounded-lg bg-(--vct-bg-input) px-4 py-2.5">
+                            <VCT_Text variant="small" className="font-semibold">Đang hoạt động</VCT_Text>
+                            <VCT_Text className="font-extrabold text-emerald-500">{dataQuyen.filter(q => q.trang_thai === 'active').length}</VCT_Text>
                         </div>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', padding: '10px 16px', background: 'var(--vct-bg-input)', borderRadius: 8 }}>
-                            <VCT_Text variant="small" style={{ fontWeight: 600 }}>Nháp / Đóng</VCT_Text>
-                            <VCT_Text style={{ fontWeight: 800, color: '#f59e0b' }}>{dataQuyen.filter(q => q.trang_thai !== 'active').length}</VCT_Text>
+                        <div className="flex justify-between rounded-lg bg-(--vct-bg-input) px-4 py-2.5">
+                            <VCT_Text variant="small" className="font-semibold">Nháp / Đóng</VCT_Text>
+                            <VCT_Text className="font-extrabold text-amber-500">{dataQuyen.filter(q => q.trang_thai !== 'active').length}</VCT_Text>
                         </div>
                     </VCT_Stack>
                 </VCT_Card>
 
                 <VCT_Card>
                     <VCT_Stack direction="row" align="center" gap={12} className="mb-4">
-                        <div style={{ width: 40, height: 40, borderRadius: 12, background: 'rgba(239, 68, 68, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#ef4444' }}>🥊</div>
-                        <VCT_Text variant="h2" style={{ fontSize: 16 }}>Hạng cân Đối kháng</VCT_Text>
+                        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-red-500/10 text-red-500">🥊</div>
+                        <VCT_Text variant="h2" className="text-base">Hạng cân Đối kháng</VCT_Text>
                     </VCT_Stack>
                     <VCT_Stack gap={10}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', padding: '10px 16px', background: 'var(--vct-bg-input)', borderRadius: 8 }}>
-                            <VCT_Text variant="small" style={{ fontWeight: 600 }}>Nam</VCT_Text>
-                            <VCT_Text style={{ fontWeight: 800, color: '#60a5fa' }}>{dataDK.filter(q => q.gioi === 'nam').length}</VCT_Text>
+                        <div className="flex justify-between rounded-lg bg-(--vct-bg-input) px-4 py-2.5">
+                            <VCT_Text variant="small" className="font-semibold">Nam</VCT_Text>
+                            <VCT_Text className="font-extrabold text-blue-400">{dataDK.filter(q => q.gioi === 'nam').length}</VCT_Text>
                         </div>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', padding: '10px 16px', background: 'var(--vct-bg-input)', borderRadius: 8 }}>
-                            <VCT_Text variant="small" style={{ fontWeight: 600 }}>Nữ</VCT_Text>
-                            <VCT_Text style={{ fontWeight: 800, color: '#f472b6' }}>{dataDK.filter(q => q.gioi === 'nu').length}</VCT_Text>
+                        <div className="flex justify-between rounded-lg bg-(--vct-bg-input) px-4 py-2.5">
+                            <VCT_Text variant="small" className="font-semibold">Nữ</VCT_Text>
+                            <VCT_Text className="font-extrabold text-pink-400">{dataDK.filter(q => q.gioi === 'nu').length}</VCT_Text>
                         </div>
                     </VCT_Stack>
                 </VCT_Card>
             </div>
 
             {/* TAB NAVIGATION */}
-            <div style={{ marginBottom: '24px' }}>
+            <div className="mb-6">
                 <VCT_SegmentedControl
                     options={[
                         { value: 'quyen', label: `🥋 Nội dung Quyền (${dataQuyen.length})` },
@@ -357,7 +357,7 @@ export const Page_noi_dung = () => {
             </div>
 
             {/* MAIN CONTENT AREA */}
-            <div style={{ background: 'var(--vct-bg-card)', padding: '24px', borderRadius: '16px', border: '1px solid var(--vct-border-subtle)' }}>
+            <div className="rounded-2xl border border-(--vct-border-subtle) bg-(--vct-bg-card) p-6">
                 <AnimatePresence mode="wait">
                     {activeTab === 'quyen' && renderQuyen()}
                     {activeTab === 'doikhang' && renderDoiKhang()}

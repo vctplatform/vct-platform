@@ -2,7 +2,10 @@
 // with channel rooms, client connection management, and heartbeat.
 package realtime
 
-import "encoding/json"
+import (
+	"encoding/json"
+	"time"
+)
 
 // Message represents a structured payload sent over WebSocket.
 type Message struct {
@@ -14,8 +17,20 @@ type Message struct {
 	Payload json.RawMessage `json:"payload,omitempty"`
 }
 
+// EntityEvent is the canonical event payload emitted by backend entity updates.
+type EntityEvent struct {
+	Type      string         `json:"type"`
+	Entity    string         `json:"entity"`
+	Action    string         `json:"action"`
+	ItemID    string         `json:"itemId,omitempty"`
+	Channel   string         `json:"channel,omitempty"`
+	Payload   map[string]any `json:"payload,omitempty"`
+	Timestamp time.Time      `json:"timestamp"`
+}
+
 // ClientMessage is sent from the client to subscribe/unsubscribe.
 type ClientMessage struct {
-	Action  string `json:"action"` // "subscribe", "unsubscribe"
-	Channel string `json:"channel"`
+	Action  string `json:"action"`            // "auth", "subscribe", "unsubscribe"
+	Channel string `json:"channel,omitempty"` // target channel for subscribe/unsubscribe
+	Token   string `json:"token,omitempty"`   // bearer token for first-message auth
 }

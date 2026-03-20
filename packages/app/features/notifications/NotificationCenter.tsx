@@ -88,7 +88,7 @@ export function NotificationCenter({ isOpen: externalOpen, onClose }: Notificati
                     {isOpen && (
                         <div
                             onClick={handleClose}
-                            className="fixed inset-0 z-[300] bg-slate-900/40 animate-[vct-fade-in_0.2s_ease_both]"
+                            className="fixed inset-0 z-300 bg-slate-900/40 animate-[vct-fade-in_0.2s_ease_both]"
                             aria-hidden
                         />
                     )}
@@ -98,7 +98,7 @@ export function NotificationCenter({ isOpen: externalOpen, onClose }: Notificati
                         role="dialog"
                         aria-label={t('notifications.title')}
                         aria-modal="true"
-                        className={`fixed right-0 top-0 bottom-0 z-[300] flex w-[min(420px,90vw)] flex-col border-l border-(--vct-border-subtle) bg-(--vct-bg-elevated) shadow-(--vct-shadow-xl) transition-transform duration-300 ease-(--vct-ease-out) ${isOpen ? 'translate-x-0' : 'translate-x-full'}`}
+                        className={`fixed right-0 top-0 bottom-0 z-300 flex w-[min(420px,90vw)] flex-col border-l border-(--vct-border-subtle) bg-(--vct-bg-elevated) shadow-(--vct-shadow-xl) transition-transform duration-300 ease-(--vct-ease-out) ${isOpen ? 'translate-x-0' : 'translate-x-full'}`}
                     >
                         {/* Header */}
                         <div className="flex items-center justify-between border-b border-(--vct-border-subtle) px-5 py-4">

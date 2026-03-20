@@ -199,7 +199,7 @@ const Page_admin_clubs_Content = () => {
                         <div>
                             <div className="text-xs text-(--vct-text-tertiary) font-bold mb-2">Chất lượng thiết bị</div>
                             <div className="w-full h-3 bg-(--vct-bg-base) rounded-full overflow-hidden">
-                                <div className="admin-bar-fill" style={{ '--_bar-width': `${selected.equipment_score}%`, '--_bar-color': selected.equipment_score >= 85 ? '#10b981' : selected.equipment_score >= 70 ? '#f59e0b' : '#ef4444' } as React.CSSProperties} />
+                                <div className="admin-bar-fill" {...{ style: { '--_bar-width': `${selected.equipment_score}%`, '--_bar-color': selected.equipment_score >= 85 ? '#10b981' : selected.equipment_score >= 70 ? '#f59e0b' : '#ef4444' } as React.CSSProperties }} />
                             </div>
                         </div>
 

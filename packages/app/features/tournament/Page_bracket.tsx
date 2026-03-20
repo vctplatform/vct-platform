@@ -147,12 +147,12 @@ export const Page_bracket = () => {
 
             {/* Header */}
             <VCT_Stack direction="row" justify="space-between" align="center"
-                style={{ marginBottom: 24, flexWrap: 'wrap', gap: 16 }}>
+                className="mb-6 flex-wrap gap-4">
                 <div>
-                    <VCT_Text variant="h1" style={{ marginBottom: 4 }}>
+                    <VCT_Text variant="h1" className="mb-1">
                         🌿 Sơ đồ nhánh thi đấu
                     </VCT_Text>
-                    <VCT_Text variant="small" style={{ opacity: 0.6 }}>
+                    <VCT_Text variant="small" className="opacity-60">
                         Single-elimination bracket — Zoom & kéo để xem chi tiết
                     </VCT_Text>
                 </div>
@@ -199,28 +199,18 @@ export const Page_bracket = () => {
                 onMouseMove={handleMouseMove}
                 onMouseUp={handleMouseUp}
                 onMouseLeave={handleMouseUp}
-                style={{
-                    marginTop: 20, borderRadius: 20,
-                    border: '1px solid var(--vct-border-subtle)',
-                    background: 'var(--vct-bg-card)', overflow: 'hidden',
-                    cursor: isDragging ? 'grabbing' : 'grab',
-                    position: 'relative', minHeight: 500,
-                }}
+                className="mt-5 rounded-[20px] border border-(--vct-border-subtle) bg-(--vct-bg-card) overflow-hidden relative min-h-[500px]"
+                {...{ style: { cursor: isDragging ? 'grabbing' : 'grab' } as React.CSSProperties }}
             >
-                <div style={{
-                    position: 'absolute', top: 12, right: 12, zIndex: 10,
-                    background: 'rgba(0,0,0,0.5)', color: '#fff', padding: '6px 12px',
-                    borderRadius: 8, fontSize: 11, fontWeight: 600, pointerEvents: 'none', opacity: 0.7,
-                }}>
+                <div className="absolute top-3 right-3 z-10 bg-black/50 text-white px-3 py-1.5 rounded-lg text-[11px] font-semibold pointer-events-none opacity-70">
                     🖱 Scroll = Zoom | Kéo = Di chuyển
                 </div>
 
-                <div style={{
+                <div className="p-5" {...{ style: {
                     transform: `translate(${pan.x}px, ${pan.y}px) scale(${zoom})`,
                     transformOrigin: '0 0',
                     transition: isDragging ? 'none' : 'transform 0.15s ease-out',
-                    padding: 20,
-                }}>
+                } as React.CSSProperties }}>
                     <BracketEngine
                         numSlots={selectedSchema}
                         slots={slots}

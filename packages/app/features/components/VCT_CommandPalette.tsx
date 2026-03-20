@@ -111,7 +111,7 @@ export const VCT_CommandPalette = ({ extraCommands = [] }: { extraCommands?: Com
                     {/* Backdrop */}
                     <motion.div
                         initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                        className="fixed inset-0 z-[999] bg-black/60 backdrop-blur-sm"
+                        className="fixed inset-0 z- bg-black/60 backdrop-blur-sm"
                         onClick={() => setOpen(false)}
                     />
                     {/* Palette */}
@@ -120,7 +120,7 @@ export const VCT_CommandPalette = ({ extraCommands = [] }: { extraCommands?: Com
                         animate={{ opacity: 1, y: 0, scale: 1 }}
                         exit={{ opacity: 0, y: -20, scale: 0.95 }}
                         transition={{ duration: 0.15 }}
-                        className="fixed left-1/2 top-[15%] z-[1000] w-full max-w-[560px] -translate-x-1/2 overflow-hidden rounded-2xl border border-(--vct-border-strong) bg-(--vct-bg-card) shadow-2xl"
+                        className="fixed left-1/2 top-[15%] z- w-full max-w-[560px] -translate-x-1/2 overflow-hidden rounded-2xl border border-(--vct-border-strong) bg-(--vct-bg-card) shadow-2xl"
                     >
                         {/* Search bar */}
                         <div className="flex items-center gap-3 border-b border-(--vct-border-subtle) px-4 py-3">

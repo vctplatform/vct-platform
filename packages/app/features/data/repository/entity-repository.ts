@@ -79,10 +79,27 @@ const toCsv = <T extends Record<string, unknown>>(items: T[]) => {
   return [headers.join(','), ...rows].join('\n')
 }
 
+const isRecoverableFallbackError = (error: unknown) => {
+  if (error instanceof TypeError) return true
+  if (!(error instanceof Error)) return false
+
+  const message = error.message.toLowerCase()
+  return (
+    message.includes('failed to fetch') ||
+    message.includes('network') ||
+    message.includes('timeout') ||
+    message.includes('econnrefused') ||
+    message.includes('503') ||
+    message.includes('502') ||
+    message.includes('500')
+  )
+}
+
 export const createMockAdapter = <T extends { id: string }>(
   storageKey: string,
   seed: T[],
-  validate: (item: unknown) => item is T
+  validate: (item: unknown) => item is T,
+  primary?: EntityRepository<T>
 ): EntityRepository<T> => {
   const ensureSeed = () => {
     const raw = readStore(storageKey)
@@ -104,7 +121,15 @@ export const createMockAdapter = <T extends { id: string }>(
     return clone(items)
   }
 
-  return {
+  const replaceLocal = (items: T[]) => persist(items.map((item) => clone(item)))
+
+  const upsertLocal = (item: T) => {
+    const current = ensureSeed().filter((entry) => entry.id !== item.id)
+    current.push(clone(item))
+    persist(current)
+  }
+
+  const localAdapter: EntityRepository<T> = {
     entityName: storageKey,
     mode: 'mock',
     async list() {
@@ -163,6 +188,115 @@ export const createMockAdapter = <T extends { id: string }>(
       const items = ensureSeed() as Array<Record<string, unknown>>
       if (format === 'csv') return toCsv(items)
       return JSON.stringify(items, null, 2)
+    },
+  }
+
+  if (!primary) {
+    return localAdapter
+  }
+
+  const withFallback = async <R>(runPrimary: () => Promise<R>, runLocal: () => Promise<R>) => {
+    try {
+      return await runPrimary()
+    } catch (error) {
+      if (isRecoverableFallbackError(error)) {
+        return runLocal()
+      }
+      throw error
+    }
+  }
+
+  return {
+    entityName: primary.entityName ?? storageKey,
+    mode: 'api',
+    async list() {
+      return withFallback(
+        async () => {
+          const rows = await primary.list()
+          replaceLocal(rows.filter(validate))
+          return clone(rows)
+        },
+        () => localAdapter.list()
+      )
+    },
+    async getById(id: string) {
+      return withFallback(
+        async () => {
+          const item = await primary.getById(id)
+          if (item && validate(item)) {
+            upsertLocal(item)
+          }
+          return item ? clone(item) : undefined
+        },
+        () => localAdapter.getById(id)
+      )
+    },
+    async create(item: T) {
+      return withFallback(
+        async () => {
+          const created = await primary.create(item)
+          if (validate(created)) {
+            upsertLocal(created)
+          }
+          return clone(created)
+        },
+        () => localAdapter.create(item)
+      )
+    },
+    async update(id: string, patch: Partial<T>) {
+      return withFallback(
+        async () => {
+          const updated = await primary.update(id, patch)
+          if (validate(updated)) {
+            upsertLocal(updated)
+          }
+          return clone(updated)
+        },
+        () => localAdapter.update(id, patch)
+      )
+    },
+    async remove(id: string) {
+      return withFallback(
+        async () => {
+          await primary.remove(id)
+          persist(ensureSeed().filter((item) => item.id !== id))
+        },
+        () => localAdapter.remove(id)
+      )
+    },
+    async replaceAll(items: T[]) {
+      return withFallback(
+        async () => {
+          const replaced = await primary.replaceAll(items)
+          replaceLocal(replaced.filter(validate))
+          return clone(replaced)
+        },
+        () => localAdapter.replaceAll(items)
+      )
+    },
+    async importItems(payload: unknown[]) {
+      return withFallback(
+        async () => {
+          const report = await primary.importItems(payload)
+          const current = ensureSeed()
+          const byID = new Map(current.map((item) => [item.id, item] as const))
+          report.imported.filter(validate).forEach((item) => {
+            byID.set(item.id, clone(item))
+          })
+          persist(Array.from(byID.values()))
+          return {
+            imported: clone(report.imported),
+            rejected: clone(report.rejected),
+          }
+        },
+        () => localAdapter.importItems(payload)
+      )
+    },
+    async exportItems(format: ExportFormat) {
+      return withFallback(
+        () => primary.exportItems(format),
+        () => localAdapter.exportItems(format)
+      )
     },
   }
 }

@@ -265,13 +265,13 @@ export const Page_techniques = () => {
                                     <div className="flex items-start justify-between gap-2 mb-2">
                                         <h3 className="font-bold text-[15px] text-(--vct-text-primary) leading-tight">{tech.name}</h3>
                                         <div className="shrink-0 flex gap-1">
-                                            <button onClick={(e) => { e.stopPropagation(); openEditModal(tech) }} className="p-1.5 text-(--vct-text-tertiary) hover:text-(--vct-accent-cyan) hover:bg-(--vct-bg-glass) rounded-md transition-colors"><VCT_Icons.Edit size={14} /></button>
-                                            <button onClick={(e) => { e.stopPropagation(); setDeleteTarget(tech) }} className="p-1.5 text-(--vct-text-tertiary) hover:text-[#ef4444] hover:bg-[#ef444420] rounded-md transition-colors"><VCT_Icons.Trash size={14} /></button>
+                                            <button aria-label={`Sửa ${tech.name}`} onClick={(e) => { e.stopPropagation(); openEditModal(tech) }} className="p-1.5 text-(--vct-text-tertiary) hover:text-(--vct-accent-cyan) hover:bg-(--vct-bg-glass) rounded-md transition-colors"><VCT_Icons.Edit size={14} /></button>
+                                            <button aria-label={`Xóa ${tech.name}`} onClick={(e) => { e.stopPropagation(); setDeleteTarget(tech) }} className="p-1.5 text-(--vct-text-tertiary) hover:text-[#ef4444] hover:bg-[#ef444420] rounded-md transition-colors"><VCT_Icons.Trash size={14} /></button>
                                         </div>
                                     </div>
 
                                     <div className="flex flex-wrap items-center gap-2 mb-3">
-                                        <span style={{ color: DIFF_MAP[tech.difficulty]?.color ?? '#94a3b8', background: `${DIFF_MAP[tech.difficulty]?.color ?? '#94a3b8'}15`, padding: '2px 8px', borderRadius: 4, fontSize: 10, fontWeight: 700 }}>
+                                        <span {...{style: { color: DIFF_MAP[tech.difficulty]?.color ?? '#94a3b8', background: `${DIFF_MAP[tech.difficulty]?.color ?? '#94a3b8'}15`, padding: '2px 8px', borderRadius: 4, fontSize: 10, fontWeight: 700 }}}>
                                             {DIFF_MAP[tech.difficulty]?.label ?? tech.difficulty}
                                         </span>
                                         <span className="text-[11px] font-medium text-(--vct-text-secondary) bg-(--vct-bg-base) px-2 py-0.5 rounded border border-(--vct-border-subtle)">
@@ -329,8 +329,8 @@ export const Page_techniques = () => {
                         <VCT_Field label="Thẻ đánh dấu (Tags - cách nhau dấu phẩy)" className="flex-1">
                             <VCT_Input value={form.tagsInput} onChange={(e: any) => setForm({ ...form, tagsInput: e.target.value })} placeholder="VD: cơ bản, tấn, móc" />
                         </VCT_Field>
-                        <label className="flex items-center gap-3 cursor-pointer pb-2" style={{ padding: '8px 12px', background: 'var(--vct-bg-elevated)', border: '1px solid var(--vct-border-subtle)', borderRadius: 8, height: 40, marginBottom: 4 }}>
-                            <input type="checkbox" checked={form.has_video} onChange={(e) => setForm({ ...form, has_video: e.target.checked })} style={{ accentColor: '#22d3ee', width: 16, height: 16 }} />
+                        <label className="flex items-center gap-3 cursor-pointer pb-2 bg-(--vct-bg-elevated) border border-(--vct-border-subtle) rounded-lg h-10 mb-1 px-3 py-2">
+                            <input aria-label="Có video" type="checkbox" checked={form.has_video} onChange={(e) => setForm({ ...form, has_video: e.target.checked })} {...{style: { accentColor: '#22d3ee', width: 16, height: 16 }}} />
                             <span className="text-sm font-semibold text-(--vct-text-primary)">Có Video</span>
                         </label>
                     </VCT_Stack>

@@ -1,6 +1,7 @@
 {
   "extends": "../../tsconfig.json",
   "compilerOptions": {
+    "forceConsistentCasingInFileNames": true,
     "target": "es5",
     "lib": [
       "dom",

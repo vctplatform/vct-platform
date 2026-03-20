@@ -66,14 +66,14 @@ export function VCT_Modal({ isOpen, onClose, title, children, footer, width = '6
                 <>
                     <motion.button
                         type="button" aria-label="Close" onClick={onClose}
-                        className="fixed inset-0 z-[400] border-none bg-slate-950/50"
+                        className="fixed inset-0 z- border-none bg-slate-950/50"
                         initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
                     />
                     <motion.div
                         role="dialog"
                         aria-modal="true"
                         aria-labelledby={title ? titleId : undefined}
-                        className="fixed left-1/2 top-1/2 z-[410] w-[calc(100vw-24px)] max-h-[90vh] -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-2xl border border-vct-border bg-vct-elevated shadow-(--vct-shadow-xl)"
+                        className="fixed left-1/2 top-1/2 z- w-[calc(100vw-24px)] max-h-[90vh] -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-2xl border border-vct-border bg-vct-elevated shadow-(--vct-shadow-xl)"
                         style={{ maxWidth: width }}
                         initial={{ opacity: 0, scale: 0.97, y: 12 }}
                         animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -124,7 +124,7 @@ export function VCT_Toast({ isVisible, message, type = 'success', onClose, durat
                 <motion.div
                     role="status"
                     aria-live="polite"
-                    className={`fixed bottom-4 right-4 z-[500] max-w-[420px] rounded-xl border px-3 py-2 text-sm font-semibold shadow-(--vct-shadow-lg) ${TONE[type] || TONE.success}`}
+                    className={`fixed bottom-4 right-4 z- max-w-[420px] rounded-xl border px-3 py-2 text-sm font-semibold shadow-(--vct-shadow-lg) ${TONE[type] || TONE.success}`}
                     initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 12 }}
                 >
                     <div className="flex items-start gap-2">

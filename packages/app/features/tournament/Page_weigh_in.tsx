@@ -16,10 +16,10 @@ import { repositories, useEntityCollection } from '../data/repository';
 import { useToast } from '../hooks/use-toast';
 import { VCT_Card } from '../components/vct-ui';
 
-const KQ_MAP: Record<KetQuaCan, { label: string; color: string; type: string }> = {
-    dat: { label: '✓ Đạt', color: '#10b981', type: 'success' },
-    khong_dat: { label: '✗ Không đạt', color: '#ef4444', type: 'danger' },
-    cho_can: { label: '⏳ Chờ cân', color: '#f59e0b', type: 'warning' },
+const KQ_MAP: Record<KetQuaCan, { label: string; color: string; type: string; borderClass: string; bgClass: string }> = {
+    dat: { label: '✓ Đạt', color: '#10b981', type: 'success', borderClass: 'border-emerald-500', bgClass: 'bg-emerald-500/5' },
+    khong_dat: { label: '✗ Không đạt', color: '#ef4444', type: 'danger', borderClass: 'border-red-500', bgClass: 'bg-red-500/5' },
+    cho_can: { label: '⏳ Chờ cân', color: '#f59e0b', type: 'warning', borderClass: 'border-amber-500', bgClass: 'bg-amber-500/5' },
 };
 
 const PIPELINE = [
@@ -118,8 +118,8 @@ export const Page_weigh_in = () => {
             {/* Stats Row: Donut + By Đoàn */}
             <div className="mb-6 grid grid-cols-1 gap-5 lg:grid-cols-[240px_1fr]">
                 {/* Donut Chart */}
-                <div style={{ padding: 16, borderRadius: 14, background: 'var(--vct-bg-glass)', border: '1px solid var(--vct-border-subtle)', textAlign: 'center' }}>
-                    <div style={{ fontSize: 11, fontWeight: 800, textTransform: 'uppercase', opacity: 0.4, marginBottom: 8 }}>Tỷ lệ cân ký</div>
+                <div className="rounded-[14px] border border-(--vct-border-subtle) bg-(--vct-bg-glass) p-4 text-center">
+                    <div className="mb-2 text-[11px] font-extrabold uppercase opacity-40">Tỷ lệ cân ký</div>
                     {(() => {
                         const total = records.length || 1;
                         const dat = records.filter(r => r.ket_qua === 'dat').length;
@@ -138,13 +138,13 @@ export const Page_weigh_in = () => {
                                     {fail > 0 && <circle cx={cx} cy={cy} r={r} fill="none" stroke="#ef4444" strokeWidth={sw}
                                         strokeDasharray={`${circ * pFail} ${circ}`} strokeDashoffset={-circ * pDat}
                                         transform={`rotate(-90 ${cx} ${cy})`} strokeLinecap="round" />}
-                                    <text x={cx} y={cy - 6} textAnchor="middle" fill="var(--vct-text-primary)" style={{ fontSize: 22, fontWeight: 900 }}>{Math.round((dat / total) * 100)}%</text>
-                                    <text x={cx} y={cy + 12} textAnchor="middle" fill="var(--vct-text-tertiary)" style={{ fontSize: 10, fontWeight: 600 }}>Tỷ lệ đạt</text>
+                                    <text x={cx} y={cy - 6} textAnchor="middle" fill="var(--vct-text-primary)" className="text-[22px] font-black">{Math.round((dat / total) * 100)}%</text>
+                                    <text x={cx} y={cy + 12} textAnchor="middle" fill="var(--vct-text-tertiary)" className="text-[10px] font-semibold">Tỷ lệ đạt</text>
                                 </svg>
-                                <div style={{ display: 'flex', justifyContent: 'center', gap: 12, marginTop: 8, fontSize: 11 }}>
-                                    <span><span style={{ display: 'inline-block', width: 8, height: 8, borderRadius: '50%', background: '#10b981', marginRight: 4 }} />Đạt {dat}</span>
-                                    <span><span style={{ display: 'inline-block', width: 8, height: 8, borderRadius: '50%', background: '#ef4444', marginRight: 4 }} />Rớt {fail}</span>
-                                    <span><span style={{ display: 'inline-block', width: 8, height: 8, borderRadius: '50%', background: '#f59e0b', marginRight: 4 }} />Chờ {wait}</span>
+                                <div className="mt-2 flex justify-center gap-3 text-[11px]">
+                                    <span><span className="mr-1 inline-block h-2 w-2 rounded-full bg-emerald-500" />Đạt {dat}</span>
+                                    <span><span className="mr-1 inline-block h-2 w-2 rounded-full bg-red-500" />Rớt {fail}</span>
+                                    <span><span className="mr-1 inline-block h-2 w-2 rounded-full bg-amber-500" />Chờ {wait}</span>
                                 </div>
                             </>
                         );
@@ -152,8 +152,8 @@ export const Page_weigh_in = () => {
                 </div>
 
                 {/* By Đoàn */}
-                <div style={{ padding: 16, borderRadius: 14, background: 'var(--vct-bg-glass)', border: '1px solid var(--vct-border-subtle)', overflowY: 'auto', maxHeight: 220 }}>
-                    <div style={{ fontSize: 11, fontWeight: 800, textTransform: 'uppercase', opacity: 0.4, marginBottom: 8 }}>Thống kê theo đoàn</div>
+                <div className="max-h-[220px] overflow-y-auto rounded-[14px] border border-(--vct-border-subtle) bg-(--vct-bg-glass) p-4">
+                    <div className="mb-2 text-[11px] font-extrabold uppercase opacity-40">Thống kê theo đoàn</div>
                     {(() => {
                         const m: Record<string, { dat: number; fail: number; total: number }> = {};
                         records.forEach(r => {
@@ -163,15 +163,15 @@ export const Page_weigh_in = () => {
                             if (r.ket_qua === 'khong_dat') m[r.doan_ten]!.fail++;
                         });
                         return Object.entries(m).sort(([, a], [, b]) => b.total - a.total).map(([doan, s]) => (
-                            <div key={doan} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '6px 0', borderBottom: '1px solid var(--vct-border-subtle)' }}>
-                                <span style={{ fontWeight: 700, fontSize: 12, minWidth: 100 }}>{doan}</span>
-                                <div style={{ flex: 1, height: 6, borderRadius: 3, background: '#e2e8f0', overflow: 'hidden', display: 'flex' }}>
-                                    <div style={{ width: `${(s.dat / s.total) * 100}%`, height: '100%', background: '#10b981' }} />
-                                    <div style={{ width: `${(s.fail / s.total) * 100}%`, height: '100%', background: '#ef4444' }} />
+                            <div key={doan} className="flex items-center gap-2.5 border-b border-(--vct-border-subtle) py-1.5">
+                                <span className="min-w-[100px] text-xs font-bold">{doan}</span>
+                                <div className="flex h-1.5 flex-1 overflow-hidden rounded-[3px] bg-slate-200 dark:bg-slate-700">
+                                    <div className="h-full bg-emerald-500" {...{ style: { width: `${(s.dat / s.total) * 100}%` } }} />
+                                    <div className="h-full bg-red-500" {...{ style: { width: `${(s.fail / s.total) * 100}%` } }} />
                                 </div>
-                                <span style={{ fontSize: 11, fontWeight: 700, fontFamily: 'monospace', color: '#10b981', minWidth: 20, textAlign: 'right' }}>{s.dat}</span>
-                                <span style={{ fontSize: 11, opacity: 0.3 }}>/</span>
-                                <span style={{ fontSize: 11, fontWeight: 700, fontFamily: 'monospace', minWidth: 20 }}>{s.total}</span>
+                                <span className="min-w-[20px] text-right font-mono text-[11px] font-bold text-emerald-500">{s.dat}</span>
+                                <span className="text-[11px] opacity-30">/</span>
+                                <span className="min-w-[20px] font-mono text-[11px] font-bold">{s.total}</span>
                             </div>
                         ));
                     })()}
@@ -207,22 +207,22 @@ export const Page_weigh_in = () => {
             `}</style>
 
             {/* Print Container Layout */}
-            <div className="print-weigh-in-form" style={{ display: 'none' }}>
-                <div style={{ textAlign: 'center', marginBottom: 20 }}>
-                    <h2 style={{ fontSize: 24, fontWeight: 'bold', margin: '0 0 10px 0' }}>DANH SÁCH CÂN KÝ VÀ BỐC THĂM - NỘI DUNG ĐỐI KHÁNG</h2>
-                    <p style={{ fontSize: 16, margin: 0 }}>Ngày: ...../...../..........  Tại: ........................................</p>
+            <div className="print-weigh-in-form hidden">
+                <div className="mb-5 text-center">
+                    <h2 className="mb-2.5 text-2xl font-bold">DANH SÁCH CÂN KÝ VÀ BỐC THĂM - NỘI DUNG ĐỐI KHÁNG</h2>
+                    <p className="m-0 text-base">Ngày: ...../...../..........  Tại: ........................................</p>
                 </div>
-                <table style={{ width: '100%', borderCollapse: 'collapse', border: '1px solid #000' }}>
+                <table className="w-full border-collapse border border-black">
                     <thead>
                         <tr>
-                            <th style={{ width: 40, textAlign: 'center' }}>STT</th>
+                            <th className="w-10 text-center">STT</th>
                             <th>Đơn Vị / Đoàn</th>
                             <th>Họ và Tên VĐV</th>
-                            <th style={{ width: 60, textAlign: 'center' }}>Giới</th>
-                            <th style={{ width: 100, textAlign: 'center' }}>Hạng Cân ĐK</th>
-                            <th style={{ width: 100, textAlign: 'center' }}>Cân Thực Tế</th>
-                            <th style={{ width: 100, textAlign: 'center' }}>Chữ Ký VĐV</th>
-                            <th style={{ width: 120, textAlign: 'center' }}>Xác Nhận Trọng Tài</th>
+                            <th className="w-[60px] text-center">Giới</th>
+                            <th className="w-[100px] text-center">Hạng Cân ĐK</th>
+                            <th className="w-[100px] text-center">Cân Thực Tế</th>
+                            <th className="w-[100px] text-center">Chữ Ký VĐV</th>
+                            <th className="w-[120px] text-center">Xác Nhận Trọng Tài</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -230,7 +230,7 @@ export const Page_weigh_in = () => {
                             <tr key={r.id}>
                                 <td className="text-center">{i + 1}</td>
                                 <td>{r.doan_ten}</td>
-                                <td style={{ fontWeight: 'bold' }}>{r.vdv_ten}</td>
+                                <td className="font-bold">{r.vdv_ten}</td>
                                 <td className="text-center">{r.gioi === 'nam' ? 'Nam' : 'Nữ'}</td>
                                 <td className="text-center">{r.can_tu}-{r.can_den}kg</td>
                                 <td></td>
@@ -240,14 +240,14 @@ export const Page_weigh_in = () => {
                         ))}
                     </tbody>
                 </table>
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 40, padding: '0 50px' }}>
+                <div className="mt-10 flex justify-between px-[50px]">
                     <div className="text-center">
-                        <p style={{ fontWeight: 'bold' }}>BAN TỔ CHỨC</p>
-                        <p style={{ fontStyle: 'italic', fontSize: 12 }}>(Ký và ghi rõ họ tên)</p>
+                        <p className="font-bold">BAN TỔ CHỨC</p>
+                        <p className="text-xs italic">(Ký và ghi rõ họ tên)</p>
                     </div>
                     <div className="text-center">
-                        <p style={{ fontWeight: 'bold' }}>TRƯỞNG BAN TRỌNG TÀI</p>
-                        <p style={{ fontStyle: 'italic', fontSize: 12 }}>(Ký và ghi rõ họ tên)</p>
+                        <p className="font-bold">TRƯỞNG BAN TRỌNG TÀI</p>
+                        <p className="text-xs italic">(Ký và ghi rõ họ tên)</p>
                     </div>
                 </div>
             </div>
@@ -294,7 +294,7 @@ export const Page_weigh_in = () => {
                                                 <div className="text-[10px] font-bold uppercase opacity-50">Đăng ký</div>
                                                 <div className="font-mono text-base font-bold text-(--vct-text-primary)">{r.can_tu}-{r.can_den}k</div>
                                             </div>
-                                            <div className="w-[1px] bg-(--vct-border-subtle)" />
+                                            <div className="w-px bg-(--vct-border-subtle)" />
                                             <div className="text-center">
                                                 <div className="text-[10px] font-bold uppercase opacity-50">Thực tế</div>
                                                 <div className={`font-mono text-base font-black ${isOverweight ? 'text-red-500' : (isWait ? 'text-(--vct-text-secondary) opacity-30' : 'text-emerald-500')}`}>
@@ -329,26 +329,26 @@ export const Page_weigh_in = () => {
                                 const kq = KQ_MAP[r.ket_qua];
                                 const isOverweight = r.ket_qua === 'khong_dat';
                                 return (
-                                    <tr key={r.id} style={{ borderBottom: '1px solid var(--vct-border-subtle)', borderLeft: `3px solid ${kq.color}`, background: isOverweight ? 'rgba(239, 68, 68, 0.03)' : idx % 2 === 0 ? 'transparent' : 'rgba(128,128,128,0.02)' }}>
+                                    <tr key={r.id} className={`border-b border-(--vct-border-subtle) border-l-[3px] ${kq.borderClass} ${isOverweight ? 'bg-red-500/5' : idx % 2 === 0 ? 'bg-transparent' : 'bg-slate-500/5'}`}>
                                         <td className="px-4 py-3">
                                             <VCT_Stack direction="row" gap={8} align="center">
                                                 <VCT_AvatarLetter name={r.vdv_ten} size={28} />
-                                                <span style={{ fontWeight: 700, fontSize: 13 }}>{r.vdv_ten}</span>
+                                                <span className="text-[13px] font-bold">{r.vdv_ten}</span>
                                             </VCT_Stack>
                                         </td>
-                                        <td style={{ padding: '12px 16px', fontSize: 13 }}>{r.doan_ten}</td>
-                                        <td style={{ padding: '12px 16px', fontSize: 13 }}>{r.gioi === 'nam' ? '♂' : '♀'}</td>
-                                        <td className="px-4 py-3"><span style={{ fontWeight: 700, fontSize: 13, fontFamily: 'monospace' }}>{r.can_tu}-{r.can_den}kg</span></td>
+                                        <td className="px-4 py-3 text-[13px]">{r.doan_ten}</td>
+                                        <td className="px-4 py-3 text-[13px]">{r.gioi === 'nam' ? '♂' : '♀'}</td>
+                                        <td className="px-4 py-3"><span className="font-mono text-[13px] font-bold">{r.can_tu}-{r.can_den}kg</span></td>
                                         <td className="px-4 py-3">
                                             {r.can_thuc_te > 0 ? (
-                                                <span style={{ fontWeight: 900, fontSize: 16, color: isOverweight ? '#ef4444' : '#10b981', fontFamily: 'monospace' }}>{r.can_thuc_te}kg</span>
-                                            ) : <span style={{ opacity: 0.3, fontSize: 13 }}>—</span>}
+                                                <span className={`font-mono text-base font-black ${isOverweight ? 'text-red-500' : 'text-emerald-500'}`}>{r.can_thuc_te}kg</span>
+                                            ) : <span className="text-[13px] opacity-30">—</span>}
                                         </td>
                                         <td className="px-4 py-3"><VCT_Badge text={kq.label} type={kq.type} pulse={r.ket_qua === 'cho_can'} /></td>
-                                        <td style={{ padding: '12px 16px', fontSize: 11, fontFamily: 'monospace', opacity: 0.6 }}>{r.thoi_gian || '—'}</td>
-                                        <td style={{ padding: '12px 16px', fontSize: 12, color: isOverweight ? '#ef4444' : 'inherit', fontWeight: isOverweight ? 700 : 400 }}>{r.ghi_chu || '—'}</td>
+                                        <td className="px-4 py-3 font-mono text-[11px] opacity-60">{r.thoi_gian || '—'}</td>
+                                        <td className={`px-4 py-3 text-xs ${isOverweight ? 'font-bold text-red-500' : ''}`}>{r.ghi_chu || '—'}</td>
                                         <td className="px-4 py-3">
-                                            <VCT_Button variant={r.ket_qua === 'cho_can' ? 'primary' : 'secondary'} onClick={() => openWeigh(r)} style={{ padding: '4px 12px', fontSize: 11 }}>
+                                            <VCT_Button variant={r.ket_qua === 'cho_can' ? 'primary' : 'secondary'} onClick={() => openWeigh(r)} className="px-3 py-1 text-[11px]">
                                                 {r.ket_qua === 'cho_can' ? '⚖️ Cân' : '🔄 Cân lại'}
                                             </VCT_Button>
                                         </td>
@@ -370,23 +370,23 @@ export const Page_weigh_in = () => {
             }>
                 {weighModal && (
                     <VCT_Stack gap={16}>
-                        <div style={{ padding: 16, borderRadius: 12, background: 'var(--vct-bg-input)', display: 'flex', gap: 12, alignItems: 'center' }}>
+                        <div className="flex items-center gap-3 rounded-xl bg-(--vct-bg-input) p-4">
                             <VCT_AvatarLetter name={weighModal.vdv_ten} size={56} />
                             <div>
-                                <div style={{ fontWeight: 900, fontSize: 18 }}>{weighModal.vdv_ten}</div>
+                                <div className="text-lg font-black">{weighModal.vdv_ten}</div>
                                 <div className="text-sm font-bold uppercase opacity-60">{weighModal.doan_ten} • {weighModal.gioi === 'nam' ? '♂ Nam' : '♀ Nữ'}</div>
                             </div>
                         </div>
-                        <div style={{ padding: 20, borderRadius: 12, background: 'var(--vct-bg-elevated)', border: '1px solid var(--vct-border-subtle)', textAlign: 'center' }}>
-                            <div style={{ fontSize: 12, opacity: 0.5, textTransform: 'uppercase', fontWeight: 800, letterSpacing: '0.05em' }}>Hạng cân đăng ký</div>
-                            <div style={{ fontSize: 36, fontWeight: 900, fontFamily: 'monospace', color: 'var(--vct-accent-cyan)' }}>{weighModal.can_tu} — {weighModal.can_den} kg</div>
+                        <div className="rounded-xl border border-(--vct-border-subtle) bg-(--vct-bg-elevated) p-5 text-center">
+                            <div className="text-xs font-extrabold uppercase tracking-wider opacity-50">Hạng cân đăng ký</div>
+                            <div className="font-mono text-4xl font-black text-(--vct-accent-cyan)">{weighModal.can_tu} — {weighModal.can_den} kg</div>
                         </div>
                         <VCT_Field label={<span className="text-lg font-bold">Cân nặng thực tế báo cáo (kg)</span>}>
-                            <VCT_Input type="number" value={weighValue} onChange={(e: any) => setWeighValue(e.target.value)} placeholder="VD: 47.5" autoFocus style={{ fontSize: 48, height: 80, fontWeight: 900, textAlign: 'center', fontFamily: 'monospace', borderRadius: 16 }} />
+                            <VCT_Input type="number" value={weighValue} onChange={(e: any) => setWeighValue(e.target.value)} placeholder="VD: 47.5" autoFocus className="h-20 rounded-2xl text-center font-mono text-5xl font-black" />
                         </VCT_Field>
                         {weighValue && !isNaN(parseFloat(weighValue)) && (
-                            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} style={{ textAlign: 'center', padding: 16, borderRadius: 12, background: parseFloat(weighValue) >= weighModal.can_tu && parseFloat(weighValue) <= weighModal.can_den ? 'rgba(16, 185, 129, 0.1)' : 'rgba(239, 68, 68, 0.1)', border: `2px solid ${parseFloat(weighValue) >= weighModal.can_tu && parseFloat(weighValue) <= weighModal.can_den ? '#10b981' : '#ef4444'}50` }}>
-                                <span style={{ fontSize: 18, fontWeight: 900, color: parseFloat(weighValue) >= weighModal.can_tu && parseFloat(weighValue) <= weighModal.can_den ? '#10b981' : '#ef4444' }}>
+                            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className={`rounded-xl border-2 p-4 text-center ${parseFloat(weighValue) >= weighModal.can_tu && parseFloat(weighValue) <= weighModal.can_den ? 'border-emerald-500/50 bg-emerald-500/10' : 'border-red-500/50 bg-red-500/10'}`}>
+                                <span className={`text-lg font-black ${parseFloat(weighValue) >= weighModal.can_tu && parseFloat(weighValue) <= weighModal.can_den ? 'text-emerald-500' : 'text-red-500'}`}>
                                     {parseFloat(weighValue) >= weighModal.can_tu && parseFloat(weighValue) <= weighModal.can_den ? '✓ ĐẠT — Trong phạm vi hạng cân' : `✗ KHÔNG ĐẠT — Lệch ${Math.abs(parseFloat(weighValue) > weighModal.can_den ? parseFloat(weighValue) - weighModal.can_den : weighModal.can_tu - parseFloat(weighValue)).toFixed(1)}kg`}
                                 </span>
                             </motion.div>

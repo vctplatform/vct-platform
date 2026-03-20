@@ -3,6 +3,7 @@ package realtime
 import (
 	"encoding/json"
 	"log/slog"
+	"strings"
 	"sync"
 	"time"
 
@@ -18,13 +19,15 @@ const (
 
 // Client represents an active WebSocket connection.
 type Client struct {
-	hub      *Hub
-	conn     *websocket.Conn
-	send     chan []byte
-	userID   string
-	channels map[string]bool
-	mu       sync.RWMutex
-	logger   *slog.Logger
+	hub           *Hub
+	conn          *websocket.Conn
+	send          chan []byte
+	userID        string
+	channels      map[string]bool
+	authenticated bool
+	authRequired  bool
+	mu            sync.RWMutex
+	logger        *slog.Logger
 }
 
 // UserID returns the authenticated user ID of this client (if any).
@@ -59,10 +62,33 @@ func (c *Client) readPump() {
 		var msg ClientMessage
 		if err := json.Unmarshal(message, &msg); err == nil {
 			switch msg.Action {
+			case "auth":
+				if !c.authRequired {
+					c.authenticated = true
+					continue
+				}
+				if err := c.hub.validateToken(msg.Token); err != nil {
+					c.logger.Warn("websocket auth failed", "error", err)
+					return
+				}
+				c.authenticated = true
+				if c.userID == "" {
+					c.userID = "authenticated"
+				}
 			case "subscribe":
-				c.hub.Subscribe(c, msg.Channel)
+				if c.authRequired && !c.authenticated {
+					continue
+				}
+				if channel := strings.TrimSpace(msg.Channel); channel != "" {
+					c.hub.Subscribe(c, channel)
+				}
 			case "unsubscribe":
-				c.hub.Unsubscribe(c, msg.Channel)
+				if c.authRequired && !c.authenticated {
+					continue
+				}
+				if channel := strings.TrimSpace(msg.Channel); channel != "" {
+					c.hub.Unsubscribe(c, channel)
+				}
 			}
 		}
 	}

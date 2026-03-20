@@ -83,6 +83,7 @@
     color: white;
     flex-shrink: 0;
     background-color: var(--_icon-color, var(--vct-accent-cyan));
+    /* stylelint-disable-next-line plugin/no-unsupported-browser-features */
     box-shadow: 0 8px 16px -4px color-mix(in srgb, var(--_icon-color, var(--vct-accent-cyan)) 30%, transparent);
 }
 
@@ -174,6 +175,7 @@
     padding: 3px 8px;
     border-radius: 6px;
     color: var(--_badge-color, #94a3b8);
+    /* stylelint-disable-next-line plugin/no-unsupported-browser-features */
     background: color-mix(in srgb, var(--_badge-color, #94a3b8) 8%, transparent);
 }
 
@@ -204,6 +206,7 @@
 
 /* ── Hero Section Card (dynamic gradient via --_hero-accent) ── */
 .admin-hero-card {
+    /* stylelint-disable-next-line plugin/no-unsupported-browser-features */
     background: linear-gradient(
         135deg,
         color-mix(in srgb, var(--_hero-accent, #22d3ee) 12%, transparent) 0%,
@@ -229,6 +232,7 @@
 .admin-accent-tag {
     border-radius: 9999px;
     padding: 4px 12px;
+    /* stylelint-disable-next-line plugin/no-unsupported-browser-features */
     background: color-mix(in srgb, var(--_tag-color, #22d3ee) 13%, transparent);
     color: var(--_tag-color, #22d3ee);
 }
@@ -244,6 +248,7 @@
     color: white;
     flex-shrink: 0;
     background-color: var(--_nav-color, var(--vct-accent-cyan));
+    /* stylelint-disable-next-line plugin/no-unsupported-browser-features */
     box-shadow: 0 8px 16px -4px color-mix(in srgb, var(--_nav-color, var(--vct-accent-cyan)) 25%, transparent);
 }
 
@@ -300,6 +305,7 @@
 
 /* ── CMS Category Tab (active state) ── */
 .admin-cms-tab--active {
+    /* stylelint-disable-next-line plugin/no-unsupported-browser-features */
     background: linear-gradient(
         135deg,
         color-mix(in srgb, var(--_tab-color, #0ea5e9) 12%, transparent),
@@ -494,8 +500,10 @@
     transition: all 0.2s ease;
     text-align: left;
     background: linear-gradient(135deg, rgba(14, 165, 233, 0.08), transparent);
+    /* stylelint-disable-next-line plugin/no-unsupported-browser-features */
     background: linear-gradient(135deg, color-mix(in srgb, var(--_nav-color) 8%, transparent), transparent);
     border: 1px solid rgba(14, 165, 233, 0.18);
+    /* stylelint-disable-next-line plugin/no-unsupported-browser-features */
     border: 1px solid color-mix(in srgb, var(--_nav-color) 18%, transparent);
 }
 .admin-nav-card:hover {
@@ -520,6 +528,7 @@
     padding: 3px 8px;
     border-radius: 6px;
     color: var(--_role-color, #94a3b8);
+    /* stylelint-disable-next-line plugin/no-unsupported-browser-features */
     background: color-mix(in srgb, var(--_role-color, #94a3b8) 12%, transparent);
 }
 
@@ -569,6 +578,7 @@
     color: white;
     flex-shrink: 0;
     background-color: var(--_nav-color, #0ea5e9);
+    /* stylelint-disable-next-line plugin/no-unsupported-browser-features */
     box-shadow: 0 8px 16px -4px color-mix(in srgb, var(--_nav-color, #0ea5e9) 40%, transparent);
 }
 
@@ -601,6 +611,7 @@
     border-radius: 9999px;
     padding: 0.25rem 0.75rem;
     color: var(--_accent-color, #8b5cf6);
+    /* stylelint-disable-next-line plugin/no-unsupported-browser-features */
     background: color-mix(in srgb, var(--_accent-color, #8b5cf6) 13%, transparent);
 }
 

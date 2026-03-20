@@ -340,7 +340,7 @@ export const Page_provincial_referees = () => {
 
             {/* Delete Confirmation */}
             {deleteId && (
-                <div className="fixed inset-0 z-[999] flex items-center justify-center bg-black/50 backdrop-blur-sm" onClick={() => setDeleteId(null)}>
+                <div className="fixed inset-0 z- flex items-center justify-center bg-black/50 backdrop-blur-sm" onClick={() => setDeleteId(null)}>
                     <div className="bg-(--vct-bg-card) rounded-2xl p-6 w-full max-w-sm shadow-2xl border border-(--vct-border-subtle)" onClick={e => e.stopPropagation()}>
                         <h3 className="text-lg font-bold mb-2">Xác nhận xoá</h3>
                         <p className="text-sm text-(--vct-text-secondary) mb-5">Bạn chắc chắn muốn xoá trọng tài này? Hành động không thể hoàn tác.</p>
@@ -378,7 +378,7 @@ function RefereeModal({ referee, onSave, onClose }: { referee: Referee | null; o
     const labelCls = "block text-xs font-semibold text-(--vct-text-secondary) mb-1.5"
 
     return (
-        <div className="fixed inset-0 z-[999] flex items-center justify-center bg-black/50 backdrop-blur-sm" onClick={onClose}>
+        <div className="fixed inset-0 z- flex items-center justify-center bg-black/50 backdrop-blur-sm" onClick={onClose}>
             <div className="bg-(--vct-bg-card) rounded-2xl p-6 w-full max-w-lg shadow-2xl border border-(--vct-border-subtle) max-h-[90vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
                 <h3 className="text-lg font-bold mb-5">{referee ? '✏️ Chỉnh sửa Trọng Tài' : '➕ Thêm Trọng Tài Mới'}</h3>
 

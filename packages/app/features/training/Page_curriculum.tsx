@@ -243,40 +243,40 @@ export const Page_curriculum = () => {
 
     const columns = [
         {
-            key: 'checkbox', label: <input type="checkbox" aria-label="Chọn tất cả giáo trình" checked={selectedIds.size === filtered.length && filtered.length > 0} onChange={toggleSelectAll} style={{ width: 16, height: 16, accentColor: '#22d3ee' }} />, align: 'center' as const,
-            render: (r: Curriculum) => <input type="checkbox" aria-label={`Chọn giáo trình ${r.title}`} checked={selectedIds.has(r.id)} onChange={() => toggleSelect(r.id)} onClick={(e: React.MouseEvent) => e.stopPropagation()} style={{ width: 16, height: 16, accentColor: '#22d3ee' }} />
+            key: 'checkbox', label: <input type="checkbox" aria-label="Chọn tất cả giáo trình" checked={selectedIds.size === filtered.length && filtered.length > 0} onChange={toggleSelectAll} {...{ style: { width: 16, height: 16, accentColor: '#22d3ee' } }} />, align: 'center' as const,
+            render: (r: Curriculum) => <input type="checkbox" aria-label={`Chọn giáo trình ${r.title}`} checked={selectedIds.has(r.id)} onChange={() => toggleSelect(r.id)} onClick={(e: React.MouseEvent) => e.stopPropagation()} {...{ style: { width: 16, height: 16, accentColor: '#22d3ee' } }} />
         },
         {
             key: 'title', label: 'Tên Giáo Trình', render: (r: Curriculum) => (
                 <div>
-                    <div style={{ fontWeight: 700, fontSize: 13, color: 'var(--vct-text-primary)' }}>{r.title}</div>
-                    <div style={{ fontSize: 11, opacity: 0.6, fontFamily: 'monospace' }}>{r.code}</div>
+                    <div {...{ style: { fontWeight: 700, fontSize: 13, color: 'var(--vct-text-primary)' } }}>{r.title}</div>
+                    <div {...{ style: { fontSize: 11, opacity: 0.6, fontFamily: 'monospace' } }}>{r.code}</div>
                 </div>
             )
         },
         {
             key: 'belt_level', label: 'Phân cấp (Đai)', render: (r: Curriculum) => (
-                <div style={{
+                <div {...{ style: {
                     display: 'inline-flex', alignItems: 'center', gap: 6,
                     padding: '4px 8px', borderRadius: 4, fontSize: 11, fontWeight: 700,
                     background: BELT_MAP[r.belt_level as BeltLevel]?.bg || '#ccc', 
                     color: BELT_MAP[r.belt_level as BeltLevel]?.color || '#000',
                     border: r.belt_level === 'trang' ? '1px solid #cbd5e1' : 'none'
-                }}>
+                } }}>
                     {BELT_MAP[r.belt_level as BeltLevel]?.label || r.belt_level}
                 </div>
             )
         },
         {
             key: 'estimated_months', label: 'Thời gian', align: 'center' as const, render: (r: Curriculum) => (
-                <div style={{ fontSize: 13, fontWeight: 600 }}>{r.estimated_months} <span style={{ fontSize: 11, opacity: 0.6, fontWeight: 400 }}>tháng</span></div>
+                <div {...{ style: { fontSize: 13, fontWeight: 600 } }}>{r.estimated_months} <span {...{ style: { fontSize: 11, opacity: 0.6, fontWeight: 400 } }}>tháng</span></div>
             )
         },
         {
             key: 'content', label: 'Nội dung', render: (r: Curriculum) => (
                 <div>
-                    <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--vct-accent-cyan)' }}>{(r.forms || []).length} bài quyền</div>
-                    <div style={{ fontSize: 11, opacity: 0.6 }}>{r.techniques_count} kỹ thuật</div>
+                    <div {...{ style: { fontSize: 13, fontWeight: 600, color: 'var(--vct-accent-cyan)' } }}>{(r.forms || []).length} bài quyền</div>
+                    <div {...{ style: { fontSize: 11, opacity: 0.6 } }}>{r.techniques_count} kỹ thuật</div>
                 </div>
             )
         },
@@ -290,10 +290,10 @@ export const Page_curriculum = () => {
         {
             key: 'actions', label: '', align: 'right' as const, render: (r: Curriculum) => (
                 <VCT_Stack direction="row" gap={4} justify="flex-end" aria-label="Hành động">
-                    <button onClick={(e) => { e.stopPropagation(); openEditModal(r); }} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--vct-text-tertiary)', padding: 4 }} aria-label={`Sửa giáo trình ${r.title}`}>
+                    <button onClick={(e) => { e.stopPropagation(); openEditModal(r); }} {...{ style: { background: 'none', border: 'none', cursor: 'pointer', color: 'var(--vct-text-tertiary)', padding: 4 } }} aria-label={`Sửa giáo trình ${r.title}`}>
                         <VCT_Icons.Edit size={16} />
                     </button>
-                    <button onClick={(e) => { e.stopPropagation(); handleDeleteTarget(r); }} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#ef4444', padding: 4 }} aria-label={`Xóa giáo trình ${r.title}`}>
+                    <button onClick={(e) => { e.stopPropagation(); handleDeleteTarget(r); }} {...{ style: { background: 'none', border: 'none', cursor: 'pointer', color: '#ef4444', padding: 4 } }} aria-label={`Xóa giáo trình ${r.title}`}>
                         <VCT_Icons.Trash size={16} />
                     </button>
                 </VCT_Stack>
@@ -358,7 +358,7 @@ export const Page_curriculum = () => {
                         <thead>
                             <tr className="border-b border-(--vct-border-strong) bg-(--vct-bg-card)">
                                 {columns.map((col, i) => (
-                                    <th key={i} scope="col" style={{ padding: '14px 16px', textAlign: (col.align || 'left') as React.CSSProperties['textAlign'], fontSize: 11, fontWeight: 700, textTransform: 'uppercase', opacity: 0.5, position: 'sticky', top: 0, background: 'var(--vct-bg-card)', zIndex: 2 }}>
+                                    <th key={i} scope="col" {...{ style: { padding: '14px 16px', textAlign: (col.align || 'left') as React.CSSProperties['textAlign'], fontSize: 11, fontWeight: 700, textTransform: 'uppercase', opacity: 0.5, position: 'sticky', top: 0, background: 'var(--vct-bg-card)', zIndex: 2 } }}>
                                         {col.label}
                                     </th>
                                 ))}
@@ -368,9 +368,9 @@ export const Page_curriculum = () => {
                             {filtered.map((civ, idx) => {
                                 const stColor = STATUS_MAP[civ.status]?.color || '#94a3b8'
                                 return (
-                                    <tr key={civ.id} style={{ borderBottom: '1px solid var(--vct-border-subtle)', background: selectedIds.has(civ.id) ? 'rgba(34, 211, 238, 0.05)' : idx % 2 === 0 ? 'transparent' : 'rgba(128,128,128,0.02)', borderLeft: `3px solid ${stColor}` }}>
+                                    <tr key={civ.id} {...{ style: { borderBottom: '1px solid var(--vct-border-subtle)', background: selectedIds.has(civ.id) ? 'rgba(34, 211, 238, 0.05)' : idx % 2 === 0 ? 'transparent' : 'rgba(128,128,128,0.02)', borderLeft: `3px solid ${stColor}` } }}>
                                         {columns.map((col, ci) => (
-                                            <td key={ci} style={{ padding: '14px 16px', fontSize: 13, textAlign: (col.align || 'left') as React.CSSProperties['textAlign'] }}>
+                                            <td key={ci} {...{ style: { padding: '14px 16px', fontSize: 13, textAlign: (col.align || 'left') as React.CSSProperties['textAlign'] } }}>
                                                 {col.render ? col.render(civ) : (civ as unknown as Record<string, React.ReactNode>)[col.key]}
                                             </td>
                                         ))}
