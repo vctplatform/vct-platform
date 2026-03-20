@@ -11,6 +11,10 @@ import { useEffect, useState, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { VCT_Text } from 'app/features/components/vct-ui'
 
+const __DEV__ = process.env.NODE_ENV !== 'production'
+// eslint-disable-next-line no-console
+const devLog = (...args: unknown[]) => { if (__DEV__) console.log(...args) }
+
 /* ═══════════════════════════════════════════════════════════════
    SERVICE WORKER REGISTRATION
    ═══════════════════════════════════════════════════════════════ */
@@ -18,21 +22,21 @@ import { VCT_Text } from 'app/features/components/vct-ui'
 export function registerServiceWorker() {
     if (typeof window === 'undefined') return
     if (!('serviceWorker' in navigator)) {
-        console.log('[PWA] Service Worker not supported')
+        devLog('[PWA] Service Worker not supported')
         return
     }
 
     window.addEventListener('load', async () => {
         try {
             const registration = await navigator.serviceWorker.register('/sw.js', { scope: '/' })
-            console.log('[PWA] Service Worker registered:', registration.scope)
+            devLog('[PWA] Service Worker registered:', registration.scope)
 
             registration.addEventListener('updatefound', () => {
                 const newWorker = registration.installing
                 if (!newWorker) return
                 newWorker.addEventListener('statechange', () => {
                     if (newWorker.state === 'activated') {
-                        console.log('[PWA] New content available, please refresh')
+                        devLog('[PWA] New content available, please refresh')
                     }
                 })
             })
@@ -164,7 +168,7 @@ export async function queueOfflineAction(action: Omit<PendingAction, 'id' | 'tim
         try {
             await (reg as unknown as { sync: { register: (tag: string) => Promise<void> } }).sync.register(`sync-${action.type}`)
         } catch {
-            console.log('[Offline] Background sync not available')
+            devLog('[Offline] Background sync not available')
         }
     }
 }
@@ -197,7 +201,7 @@ export function useOfflineSync() {
         const pending = await getPendingActions()
         if (pending.length === 0) return
 
-        console.log(`[Sync] Processing ${pending.length} pending actions...`)
+        devLog(`[Sync] Processing ${pending.length} pending actions...`)
 
         for (const action of pending) {
             try {
@@ -208,10 +212,10 @@ export function useOfflineSync() {
                 })
                 if (res.ok) {
                     await removePendingAction(action.id)
-                    console.log(`[Sync] ✓ ${action.type} synced`)
+                    devLog(`[Sync] ✓ ${action.type} synced`)
                 }
             } catch {
-                console.log(`[Sync] ✗ ${action.type} failed, will retry`)
+                devLog(`[Sync] ✗ ${action.type} failed, will retry`)
             }
         }
     }, [])
@@ -229,12 +233,12 @@ export function useOfflineSync() {
 
 export async function requestPushPermission(): Promise<NotificationPermission> {
     if (!('Notification' in window)) {
-        console.log('[Push] Notifications not supported')
+        devLog('[Push] Notifications not supported')
         return 'denied'
     }
 
     const permission = await Notification.requestPermission()
-    console.log('[Push] Permission:', permission)
+    devLog('[Push] Permission:', permission)
     return permission
 }
 
@@ -247,7 +251,7 @@ export async function subscribeToPush(vapidPublicKey: string): Promise<PushSubsc
             userVisibleOnly: true,
             applicationServerKey: urlBase64ToUint8Array(vapidPublicKey) as BufferSource,
         })
-        console.log('[Push] Subscribed:', subscription.endpoint)
+        devLog('[Push] Subscribed:', subscription.endpoint)
         return subscription
     } catch (err) {
         console.error('[Push] Subscription failed:', err)

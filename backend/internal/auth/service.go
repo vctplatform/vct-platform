@@ -169,6 +169,9 @@ type Principal struct {
 	TokenExpiresAt time.Time
 	TournamentCode string
 	OperationShift string
+	Roles          []RoleAssignment
+	Permissions    []string
+	Workspaces     []WorkspaceAccess
 }
 
 type AuditEntry struct {
@@ -632,12 +635,12 @@ func (s *Service) Login(input LoginRequest, requestCtx RequestContext) (LoginRes
 		"operationShift": operationShift,
 	})
 
-	roles, perms, ws := resolveRBACForUser(user)
-
 	// Ensure multi-role store has at least the primary binding
 	if s.roleBindings != nil {
 		s.roleBindings.EnsureDefaultBinding(user)
 	}
+
+	roles, perms, ws := s.resolveRBACSnapshot(user)
 
 	// Update last_login_at in database (async, non-blocking)
 	if s.userStore != nil {
@@ -696,6 +699,7 @@ func (s *Service) AuthenticateAccessToken(token string, requestCtx RequestContex
 		TournamentCode: claims.TournamentCode,
 		OperationShift: claims.OperationShift,
 	}
+	principal.Roles, principal.Permissions, principal.Workspaces = s.resolveRBACSnapshot(principal.User)
 	return principal, nil
 }
 
@@ -760,7 +764,7 @@ func (s *Service) Refresh(input RefreshRequest, requestCtx RequestContext) (Logi
 		"sessionId": session.ID,
 	})
 
-	roles, perms, ws := resolveRBACForUser(session.User)
+	roles, perms, ws := s.resolveRBACSnapshot(session.User)
 
 	return LoginResult{
 		TokenResponse:  response,
@@ -861,7 +865,7 @@ func (s *Service) Me(principal Principal) LoginResult {
 		OperationShift: principal.OperationShift,
 	}
 
-	roles, perms, ws := resolveRBACForUser(principal.User)
+	roles, perms, ws := s.resolveRBACSnapshot(principal.User)
 	result.Roles = roles
 	result.Permissions = perms
 	result.Workspaces = ws
@@ -1234,7 +1238,7 @@ func (s *Service) Register(input RegisterRequest, requestCtx RequestContext) (Lo
 
 	s.addAuditLocked("auth.register", true, requestCtx, user, map[string]any{"sessionId": sessionID})
 
-	roles, perms, ws := resolveRBACForUser(user)
+	roles, perms, ws := s.resolveRBACSnapshot(user)
 
 	return LoginResult{
 		TokenResponse:  response,

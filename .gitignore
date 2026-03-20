@@ -94,6 +94,20 @@ tsc*.log
 start.log
 tsconfig.tsbuildinfo
 
+# Lint / analysis output
+eslint_*.txt
+eslint_*.json
+lint*.txt
+lint*.json
+next_lint*.txt
+temp_eslint*.txt
+
+# One-off fix scripts
+fix_*.js
+
+# Error logs
+errors.txt
+
 # AI / Editor configs
 .claude/
 

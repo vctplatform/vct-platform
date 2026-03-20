@@ -34,6 +34,7 @@
     "authz:sync": "node scripts/generate-authz-contract.mjs",
     "authz:check": "node scripts/generate-authz-contract.mjs --check",
     "test": "node scripts/run-tests.mjs",
+    "test:smoke": "node scripts/run-tests.mjs --smoke-only",
     "test:ui": "playwright test tests/e2e/appshell.breakpoints.spec.mjs --config=playwright.config.mjs",
     "test:e2e": "playwright test tests/e2e/core-workflow.spec.mjs --config=playwright.config.mjs",
     "smoke:backend:db": "node scripts/run-backend-db-smoke.mjs",

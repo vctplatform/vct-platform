@@ -103,8 +103,15 @@ func (c Config) Validate() error {
 	if env == "production" && c.AllowDemoUsers {
 		return fmt.Errorf("VCT_ALLOW_DEMO_USERS must be false for %s", env)
 	}
-	if (env == "production" || env == "staging") && secret == DefaultJWTSecret {
-		return fmt.Errorf("VCT_JWT_SECRET must be overridden for %s", env)
+	if env == "production" || env == "staging" {
+		if secret == DefaultJWTSecret {
+			return fmt.Errorf("VCT_JWT_SECRET must be overridden for %s", env)
+		}
+		lower := strings.ToLower(secret)
+		if strings.Contains(lower, "change-me") || strings.Contains(lower, "change_me") ||
+			strings.Contains(lower, "insecure") || strings.Contains(lower, "placeholder") {
+			return fmt.Errorf("VCT_JWT_SECRET appears to be a placeholder — use a cryptographically random value for %s", env)
+		}
 	}
 	if c.PostgresURL == "" && c.StorageDriver == "postgres" {
 		return fmt.Errorf("VCT_POSTGRES_URL is required when storage driver is postgres")

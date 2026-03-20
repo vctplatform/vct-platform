@@ -51,7 +51,7 @@ jobs:
           node-version: 22
           cache: 'npm'
       - run: npm ci
-      - run: npx eslint packages/app/features/mobile/ --max-warnings=0 || true
+      - run: npx eslint packages/app/features/mobile/ --max-warnings=0
 
   eas-preview:
     name: EAS Preview Build (Android)
