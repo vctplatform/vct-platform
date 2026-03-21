@@ -302,7 +302,10 @@ export function VCTThemeProvider({
     setDynamicTokens(prev => ({ ...prev, ...tokens }))
   }, [])
 
-  const theme = buildTheme(userMode, systemScheme, dynamicTokens)
+  // Normalize: newer RN/Expo may return "unspecified" – treat as null
+  const normalizedScheme: 'dark' | 'light' | null =
+    systemScheme === 'dark' || systemScheme === 'light' ? systemScheme : null
+  const theme = buildTheme(userMode, normalizedScheme, dynamicTokens)
 
   // Avoid flash of unstyled content
   if (!isReady) return null
