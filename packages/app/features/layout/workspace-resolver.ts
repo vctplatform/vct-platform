@@ -240,9 +240,9 @@ function mapRoleToWorkspace(
 
     if (code === 'OWNER' || code === 'SYSTEM_ADMIN' || code === 'ADMIN') {
         add('system_admin', 'SYS', 'ws.scope.sysadmin', 'admin')
-        add('federation_admin', scopeId, scopeName, 'admin')
-        add('tournament_ops', scopeId, scopeName, 'admin')
-        add('club_management', scopeId, scopeName, 'admin')
+        add('federation_admin', 'FED', 'ws.scope.federation', 'admin')
+        add('tournament_ops', 'TOURN', 'ws.scope.tournament', 'admin')
+        add('club_management', 'CLUB', 'ws.scope.club', 'admin')
     } else if (PROVINCIAL_ROLE_CODES.has(code)) {
         add('federation_provincial', scopeId, scopeName, ra.roleCode)
     } else if (DISCIPLINE_ROLE_CODES.has(code)) {
