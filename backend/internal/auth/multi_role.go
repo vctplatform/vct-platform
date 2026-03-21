@@ -3,6 +3,7 @@ package auth
 import (
 	"fmt"
 	"sort"
+	"strings"
 	"sync"
 	"time"
 )
@@ -143,12 +144,26 @@ func (s *RoleBindingStore) GetBinding(userID, bindingID string) (RoleBinding, bo
 }
 
 // EnsureDefaultBinding ensures a user has at least one binding matching their primary role.
+// Admin users get all 4 workspace scopes (system, federation, tournament, club).
 func (s *RoleBindingStore) EnsureDefaultBinding(user AuthUser) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
 	// If user already has bindings, skip
 	if len(s.bindings[user.ID]) > 0 {
+		return
+	}
+
+	now := time.Now().UTC().Format(time.RFC3339)
+
+	// Admin gets bindings for all scopes they manage
+	if user.Role == RoleAdmin {
+		s.bindings[user.ID] = []RoleBinding{
+			{ID: fmt.Sprintf("rb-%s-sys", shortID(user.ID)), UserID: user.ID, Role: RoleAdmin, ScopeType: "system", ScopeID: "SYS", ScopeName: "Quản trị hệ thống", GrantedBy: "system", GrantedAt: now, IsActive: true},
+			{ID: fmt.Sprintf("rb-%s-fed", shortID(user.ID)), UserID: user.ID, Role: RoleAdmin, ScopeType: "federation", ScopeID: "FED", ScopeName: "Liên đoàn VCT", GrantedBy: "system", GrantedAt: now, IsActive: true},
+			{ID: fmt.Sprintf("rb-%s-tourn", shortID(user.ID)), UserID: user.ID, Role: RoleAdmin, ScopeType: "tournament", ScopeID: "TOURN", ScopeName: "Giải đấu", GrantedBy: "system", GrantedAt: now, IsActive: true},
+			{ID: fmt.Sprintf("rb-%s-club", shortID(user.ID)), UserID: user.ID, Role: RoleAdmin, ScopeType: "club", ScopeID: "CLUB", ScopeName: "CLB", GrantedBy: "system", GrantedAt: now, IsActive: true},
+		}
 		return
 	}
 
@@ -159,11 +174,11 @@ func (s *RoleBindingStore) EnsureDefaultBinding(user AuthUser) {
 			ID:        fmt.Sprintf("rb-%s-default", shortID(user.ID)),
 			UserID:    user.ID,
 			Role:      user.Role,
-			ScopeType: scope,
+			ScopeType: strings.ToLower(scope),
 			ScopeID:   scopeIDForDefault(scope),
 			ScopeName: scopeNameForDefault(scope),
 			GrantedBy: "system",
-			GrantedAt: time.Now().UTC().Format(time.RFC3339),
+			GrantedAt: now,
 			IsActive:  true,
 		},
 	}
@@ -309,11 +324,13 @@ func (svc *Service) ListMyRoles(principal Principal) []RoleBinding {
 
 func bindingToWorkspace(b RoleBinding) WorkspaceAccess {
 	wsType := "custom"
-	switch b.ScopeType {
+	switch strings.ToLower(b.ScopeType) {
 	case "system":
 		wsType = "system_admin"
 	case "federation":
 		wsType = "federation_admin"
+	case "province":
+		wsType = "federation_provincial"
 	case "tournament":
 		wsType = "tournament_ops"
 	case "club":
