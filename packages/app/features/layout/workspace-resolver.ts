@@ -195,14 +195,23 @@ export function resolveWorkspacesForUser(user: AuthUser): WorkspaceAccess[] {
     }
 
     // If backend already provides workspaces, use those after alias normalization.
+    // If all backend workspaces fail normalization (e.g. type "custom" from a case-mismatch bug),
+    // fall through to role-based derivation instead of returning only public_spectator.
     if (user.workspaces && user.workspaces.length > 0) {
         for (const workspace of user.workspaces) {
             const type = normalizeWorkspaceType(workspace.type)
             if (!type) continue
             addWorkspace(type, workspace.scopeId, workspace.scopeName, workspace.role)
         }
-        addWorkspace('public_spectator', 'PUBLIC', 'ws.scope.spectator', 'viewer')
-        return workspaces
+        // Only use backend workspaces if at least one meaningful (non-spectator) workspace resolved
+        const hasMeaningful = workspaces.some(w => w.type !== 'public_spectator')
+        if (hasMeaningful) {
+            addWorkspace('public_spectator', 'PUBLIC', 'ws.scope.spectator', 'viewer')
+            return workspaces
+        }
+        // Otherwise clear and fall through to role-based derivation
+        workspaces.length = 0
+        seen.clear()
     }
 
     // Derive from role assignments
