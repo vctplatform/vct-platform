@@ -238,7 +238,7 @@ function mapRoleToWorkspace(
     const scopeId = ra.scopeId ?? 'DEFAULT'
     const scopeName = ra.scopeName ?? ra.roleName
 
-    if (code === 'SYSTEM_ADMIN' || code === 'ADMIN') {
+    if (code === 'OWNER' || code === 'SYSTEM_ADMIN' || code === 'ADMIN') {
         add('system_admin', 'SYS', 'ws.scope.sysadmin', 'admin')
         add('federation_admin', scopeId, scopeName, 'admin')
         add('tournament_ops', scopeId, scopeName, 'admin')
@@ -270,6 +270,7 @@ function mapSingleRoleToWorkspace(
     add: (type: WorkspaceType, scopeId: string, scopeName: string, role: string) => void
 ) {
     switch (role) {
+        case 'owner':
         case 'admin':
             add('system_admin', 'SYS', 'ws.scope.sysadmin', 'admin')
             add('federation_admin', 'FED', 'ws.scope.federation', 'admin')

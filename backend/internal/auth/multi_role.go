@@ -156,8 +156,8 @@ func (s *RoleBindingStore) EnsureDefaultBinding(user AuthUser) {
 
 	now := time.Now().UTC().Format(time.RFC3339)
 
-	// Admin gets bindings for all scopes they manage
-	if user.Role == RoleAdmin {
+	// Admin and Owner get bindings for all scopes they manage
+	if user.Role == RoleAdmin || user.Role == RoleOwner {
 		s.bindings[user.ID] = []RoleBinding{
 			{ID: fmt.Sprintf("rb-%s-sys", shortID(user.ID)), UserID: user.ID, Role: RoleAdmin, ScopeType: "system", ScopeID: "SYS", ScopeName: "Quản trị hệ thống", GrantedBy: "system", GrantedAt: now, IsActive: true},
 			{ID: fmt.Sprintf("rb-%s-fed", shortID(user.ID)), UserID: user.ID, Role: RoleAdmin, ScopeType: "federation", ScopeID: "FED", ScopeName: "Liên đoàn VCT", GrantedBy: "system", GrantedAt: now, IsActive: true},

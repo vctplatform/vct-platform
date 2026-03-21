@@ -1,6 +1,7 @@
 {
-  "version": 3,
+  "version": 4,
   "roles": [
+    "owner",
     "admin",
     "federation_president",
     "federation_secretary",
@@ -23,6 +24,9 @@
     "export"
   ],
   "policies": {
+    "owner": {
+      "*": ["view", "create", "update", "delete", "import", "export"]
+    },
     "admin": {
       "*": ["view", "create", "update", "delete", "import", "export"]
     },

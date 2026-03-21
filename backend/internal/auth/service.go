@@ -22,6 +22,7 @@ import (
 type UserRole string
 
 const (
+	RoleOwner               UserRole = "owner"
 	RoleAdmin               UserRole = "admin"
 	RoleFederationPresident UserRole = "federation_president"
 	RoleFederationSecretary UserRole = "federation_secretary"
@@ -441,7 +442,7 @@ func demoCredentials() map[string]userCredential {
 		"hbtung": {
 			passwordHash: hashOrPanic("BaTung@1511"),
 			displayName:  "Hoàng Bá Tùng",
-			allowedRole:  []UserRole{RoleAdmin, RoleFederationPresident, RoleBTC},
+			allowedRole:  []UserRole{RoleOwner},
 			userID:       OwnerUserID,
 		},
 		"admin": {
@@ -1341,6 +1342,8 @@ func resolveRBACForUser(user AuthUser) ([]RoleAssignment, []string, []WorkspaceA
 
 func roleDisplayName(role UserRole) string {
 	switch role {
+	case RoleOwner:
+		return "Chủ sở hữu"
 	case RoleAdmin:
 		return "Quản trị hệ thống"
 	case RoleFederationPresident:
@@ -1396,7 +1399,7 @@ func roleDisplayName(role UserRole) string {
 
 func roleScopeType(role UserRole) string {
 	switch role {
-	case RoleAdmin:
+	case RoleOwner, RoleAdmin:
 		return "SYSTEM"
 	case RoleFederationPresident, RoleFederationSecretary:
 		return "FEDERATION"
@@ -1417,7 +1420,7 @@ func roleScopeType(role UserRole) string {
 
 func resolvePermissionsForRole(role UserRole) []string {
 	switch role {
-	case RoleAdmin:
+	case RoleOwner, RoleAdmin:
 		return []string{"*"}
 	case RoleFederationPresident:
 		return []string{
@@ -1544,7 +1547,7 @@ func resolveWorkspacesForRole(role UserRole) []WorkspaceAccess {
 	ws := []WorkspaceAccess{}
 
 	switch role {
-	case RoleAdmin:
+	case RoleOwner, RoleAdmin:
 		ws = append(ws,
 			WorkspaceAccess{Type: "system_admin", ScopeID: "SYS", ScopeName: "Quản trị hệ thống", Role: "admin"},
 			WorkspaceAccess{Type: "federation_admin", ScopeID: "FED", ScopeName: "Liên đoàn VCT", Role: "admin"},

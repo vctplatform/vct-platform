@@ -513,7 +513,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   const hasPermission = useCallback(
     (resource: string, action: string): boolean => {
-      if (currentUser.role === 'admin') return true
+      if (currentUser.role === 'admin' || currentUser.role === 'owner') return true
       return (
         permissionSet.has('*') ||
         permissionSet.has(`${resource}.*`) ||
