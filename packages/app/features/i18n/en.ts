@@ -609,6 +609,15 @@ export const en: Record<string, string> = {
     'ws.meta.sysadmin.label': 'System Admin',
     'ws.meta.sysadmin.desc': 'Users, Roles, Feature Flags, Audit',
 
+    // ── Workspace Categories (Portal Hub) ──
+    'ws.cat.platform': 'System Administration',
+    'ws.cat.organization': 'Federations & Organizations',
+    'ws.cat.competition': 'Tournaments & Competition',
+    'ws.cat.club': 'Clubs & Dojos',
+    'ws.cat.academic': 'Heritage & Training',
+    'ws.cat.personal': 'Personal',
+    'ws.cat.public': 'Spectators & Public',
+
     // ── Workspace Scopes ──
     'ws.scope.sysadmin': 'System Administration',
     'ws.scope.federation': 'VCT Federation',

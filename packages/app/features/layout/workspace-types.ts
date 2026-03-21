@@ -180,3 +180,86 @@ export const WORKSPACE_META: Record<WorkspaceType, {
         description: 'ws.meta.sysadmin.desc',
     },
 }
+
+// ── Workspace Categories ──
+// Groups workspace types into logical categories for the Portal Hub
+export type WorkspaceCategory =
+    | 'platform'      // System Admin
+    | 'organization'  // Federation, Provincial, Discipline
+    | 'competition'   // Tournament, Referee
+    | 'club'          // Club management
+    | 'academic'      // Heritage, Training
+    | 'personal'      // Athlete, Parent
+    | 'public'        // Spectator
+
+export interface WorkspaceCategoryMeta {
+    label: string   // i18n key
+    icon: string
+    color: string
+    order: number
+    types: WorkspaceType[]
+}
+
+export const WORKSPACE_CATEGORIES: Record<WorkspaceCategory, WorkspaceCategoryMeta> = {
+    platform: {
+        label: 'ws.cat.platform',
+        icon: 'Settings',
+        color: '#64748b',
+        order: 0,
+        types: ['system_admin'],
+    },
+    organization: {
+        label: 'ws.cat.organization',
+        icon: 'Building',
+        color: '#8b5cf6',
+        order: 1,
+        types: ['federation_admin', 'federation_provincial', 'federation_discipline'],
+    },
+    competition: {
+        label: 'ws.cat.competition',
+        icon: 'Trophy',
+        color: '#ef4444',
+        order: 2,
+        types: ['tournament_ops', 'referee_console'],
+    },
+    club: {
+        label: 'ws.cat.club',
+        icon: 'Home',
+        color: '#f59e0b',
+        order: 3,
+        types: ['club_management'],
+    },
+    academic: {
+        label: 'ws.cat.academic',
+        icon: 'BookOpen',
+        color: '#14b8a6',
+        order: 4,
+        types: ['federation_heritage', 'training_management'],
+    },
+    personal: {
+        label: 'ws.cat.personal',
+        icon: 'User',
+        color: '#10b981',
+        order: 5,
+        types: ['athlete_portal', 'parent_portal'],
+    },
+    public: {
+        label: 'ws.cat.public',
+        icon: 'Monitor',
+        color: '#ec4899',
+        order: 6,
+        types: ['public_spectator'],
+    },
+}
+
+// Reverse lookup: WorkspaceType → WorkspaceCategory
+const _typeToCategoryCache = new Map<WorkspaceType, WorkspaceCategory>()
+for (const [cat, meta] of Object.entries(WORKSPACE_CATEGORIES)) {
+    for (const t of meta.types) {
+        _typeToCategoryCache.set(t, cat as WorkspaceCategory)
+    }
+}
+
+export function getCategoryForType(type: WorkspaceType): WorkspaceCategory {
+    return _typeToCategoryCache.get(type) ?? 'public'
+}

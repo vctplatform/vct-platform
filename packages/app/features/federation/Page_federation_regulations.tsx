@@ -141,7 +141,7 @@ export function Page_federation_regulations() {
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.1 + i * 0.1 }}
-                        onClick={() => router.push(`/fed/master-data?tab=${card.tab}`)}
+                        onClick={() => router.push(`/federation/master-data?tab=${card.tab}`)}
                         style={{
                             padding: '1.5rem',
                             borderRadius: 16,

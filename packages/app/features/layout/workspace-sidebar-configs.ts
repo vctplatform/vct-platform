@@ -11,48 +11,58 @@ const FEDERATION_SIDEBAR: WorkspaceSidebarConfig = {
         {
             id: 'overview', label: 'ws.fed.overview', items: [
                 { id: 'fed-dashboard', path: '/dashboard', label: 'ws.fed.dashboard', icon: 'Dashboard' },
-                { id: 'fed-calendar', path: '/calendar', label: 'ws.fed.calendar', icon: 'Calendar' },
-                { id: 'fed-approvals', path: '/federation/approvals', label: 'ws.fed.approvals', icon: 'CheckSquare' },
+                { id: 'fed-executive', path: '/federation/executive', label: 'ws.fed.executive', icon: 'BarChart2' },
+                { id: 'fed-calendar', path: '/federation/calendar', label: 'ws.fed.calendar', icon: 'Calendar' },
+            ],
+        },
+        {
+            id: 'approvals', label: 'ws.fed.approvals', items: [
+                { id: 'fed-approvals', path: '/federation/approvals', label: 'ws.fed.approvalCenter', icon: 'CheckSquare' },
+                { id: 'fed-pending', path: '/federation/pending-approvals', label: 'ws.fed.pendingApprovals', icon: 'Clock' },
+                { id: 'fed-submit', path: '/federation/submit-approval', label: 'ws.fed.submitApproval', icon: 'Upload' },
+                { id: 'fed-workflow', path: '/federation/workflow-config', label: 'ws.fed.workflow', icon: 'GitMerge' },
             ],
         },
         {
             id: 'organization', label: 'ws.fed.org', items: [
                 { id: 'fed-orgs', path: '/organizations', label: 'ws.fed.orgs', icon: 'Building' },
-                { id: 'fed-clubs', path: '/clubs', label: 'ws.fed.clubs', icon: 'Home' },
-                { id: 'fed-people', path: '/people', label: 'ws.fed.people', icon: 'Users' },
+                { id: 'fed-orgchart', path: '/federation/org-chart', label: 'ws.fed.orgChart', icon: 'Network' },
+                { id: 'fed-personnel', path: '/federation/personnel', label: 'ws.fed.personnel', icon: 'Users' },
                 { id: 'fed-provinces', path: '/federation/provinces', label: 'ws.fed.provinces', icon: 'MapPin' },
-                { id: 'fed-orgchart', path: '/federation/org-chart', label: 'ws.fed.orgChart', icon: 'GitMerge' },
             ],
         },
         {
             id: 'regulations', label: 'ws.fed.regulations', items: [
                 { id: 'fed-regulations', path: '/federation/regulations', label: 'ws.fed.regulationsOverview', icon: 'ScrollText' },
                 { id: 'fed-masterdata', path: '/federation/master-data', label: 'ws.fed.masterData', icon: 'Database' },
+                { id: 'fed-docs', path: '/federation/documents', label: 'ws.fed.documents', icon: 'FileText' },
+            ],
+        },
+        {
+            id: 'compliance', label: 'ws.fed.compliance', items: [
+                { id: 'fed-certifications', path: '/federation/certifications', label: 'ws.fed.certifications', icon: 'Award' },
+                { id: 'fed-cert-verify', path: '/federation/cert-verification', label: 'ws.fed.certVerify', icon: 'Search' },
+                { id: 'fed-discipline', path: '/federation/discipline', label: 'ws.fed.discipline', icon: 'Shield' },
             ],
         },
         {
             id: 'finance', label: 'ws.fed.finance', items: [
-                { id: 'fed-finance', path: '/finance', label: 'ws.fed.financeOverview', icon: 'DollarSign' },
-                { id: 'fed-invoices', path: '/finance/invoices', label: 'ws.fed.invoices', icon: 'FileText' },
-                { id: 'fed-fees', path: '/finance/fees', label: 'ws.fed.fees', icon: 'CreditCard' },
-                { id: 'fed-sponsorship', path: '/finance/sponsorship', label: 'ws.fed.sponsorship', icon: 'Heart' },
-                { id: 'fed-budget', path: '/finance/budget', label: 'ws.fed.budget', icon: 'BarChart2' },
+                { id: 'fed-finance', path: '/federation/finance', label: 'ws.fed.financeOverview', icon: 'DollarSign' },
+                { id: 'fed-invoices', path: '/federation/invoices', label: 'ws.fed.invoices', icon: 'FileText' },
+                { id: 'fed-fees', path: '/federation/fees', label: 'ws.fed.fees', icon: 'CreditCard' },
+                { id: 'fed-sponsorship', path: '/federation/sponsorship', label: 'ws.fed.sponsorship', icon: 'Heart' },
+                { id: 'fed-budget', path: '/federation/budget', label: 'ws.fed.budget', icon: 'BarChart2' },
             ],
         },
         {
-            id: 'community', label: 'ws.fed.community', items: [
-                { id: 'fed-community', path: '/community', label: 'ws.fed.news', icon: 'Heart' },
-                { id: 'fed-groups', path: '/community/groups', label: 'ws.fed.groups', icon: 'Users' },
-                { id: 'fed-events', path: '/community/events', label: 'ws.fed.events', icon: 'Calendar' },
+            id: 'external', label: 'ws.fed.external', items: [
+                { id: 'fed-international', path: '/federation/international', label: 'ws.fed.international', icon: 'Globe' },
+                { id: 'fed-pr', path: '/federation/pr', label: 'ws.fed.pr', icon: 'Megaphone' },
             ],
         },
         {
-            id: 'admin', label: 'ws.fed.admin', items: [
-                { id: 'fed-refdata', path: '/federation/master-data', label: 'ws.fed.masterData', icon: 'Database' },
-                { id: 'fed-docs', path: '/federation/documents', label: 'ws.fed.documents', icon: 'FileText' },
-                { id: 'fed-certifications-mgmt', path: '/federation/certifications', label: 'ws.fed.certifications', icon: 'Award' },
-                { id: 'fed-notif', path: '/federation/notifications', label: 'ws.fed.notifications', icon: 'Bell' },
-                { id: 'fed-workflow', path: '/federation/workflow-config', label: 'ws.fed.workflow', icon: 'GitMerge' },
+            id: 'settings', label: 'ws.fed.settings', items: [
+                { id: 'fed-notifications', path: '/federation/notifications', label: 'ws.fed.notifications', icon: 'Bell' },
             ],
         },
     ],

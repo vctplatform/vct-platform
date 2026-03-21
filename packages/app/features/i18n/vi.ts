@@ -609,6 +609,15 @@ export const vi: Record<string, string> = {
     'ws.meta.sysadmin.label': 'Quản trị hệ thống',
     'ws.meta.sysadmin.desc': 'Users, Roles, Feature Flags, Audit',
 
+    // ── Workspace Categories (Portal Hub) ──
+    'ws.cat.platform': 'Quản trị Hệ thống',
+    'ws.cat.organization': 'Liên đoàn & Tổ chức',
+    'ws.cat.competition': 'Giải đấu & Thi đấu',
+    'ws.cat.club': 'CLB & Võ đường',
+    'ws.cat.academic': 'Di sản & Đào tạo',
+    'ws.cat.personal': 'Cá nhân',
+    'ws.cat.public': 'Khán giả & Công cộng',
+
     // ── Workspace Scopes ──
     'ws.scope.sysadmin': 'Quản trị hệ thống',
     'ws.scope.federation': 'Liên đoàn VCT',
