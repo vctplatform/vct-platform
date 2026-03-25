@@ -5,6 +5,7 @@
 // ════════════════════════════════════════════════════════════════
 
 import * as React from 'react'
+import { motion } from 'framer-motion'
 import { VCT_Icons } from '../../components/vct-icons'
 import { useI18n } from '../../i18n'
 import { useWorkspaceStore } from '../../layout/workspace-store'
@@ -47,15 +48,20 @@ export const PortalWorkspaceCard = ({ card, onClick }: Props) => {
     const typeName = t(meta?.label ?? card.label)
 
     return (
-        <button
+        <motion.button
+            whileHover={{ y: -4, scale: 1.01 }}
+            whileTap={{ scale: 0.98 }}
             type="button"
             onClick={() => onClick(card)}
-            className="group relative flex flex-col gap-3 rounded-2xl border border-vct-border/60 bg-[var(--vct-bg-card)] p-5 text-left transition-all duration-200 hover:border-vct-accent/40 hover:shadow-lg hover:shadow-vct-accent/5 focus:outline-none focus:ring-2 focus:ring-vct-accent/30"
+            className="group relative flex h-full flex-col gap-4 overflow-hidden rounded-2xl border border-vct-border/40 bg-white/40 p-6 text-left shadow-xs backdrop-blur-xl transition-all duration-300 hover:border-vct-accent/50 hover:bg-white/60 hover:shadow-2xl hover:shadow-vct-accent/20 focus:outline-none focus:ring-2 focus:ring-vct-accent/30 dark:bg-black/40 dark:hover:bg-black/60"
         >
+            {/* Ambient Background Glow Effect inside the card (visible on hover) */}
+            <div className="absolute -inset-x-0 -bottom-0 h-1/2 bg-gradient-to-t from-vct-accent/10 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+
             {/* Top row: icon + pin + badges */}
-            <div className="flex items-start justify-between">
-                <div className="flex items-center gap-3">
-                    {/* Logo or icon */}
+            <div className="relative flex w-full items-start justify-between">
+                <div className="flex items-center gap-4">
+                    {/* Logo or icon with premium background */}
                     {card.logoUrl ? (
                         <img
                             src={card.logoUrl}
@@ -133,11 +139,11 @@ export const PortalWorkspaceCard = ({ card, onClick }: Props) => {
 
                 {/* Last access */}
                 {lastAccess && (
-                    <span className="text-vct-text-muted/60">
+                    <span className="text-vct-text-muted/70">
                         {getRelativeTime(lastAccess)}
                     </span>
                 )}
             </div>
-        </button>
+        </motion.button>
     )
 }
