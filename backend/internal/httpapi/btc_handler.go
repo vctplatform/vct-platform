@@ -65,7 +65,7 @@ func (s *Server) handleBTCMemberList(w http.ResponseWriter, r *http.Request, p a
 		return
 	}
 	giaiID := r.URL.Query().Get("giai_id")
-	members, err := s.btcSvc.ListMembers(r.Context(), giaiID)
+	members, err := s.Extended.BTC.ListMembers(r.Context(), giaiID)
 	if err != nil {
 		internalError(w, err)
 		return
@@ -86,7 +86,7 @@ func (s *Server) handleBTCMemberCreate(w http.ResponseWriter, r *http.Request, p
 		badRequest(w, "invalid JSON: "+err.Error())
 		return
 	}
-	if err := s.btcSvc.CreateMember(r.Context(), &m); err != nil {
+	if err := s.Extended.BTC.CreateMember(r.Context(), &m); err != nil {
 		badRequest(w, err.Error())
 		return
 	}
@@ -106,7 +106,7 @@ func (s *Server) handleBTCMemberByID(w http.ResponseWriter, r *http.Request, p a
 
 	switch r.Method {
 	case http.MethodGet:
-		m, err := s.btcSvc.GetMember(r.Context(), memberID)
+		m, err := s.Extended.BTC.GetMember(r.Context(), memberID)
 		if err != nil {
 			badRequest(w, err.Error())
 			return
@@ -120,14 +120,14 @@ func (s *Server) handleBTCMemberByID(w http.ResponseWriter, r *http.Request, p a
 			return
 		}
 		m.ID = memberID
-		if err := s.btcSvc.UpdateMember(r.Context(), &m); err != nil {
+		if err := s.Extended.BTC.UpdateMember(r.Context(), &m); err != nil {
 			badRequest(w, err.Error())
 			return
 		}
 		success(w, http.StatusOK, m)
 
 	case http.MethodDelete:
-		if err := s.btcSvc.DeleteMember(r.Context(), memberID); err != nil {
+		if err := s.Extended.BTC.DeleteMember(r.Context(), memberID); err != nil {
 			badRequest(w, err.Error())
 			return
 		}
@@ -149,7 +149,7 @@ func (s *Server) handleBTCWeighInList(w http.ResponseWriter, r *http.Request, p 
 		return
 	}
 	giaiID := r.URL.Query().Get("giai_id")
-	records, err := s.btcSvc.ListWeighIns(r.Context(), giaiID)
+	records, err := s.Extended.BTC.ListWeighIns(r.Context(), giaiID)
 	if err != nil {
 		internalError(w, err)
 		return
@@ -170,7 +170,7 @@ func (s *Server) handleBTCWeighInCreate(w http.ResponseWriter, r *http.Request, 
 		badRequest(w, "invalid JSON: "+err.Error())
 		return
 	}
-	if err := s.btcSvc.CreateWeighIn(r.Context(), &wi); err != nil {
+	if err := s.Extended.BTC.CreateWeighIn(r.Context(), &wi); err != nil {
 		badRequest(w, err.Error())
 		return
 	}
@@ -188,7 +188,7 @@ func (s *Server) handleBTCDrawList(w http.ResponseWriter, r *http.Request, p aut
 		return
 	}
 	giaiID := r.URL.Query().Get("giai_id")
-	draws, err := s.btcSvc.ListDraws(r.Context(), giaiID)
+	draws, err := s.Extended.BTC.ListDraws(r.Context(), giaiID)
 	if err != nil {
 		internalError(w, err)
 		return
@@ -209,7 +209,7 @@ func (s *Server) handleBTCDrawGenerate(w http.ResponseWriter, r *http.Request, p
 		badRequest(w, "invalid JSON: "+err.Error())
 		return
 	}
-	result, err := s.btcSvc.GenerateDraw(r.Context(), input)
+	result, err := s.Extended.BTC.GenerateDraw(r.Context(), input)
 	if err != nil {
 		badRequest(w, err.Error())
 		return
@@ -228,7 +228,7 @@ func (s *Server) handleBTCAssignmentList(w http.ResponseWriter, r *http.Request,
 		return
 	}
 	giaiID := r.URL.Query().Get("giai_id")
-	assignments, err := s.btcSvc.ListAssignments(r.Context(), giaiID)
+	assignments, err := s.Extended.BTC.ListAssignments(r.Context(), giaiID)
 	if err != nil {
 		internalError(w, err)
 		return
@@ -249,7 +249,7 @@ func (s *Server) handleBTCAssignmentCreate(w http.ResponseWriter, r *http.Reques
 		badRequest(w, "invalid JSON: "+err.Error())
 		return
 	}
-	if err := s.btcSvc.CreateAssignment(r.Context(), &a); err != nil {
+	if err := s.Extended.BTC.CreateAssignment(r.Context(), &a); err != nil {
 		badRequest(w, err.Error())
 		return
 	}
@@ -267,7 +267,7 @@ func (s *Server) handleBTCTeamResults(w http.ResponseWriter, r *http.Request, p 
 		return
 	}
 	giaiID := r.URL.Query().Get("giai_id")
-	results, err := s.btcSvc.ListTeamResults(r.Context(), giaiID)
+	results, err := s.Extended.BTC.ListTeamResults(r.Context(), giaiID)
 	if err != nil {
 		internalError(w, err)
 		return
@@ -284,7 +284,7 @@ func (s *Server) handleBTCContentResults(w http.ResponseWriter, r *http.Request,
 		return
 	}
 	giaiID := r.URL.Query().Get("giai_id")
-	results, err := s.btcSvc.ListContentResults(r.Context(), giaiID)
+	results, err := s.Extended.BTC.ListContentResults(r.Context(), giaiID)
 	if err != nil {
 		internalError(w, err)
 		return
@@ -303,7 +303,7 @@ func (s *Server) handleBTCFinanceList(w http.ResponseWriter, r *http.Request, p 
 		return
 	}
 	giaiID := r.URL.Query().Get("giai_id")
-	entries, err := s.btcSvc.ListFinance(r.Context(), giaiID)
+	entries, err := s.Extended.BTC.ListFinance(r.Context(), giaiID)
 	if err != nil {
 		internalError(w, err)
 		return
@@ -324,7 +324,7 @@ func (s *Server) handleBTCFinanceCreate(w http.ResponseWriter, r *http.Request, 
 		badRequest(w, "invalid JSON: "+err.Error())
 		return
 	}
-	if err := s.btcSvc.CreateFinance(r.Context(), &f); err != nil {
+	if err := s.Extended.BTC.CreateFinance(r.Context(), &f); err != nil {
 		badRequest(w, err.Error())
 		return
 	}
@@ -340,7 +340,7 @@ func (s *Server) handleBTCFinanceSummary(w http.ResponseWriter, r *http.Request,
 		return
 	}
 	giaiID := r.URL.Query().Get("giai_id")
-	summary, err := s.btcSvc.FinanceSummary(r.Context(), giaiID)
+	summary, err := s.Extended.BTC.FinanceSummary(r.Context(), giaiID)
 	if err != nil {
 		internalError(w, err)
 		return
@@ -359,7 +359,7 @@ func (s *Server) handleBTCMeetingList(w http.ResponseWriter, r *http.Request, p 
 		return
 	}
 	giaiID := r.URL.Query().Get("giai_id")
-	meetings, err := s.btcSvc.ListMeetings(r.Context(), giaiID)
+	meetings, err := s.Extended.BTC.ListMeetings(r.Context(), giaiID)
 	if err != nil {
 		internalError(w, err)
 		return
@@ -380,7 +380,7 @@ func (s *Server) handleBTCMeetingCreate(w http.ResponseWriter, r *http.Request, 
 		badRequest(w, "invalid JSON: "+err.Error())
 		return
 	}
-	if err := s.btcSvc.CreateMeeting(r.Context(), &m); err != nil {
+	if err := s.Extended.BTC.CreateMeeting(r.Context(), &m); err != nil {
 		badRequest(w, err.Error())
 		return
 	}
@@ -398,7 +398,7 @@ func (s *Server) handleBTCProtestList(w http.ResponseWriter, r *http.Request, p 
 		return
 	}
 	giaiID := r.URL.Query().Get("giai_id")
-	protests, err := s.btcSvc.ListProtests(r.Context(), giaiID)
+	protests, err := s.Extended.BTC.ListProtests(r.Context(), giaiID)
 	if err != nil {
 		internalError(w, err)
 		return
@@ -419,7 +419,7 @@ func (s *Server) handleBTCProtestCreate(w http.ResponseWriter, r *http.Request, 
 		badRequest(w, "invalid JSON: "+err.Error())
 		return
 	}
-	if err := s.btcSvc.CreateProtest(r.Context(), &p); err != nil {
+	if err := s.Extended.BTC.CreateProtest(r.Context(), &p); err != nil {
 		badRequest(w, err.Error())
 		return
 	}
@@ -451,7 +451,7 @@ func (s *Server) handleBTCProtestUpdate(w http.ResponseWriter, r *http.Request, 
 		return
 	}
 
-	if err := s.btcSvc.UpdateProtestStatus(r.Context(), protestID, body.TrangThai, body.NguoiXL, body.QuyetDinh); err != nil {
+	if err := s.Extended.BTC.UpdateProtestStatus(r.Context(), protestID, body.TrangThai, body.NguoiXL, body.QuyetDinh); err != nil {
 		badRequest(w, err.Error())
 		return
 	}
@@ -469,7 +469,7 @@ func (s *Server) handleBTCStats(w http.ResponseWriter, r *http.Request, p auth.P
 		return
 	}
 	giaiID := r.URL.Query().Get("giai_id")
-	stats, err := s.btcSvc.GetStats(r.Context(), giaiID)
+	stats, err := s.Extended.BTC.GetStats(r.Context(), giaiID)
 	if err != nil {
 		internalError(w, err)
 		return

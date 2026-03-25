@@ -49,7 +49,7 @@ func (s *Server) handleClubDashboardV2(w http.ResponseWriter, r *http.Request, p
 	if !requireRole(w, p, clubReadRoles...) {
 		return
 	}
-	d, err := s.clubSvc.GetDashboard(r.Context(), clubIDFromQuery(r))
+	d, err := s.Core.Club.GetDashboard(r.Context(), clubIDFromQuery(r))
 	if err != nil {
 		internalError(w, err)
 		return
@@ -73,11 +73,11 @@ func (s *Server) handleClubAttendance(w http.ResponseWriter, r *http.Request, p 
 		var records []club.Attendance
 		var err error
 		if date != "" {
-			records, err = s.clubSvc.ListAttendanceByDate(r.Context(), clubID, date)
+			records, err = s.Core.Club.ListAttendanceByDate(r.Context(), clubID, date)
 		} else if classID != "" {
-			records, err = s.clubSvc.ListAttendanceByClass(r.Context(), clubID, classID)
+			records, err = s.Core.Club.ListAttendanceByClass(r.Context(), clubID, classID)
 		} else {
-			records, err = s.clubSvc.ListAttendance(r.Context(), clubID)
+			records, err = s.Core.Club.ListAttendance(r.Context(), clubID)
 		}
 		if err != nil {
 			internalError(w, err)
@@ -97,7 +97,7 @@ func (s *Server) handleClubAttendance(w http.ResponseWriter, r *http.Request, p 
 		if a.ClubID == "" {
 			a.ClubID = clubID
 		}
-		created, err := s.clubSvc.RecordAttendance(r.Context(), a)
+		created, err := s.Core.Club.RecordAttendance(r.Context(), a)
 		if err != nil {
 			badRequest(w, err.Error())
 			return
@@ -117,7 +117,7 @@ func (s *Server) handleClubAttendanceAction(w http.ResponseWriter, r *http.Reque
 
 	switch r.Method {
 	case http.MethodDelete:
-		if err := s.clubSvc.DeleteAttendance(r.Context(), id); err != nil {
+		if err := s.Core.Club.DeleteAttendance(r.Context(), id); err != nil {
 			internalError(w, err)
 			return
 		}
@@ -135,7 +135,7 @@ func (s *Server) handleClubAttendanceSummary(w http.ResponseWriter, r *http.Requ
 	if !requireRole(w, p, clubReadRoles...) {
 		return
 	}
-	summary, err := s.clubSvc.GetAttendanceSummary(r.Context(), clubIDFromQuery(r))
+	summary, err := s.Core.Club.GetAttendanceSummary(r.Context(), clubIDFromQuery(r))
 	if err != nil {
 		internalError(w, err)
 		return
@@ -164,7 +164,7 @@ func (s *Server) handleClubAttendanceBulk(w http.ResponseWriter, r *http.Request
 			body.Records[i].ClubID = clubID
 		}
 	}
-	created, err := s.clubSvc.BulkRecordAttendance(r.Context(), body.Records)
+	created, err := s.Core.Club.BulkRecordAttendance(r.Context(), body.Records)
 	if err != nil {
 		badRequest(w, err.Error())
 		return
@@ -180,7 +180,7 @@ func (s *Server) handleClubAttendanceExport(w http.ResponseWriter, r *http.Reque
 	if !requireRole(w, p, clubReadRoles...) {
 		return
 	}
-	csv, err := s.clubSvc.ExportAttendanceCSV(r.Context(), clubIDFromQuery(r))
+	csv, err := s.Core.Club.ExportAttendanceCSV(r.Context(), clubIDFromQuery(r))
 	if err != nil {
 		internalError(w, err)
 		return
@@ -201,7 +201,7 @@ func (s *Server) handleClubEquipment(w http.ResponseWriter, r *http.Request, p a
 		if !requireRole(w, p, clubReadRoles...) {
 			return
 		}
-		items, err := s.clubSvc.ListEquipment(r.Context(), clubID)
+		items, err := s.Core.Club.ListEquipment(r.Context(), clubID)
 		if err != nil {
 			internalError(w, err)
 			return
@@ -220,7 +220,7 @@ func (s *Server) handleClubEquipment(w http.ResponseWriter, r *http.Request, p a
 		if e.ClubID == "" {
 			e.ClubID = clubID
 		}
-		created, err := s.clubSvc.CreateEquipment(r.Context(), e)
+		created, err := s.Core.Club.CreateEquipment(r.Context(), e)
 		if err != nil {
 			badRequest(w, err.Error())
 			return
@@ -240,7 +240,7 @@ func (s *Server) handleClubEquipmentAction(w http.ResponseWriter, r *http.Reques
 
 	switch r.Method {
 	case http.MethodGet:
-		e, err := s.clubSvc.GetEquipment(r.Context(), id)
+		e, err := s.Core.Club.GetEquipment(r.Context(), id)
 		if err != nil {
 			notFound(w)
 			return
@@ -253,14 +253,14 @@ func (s *Server) handleClubEquipmentAction(w http.ResponseWriter, r *http.Reques
 			badRequest(w, "invalid body")
 			return
 		}
-		if err := s.clubSvc.UpdateEquipment(r.Context(), id, patch); err != nil {
+		if err := s.Core.Club.UpdateEquipment(r.Context(), id, patch); err != nil {
 			internalError(w, err)
 			return
 		}
 		success(w, http.StatusOK, map[string]any{"message": "updated"})
 
 	case http.MethodDelete:
-		if err := s.clubSvc.DeleteEquipment(r.Context(), id); err != nil {
+		if err := s.Core.Club.DeleteEquipment(r.Context(), id); err != nil {
 			internalError(w, err)
 			return
 		}
@@ -279,7 +279,7 @@ func (s *Server) handleClubEquipmentSummary(w http.ResponseWriter, r *http.Reque
 	if !requireRole(w, p, clubReadRoles...) {
 		return
 	}
-	summary, err := s.clubSvc.GetEquipmentSummary(r.Context(), clubIDFromQuery(r))
+	summary, err := s.Core.Club.GetEquipmentSummary(r.Context(), clubIDFromQuery(r))
 	if err != nil {
 		internalError(w, err)
 		return
@@ -295,7 +295,7 @@ func (s *Server) handleClubEquipmentExport(w http.ResponseWriter, r *http.Reques
 	if !requireRole(w, p, clubReadRoles...) {
 		return
 	}
-	csv, err := s.clubSvc.ExportEquipmentCSV(r.Context(), clubIDFromQuery(r))
+	csv, err := s.Core.Club.ExportEquipmentCSV(r.Context(), clubIDFromQuery(r))
 	if err != nil {
 		internalError(w, err)
 		return
@@ -316,7 +316,7 @@ func (s *Server) handleClubFacilities(w http.ResponseWriter, r *http.Request, p 
 		if !requireRole(w, p, clubReadRoles...) {
 			return
 		}
-		items, err := s.clubSvc.ListFacilities(r.Context(), clubID)
+		items, err := s.Core.Club.ListFacilities(r.Context(), clubID)
 		if err != nil {
 			internalError(w, err)
 			return
@@ -335,7 +335,7 @@ func (s *Server) handleClubFacilities(w http.ResponseWriter, r *http.Request, p 
 		if f.ClubID == "" {
 			f.ClubID = clubID
 		}
-		created, err := s.clubSvc.CreateFacility(r.Context(), f)
+		created, err := s.Core.Club.CreateFacility(r.Context(), f)
 		if err != nil {
 			badRequest(w, err.Error())
 			return
@@ -355,7 +355,7 @@ func (s *Server) handleClubFacilityAction(w http.ResponseWriter, r *http.Request
 
 	switch r.Method {
 	case http.MethodGet:
-		f, err := s.clubSvc.GetFacility(r.Context(), id)
+		f, err := s.Core.Club.GetFacility(r.Context(), id)
 		if err != nil {
 			notFound(w)
 			return
@@ -368,14 +368,14 @@ func (s *Server) handleClubFacilityAction(w http.ResponseWriter, r *http.Request
 			badRequest(w, "invalid body")
 			return
 		}
-		if err := s.clubSvc.UpdateFacility(r.Context(), id, patch); err != nil {
+		if err := s.Core.Club.UpdateFacility(r.Context(), id, patch); err != nil {
 			internalError(w, err)
 			return
 		}
 		success(w, http.StatusOK, map[string]any{"message": "updated"})
 
 	case http.MethodDelete:
-		if err := s.clubSvc.DeleteFacility(r.Context(), id); err != nil {
+		if err := s.Core.Club.DeleteFacility(r.Context(), id); err != nil {
 			internalError(w, err)
 			return
 		}
@@ -394,7 +394,7 @@ func (s *Server) handleClubFacilitySummary(w http.ResponseWriter, r *http.Reques
 	if !requireRole(w, p, clubReadRoles...) {
 		return
 	}
-	summary, err := s.clubSvc.GetFacilitySummary(r.Context(), clubIDFromQuery(r))
+	summary, err := s.Core.Club.GetFacilitySummary(r.Context(), clubIDFromQuery(r))
 	if err != nil {
 		internalError(w, err)
 		return
@@ -410,7 +410,7 @@ func (s *Server) handleClubFacilitiesExport(w http.ResponseWriter, r *http.Reque
 	if !requireRole(w, p, clubReadRoles...) {
 		return
 	}
-	csv, err := s.clubSvc.ExportFacilitiesCSV(r.Context(), clubIDFromQuery(r))
+	csv, err := s.Core.Club.ExportFacilitiesCSV(r.Context(), clubIDFromQuery(r))
 	if err != nil {
 		internalError(w, err)
 		return

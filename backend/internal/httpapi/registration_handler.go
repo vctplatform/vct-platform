@@ -33,11 +33,11 @@ func (s *Server) handleRegistrationRoutes(w http.ResponseWriter, r *http.Request
 			var fetchErr error
 
 			if athleteID != "" {
-				list, fetchErr = s.registrationService.ListByAthlete(r.Context(), athleteID)
+				list, fetchErr = s.Core.Registration.ListByAthlete(r.Context(), athleteID)
 			} else if tournamentID != "" {
-				list, fetchErr = s.registrationService.ListByTournament(r.Context(), tournamentID)
+				list, fetchErr = s.Core.Registration.ListByTournament(r.Context(), tournamentID)
 			} else {
-				list, fetchErr = s.registrationService.ListRegistrations(r.Context())
+				list, fetchErr = s.Core.Registration.ListRegistrations(r.Context())
 			}
 
 			if fetchErr != nil {
@@ -57,7 +57,7 @@ func (s *Server) handleRegistrationRoutes(w http.ResponseWriter, r *http.Request
 				badRequest(w, err.Error())
 				return
 			}
-			created, err := s.registrationService.CreateRegistration(r.Context(), payload)
+			created, err := s.Core.Registration.CreateRegistration(r.Context(), payload)
 			if err != nil {
 				badRequest(w, err.Error())
 				return
@@ -83,7 +83,7 @@ func (s *Server) handleRegistrationRoutes(w http.ResponseWriter, r *http.Request
 				writeAuthError(w, err)
 				return
 			}
-			reg, err := s.registrationService.GetRegistration(r.Context(), id)
+			reg, err := s.Core.Registration.GetRegistration(r.Context(), id)
 			if err != nil {
 				notFound(w)
 				return
@@ -101,7 +101,7 @@ func (s *Server) handleRegistrationRoutes(w http.ResponseWriter, r *http.Request
 				badRequest(w, "invalid json")
 				return
 			}
-			updated, err := s.registrationService.UpdateRegistration(r.Context(), id, patch)
+			updated, err := s.Core.Registration.UpdateRegistration(r.Context(), id, patch)
 			if err != nil {
 				badRequest(w, err.Error())
 				return
@@ -116,7 +116,7 @@ func (s *Server) handleRegistrationRoutes(w http.ResponseWriter, r *http.Request
 				writeAuthError(w, err)
 				return
 			}
-			if err := s.registrationService.DeleteRegistration(r.Context(), id); err != nil {
+			if err := s.Core.Registration.DeleteRegistration(r.Context(), id); err != nil {
 				badRequest(w, err.Error())
 				return
 			}

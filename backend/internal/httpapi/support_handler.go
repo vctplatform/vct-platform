@@ -60,7 +60,7 @@ func (s *Server) handleSupportTicketList(w http.ResponseWriter, r *http.Request,
 		if !isSupportAdmin(p.User.Role) {
 			filter.UserID = p.User.ID
 		}
-		result, err := s.supportSvc.ListTickets(ctx, filter)
+		result, err := s.Extended.Support.ListTickets(ctx, filter)
 		if err != nil {
 			internalError(w, err)
 			return
@@ -77,7 +77,7 @@ func (s *Server) handleSupportTicketList(w http.ResponseWriter, r *http.Request,
 		if t.NguoiTaoTen == "" {
 			t.NguoiTaoTen = p.User.Username
 		}
-		created, err := s.supportSvc.CreateTicket(ctx, t)
+		created, err := s.Extended.Support.CreateTicket(ctx, t)
 		if err != nil {
 			badRequest(w, err.Error())
 			return
@@ -107,7 +107,7 @@ func (s *Server) handleSupportTicketDetail(w http.ResponseWriter, r *http.Reques
 
 	switch r.Method {
 	case http.MethodGet:
-		ticket, err := s.supportSvc.GetTicket(ctx, ticketID)
+		ticket, err := s.Extended.Support.GetTicket(ctx, ticketID)
 		if err != nil {
 			notFound(w)
 			return
@@ -129,7 +129,7 @@ func (s *Server) handleSupportTicketDetail(w http.ResponseWriter, r *http.Reques
 			badRequest(w, "invalid request body")
 			return
 		}
-		updated, err := s.supportSvc.UpdateTicket(ctx, ticketID, patch)
+		updated, err := s.Extended.Support.UpdateTicket(ctx, ticketID, patch)
 		if err != nil {
 			badRequest(w, err.Error())
 			return
@@ -140,7 +140,7 @@ func (s *Server) handleSupportTicketDetail(w http.ResponseWriter, r *http.Reques
 			badRequest(w, "Bạn không có quyền xóa ticket")
 			return
 		}
-		if err := s.supportSvc.DeleteTicket(ctx, ticketID); err != nil {
+		if err := s.Extended.Support.DeleteTicket(ctx, ticketID); err != nil {
 			badRequest(w, err.Error())
 			return
 		}
@@ -166,7 +166,7 @@ func (s *Server) handleSupportTicketReply(w http.ResponseWriter, r *http.Request
 		reply.NguoiTra = p.User.Username
 	}
 	reply.IsStaff = isSupportAdmin(p.User.Role)
-	created, err := s.supportSvc.CreateReply(r.Context(), reply)
+	created, err := s.Extended.Support.CreateReply(r.Context(), reply)
 	if err != nil {
 		badRequest(w, err.Error())
 		return
@@ -180,7 +180,7 @@ func (s *Server) handleSupportTicketReplies(w http.ResponseWriter, r *http.Reque
 		return
 	}
 	// Check ticket access
-	ticket, err := s.supportSvc.GetTicket(r.Context(), ticketID)
+	ticket, err := s.Extended.Support.GetTicket(r.Context(), ticketID)
 	if err != nil {
 		notFound(w)
 		return
@@ -189,7 +189,7 @@ func (s *Server) handleSupportTicketReplies(w http.ResponseWriter, r *http.Reque
 		notFound(w)
 		return
 	}
-	replies, err := s.supportSvc.ListReplies(r.Context(), ticketID)
+	replies, err := s.Extended.Support.ListReplies(r.Context(), ticketID)
 	if err != nil {
 		internalError(w, err)
 		return
@@ -206,7 +206,7 @@ func (s *Server) handleSupportCategoryList(w http.ResponseWriter, r *http.Reques
 	ctx := r.Context()
 	switch r.Method {
 	case http.MethodGet:
-		categories, err := s.supportSvc.ListCategories(ctx)
+		categories, err := s.Extended.Support.ListCategories(ctx)
 		if err != nil {
 			internalError(w, err)
 			return
@@ -225,7 +225,7 @@ func (s *Server) handleSupportCategoryList(w http.ResponseWriter, r *http.Reques
 			badRequest(w, "invalid request body")
 			return
 		}
-		created, err := s.supportSvc.CreateCategory(ctx, c)
+		created, err := s.Extended.Support.CreateCategory(ctx, c)
 		if err != nil {
 			badRequest(w, err.Error())
 			return
@@ -241,7 +241,7 @@ func (s *Server) handleSupportCategoryDetail(w http.ResponseWriter, r *http.Requ
 	id := strings.TrimPrefix(r.URL.Path, "/api/v1/support/categories/")
 	switch r.Method {
 	case http.MethodGet:
-		cat, err := s.supportSvc.GetCategory(ctx, id)
+		cat, err := s.Extended.Support.GetCategory(ctx, id)
 		if err != nil {
 			notFound(w)
 			return
@@ -257,7 +257,7 @@ func (s *Server) handleSupportCategoryDetail(w http.ResponseWriter, r *http.Requ
 			badRequest(w, "invalid request body")
 			return
 		}
-		updated, err := s.supportSvc.UpdateCategory(ctx, id, patch)
+		updated, err := s.Extended.Support.UpdateCategory(ctx, id, patch)
 		if err != nil {
 			badRequest(w, err.Error())
 			return
@@ -268,7 +268,7 @@ func (s *Server) handleSupportCategoryDetail(w http.ResponseWriter, r *http.Requ
 			badRequest(w, "Bạn không có quyền xóa danh mục")
 			return
 		}
-		if err := s.supportSvc.DeleteCategory(ctx, id); err != nil {
+		if err := s.Extended.Support.DeleteCategory(ctx, id); err != nil {
 			badRequest(w, err.Error())
 			return
 		}
@@ -284,7 +284,7 @@ func (s *Server) handleSupportFAQList(w http.ResponseWriter, r *http.Request, p 
 	ctx := r.Context()
 	switch r.Method {
 	case http.MethodGet:
-		faqs, err := s.supportSvc.ListFAQs(ctx)
+		faqs, err := s.Extended.Support.ListFAQs(ctx)
 		if err != nil {
 			internalError(w, err)
 			return
@@ -303,7 +303,7 @@ func (s *Server) handleSupportFAQList(w http.ResponseWriter, r *http.Request, p 
 			badRequest(w, "invalid request body")
 			return
 		}
-		created, err := s.supportSvc.CreateFAQ(ctx, f)
+		created, err := s.Extended.Support.CreateFAQ(ctx, f)
 		if err != nil {
 			badRequest(w, err.Error())
 			return
@@ -319,7 +319,7 @@ func (s *Server) handleSupportFAQDetail(w http.ResponseWriter, r *http.Request, 
 	id := strings.TrimPrefix(r.URL.Path, "/api/v1/support/faqs/")
 	switch r.Method {
 	case http.MethodGet:
-		faq, err := s.supportSvc.GetFAQ(ctx, id)
+		faq, err := s.Extended.Support.GetFAQ(ctx, id)
 		if err != nil {
 			notFound(w)
 			return
@@ -335,7 +335,7 @@ func (s *Server) handleSupportFAQDetail(w http.ResponseWriter, r *http.Request, 
 			badRequest(w, "invalid request body")
 			return
 		}
-		updated, err := s.supportSvc.UpdateFAQ(ctx, id, patch)
+		updated, err := s.Extended.Support.UpdateFAQ(ctx, id, patch)
 		if err != nil {
 			badRequest(w, err.Error())
 			return
@@ -346,7 +346,7 @@ func (s *Server) handleSupportFAQDetail(w http.ResponseWriter, r *http.Request, 
 			badRequest(w, "Bạn không có quyền xóa FAQ")
 			return
 		}
-		if err := s.supportSvc.DeleteFAQ(ctx, id); err != nil {
+		if err := s.Extended.Support.DeleteFAQ(ctx, id); err != nil {
 			badRequest(w, err.Error())
 			return
 		}
@@ -368,7 +368,7 @@ func (s *Server) handleSupportStats(w http.ResponseWriter, r *http.Request, p au
 		badRequest(w, "Bạn không có quyền xem thống kê")
 		return
 	}
-	stats, err := s.supportSvc.GetStats(r.Context())
+	stats, err := s.Extended.Support.GetStats(r.Context())
 	if err != nil {
 		internalError(w, err)
 		return

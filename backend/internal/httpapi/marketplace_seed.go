@@ -8,12 +8,12 @@ import (
 )
 
 func (s *Server) seedDefaultMarketplaceData() {
-	if s.marketplaceSvc == nil {
+	if s.Extended.Marketplace == nil {
 		return
 	}
 
 	ctx := context.Background()
-	products, err := s.marketplaceSvc.ListSellerProducts(ctx, "")
+	products, err := s.Extended.Marketplace.ListSellerProducts(ctx, "")
 	if err != nil {
 		s.logger.Warn("marketplace seed skipped", slog.String("error", err.Error()))
 		return
@@ -212,17 +212,17 @@ func (s *Server) seedDefaultMarketplaceData() {
 	}
 
 	for _, product := range defaultProducts {
-		if _, err := s.marketplaceSvc.CreateProduct(ctx, product); err != nil {
+		if _, err := s.Extended.Marketplace.CreateProduct(ctx, product); err != nil {
 			s.logger.Warn("seed marketplace product failed", slog.String("title", product.Title), slog.String("error", err.Error()))
 		}
 	}
 
-	orders, err := s.marketplaceSvc.ListOrders(ctx, "")
+	orders, err := s.Extended.Marketplace.ListOrders(ctx, "")
 	if err != nil || len(orders) > 0 {
 		return
 	}
 
-	catalog, err := s.marketplaceSvc.ListCatalog(ctx, marketplace.CatalogFilter{})
+	catalog, err := s.Extended.Marketplace.ListCatalog(ctx, marketplace.CatalogFilter{})
 	if err != nil || len(catalog.Items) < 2 {
 		return
 	}
@@ -249,7 +249,7 @@ func (s *Server) seedDefaultMarketplaceData() {
 	}
 
 	for _, input := range seedOrders {
-		if _, err := s.marketplaceSvc.CreateOrder(ctx, input); err != nil {
+		if _, err := s.Extended.Marketplace.CreateOrder(ctx, input); err != nil {
 			s.logger.Warn("seed marketplace order failed", slog.String("product_id", input.ProductID), slog.String("error", err.Error()))
 		}
 	}

@@ -17,18 +17,26 @@ type RejectedItem struct {
 }
 
 type ImportReport struct {
-	Imported []map[string]any `json:"imported"`
-	Rejected []RejectedItem   `json:"rejected"`
+	Imported [][]byte       `json:"imported"`
+	Rejected []RejectedItem `json:"rejected"`
 }
 
 type Store struct {
 	mu       sync.RWMutex
-	entities map[string]map[string]map[string]any
+	entities map[string]map[string][]byte
 }
 
 func NewStore() *Store {
 	seed := SeedData()
-	return &Store{entities: seed}
+	byteSeed := make(map[string]map[string][]byte)
+	for e, bucket := range seed {
+		byteSeed[e] = make(map[string][]byte)
+		for k, v := range bucket {
+			b, _ := json.Marshal(v)
+			byteSeed[e][k] = b
+		}
+	}
+	return &Store{entities: byteSeed}
 }
 
 func (s *Store) Close() error {
@@ -39,32 +47,37 @@ func (s *Store) EnsureEntity(entity string) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	if _, exists := s.entities[entity]; !exists {
-		s.entities[entity] = make(map[string]map[string]any)
+		s.entities[entity] = make(map[string][]byte)
 	}
 }
 
-func (s *Store) List(entity string) []map[string]any {
+func (s *Store) List(entity string) [][]byte {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
 
 	bucket := s.entities[entity]
 	if bucket == nil {
-		return []map[string]any{}
+		return [][]byte{}
 	}
 
-	rows := make([]map[string]any, 0, len(bucket))
-	for _, item := range bucket {
-		rows = append(rows, cloneMap(item))
+	// We need to sort by ID, so we extract keys, sort, then append
+	keys := make([]string, 0, len(bucket))
+	for k := range bucket {
+		keys = append(keys, k)
 	}
-	sort.SliceStable(rows, func(i, j int) bool {
-		left, _ := rows[i]["id"].(string)
-		right, _ := rows[j]["id"].(string)
-		return left < right
-	})
+	sort.Strings(keys)
+
+	rows := make([][]byte, 0, len(keys))
+	for _, k := range keys {
+		// make a copy of the byte slice to avoid caller mutating the cache
+		cp := make([]byte, len(bucket[k]))
+		copy(cp, bucket[k])
+		rows = append(rows, cp)
+	}
 	return rows
 }
 
-func (s *Store) GetByID(entity, id string) (map[string]any, bool) {
+func (s *Store) GetByID(entity, id string) ([]byte, bool) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
 
@@ -72,11 +85,13 @@ func (s *Store) GetByID(entity, id string) (map[string]any, bool) {
 	if !exists {
 		return nil, false
 	}
-	return cloneMap(item), true
+	cp := make([]byte, len(item))
+	copy(cp, item)
+	return cp, true
 }
 
-func (s *Store) Create(entity string, item map[string]any) (map[string]any, error) {
-	id, err := requireID(item)
+func (s *Store) Create(entity string, item []byte) ([]byte, error) {
+	id, err := requireIDBytes(item)
 	if err != nil {
 		return nil, err
 	}
@@ -85,17 +100,22 @@ func (s *Store) Create(entity string, item map[string]any) (map[string]any, erro
 	defer s.mu.Unlock()
 
 	if _, exists := s.entities[entity]; !exists {
-		s.entities[entity] = make(map[string]map[string]any)
+		s.entities[entity] = make(map[string][]byte)
 	}
 	if _, exists := s.entities[entity][id]; exists {
 		return nil, fmt.Errorf("%w: %s", apierror.ErrDuplicateID, id)
 	}
 
-	s.entities[entity][id] = cloneMap(item)
-	return cloneMap(item), nil
+	cp := make([]byte, len(item))
+	copy(cp, item)
+	s.entities[entity][id] = cp
+
+	res := make([]byte, len(item))
+	copy(res, item)
+	return res, nil
 }
 
-func (s *Store) Update(entity, id string, patch map[string]any) (map[string]any, error) {
+func (s *Store) Update(entity, id string, patch []byte) ([]byte, error) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
@@ -103,22 +123,43 @@ func (s *Store) Update(entity, id string, patch map[string]any) (map[string]any,
 	if bucket == nil {
 		return nil, apierror.ErrEntityNotFound
 	}
-	current, exists := bucket[id]
+	currentBytes, exists := bucket[id]
 	if !exists {
 		return nil, apierror.ErrNotFound
 	}
 
-	next := cloneMap(current)
-	for key, value := range patch {
+	// Unmarshal current into map
+	var next map[string]any
+	if err := json.Unmarshal(currentBytes, &next); err != nil {
+		return nil, err
+	}
+
+	// Unmarshal patch into map
+	var patchMap map[string]any
+	if err := json.Unmarshal(patch, &patchMap); err != nil {
+		return nil, err
+	}
+
+	// Merge
+	for key, value := range patchMap {
 		if key == "id" {
 			continue
 		}
 		next[key] = value
 	}
 	next["id"] = id
-	bucket[id] = next
 
-	return cloneMap(next), nil
+	// Marshal back
+	mergedBytes, err := json.Marshal(next)
+	if err != nil {
+		return nil, err
+	}
+
+	bucket[id] = mergedBytes
+
+	res := make([]byte, len(mergedBytes))
+	copy(res, mergedBytes)
+	return res, nil
 }
 
 func (s *Store) Delete(entity, id string) {
@@ -130,14 +171,16 @@ func (s *Store) Delete(entity, id string) {
 	delete(s.entities[entity], id)
 }
 
-func (s *Store) ReplaceAll(entity string, items []map[string]any) ([]map[string]any, error) {
-	next := make(map[string]map[string]any, len(items))
+func (s *Store) ReplaceAll(entity string, items [][]byte) ([][]byte, error) {
+	next := make(map[string][]byte, len(items))
 	for _, item := range items {
-		id, err := requireID(item)
+		id, err := requireIDBytes(item)
 		if err != nil {
 			return nil, err
 		}
-		next[id] = cloneMap(item)
+		cp := make([]byte, len(item))
+		copy(cp, item)
+		next[id] = cp
 	}
 
 	s.mu.Lock()
@@ -149,7 +192,7 @@ func (s *Store) ReplaceAll(entity string, items []map[string]any) ([]map[string]
 
 func (s *Store) Import(entity string, payload []any) ImportReport {
 	report := ImportReport{
-		Imported: make([]map[string]any, 0),
+		Imported: make([][]byte, 0),
 		Rejected: make([]RejectedItem, 0),
 	}
 
@@ -165,43 +208,89 @@ func (s *Store) Import(entity string, payload []any) ImportReport {
 			continue
 		}
 
+		b, err := json.Marshal(mapped)
+		if err != nil {
+			report.Rejected = append(report.Rejected, RejectedItem{Item: item, Reason: err.Error()})
+			continue
+		}
+
 		s.mu.Lock()
 		if _, exists := s.entities[entity]; !exists {
-			s.entities[entity] = make(map[string]map[string]any)
+			s.entities[entity] = make(map[string][]byte)
 		}
-		cloned := cloneMap(mapped)
-		s.entities[entity][id] = cloned
+		s.entities[entity][id] = b
 		s.mu.Unlock()
 
-		report.Imported = append(report.Imported, cloneMap(cloned))
+		report.Imported = append(report.Imported, b)
 	}
 
 	return report
 }
 
 func (s *Store) ExportJSON(entity string) (string, error) {
-	rows := s.List(entity)
-	body, err := json.MarshalIndent(rows, "", "  ")
-	if err != nil {
-		return "", err
+	// Reconstruct the JSON array manually for performance
+	s.mu.RLock()
+	bucket := s.entities[entity]
+	s.mu.RUnlock()
+
+	if bucket == nil || len(bucket) == 0 {
+		return "[]", nil
 	}
-	return string(body), nil
+
+	keys := make([]string, 0, len(bucket))
+	for k := range bucket {
+		keys = append(keys, k)
+	}
+	sort.Strings(keys)
+
+	var sb strings.Builder
+	sb.WriteString("[\n")
+	for i, k := range keys {
+		sb.Write(bucket[k])
+		if i < len(keys)-1 {
+			sb.WriteString(",\n")
+		} else {
+			sb.WriteString("\n")
+		}
+	}
+	sb.WriteString("]")
+
+	return sb.String(), nil
 }
 
 func (s *Store) ExportCSV(entity string) (string, error) {
-	rows := s.List(entity)
-	if len(rows) == 0 {
+	s.mu.RLock()
+	bucket := s.entities[entity]
+	s.mu.RUnlock()
+
+	if bucket == nil || len(bucket) == 0 {
 		return "", nil
 	}
 
-	headers := sortedKeys(rows[0])
+	keys := make([]string, 0, len(bucket))
+	for k := range bucket {
+		keys = append(keys, k)
+	}
+	sort.Strings(keys)
+
+	// Sample first item to get headers
+	var firstItem map[string]any
+	if err := json.Unmarshal(bucket[keys[0]], &firstItem); err != nil {
+		return "", err
+	}
+	headers := sortedKeys(firstItem)
+
 	builder := &strings.Builder{}
 	writer := csv.NewWriter(builder)
 	if err := writer.Write(headers); err != nil {
 		return "", err
 	}
 
-	for _, row := range rows {
+	for _, k := range keys {
+		var row map[string]any
+		if err := json.Unmarshal(bucket[k], &row); err != nil {
+			continue
+		}
 		record := make([]string, 0, len(headers))
 		for _, key := range headers {
 			record = append(record, stringifyValue(row[key]))
@@ -228,6 +317,19 @@ func requireID(item map[string]any) (string, error) {
 		return "", apierror.ErrInvalidID
 	}
 	return strings.TrimSpace(id), nil
+}
+
+func requireIDBytes(payload []byte) (string, error) {
+	var probe struct {
+		ID string `json:"id"`
+	}
+	if err := json.Unmarshal(payload, &probe); err != nil {
+		return "", err
+	}
+	if probe.ID == "" {
+		return "", apierror.ErrMissingID
+	}
+	return strings.TrimSpace(probe.ID), nil
 }
 
 func cloneMap(source map[string]any) map[string]any {

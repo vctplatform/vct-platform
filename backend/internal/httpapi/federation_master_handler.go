@@ -19,7 +19,7 @@ import (
 func (s *Server) handleMasterBelts(w http.ResponseWriter, r *http.Request, _ auth.Principal) {
 	switch r.Method {
 	case "GET":
-		belts, err := s.federationSvc.ListMasterBelts(r.Context())
+		belts, err := s.Federation.Main.ListMasterBelts(r.Context())
 		if err != nil {
 			internalError(w, err)
 			return
@@ -32,7 +32,7 @@ func (s *Server) handleMasterBelts(w http.ResponseWriter, r *http.Request, _ aut
 			badRequest(w, "invalid JSON: "+err.Error())
 			return
 		}
-		if err := s.federationSvc.CreateMasterBelt(r.Context(), belt); err != nil {
+		if err := s.Federation.Main.CreateMasterBelt(r.Context(), belt); err != nil {
 			badRequest(w, err.Error())
 			return
 		}
@@ -52,7 +52,7 @@ func (s *Server) handleMasterBeltByID(w http.ResponseWriter, r *http.Request, _ 
 
 	switch r.Method {
 	case "GET":
-		belt, err := s.federationSvc.GetMasterBelt(r.Context(), level)
+		belt, err := s.Federation.Main.GetMasterBelt(r.Context(), level)
 		if err != nil {
 			notFoundError(w, "belt not found")
 			return
@@ -72,14 +72,14 @@ func (s *Server) handleMasterBeltByID(w http.ResponseWriter, r *http.Request, _ 
 			return
 		}
 		belt.Level = levelInt
-		if err := s.federationSvc.UpdateMasterBelt(r.Context(), belt); err != nil {
+		if err := s.Federation.Main.UpdateMasterBelt(r.Context(), belt); err != nil {
 			badRequest(w, err.Error())
 			return
 		}
 		success(w, http.StatusOK, map[string]string{"status": "belt_updated"})
 
 	case "DELETE":
-		if err := s.federationSvc.DeleteMasterBelt(r.Context(), level); err != nil {
+		if err := s.Federation.Main.DeleteMasterBelt(r.Context(), level); err != nil {
 			badRequest(w, err.Error())
 			return
 		}
@@ -95,7 +95,7 @@ func (s *Server) handleMasterBeltByID(w http.ResponseWriter, r *http.Request, _ 
 func (s *Server) handleMasterWeights(w http.ResponseWriter, r *http.Request, _ auth.Principal) {
 	switch r.Method {
 	case "GET":
-		weights, err := s.federationSvc.ListMasterWeights(r.Context())
+		weights, err := s.Federation.Main.ListMasterWeights(r.Context())
 		if err != nil {
 			internalError(w, err)
 			return
@@ -108,7 +108,7 @@ func (s *Server) handleMasterWeights(w http.ResponseWriter, r *http.Request, _ a
 			badRequest(w, "invalid JSON: "+err.Error())
 			return
 		}
-		if err := s.federationSvc.CreateMasterWeight(r.Context(), wc); err != nil {
+		if err := s.Federation.Main.CreateMasterWeight(r.Context(), wc); err != nil {
 			badRequest(w, err.Error())
 			return
 		}
@@ -128,7 +128,7 @@ func (s *Server) handleMasterWeightByID(w http.ResponseWriter, r *http.Request, 
 
 	switch r.Method {
 	case "GET":
-		wc, err := s.federationSvc.GetMasterWeight(r.Context(), id)
+		wc, err := s.Federation.Main.GetMasterWeight(r.Context(), id)
 		if err != nil {
 			notFoundError(w, "weight class not found")
 			return
@@ -142,14 +142,14 @@ func (s *Server) handleMasterWeightByID(w http.ResponseWriter, r *http.Request, 
 			return
 		}
 		wc.ID = id
-		if err := s.federationSvc.UpdateMasterWeight(r.Context(), wc); err != nil {
+		if err := s.Federation.Main.UpdateMasterWeight(r.Context(), wc); err != nil {
 			badRequest(w, err.Error())
 			return
 		}
 		success(w, http.StatusOK, map[string]string{"status": "weight_class_updated"})
 
 	case "DELETE":
-		if err := s.federationSvc.DeleteMasterWeight(r.Context(), id); err != nil {
+		if err := s.Federation.Main.DeleteMasterWeight(r.Context(), id); err != nil {
 			badRequest(w, err.Error())
 			return
 		}
@@ -165,7 +165,7 @@ func (s *Server) handleMasterWeightByID(w http.ResponseWriter, r *http.Request, 
 func (s *Server) handleMasterAges(w http.ResponseWriter, r *http.Request, _ auth.Principal) {
 	switch r.Method {
 	case "GET":
-		ages, err := s.federationSvc.ListMasterAges(r.Context())
+		ages, err := s.Federation.Main.ListMasterAges(r.Context())
 		if err != nil {
 			internalError(w, err)
 			return
@@ -178,7 +178,7 @@ func (s *Server) handleMasterAges(w http.ResponseWriter, r *http.Request, _ auth
 			badRequest(w, "invalid JSON: "+err.Error())
 			return
 		}
-		if err := s.federationSvc.CreateMasterAge(r.Context(), ag); err != nil {
+		if err := s.Federation.Main.CreateMasterAge(r.Context(), ag); err != nil {
 			badRequest(w, err.Error())
 			return
 		}
@@ -198,7 +198,7 @@ func (s *Server) handleMasterAgeByID(w http.ResponseWriter, r *http.Request, _ a
 
 	switch r.Method {
 	case "GET":
-		ag, err := s.federationSvc.GetMasterAge(r.Context(), id)
+		ag, err := s.Federation.Main.GetMasterAge(r.Context(), id)
 		if err != nil {
 			notFoundError(w, "age group not found")
 			return
@@ -212,14 +212,14 @@ func (s *Server) handleMasterAgeByID(w http.ResponseWriter, r *http.Request, _ a
 			return
 		}
 		ag.ID = id
-		if err := s.federationSvc.UpdateMasterAge(r.Context(), ag); err != nil {
+		if err := s.Federation.Main.UpdateMasterAge(r.Context(), ag); err != nil {
 			badRequest(w, err.Error())
 			return
 		}
 		success(w, http.StatusOK, map[string]string{"status": "age_group_updated"})
 
 	case "DELETE":
-		if err := s.federationSvc.DeleteMasterAge(r.Context(), id); err != nil {
+		if err := s.Federation.Main.DeleteMasterAge(r.Context(), id); err != nil {
 			badRequest(w, err.Error())
 			return
 		}
@@ -235,7 +235,7 @@ func (s *Server) handleMasterAgeByID(w http.ResponseWriter, r *http.Request, _ a
 func (s *Server) handleMasterContents(w http.ResponseWriter, r *http.Request, _ auth.Principal) {
 	switch r.Method {
 	case "GET":
-		contents, err := s.federationSvc.ListMasterContents(r.Context())
+		contents, err := s.Federation.Main.ListMasterContents(r.Context())
 		if err != nil {
 			internalError(w, err)
 			return
@@ -248,7 +248,7 @@ func (s *Server) handleMasterContents(w http.ResponseWriter, r *http.Request, _ 
 			badRequest(w, "invalid JSON: "+err.Error())
 			return
 		}
-		if err := s.federationSvc.CreateMasterContent(r.Context(), c); err != nil {
+		if err := s.Federation.Main.CreateMasterContent(r.Context(), c); err != nil {
 			badRequest(w, err.Error())
 			return
 		}
@@ -268,7 +268,7 @@ func (s *Server) handleMasterContentByID(w http.ResponseWriter, r *http.Request,
 
 	switch r.Method {
 	case "GET":
-		c, err := s.federationSvc.GetMasterContent(r.Context(), id)
+		c, err := s.Federation.Main.GetMasterContent(r.Context(), id)
 		if err != nil {
 			notFoundError(w, "content not found")
 			return
@@ -282,14 +282,14 @@ func (s *Server) handleMasterContentByID(w http.ResponseWriter, r *http.Request,
 			return
 		}
 		c.ID = id
-		if err := s.federationSvc.UpdateMasterContent(r.Context(), c); err != nil {
+		if err := s.Federation.Main.UpdateMasterContent(r.Context(), c); err != nil {
 			badRequest(w, err.Error())
 			return
 		}
 		success(w, http.StatusOK, map[string]string{"status": "content_updated"})
 
 	case "DELETE":
-		if err := s.federationSvc.DeleteMasterContent(r.Context(), id); err != nil {
+		if err := s.Federation.Main.DeleteMasterContent(r.Context(), id); err != nil {
 			badRequest(w, err.Error())
 			return
 		}
@@ -314,7 +314,7 @@ func (s *Server) handleFederationApprovals(w http.ResponseWriter, r *http.Reques
 	switch {
 	case r.Method == "GET" && id == "":
 		status := r.URL.Query().Get("status")
-		reqs, err := s.federationSvc.GetAllApprovals(r.Context(), status)
+		reqs, err := s.Federation.Main.GetAllApprovals(r.Context(), status)
 		if err != nil {
 			internalError(w, err)
 			return
@@ -326,7 +326,7 @@ func (s *Server) handleFederationApprovals(w http.ResponseWriter, r *http.Reques
 			Notes string `json:"notes"`
 		}
 		_ = json.NewDecoder(r.Body).Decode(&body)
-		if err := s.federationSvc.ProcessApproval(r.Context(), id, "APPROVE", body.Notes); err != nil {
+		if err := s.Federation.Main.ProcessApproval(r.Context(), id, "APPROVE", body.Notes); err != nil {
 			badRequest(w, err.Error())
 			return
 		}
@@ -337,7 +337,7 @@ func (s *Server) handleFederationApprovals(w http.ResponseWriter, r *http.Reques
 			Notes string `json:"notes"`
 		}
 		_ = json.NewDecoder(r.Body).Decode(&body)
-		if err := s.federationSvc.ProcessApproval(r.Context(), id, "REJECT", body.Notes); err != nil {
+		if err := s.Federation.Main.ProcessApproval(r.Context(), id, "REJECT", body.Notes); err != nil {
 			badRequest(w, err.Error())
 			return
 		}

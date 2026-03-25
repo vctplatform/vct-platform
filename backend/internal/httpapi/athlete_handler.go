@@ -33,11 +33,11 @@ func (s *Server) handleAthleteRoutes(w http.ResponseWriter, r *http.Request) {
 			var fetchErr error
 
 			if teamID != "" {
-				list, fetchErr = s.athleteService.ListByTeam(r.Context(), teamID)
+				list, fetchErr = s.Core.Athlete.ListByTeam(r.Context(), teamID)
 			} else if tournamentID != "" {
-				list, fetchErr = s.athleteService.ListByTournament(r.Context(), tournamentID)
+				list, fetchErr = s.Core.Athlete.ListByTournament(r.Context(), tournamentID)
 			} else {
-				list, fetchErr = s.athleteService.ListAthletes(r.Context())
+				list, fetchErr = s.Core.Athlete.ListAthletes(r.Context())
 			}
 
 			if fetchErr != nil {
@@ -57,7 +57,7 @@ func (s *Server) handleAthleteRoutes(w http.ResponseWriter, r *http.Request) {
 				badRequest(w, err.Error())
 				return
 			}
-			created, err := s.athleteService.CreateAthlete(r.Context(), payload)
+			created, err := s.Core.Athlete.CreateAthlete(r.Context(), payload)
 			if err != nil {
 				badRequest(w, err.Error())
 				return
@@ -85,7 +85,7 @@ func (s *Server) handleAthleteRoutes(w http.ResponseWriter, r *http.Request) {
 				writeAuthError(w, err)
 				return
 			}
-			athlete, err := s.athleteService.GetAthlete(r.Context(), id)
+			athlete, err := s.Core.Athlete.GetAthlete(r.Context(), id)
 			if err != nil {
 				notFound(w)
 				return
@@ -105,7 +105,7 @@ func (s *Server) handleAthleteRoutes(w http.ResponseWriter, r *http.Request) {
 
 			// For generic update, we can still fall back to store update, or handle specific fields in service
 			if status, ok := patch["trang_thai"].(string); ok && len(patch) == 1 {
-				updated, err := s.athleteService.UpdateStatus(r.Context(), id, domain.TrangThaiVDV(status))
+				updated, err := s.Core.Athlete.UpdateStatus(r.Context(), id, domain.TrangThaiVDV(status))
 				if err != nil {
 					badRequest(w, err.Error())
 					return
@@ -118,13 +118,20 @@ func (s *Server) handleAthleteRoutes(w http.ResponseWriter, r *http.Request) {
 
 			// If it's a generic patch, we might need a generic update in service. Assuming repository.Update handles it
 			// For now, let's keep it simple and just forward to generic update (needs extending service, but let's cheat by calling store directly or adding it to service)
-			updatedStore, err := s.store.Update("athletes", id, patch)
+			b, err := json.Marshal(patch)
 			if err != nil {
 				badRequest(w, err.Error())
 				return
 			}
-			s.broadcastEntityChange("athletes", "updated", id, updatedStore, nil)
-			success(w, http.StatusOK, updatedStore)
+			updatedStore, err := s.store.Update("athletes", id, b)
+			if err != nil {
+				badRequest(w, err.Error())
+				return
+			}
+			var updatedMap map[string]any
+			json.Unmarshal(updatedStore, &updatedMap)
+			s.broadcastEntityChange("athletes", "updated", id, updatedMap, nil)
+			successJSONBytes(w, http.StatusOK, updatedStore)
 			return
 
 		case http.MethodDelete:

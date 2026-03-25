@@ -1,4 +1,5 @@
 BEGIN;
+SET search_path = public, extensions, core;
 
 DO $seed$
 BEGIN
@@ -8,15 +9,15 @@ BEGIN
   END IF;
 
   EXECUTE $sql$
-    INSERT INTO users (
-      id, username, password_hash, role, full_name, email, phone, is_active
+    INSERT INTO core.users (
+      id, tenant_id, username, password_hash, full_name, email, phone, is_active
     )
     VALUES
       (
         'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa1',
+        '00000000-0000-7000-8000-000000000001',
         'admin',
         '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy',
-        'admin',
         'VCT Admin',
         'admin@vct.vn',
         '0900000000',
@@ -24,9 +25,9 @@ BEGIN
       ),
       (
         'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa2',
+        '00000000-0000-7000-8000-000000000001',
         'btc',
         '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy',
-        'btc',
         'Ban To Chuc',
         'btc@vct.vn',
         '0900000003',
@@ -34,21 +35,59 @@ BEGIN
       ),
       (
         'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa3',
+        '00000000-0000-7000-8000-000000000001',
         'delegate01',
         '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy',
-        'delegate',
         'Truong Doan Demo',
         'delegate01@vct.vn',
         '0900000004',
         true
       )
-    ON CONFLICT (username) DO UPDATE
-      SET role = EXCLUDED.role,
-          full_name = EXCLUDED.full_name,
+    ON CONFLICT (tenant_id, username) DO UPDATE
+      SET full_name = EXCLUDED.full_name,
           email = EXCLUDED.email,
           phone = EXCLUDED.phone,
           is_active = EXCLUDED.is_active,
           updated_at = NOW();
+  $sql$;
+
+  EXECUTE $sql$
+    INSERT INTO core.user_roles (
+      tenant_id, user_id, role_id, scope_type
+    )
+    SELECT
+      '00000000-0000-7000-8000-000000000001'::UUID,
+      'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa1'::UUID,
+      id,
+      'TENANT'
+    FROM core.roles WHERE name = 'SYSTEM_ADMIN'
+    ON CONFLICT DO NOTHING;
+  $sql$;
+
+  EXECUTE $sql$
+    INSERT INTO core.user_roles (
+      tenant_id, user_id, role_id, scope_type
+    )
+    SELECT
+      '00000000-0000-7000-8000-000000000001'::UUID,
+      'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa2'::UUID,
+      id,
+      'TENANT'
+    FROM core.roles WHERE name = 'FEDERATION_ADMIN'
+    ON CONFLICT DO NOTHING;
+  $sql$;
+
+  EXECUTE $sql$
+    INSERT INTO core.user_roles (
+      tenant_id, user_id, role_id, scope_type
+    )
+    SELECT
+      '00000000-0000-7000-8000-000000000001'::UUID,
+      'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa3'::UUID,
+      id,
+      'TENANT'
+    FROM core.roles WHERE name = 'DELEGATE'
+    ON CONFLICT DO NOTHING;
   $sql$;
 
   EXECUTE $sql$
@@ -172,7 +211,7 @@ BEGIN
         'Nguyen Van Trong',
         '0900000001',
         'bd@vct.vn',
-        'da_xac_nhan',
+        'da_duyet',
         '{}'::jsonb,
         '{"total":0,"paid":0,"remaining":0}'::jsonb,
         '[]'::jsonb,
@@ -188,7 +227,7 @@ BEGIN
         'Tran Tuan Anh',
         '0900000002',
         'hn@vct.vn',
-        'da_xac_nhan',
+        'da_duyet',
         '{}'::jsonb,
         '{"total":0,"paid":0,"remaining":0}'::jsonb,
         '[]'::jsonb,
@@ -225,7 +264,7 @@ BEGIN
         DATE '2002-03-01',
         54.8,
         170.0,
-        'du_dieu_kien',
+        'da_duyet',
         '{}'::jsonb,
         'Van dong vien doi khang',
         NULL,
@@ -240,7 +279,7 @@ BEGIN
         DATE '2003-07-12',
         50.0,
         162.0,
-        'du_dieu_kien',
+        'da_duyet',
         '{}'::jsonb,
         'Van dong vien quyen',
         NULL,

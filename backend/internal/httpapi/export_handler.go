@@ -42,7 +42,7 @@ func (s *Server) handleBTCExport(w http.ResponseWriter, r *http.Request, p auth.
 }
 
 func (s *Server) exportTeamResults(w http.ResponseWriter, r *http.Request, format, giaiID string) {
-	results, err := s.btcSvc.ListTeamResults(r.Context(), giaiID)
+	results, err := s.Extended.BTC.ListTeamResults(r.Context(), giaiID)
 	if err != nil {
 		internalError(w, err)
 		return
@@ -73,7 +73,7 @@ func (s *Server) exportTeamResults(w http.ResponseWriter, r *http.Request, forma
 }
 
 func (s *Server) exportFinance(w http.ResponseWriter, r *http.Request, format, giaiID string) {
-	entries, err := s.btcSvc.ListFinance(r.Context(), giaiID)
+	entries, err := s.Extended.BTC.ListFinance(r.Context(), giaiID)
 	if err != nil {
 		internalError(w, err)
 		return
@@ -104,7 +104,7 @@ func (s *Server) exportFinance(w http.ResponseWriter, r *http.Request, format, g
 }
 
 func (s *Server) exportWeighIns(w http.ResponseWriter, r *http.Request, format, giaiID string) {
-	records, err := s.btcSvc.ListWeighIns(r.Context(), giaiID)
+	records, err := s.Extended.BTC.ListWeighIns(r.Context(), giaiID)
 	if err != nil {
 		internalError(w, err)
 		return
@@ -135,7 +135,7 @@ func (s *Server) exportWeighIns(w http.ResponseWriter, r *http.Request, format, 
 }
 
 func (s *Server) exportAssignments(w http.ResponseWriter, r *http.Request, format, giaiID string) {
-	assignments, err := s.btcSvc.ListAssignments(r.Context(), giaiID)
+	assignments, err := s.Extended.BTC.ListAssignments(r.Context(), giaiID)
 	if err != nil {
 		internalError(w, err)
 		return
@@ -165,7 +165,7 @@ func (s *Server) exportAssignments(w http.ResponseWriter, r *http.Request, forma
 }
 
 func (s *Server) exportProtests(w http.ResponseWriter, r *http.Request, format, giaiID string) {
-	protests, err := s.btcSvc.ListProtests(r.Context(), giaiID)
+	protests, err := s.Extended.BTC.ListProtests(r.Context(), giaiID)
 	if err != nil {
 		internalError(w, err)
 		return

@@ -44,7 +44,7 @@ func (s *Server) handleProvincialTournaments(w http.ResponseWriter, r *http.Requ
 
 	switch r.Method {
 	case http.MethodGet:
-		list, err := s.tournamentStore.ListTournaments(ctx, provID)
+		list, err := s.Provincial.TournamentStore.ListTournaments(ctx, provID)
 		if err != nil {
 			internalError(w, err)
 			return
@@ -62,7 +62,7 @@ func (s *Server) handleProvincialTournaments(w http.ResponseWriter, r *http.Requ
 		t.Status = provincial.TournamentStatusDraft
 		t.CreatedAt = time.Now().UTC()
 		t.UpdatedAt = t.CreatedAt
-		created, err := s.tournamentStore.CreateTournament(ctx, t)
+		created, err := s.Provincial.TournamentStore.CreateTournament(ctx, t)
 		if err != nil {
 			internalError(w, err)
 			return
@@ -84,20 +84,20 @@ func (s *Server) handleProvincialTournamentDetail(w http.ResponseWriter, r *http
 		action := parts[1]
 		switch action {
 		case "open":
-			s.tournamentStore.UpdateTournament(r.Context(), tournamentID, map[string]interface{}{"status": "open"})
+			s.Provincial.TournamentStore.UpdateTournament(r.Context(), tournamentID, map[string]interface{}{"status": "open"})
 			success(w, http.StatusOK, map[string]string{"message": "Giải đấu đã mở đăng ký"})
 		case "start":
-			s.tournamentStore.UpdateTournament(r.Context(), tournamentID, map[string]interface{}{"status": "in_progress"})
+			s.Provincial.TournamentStore.UpdateTournament(r.Context(), tournamentID, map[string]interface{}{"status": "in_progress"})
 			success(w, http.StatusOK, map[string]string{"message": "Giải đấu đã bắt đầu"})
 		case "complete":
-			s.tournamentStore.UpdateTournament(r.Context(), tournamentID, map[string]interface{}{"status": "completed"})
+			s.Provincial.TournamentStore.UpdateTournament(r.Context(), tournamentID, map[string]interface{}{"status": "completed"})
 			success(w, http.StatusOK, map[string]string{"message": "Giải đấu đã kết thúc"})
 		case "cancel":
-			s.tournamentStore.UpdateTournament(r.Context(), tournamentID, map[string]interface{}{"status": "cancelled"})
+			s.Provincial.TournamentStore.UpdateTournament(r.Context(), tournamentID, map[string]interface{}{"status": "cancelled"})
 			success(w, http.StatusOK, map[string]string{"message": "Giải đấu đã bị hủy"})
 		case "registrations":
 			if r.Method == http.MethodGet {
-				list, err := s.tournamentStore.ListRegistrations(r.Context(), tournamentID)
+				list, err := s.Provincial.TournamentStore.ListRegistrations(r.Context(), tournamentID)
 				if err != nil {
 					internalError(w, err)
 					return
@@ -113,12 +113,12 @@ func (s *Server) handleProvincialTournamentDetail(w http.ResponseWriter, r *http
 				reg.TournamentID = tournamentID
 				reg.Status = "pending"
 				reg.SubmittedAt = time.Now().UTC()
-				created, _ := s.tournamentStore.CreateRegistration(r.Context(), reg)
+				created, _ := s.Provincial.TournamentStore.CreateRegistration(r.Context(), reg)
 				success(w, http.StatusCreated, created)
 			}
 		case "results":
 			if r.Method == http.MethodGet {
-				list, err := s.tournamentStore.ListResults(r.Context(), tournamentID)
+				list, err := s.Provincial.TournamentStore.ListResults(r.Context(), tournamentID)
 				if err != nil {
 					internalError(w, err)
 					return
@@ -132,7 +132,7 @@ func (s *Server) handleProvincialTournamentDetail(w http.ResponseWriter, r *http
 				}
 				res.ID = "RES-" + newUUID()[:8]
 				res.TournamentID = tournamentID
-				created, _ := s.tournamentStore.CreateResult(r.Context(), res)
+				created, _ := s.Provincial.TournamentStore.CreateResult(r.Context(), res)
 				success(w, http.StatusCreated, created)
 			}
 		default:
@@ -142,7 +142,7 @@ func (s *Server) handleProvincialTournamentDetail(w http.ResponseWriter, r *http
 	}
 
 	// GET single tournament
-	t, err := s.tournamentStore.GetTournament(r.Context(), tournamentID)
+	t, err := s.Provincial.TournamentStore.GetTournament(r.Context(), tournamentID)
 	if err != nil {
 		notFoundError(w, "tournament not found")
 		return
@@ -158,7 +158,7 @@ func (s *Server) handleProvincialFinance(w http.ResponseWriter, r *http.Request,
 
 	switch r.Method {
 	case http.MethodGet:
-		list, err := s.financeStore.List(ctx, provID)
+		list, err := s.Provincial.FinanceStore.List(ctx, provID)
 		if err != nil {
 			internalError(w, err)
 			return
@@ -174,7 +174,7 @@ func (s *Server) handleProvincialFinance(w http.ResponseWriter, r *http.Request,
 		e.ID = "FIN-" + newUUID()[:8]
 		e.ProvinceID = provID
 		e.CreatedAt = time.Now().UTC()
-		created, err := s.financeStore.Create(ctx, e)
+		created, err := s.Provincial.FinanceStore.Create(ctx, e)
 		if err != nil {
 			internalError(w, err)
 			return
@@ -188,7 +188,7 @@ func (s *Server) handleProvincialFinance(w http.ResponseWriter, r *http.Request,
 
 func (s *Server) handleProvincialFinanceSummary(w http.ResponseWriter, r *http.Request, _ auth.Principal) {
 	provID := resolveProvinceID(r)
-	sum, err := s.financeStore.Summary(r.Context(), provID)
+	sum, err := s.Provincial.FinanceStore.Summary(r.Context(), provID)
 	if err != nil {
 		internalError(w, err)
 		return
@@ -204,7 +204,7 @@ func (s *Server) handleProvincialCertifications(w http.ResponseWriter, r *http.R
 
 	switch r.Method {
 	case http.MethodGet:
-		list, err := s.certStore.List(ctx, provID)
+		list, err := s.Provincial.CertStore.List(ctx, provID)
 		if err != nil {
 			internalError(w, err)
 			return
@@ -220,7 +220,7 @@ func (s *Server) handleProvincialCertifications(w http.ResponseWriter, r *http.R
 		c.ID = "CERT-" + newUUID()[:8]
 		c.ProvinceID = provID
 		c.CreatedAt = time.Now().UTC()
-		created, err := s.certStore.Create(ctx, c)
+		created, err := s.Provincial.CertStore.Create(ctx, c)
 		if err != nil {
 			internalError(w, err)
 			return
@@ -240,7 +240,7 @@ func (s *Server) handleProvincialDiscipline(w http.ResponseWriter, r *http.Reque
 
 	switch r.Method {
 	case http.MethodGet:
-		list, err := s.disciplineStore.List(ctx, provID)
+		list, err := s.Provincial.DisciplineStore.List(ctx, provID)
 		if err != nil {
 			internalError(w, err)
 			return
@@ -258,7 +258,7 @@ func (s *Server) handleProvincialDiscipline(w http.ResponseWriter, r *http.Reque
 		c.Status = "open"
 		c.ReportedAt = time.Now().UTC()
 		c.CreatedAt = c.ReportedAt
-		created, err := s.disciplineStore.Create(ctx, c)
+		created, err := s.Provincial.DisciplineStore.Create(ctx, c)
 		if err != nil {
 			internalError(w, err)
 			return
@@ -285,10 +285,10 @@ func (s *Server) handleProvincialDisciplineAction(w http.ResponseWriter, r *http
 			Penalty string `json:"penalty"`
 		}
 		json.NewDecoder(r.Body).Decode(&body)
-		s.disciplineStore.Update(r.Context(), caseID, map[string]interface{}{"status": "resolved", "penalty": body.Penalty})
+		s.Provincial.DisciplineStore.Update(r.Context(), caseID, map[string]interface{}{"status": "resolved", "penalty": body.Penalty})
 		success(w, http.StatusOK, map[string]string{"status": "resolved"})
 	case "close":
-		s.disciplineStore.Update(r.Context(), caseID, map[string]interface{}{"status": "closed"})
+		s.Provincial.DisciplineStore.Update(r.Context(), caseID, map[string]interface{}{"status": "closed"})
 		success(w, http.StatusOK, map[string]string{"status": "closed"})
 	default:
 		badRequest(w, "unknown action: "+action)
@@ -303,7 +303,7 @@ func (s *Server) handleProvincialDocuments(w http.ResponseWriter, r *http.Reques
 
 	switch r.Method {
 	case http.MethodGet:
-		list, err := s.docStore.List(ctx, provID)
+		list, err := s.Provincial.DocStore.List(ctx, provID)
 		if err != nil {
 			internalError(w, err)
 			return
@@ -321,7 +321,7 @@ func (s *Server) handleProvincialDocuments(w http.ResponseWriter, r *http.Reques
 		d.Status = "draft"
 		d.CreatedAt = time.Now().UTC()
 		d.UpdatedAt = d.CreatedAt
-		created, err := s.docStore.Create(ctx, d)
+		created, err := s.Provincial.DocStore.Create(ctx, d)
 		if err != nil {
 			internalError(w, err)
 			return
@@ -344,10 +344,10 @@ func (s *Server) handleProvincialDocumentAction(w http.ResponseWriter, r *http.R
 	action := parts[1]
 	switch action {
 	case "publish":
-		s.docStore.Update(r.Context(), docID, map[string]interface{}{"status": "published"})
+		s.Provincial.DocStore.Update(r.Context(), docID, map[string]interface{}{"status": "published"})
 		success(w, http.StatusOK, map[string]string{"status": "published"})
 	case "archive":
-		s.docStore.Update(r.Context(), docID, map[string]interface{}{"status": "archived"})
+		s.Provincial.DocStore.Update(r.Context(), docID, map[string]interface{}{"status": "archived"})
 		success(w, http.StatusOK, map[string]string{"status": "archived"})
 	default:
 		badRequest(w, "unknown action: "+action)

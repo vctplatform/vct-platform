@@ -135,7 +135,7 @@ func TestAthleteProfileServiceGetStats(t *testing.T) {
 	s := testServer(t)
 
 	// Access service directly via the server
-	stats, err := s.athleteProfileSvc.GetStats(t.Context())
+	stats, err := s.Extended.AthleteProfile.GetStats(t.Context())
 	if err != nil {
 		t.Fatalf("GetStats failed: %v", err)
 	}
@@ -173,7 +173,7 @@ func TestAthleteProfileServiceSearch(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			results, err := s.athleteProfileSvc.SearchProfiles(t.Context(), tt.query)
+			results, err := s.Extended.AthleteProfile.SearchProfiles(t.Context(), tt.query)
 			if err != nil {
 				t.Fatalf("SearchProfiles(%q) failed: %v", tt.query, err)
 			}
@@ -188,7 +188,7 @@ func TestAthleteProfileServiceBeltHistory(t *testing.T) {
 	s := testServer(t)
 
 	// Get AP-001 which should have belt history
-	p, err := s.athleteProfileSvc.GetProfile(t.Context(), "AP-001")
+	p, err := s.Extended.AthleteProfile.GetProfile(t.Context(), "AP-001")
 	if err != nil {
 		t.Fatalf("GetProfile(AP-001) failed: %v", err)
 	}

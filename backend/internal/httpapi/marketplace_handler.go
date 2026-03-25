@@ -14,7 +14,7 @@ func (s *Server) handleMarketplaceProducts(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	result, err := s.marketplaceSvc.ListCatalog(r.Context(), marketplace.CatalogFilter{
+	result, err := s.Extended.Marketplace.ListCatalog(r.Context(), marketplace.CatalogFilter{
 		Search:       strings.TrimSpace(r.URL.Query().Get("search")),
 		Category:     strings.TrimSpace(r.URL.Query().Get("category")),
 		Condition:    strings.TrimSpace(r.URL.Query().Get("condition")),
@@ -41,7 +41,7 @@ func (s *Server) handleMarketplaceProductDetail(w http.ResponseWriter, r *http.R
 		return
 	}
 
-	product, err := s.marketplaceSvc.GetProductBySlug(r.Context(), slug)
+	product, err := s.Extended.Marketplace.GetProductBySlug(r.Context(), slug)
 	if err != nil {
 		notFoundError(w, err.Error())
 		return
@@ -61,7 +61,7 @@ func (s *Server) handleMarketplaceOrders(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	order, err := s.marketplaceSvc.CreateOrder(r.Context(), payload)
+	order, err := s.Extended.Marketplace.CreateOrder(r.Context(), payload)
 	if err != nil {
 		badRequest(w, err.Error())
 		return
@@ -75,7 +75,7 @@ func (s *Server) handleMarketplaceStats(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	result, err := s.marketplaceSvc.ListCatalog(r.Context(), marketplace.CatalogFilter{})
+	result, err := s.Extended.Marketplace.ListCatalog(r.Context(), marketplace.CatalogFilter{})
 	if err != nil {
 		internalError(w, err)
 		return
@@ -92,7 +92,7 @@ func (s *Server) handleMarketplaceSellerDashboard(w http.ResponseWriter, r *http
 		return
 	}
 
-	dashboard, err := s.marketplaceSvc.SellerDashboard(r.Context(), marketplaceScopeSellerID(p))
+	dashboard, err := s.Extended.Marketplace.SellerDashboard(r.Context(), marketplaceScopeSellerID(p))
 	if err != nil {
 		internalError(w, err)
 		return
@@ -107,7 +107,7 @@ func (s *Server) handleMarketplaceSellerProducts(w http.ResponseWriter, r *http.
 
 	switch r.Method {
 	case http.MethodGet:
-		items, err := s.marketplaceSvc.ListSellerProducts(r.Context(), marketplaceScopeSellerID(p))
+		items, err := s.Extended.Marketplace.ListSellerProducts(r.Context(), marketplaceScopeSellerID(p))
 		if err != nil {
 			internalError(w, err)
 			return
@@ -138,7 +138,7 @@ func (s *Server) handleMarketplaceSellerProducts(w http.ResponseWriter, r *http.
 			}
 		}
 
-		created, err := s.marketplaceSvc.CreateProduct(r.Context(), payload)
+		created, err := s.Extended.Marketplace.CreateProduct(r.Context(), payload)
 		if err != nil {
 			badRequest(w, err.Error())
 			return
@@ -163,7 +163,7 @@ func (s *Server) handleMarketplaceSellerProductDetail(w http.ResponseWriter, r *
 
 	switch r.Method {
 	case http.MethodGet:
-		items, err := s.marketplaceSvc.ListSellerProducts(r.Context(), marketplaceScopeSellerID(p))
+		items, err := s.Extended.Marketplace.ListSellerProducts(r.Context(), marketplaceScopeSellerID(p))
 		if err != nil {
 			internalError(w, err)
 			return
@@ -181,7 +181,7 @@ func (s *Server) handleMarketplaceSellerProductDetail(w http.ResponseWriter, r *
 			badRequest(w, err.Error())
 			return
 		}
-		updated, err := s.marketplaceSvc.UpdateProduct(r.Context(), productID, patch)
+		updated, err := s.Extended.Marketplace.UpdateProduct(r.Context(), productID, patch)
 		if err != nil {
 			badRequest(w, err.Error())
 			return
@@ -201,7 +201,7 @@ func (s *Server) handleMarketplaceSellerOrders(w http.ResponseWriter, r *http.Re
 		return
 	}
 
-	items, err := s.marketplaceSvc.ListOrders(r.Context(), marketplaceScopeSellerID(p))
+	items, err := s.Extended.Marketplace.ListOrders(r.Context(), marketplaceScopeSellerID(p))
 	if err != nil {
 		internalError(w, err)
 		return
@@ -233,7 +233,7 @@ func (s *Server) handleMarketplaceSellerOrderDetail(w http.ResponseWriter, r *ht
 		badRequest(w, err.Error())
 		return
 	}
-	updated, err := s.marketplaceSvc.UpdateOrder(r.Context(), orderID, patch)
+	updated, err := s.Extended.Marketplace.UpdateOrder(r.Context(), orderID, patch)
 	if err != nil {
 		badRequest(w, err.Error())
 		return

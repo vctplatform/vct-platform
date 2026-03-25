@@ -35,7 +35,7 @@ func (s *Server) handleClubDashboard(w http.ResponseWriter, r *http.Request, p a
 	if clubID == "" {
 		clubID = "CLB-001"
 	}
-	stats, err := s.provincialSvc.GetClubDashboard(r.Context(), clubID)
+	stats, err := s.Provincial.Main.GetClubDashboard(r.Context(), clubID)
 	if err != nil {
 		internalError(w, err)
 		return
@@ -56,7 +56,7 @@ func (s *Server) handleClubMembers(w http.ResponseWriter, r *http.Request, p aut
 		if !requireClubRead(w, p) {
 			return
 		}
-		members, err := s.provincialSvc.ListClubMembers(r.Context(), clubID)
+		members, err := s.Provincial.Main.ListClubMembers(r.Context(), clubID)
 		if err != nil {
 			internalError(w, err)
 			return
@@ -75,7 +75,7 @@ func (s *Server) handleClubMembers(w http.ResponseWriter, r *http.Request, p aut
 		if m.ClubID == "" {
 			m.ClubID = clubID
 		}
-		created, err := s.provincialSvc.CreateClubMember(r.Context(), m)
+		created, err := s.Provincial.Main.CreateClubMember(r.Context(), m)
 		if err != nil {
 			internalError(w, err)
 			return
@@ -103,13 +103,13 @@ func (s *Server) handleClubMemberAction(w http.ResponseWriter, r *http.Request, 
 		}
 		switch action {
 		case "approve":
-			if err := s.provincialSvc.ApproveClubMember(r.Context(), id); err != nil {
+			if err := s.Provincial.Main.ApproveClubMember(r.Context(), id); err != nil {
 				internalError(w, err)
 				return
 			}
 			success(w, http.StatusOK, map[string]any{"message": "member approved"})
 		case "reject":
-			if err := s.provincialSvc.RejectClubMember(r.Context(), id); err != nil {
+			if err := s.Provincial.Main.RejectClubMember(r.Context(), id); err != nil {
 				internalError(w, err)
 				return
 			}
@@ -125,7 +125,7 @@ func (s *Server) handleClubMemberAction(w http.ResponseWriter, r *http.Request, 
 		if !requireClubRead(w, p) {
 			return
 		}
-		m, err := s.provincialSvc.GetClubMember(r.Context(), id)
+		m, err := s.Provincial.Main.GetClubMember(r.Context(), id)
 		if err != nil {
 			notFound(w)
 			return
@@ -141,7 +141,7 @@ func (s *Server) handleClubMemberAction(w http.ResponseWriter, r *http.Request, 
 			badRequest(w, "invalid body")
 			return
 		}
-		if err := s.provincialSvc.UpdateClubMember(r.Context(), id, patch); err != nil {
+		if err := s.Provincial.Main.UpdateClubMember(r.Context(), id, patch); err != nil {
 			internalError(w, err)
 			return
 		}
@@ -151,7 +151,7 @@ func (s *Server) handleClubMemberAction(w http.ResponseWriter, r *http.Request, 
 		if !requireClubWrite(w, p) {
 			return
 		}
-		if err := s.provincialSvc.DeleteClubMember(r.Context(), id); err != nil {
+		if err := s.Provincial.Main.DeleteClubMember(r.Context(), id); err != nil {
 			internalError(w, err)
 			return
 		}
@@ -175,7 +175,7 @@ func (s *Server) handleClubClasses(w http.ResponseWriter, r *http.Request, p aut
 		if !requireClubRead(w, p) {
 			return
 		}
-		classes, err := s.provincialSvc.ListClubClasses(r.Context(), clubID)
+		classes, err := s.Provincial.Main.ListClubClasses(r.Context(), clubID)
 		if err != nil {
 			internalError(w, err)
 			return
@@ -194,7 +194,7 @@ func (s *Server) handleClubClasses(w http.ResponseWriter, r *http.Request, p aut
 		if c.ClubID == "" {
 			c.ClubID = clubID
 		}
-		created, err := s.provincialSvc.CreateClubClass(r.Context(), c)
+		created, err := s.Provincial.Main.CreateClubClass(r.Context(), c)
 		if err != nil {
 			internalError(w, err)
 			return
@@ -214,7 +214,7 @@ func (s *Server) handleClubClassAction(w http.ResponseWriter, r *http.Request, p
 		if !requireClubRead(w, p) {
 			return
 		}
-		c, err := s.provincialSvc.GetClubClass(r.Context(), id)
+		c, err := s.Provincial.Main.GetClubClass(r.Context(), id)
 		if err != nil {
 			notFound(w)
 			return
@@ -230,7 +230,7 @@ func (s *Server) handleClubClassAction(w http.ResponseWriter, r *http.Request, p
 			badRequest(w, "invalid body")
 			return
 		}
-		if err := s.provincialSvc.UpdateClubClass(r.Context(), id, patch); err != nil {
+		if err := s.Provincial.Main.UpdateClubClass(r.Context(), id, patch); err != nil {
 			internalError(w, err)
 			return
 		}
@@ -240,7 +240,7 @@ func (s *Server) handleClubClassAction(w http.ResponseWriter, r *http.Request, p
 		if !requireClubWrite(w, p) {
 			return
 		}
-		if err := s.provincialSvc.DeleteClubClass(r.Context(), id); err != nil {
+		if err := s.Provincial.Main.DeleteClubClass(r.Context(), id); err != nil {
 			internalError(w, err)
 			return
 		}
@@ -264,7 +264,7 @@ func (s *Server) handleClubFinance(w http.ResponseWriter, r *http.Request, p aut
 		if !requireClubRead(w, p) {
 			return
 		}
-		entries, err := s.provincialSvc.ListClubFinance(r.Context(), clubID)
+		entries, err := s.Provincial.Main.ListClubFinance(r.Context(), clubID)
 		if err != nil {
 			internalError(w, err)
 			return
@@ -283,7 +283,7 @@ func (s *Server) handleClubFinance(w http.ResponseWriter, r *http.Request, p aut
 		if f.ClubID == "" {
 			f.ClubID = clubID
 		}
-		created, err := s.provincialSvc.CreateClubFinanceEntry(r.Context(), f)
+		created, err := s.Provincial.Main.CreateClubFinanceEntry(r.Context(), f)
 		if err != nil {
 			internalError(w, err)
 			return
@@ -307,7 +307,7 @@ func (s *Server) handleClubFinanceSummary(w http.ResponseWriter, r *http.Request
 	if clubID == "" {
 		clubID = "CLB-001"
 	}
-	summary, err := s.provincialSvc.GetClubFinanceSummary(r.Context(), clubID)
+	summary, err := s.Provincial.Main.GetClubFinanceSummary(r.Context(), clubID)
 	if err != nil {
 		internalError(w, err)
 		return
@@ -328,7 +328,7 @@ func (s *Server) handleClubSettings(w http.ResponseWriter, r *http.Request, p au
 
 	switch r.Method {
 	case http.MethodGet:
-		club, err := s.provincialSvc.GetClub(r.Context(), clubID)
+		club, err := s.Provincial.Main.GetClub(r.Context(), clubID)
 		if err != nil {
 			notFound(w)
 			return

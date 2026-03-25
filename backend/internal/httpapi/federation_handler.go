@@ -59,9 +59,9 @@ func (s *Server) handleFederationProvinceRoutes(w http.ResponseWriter, r *http.R
 		var provinces []federation.Province
 		var err error
 		if region != "" {
-			provinces, err = s.federationSvc.ListProvincesByRegion(r.Context(), federation.RegionCode(region))
+			provinces, err = s.Federation.Main.ListProvincesByRegion(r.Context(), federation.RegionCode(region))
 		} else {
-			provinces, err = s.federationSvc.ListProvinces(r.Context())
+			provinces, err = s.Federation.Main.ListProvinces(r.Context())
 		}
 		if err != nil {
 			internalError(w, err)
@@ -90,7 +90,7 @@ func (s *Server) handleFederationProvinceRoutes(w http.ResponseWriter, r *http.R
 			badRequest(w, "invalid JSON: "+err.Error())
 			return
 		}
-		created, err := s.federationSvc.CreateProvince(r.Context(), prov)
+		created, err := s.Federation.Main.CreateProvince(r.Context(), prov)
 		if err != nil {
 			federationValidationError(w, err)
 			return
@@ -101,7 +101,7 @@ func (s *Server) handleFederationProvinceRoutes(w http.ResponseWriter, r *http.R
 		if !requireFederationRead(w, p) {
 			return
 		}
-		prov, err := s.federationSvc.GetProvince(r.Context(), id)
+		prov, err := s.Federation.Main.GetProvince(r.Context(), id)
 		if err != nil {
 			federationNotFound(w, "Tỉnh/TP", id)
 			return
@@ -122,7 +122,7 @@ func (s *Server) handleFederationUnitRoutes(w http.ResponseWriter, r *http.Reque
 		if !requireFederationRead(w, p) {
 			return
 		}
-		units, err := s.federationSvc.ListUnits(r.Context())
+		units, err := s.Federation.Main.ListUnits(r.Context())
 		if err != nil {
 			internalError(w, err)
 			return
@@ -140,7 +140,7 @@ func (s *Server) handleFederationUnitRoutes(w http.ResponseWriter, r *http.Reque
 			badRequest(w, "invalid JSON: "+err.Error())
 			return
 		}
-		created, err := s.federationSvc.CreateUnit(r.Context(), unit)
+		created, err := s.Federation.Main.CreateUnit(r.Context(), unit)
 		if err != nil {
 			badRequest(w, err.Error())
 			return
@@ -151,7 +151,7 @@ func (s *Server) handleFederationUnitRoutes(w http.ResponseWriter, r *http.Reque
 		if !requireFederationRead(w, p) {
 			return
 		}
-		unit, err := s.federationSvc.GetUnit(r.Context(), id)
+		unit, err := s.Federation.Main.GetUnit(r.Context(), id)
 		if err != nil {
 			notFoundError(w, "unit not found")
 			return
@@ -167,7 +167,7 @@ func (s *Server) handleOrgChart(w http.ResponseWriter, r *http.Request, p auth.P
 	if !requireFederationRead(w, p) {
 		return
 	}
-	chart, err := s.federationSvc.BuildOrgChart(r.Context())
+	chart, err := s.Federation.Main.BuildOrgChart(r.Context())
 	if err != nil {
 		internalError(w, err)
 		return
@@ -179,7 +179,7 @@ func (s *Server) handleFederationStats(w http.ResponseWriter, r *http.Request, p
 	if !requireFederationRead(w, p) {
 		return
 	}
-	stats, err := s.federationSvc.GetNationalStatistics(r.Context())
+	stats, err := s.Federation.Main.GetNationalStatistics(r.Context())
 	if err != nil {
 		internalError(w, err)
 		return
@@ -200,7 +200,7 @@ func (s *Server) handlePersonnelRoutes(w http.ResponseWriter, r *http.Request, p
 		if unitID == "" {
 			unitID = queryUnitID
 		}
-		list, err := s.federationSvc.ListPersonnel(r.Context(), unitID)
+		list, err := s.Federation.Main.ListPersonnel(r.Context(), unitID)
 		if err != nil {
 			internalError(w, err)
 			return
@@ -218,7 +218,7 @@ func (s *Server) handlePersonnelRoutes(w http.ResponseWriter, r *http.Request, p
 			badRequest(w, "invalid JSON: "+err.Error())
 			return
 		}
-		if err := s.federationSvc.AssignPersonnel(r.Context(), assign); err != nil {
+		if err := s.Federation.Main.AssignPersonnel(r.Context(), assign); err != nil {
 			badRequest(w, err.Error())
 			return
 		}
@@ -250,7 +250,7 @@ func (s *Server) handleDocumentCRUD(w http.ResponseWriter, r *http.Request, p au
 		if !requireFederationRead(w, p) {
 			return
 		}
-		docs, err := s.documentSvc.ListDocuments(r.Context())
+		docs, err := s.Federation.Document.ListDocuments(r.Context())
 		if err != nil {
 			internalError(w, err)
 			return
@@ -267,7 +267,7 @@ func (s *Server) handleDocumentCRUD(w http.ResponseWriter, r *http.Request, p au
 			return
 		}
 		doc.IssuedBy = p.User.ID
-		created, err := s.documentSvc.CreateDraft(r.Context(), doc)
+		created, err := s.Federation.Document.CreateDraft(r.Context(), doc)
 		if err != nil {
 			badRequest(w, err.Error())
 			return
@@ -278,7 +278,7 @@ func (s *Server) handleDocumentCRUD(w http.ResponseWriter, r *http.Request, p au
 		if !requireFederationRead(w, p) {
 			return
 		}
-		doc, err := s.documentSvc.GetDocument(r.Context(), id)
+		doc, err := s.Federation.Document.GetDocument(r.Context(), id)
 		if err != nil {
 			notFoundError(w, "document not found")
 			return
@@ -289,7 +289,7 @@ func (s *Server) handleDocumentCRUD(w http.ResponseWriter, r *http.Request, p au
 		if !requireFederationWrite(w, p) {
 			return
 		}
-		if err := s.documentSvc.SubmitForApproval(r.Context(), id); err != nil {
+		if err := s.Federation.Document.SubmitForApproval(r.Context(), id); err != nil {
 			badRequest(w, err.Error())
 			return
 		}
@@ -299,7 +299,7 @@ func (s *Server) handleDocumentCRUD(w http.ResponseWriter, r *http.Request, p au
 		if !requireFederationWrite(w, p) {
 			return
 		}
-		if err := s.documentSvc.Approve(r.Context(), id, p.User.ID, p.User.DisplayName); err != nil {
+		if err := s.Federation.Document.Approve(r.Context(), id, p.User.ID, p.User.DisplayName); err != nil {
 			badRequest(w, err.Error())
 			return
 		}
@@ -309,7 +309,7 @@ func (s *Server) handleDocumentCRUD(w http.ResponseWriter, r *http.Request, p au
 		if !requireFederationWrite(w, p) {
 			return
 		}
-		if err := s.documentSvc.Publish(r.Context(), id); err != nil {
+		if err := s.Federation.Document.Publish(r.Context(), id); err != nil {
 			badRequest(w, err.Error())
 			return
 		}
@@ -323,7 +323,7 @@ func (s *Server) handleDocumentCRUD(w http.ResponseWriter, r *http.Request, p au
 			Reason string `json:"reason"`
 		}
 		_ = json.NewDecoder(r.Body).Decode(&body)
-		if err := s.documentSvc.Revoke(r.Context(), id, body.Reason); err != nil {
+		if err := s.Federation.Document.Revoke(r.Context(), id, body.Reason); err != nil {
 			badRequest(w, err.Error())
 			return
 		}
@@ -359,9 +359,9 @@ func (s *Server) handleDisciplineCRUD(w http.ResponseWriter, r *http.Request, p 
 		var cases []discipline.DisciplineCase
 		var err error
 		if status != "" {
-			cases, err = s.disciplineSvc.ListByStatus(r.Context(), discipline.CaseStatus(status))
+			cases, err = s.Federation.Discipline.ListByStatus(r.Context(), discipline.CaseStatus(status))
 		} else {
-			cases, err = s.disciplineSvc.ListCases(r.Context())
+			cases, err = s.Federation.Discipline.ListCases(r.Context())
 		}
 		if err != nil {
 			internalError(w, err)
@@ -379,7 +379,7 @@ func (s *Server) handleDisciplineCRUD(w http.ResponseWriter, r *http.Request, p 
 			return
 		}
 		dc.ReportedBy = p.User.ID
-		created, err := s.disciplineSvc.ReportViolation(r.Context(), dc)
+		created, err := s.Federation.Discipline.ReportViolation(r.Context(), dc)
 		if err != nil {
 			badRequest(w, err.Error())
 			return
@@ -390,7 +390,7 @@ func (s *Server) handleDisciplineCRUD(w http.ResponseWriter, r *http.Request, p 
 		if !requireFederationRead(w, p) {
 			return
 		}
-		dc, err := s.disciplineSvc.GetCase(r.Context(), id)
+		dc, err := s.Federation.Discipline.GetCase(r.Context(), id)
 		if err != nil {
 			notFoundError(w, "case not found")
 			return
@@ -405,7 +405,7 @@ func (s *Server) handleDisciplineCRUD(w http.ResponseWriter, r *http.Request, p 
 			InvestigatorID string `json:"investigator_id"`
 		}
 		_ = json.NewDecoder(r.Body).Decode(&body)
-		if err := s.disciplineSvc.AssignInvestigator(r.Context(), id, body.InvestigatorID); err != nil {
+		if err := s.Federation.Discipline.AssignInvestigator(r.Context(), id, body.InvestigatorID); err != nil {
 			badRequest(w, err.Error())
 			return
 		}
@@ -421,7 +421,7 @@ func (s *Server) handleDisciplineCRUD(w http.ResponseWriter, r *http.Request, p 
 			return
 		}
 		h.CaseID = id
-		created, err := s.disciplineSvc.ScheduleHearing(r.Context(), h)
+		created, err := s.Federation.Discipline.ScheduleHearing(r.Context(), h)
 		if err != nil {
 			badRequest(w, err.Error())
 			return
@@ -432,7 +432,7 @@ func (s *Server) handleDisciplineCRUD(w http.ResponseWriter, r *http.Request, p 
 		if !requireFederationWrite(w, p) {
 			return
 		}
-		if err := s.disciplineSvc.DismissCase(r.Context(), id, p.User.ID); err != nil {
+		if err := s.Federation.Discipline.DismissCase(r.Context(), id, p.User.ID); err != nil {
 			badRequest(w, err.Error())
 			return
 		}
@@ -465,7 +465,7 @@ func (s *Server) handleCertCRUD(w http.ResponseWriter, r *http.Request, p auth.P
 		if !requireFederationRead(w, p) {
 			return
 		}
-		certs, err := s.certificationSvc.ListByHolder(r.Context(), "", "")
+		certs, err := s.Federation.Certification.ListByHolder(r.Context(), "", "")
 		if err != nil {
 			// Fallback: try to list via repo if ListByHolder returns error for empty args
 			internalError(w, err)
@@ -483,7 +483,7 @@ func (s *Server) handleCertCRUD(w http.ResponseWriter, r *http.Request, p auth.P
 			return
 		}
 		cert.IssuedBy = p.User.ID
-		issued, err := s.certificationSvc.Issue(r.Context(), cert)
+		issued, err := s.Federation.Certification.Issue(r.Context(), cert)
 		if err != nil {
 			badRequest(w, err.Error())
 			return
@@ -494,7 +494,7 @@ func (s *Server) handleCertCRUD(w http.ResponseWriter, r *http.Request, p auth.P
 		if !requireFederationRead(w, p) {
 			return
 		}
-		cert, err := s.certificationSvc.GetCertificate(r.Context(), id)
+		cert, err := s.Federation.Certification.GetCertificate(r.Context(), id)
 		if err != nil {
 			notFoundError(w, "certification not found")
 			return
@@ -509,7 +509,7 @@ func (s *Server) handleCertCRUD(w http.ResponseWriter, r *http.Request, p auth.P
 			ValidUntil string `json:"valid_until"`
 		}
 		_ = json.NewDecoder(r.Body).Decode(&body)
-		renewed, err := s.certificationSvc.Renew(r.Context(), id, body.ValidUntil)
+		renewed, err := s.Federation.Certification.Renew(r.Context(), id, body.ValidUntil)
 		if err != nil {
 			badRequest(w, err.Error())
 			return
@@ -524,7 +524,7 @@ func (s *Server) handleCertCRUD(w http.ResponseWriter, r *http.Request, p auth.P
 			Reason string `json:"reason"`
 		}
 		_ = json.NewDecoder(r.Body).Decode(&body)
-		if err := s.certificationSvc.Revoke(r.Context(), id, body.Reason); err != nil {
+		if err := s.Federation.Certification.Revoke(r.Context(), id, body.Reason); err != nil {
 			badRequest(w, err.Error())
 			return
 		}
@@ -541,7 +541,7 @@ func (s *Server) handleCertVerifyPublic(w http.ResponseWriter, r *http.Request) 
 		badRequest(w, "verification code required")
 		return
 	}
-	cert, err := s.certificationSvc.Verify(r.Context(), code)
+	cert, err := s.Federation.Certification.Verify(r.Context(), code)
 	if err != nil {
 		success(w, http.StatusOK, map[string]any{"found": false, "code": code})
 		return

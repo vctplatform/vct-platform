@@ -57,6 +57,8 @@ WHERE schemaname = 'public';
 - [ ] Không có N+1 query problems
 - [ ] Pagination cho list endpoints (limit/offset)
 - [ ] `SELECT` chỉ những columns cần thiết (không `SELECT *`)
+- [ ] Sử dụng Batch Insert/Update thay vì loop qua từng item và gọi INSERT/UPDATE (tránh db roundtrips).
+- [ ] Giảm thiểu sử dụng CTEs/JOIN quá phức tạp, cân nhắc sử dụng JSONB aggregation nếu phù hợp.
 
 ### 2.2 Caching
 ```go
@@ -97,7 +99,9 @@ npm run build
 ### 3.2 Rendering Performance
 - [ ] `useMemo` cho expensive computations
 - [ ] `useCallback` cho function props
-- [ ] Avoid unnecessary re-renders
+- [ ] Avoid unnecessary re-renders (Memoize component nếu nhận object/array prop)
+- [ ] Push state down: Đưa state xuống component con sâu nhất có thể để tránh re-render components cha.
+- [ ] Split Contexts: Tách React Context ra nhiều context nhỏ lẻ thay vì 1 global object bự.
 - [ ] Virtualized lists cho danh sách dài (> 100 items)
 - [ ] Images optimized (`next/image`)
 

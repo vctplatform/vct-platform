@@ -1,0 +1,27 @@
+﻿seeded 0005_seed_reference_data.sql
+seeded 0001_seed_entity_records.sql
+seeded 0002_seed_relational_core.sql
+go : migrate: apply 
+seed 0003_seed_training
+_heritage.sql failed: 
+ERROR: column 
+"child_school_id" does 
+not exist (SQLSTATE 
+42703)
+At line:1 char:1
++ go run ./cmd/migrate 
+seed > seed.log 2>&1; 
+Get-Content seed.log
++ ~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo     
+         : NotSpecifi  
+  ed: (migrate: appl   
+ y ...SQLSTATE 4270    
+3):String) [], Rem    
+oteException
+    + FullyQualifiedEr 
+   rorId : NativeComm  
+  andError
+ 
+exit status 1

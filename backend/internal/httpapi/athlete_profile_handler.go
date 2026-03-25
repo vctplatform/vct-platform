@@ -39,9 +39,9 @@ func (s *Server) handleAthleteProfileList(w http.ResponseWriter, r *http.Request
 		var list []athlete.AthleteProfile
 		var err error
 		if clubID != "" {
-			list, err = s.athleteProfileSvc.ListByClub(r.Context(), clubID)
+			list, err = s.Extended.AthleteProfile.ListByClub(r.Context(), clubID)
 		} else {
-			list, err = s.athleteProfileSvc.ListProfiles(r.Context())
+			list, err = s.Extended.AthleteProfile.ListProfiles(r.Context())
 		}
 		if err != nil {
 			internalError(w, err)
@@ -55,7 +55,7 @@ func (s *Server) handleAthleteProfileList(w http.ResponseWriter, r *http.Request
 			badRequest(w, "invalid JSON: "+err.Error())
 			return
 		}
-		created, err := s.athleteProfileSvc.CreateProfile(r.Context(), payload)
+		created, err := s.Extended.AthleteProfile.CreateProfile(r.Context(), payload)
 		if err != nil {
 			badRequest(w, err.Error())
 			return
@@ -74,7 +74,7 @@ func (s *Server) handleAthleteProfileMe(w http.ResponseWriter, r *http.Request, 
 		w.WriteHeader(http.StatusMethodNotAllowed)
 		return
 	}
-	profile, err := s.athleteProfileSvc.GetByUserID(r.Context(), p.User.ID)
+	profile, err := s.Extended.AthleteProfile.GetByUserID(r.Context(), p.User.ID)
 	if err != nil {
 		notFoundError(w, "athlete profile not found for current user")
 		return
@@ -104,7 +104,7 @@ func (s *Server) handleAthleteProfileByID(w http.ResponseWriter, r *http.Request
 
 	switch r.Method {
 	case http.MethodGet:
-		profile, err := s.athleteProfileSvc.GetProfile(r.Context(), id)
+		profile, err := s.Extended.AthleteProfile.GetProfile(r.Context(), id)
 		if err != nil {
 			notFoundError(w, err.Error())
 			return
@@ -117,15 +117,15 @@ func (s *Server) handleAthleteProfileByID(w http.ResponseWriter, r *http.Request
 			badRequest(w, "invalid JSON: "+err.Error())
 			return
 		}
-		if err := s.athleteProfileSvc.UpdateProfile(r.Context(), id, patch); err != nil {
+		if err := s.Extended.AthleteProfile.UpdateProfile(r.Context(), id, patch); err != nil {
 			internalError(w, err)
 			return
 		}
-		profile, _ := s.athleteProfileSvc.GetProfile(r.Context(), id)
+		profile, _ := s.Extended.AthleteProfile.GetProfile(r.Context(), id)
 		success(w, http.StatusOK, profile)
 
 	case http.MethodDelete:
-		if err := s.athleteProfileSvc.DeleteProfile(r.Context(), id); err != nil {
+		if err := s.Extended.AthleteProfile.DeleteProfile(r.Context(), id); err != nil {
 			internalError(w, err)
 			return
 		}
@@ -141,7 +141,7 @@ func (s *Server) handleAthleteProfileByID(w http.ResponseWriter, r *http.Request
 func (s *Server) handleProfileClubs(w http.ResponseWriter, r *http.Request, _ auth.Principal, athleteID string) {
 	switch r.Method {
 	case http.MethodGet:
-		list, err := s.athleteProfileSvc.ListMyClubs(r.Context(), athleteID)
+		list, err := s.Extended.AthleteProfile.ListMyClubs(r.Context(), athleteID)
 		if err != nil {
 			internalError(w, err)
 			return
@@ -155,7 +155,7 @@ func (s *Server) handleProfileClubs(w http.ResponseWriter, r *http.Request, _ au
 			return
 		}
 		payload.AthleteID = athleteID
-		created, err := s.athleteProfileSvc.JoinClub(r.Context(), payload)
+		created, err := s.Extended.AthleteProfile.JoinClub(r.Context(), payload)
 		if err != nil {
 			badRequest(w, err.Error())
 			return
@@ -172,7 +172,7 @@ func (s *Server) handleProfileClubs(w http.ResponseWriter, r *http.Request, _ au
 func (s *Server) handleProfileTournaments(w http.ResponseWriter, r *http.Request, _ auth.Principal, athleteID string) {
 	switch r.Method {
 	case http.MethodGet:
-		list, err := s.athleteProfileSvc.ListMyTournaments(r.Context(), athleteID)
+		list, err := s.Extended.AthleteProfile.ListMyTournaments(r.Context(), athleteID)
 		if err != nil {
 			internalError(w, err)
 			return
@@ -186,7 +186,7 @@ func (s *Server) handleProfileTournaments(w http.ResponseWriter, r *http.Request
 			return
 		}
 		payload.AthleteID = athleteID
-		created, err := s.athleteProfileSvc.EnterTournament(r.Context(), payload)
+		created, err := s.Extended.AthleteProfile.EnterTournament(r.Context(), payload)
 		if err != nil {
 			badRequest(w, err.Error())
 			return
@@ -208,12 +208,12 @@ func (s *Server) handleClubMembershipList(w http.ResponseWriter, r *http.Request
 		var list []athlete.ClubMembership
 		var err error
 		if athleteID != "" {
-			list, err = s.athleteProfileSvc.ListMyClubs(r.Context(), athleteID)
+			list, err = s.Extended.AthleteProfile.ListMyClubs(r.Context(), athleteID)
 		} else if clubID != "" {
-			list, err = s.athleteProfileSvc.ListClubMembers(r.Context(), clubID)
+			list, err = s.Extended.AthleteProfile.ListClubMembers(r.Context(), clubID)
 		} else {
 			// Return all — admin view
-			list, err = s.athleteProfileSvc.ListMyClubs(r.Context(), "")
+			list, err = s.Extended.AthleteProfile.ListMyClubs(r.Context(), "")
 		}
 		if err != nil {
 			internalError(w, err)
@@ -230,7 +230,7 @@ func (s *Server) handleClubMembershipList(w http.ResponseWriter, r *http.Request
 			badRequest(w, "invalid JSON: "+err.Error())
 			return
 		}
-		created, err := s.athleteProfileSvc.JoinClub(r.Context(), payload)
+		created, err := s.Extended.AthleteProfile.JoinClub(r.Context(), payload)
 		if err != nil {
 			badRequest(w, err.Error())
 			return
@@ -247,7 +247,7 @@ func (s *Server) handleClubMembershipByID(w http.ResponseWriter, r *http.Request
 
 	switch r.Method {
 	case http.MethodGet:
-		m, err := s.athleteProfileSvc.ListMyClubs(r.Context(), id)
+		m, err := s.Extended.AthleteProfile.ListMyClubs(r.Context(), id)
 		if err != nil {
 			notFoundError(w, err.Error())
 			return
@@ -260,14 +260,14 @@ func (s *Server) handleClubMembershipByID(w http.ResponseWriter, r *http.Request
 			badRequest(w, "invalid JSON: "+err.Error())
 			return
 		}
-		if err := s.athleteProfileSvc.UpdateMembership(r.Context(), id, patch); err != nil {
+		if err := s.Extended.AthleteProfile.UpdateMembership(r.Context(), id, patch); err != nil {
 			internalError(w, err)
 			return
 		}
 		success(w, http.StatusOK, map[string]string{"updated": id})
 
 	case http.MethodDelete:
-		if err := s.athleteProfileSvc.LeaveClub(r.Context(), id); err != nil {
+		if err := s.Extended.AthleteProfile.LeaveClub(r.Context(), id); err != nil {
 			internalError(w, err)
 			return
 		}
@@ -288,11 +288,11 @@ func (s *Server) handleTournamentEntryList(w http.ResponseWriter, r *http.Reques
 		var list []athlete.TournamentEntry
 		var err error
 		if athleteID != "" {
-			list, err = s.athleteProfileSvc.ListMyTournaments(r.Context(), athleteID)
+			list, err = s.Extended.AthleteProfile.ListMyTournaments(r.Context(), athleteID)
 		} else if tournamentID != "" {
-			list, err = s.athleteProfileSvc.ListByTournament(r.Context(), tournamentID)
+			list, err = s.Extended.AthleteProfile.ListByTournament(r.Context(), tournamentID)
 		} else {
-			list, err = s.athleteProfileSvc.ListMyTournaments(r.Context(), "")
+			list, err = s.Extended.AthleteProfile.ListMyTournaments(r.Context(), "")
 		}
 		if err != nil {
 			internalError(w, err)
@@ -309,7 +309,7 @@ func (s *Server) handleTournamentEntryList(w http.ResponseWriter, r *http.Reques
 			badRequest(w, "invalid JSON: "+err.Error())
 			return
 		}
-		created, err := s.athleteProfileSvc.EnterTournament(r.Context(), payload)
+		created, err := s.Extended.AthleteProfile.EnterTournament(r.Context(), payload)
 		if err != nil {
 			badRequest(w, err.Error())
 			return
@@ -326,7 +326,7 @@ func (s *Server) handleTournamentEntryByID(w http.ResponseWriter, r *http.Reques
 
 	switch r.Method {
 	case http.MethodGet:
-		entry, err := s.athleteProfileSvc.GetEntry(r.Context(), id)
+		entry, err := s.Extended.AthleteProfile.GetEntry(r.Context(), id)
 		if err != nil {
 			notFoundError(w, err.Error())
 			return
@@ -345,23 +345,23 @@ func (s *Server) handleTournamentEntryByID(w http.ResponseWriter, r *http.Reques
 		if body.Status != "" {
 			switch body.Status {
 			case "approve":
-				if err := s.athleteProfileSvc.ApproveEntry(r.Context(), id); err != nil {
+				if err := s.Extended.AthleteProfile.ApproveEntry(r.Context(), id); err != nil {
 					internalError(w, err)
 					return
 				}
 			case "reject":
-				if err := s.athleteProfileSvc.RejectEntry(r.Context(), id); err != nil {
+				if err := s.Extended.AthleteProfile.RejectEntry(r.Context(), id); err != nil {
 					internalError(w, err)
 					return
 				}
 			default:
-				if err := s.athleteProfileSvc.UpdateEntryStatus(r.Context(), id, athlete.EntryStatus(body.Status)); err != nil {
+				if err := s.Extended.AthleteProfile.UpdateEntryStatus(r.Context(), id, athlete.EntryStatus(body.Status)); err != nil {
 					internalError(w, err)
 					return
 				}
 			}
 		}
-		entry, _ := s.athleteProfileSvc.GetEntry(r.Context(), id)
+		entry, _ := s.Extended.AthleteProfile.GetEntry(r.Context(), id)
 		success(w, http.StatusOK, entry)
 
 	default:
@@ -376,7 +376,7 @@ func (s *Server) handleAthleteProfileStats(w http.ResponseWriter, r *http.Reques
 		w.WriteHeader(http.StatusMethodNotAllowed)
 		return
 	}
-	stats, err := s.athleteProfileSvc.GetStats(r.Context())
+	stats, err := s.Extended.AthleteProfile.GetStats(r.Context())
 	if err != nil {
 		internalError(w, err)
 		return
@@ -392,7 +392,7 @@ func (s *Server) handleAthleteProfileSearch(w http.ResponseWriter, r *http.Reque
 		return
 	}
 	query := r.URL.Query().Get("q")
-	list, err := s.athleteProfileSvc.SearchProfiles(r.Context(), query)
+	list, err := s.Extended.AthleteProfile.SearchProfiles(r.Context(), query)
 	if err != nil {
 		internalError(w, err)
 		return
@@ -412,7 +412,7 @@ func (s *Server) handleTrainingSessionList(w http.ResponseWriter, r *http.Reques
 		var list []athlete.TrainingSession
 		var err error
 		if athleteID != "" {
-			list, err = s.trainingSessionSvc.ListByAthlete(r.Context(), athleteID)
+			list, err = s.Extended.TrainingSession.ListByAthlete(r.Context(), athleteID)
 		} else {
 			list = []athlete.TrainingSession{}
 		}
@@ -431,7 +431,7 @@ func (s *Server) handleTrainingSessionList(w http.ResponseWriter, r *http.Reques
 			badRequest(w, "invalid JSON: "+err.Error())
 			return
 		}
-		created, err := s.trainingSessionSvc.CreateSession(r.Context(), payload)
+		created, err := s.Extended.TrainingSession.CreateSession(r.Context(), payload)
 		if err != nil {
 			badRequest(w, err.Error())
 			return
@@ -452,7 +452,7 @@ func (s *Server) handleTrainingSessionByID(w http.ResponseWriter, r *http.Reques
 
 	switch r.Method {
 	case http.MethodGet:
-		sess, err := s.trainingSessionSvc.GetSession(r.Context(), id)
+		sess, err := s.Extended.TrainingSession.GetSession(r.Context(), id)
 		if err != nil {
 			notFoundError(w, err.Error())
 			return
@@ -465,15 +465,15 @@ func (s *Server) handleTrainingSessionByID(w http.ResponseWriter, r *http.Reques
 			badRequest(w, "invalid JSON: "+err.Error())
 			return
 		}
-		if err := s.trainingSessionSvc.UpdateSession(r.Context(), id, patch); err != nil {
+		if err := s.Extended.TrainingSession.UpdateSession(r.Context(), id, patch); err != nil {
 			internalError(w, err)
 			return
 		}
-		sess, _ := s.trainingSessionSvc.GetSession(r.Context(), id)
+		sess, _ := s.Extended.TrainingSession.GetSession(r.Context(), id)
 		success(w, http.StatusOK, sess)
 
 	case http.MethodDelete:
-		if err := s.trainingSessionSvc.DeleteSession(r.Context(), id); err != nil {
+		if err := s.Extended.TrainingSession.DeleteSession(r.Context(), id); err != nil {
 			internalError(w, err)
 			return
 		}
@@ -494,7 +494,7 @@ func (s *Server) handleTrainingSessionStats(w http.ResponseWriter, r *http.Reque
 		badRequest(w, "athleteId query parameter is required")
 		return
 	}
-	stats, err := s.trainingSessionSvc.GetAttendanceStats(r.Context(), athleteID)
+	stats, err := s.Extended.TrainingSession.GetAttendanceStats(r.Context(), athleteID)
 	if err != nil {
 		internalError(w, err)
 		return

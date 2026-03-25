@@ -1,6 +1,7 @@
 package httpapi
 
 import (
+	"encoding/json"
 	"net/http"
 	"strings"
 
@@ -72,14 +73,21 @@ func (s *Server) handleEntityCollection(entity string, principal *auth.Principal
 			badRequest(w, err.Error())
 			return
 		}
-		created, err := s.store.Create(entity, item)
+		b, err := json.Marshal(item)
 		if err != nil {
 			badRequest(w, err.Error())
 			return
 		}
-		createdID, _ := created["id"].(string)
-		s.broadcastEntityChange(entity, "created", createdID, created, nil)
-		success(w, http.StatusCreated, created)
+		created, err := s.store.Create(entity, b)
+		if err != nil {
+			badRequest(w, err.Error())
+			return
+		}
+		var createdMap map[string]any
+		json.Unmarshal(created, &createdMap)
+		createdID, _ := createdMap["id"].(string)
+		s.broadcastEntityChange(entity, "created", createdID, createdMap, nil)
+		successJSONBytes(w, http.StatusCreated, created)
 	default:
 		methodNotAllowed(w)
 	}
@@ -110,7 +118,7 @@ func (s *Server) handleEntityAction(entity, action string, principal *auth.Princ
 			notFound(w)
 			return
 		}
-		success(w, http.StatusOK, item)
+		successJSONBytes(w, http.StatusOK, item)
 	case http.MethodPatch:
 		if err := s.authorizeEntityAction(principal, entity, authz.ActionUpdate); err != nil {
 			writeAuthError(w, err)
@@ -121,13 +129,20 @@ func (s *Server) handleEntityAction(entity, action string, principal *auth.Princ
 			badRequest(w, err.Error())
 			return
 		}
-		updated, err := s.store.Update(entity, id, patch)
+		b, err := json.Marshal(patch)
 		if err != nil {
 			badRequest(w, err.Error())
 			return
 		}
-		s.broadcastEntityChange(entity, "updated", id, updated, nil)
-		success(w, http.StatusOK, updated)
+		updated, err := s.store.Update(entity, id, b)
+		if err != nil {
+			badRequest(w, err.Error())
+			return
+		}
+		var updatedMap map[string]any
+		json.Unmarshal(updated, &updatedMap)
+		s.broadcastEntityChange(entity, "updated", id, updatedMap, nil)
+		successJSONBytes(w, http.StatusOK, updated)
 	case http.MethodDelete:
 		if err := s.authorizeEntityAction(principal, entity, authz.ActionDelete); err != nil {
 			writeAuthError(w, err)
@@ -158,7 +173,12 @@ func (s *Server) handleBulkReplace(entity string, principal *auth.Principal, w h
 		badRequest(w, err.Error())
 		return
 	}
-	replaced, err := s.store.ReplaceAll(entity, payload.Items)
+	var byteItems [][]byte
+	for _, item := range payload.Items {
+		b, _ := json.Marshal(item)
+		byteItems = append(byteItems, b)
+	}
+	replaced, err := s.store.ReplaceAll(entity, byteItems)
 	if err != nil {
 		badRequest(w, err.Error())
 		return
@@ -166,7 +186,16 @@ func (s *Server) handleBulkReplace(entity string, principal *auth.Principal, w h
 	s.broadcastEntityChange(entity, "replaced", "", nil, map[string]any{
 		"count": len(replaced),
 	})
-	success(w, http.StatusOK, replaced)
+	// replaced is []map[string]any but the return of ReplaceAll should be ... wait, let's see what ReplaceAll returns.
+	// ReplaceAll returns `[][]byte`?
+	// successJSONBytes wouldn't work easily here, let's marshal the `[][]byte` into a valid JSON array or unmarshal the whole thing
+	var replacedMaps []map[string]any
+	for _, item := range replaced {
+		var m map[string]any
+		json.Unmarshal(item, &m)
+		replacedMaps = append(replacedMaps, m)
+	}
+	success(w, http.StatusOK, replacedMaps)
 }
 
 func (s *Server) handleImport(entity string, principal *auth.Principal, w http.ResponseWriter, r *http.Request) {

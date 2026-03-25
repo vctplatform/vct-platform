@@ -1,0 +1,4 @@
+seeded 0005_seed_reference_data.sql
+seeded 0001_seed_entity_records.sql
+migrate: apply seed 0002_seed_relational_core.sql failed: ERROR: stack depth limit exceeded (SQLSTATE 54001)
+exit status 1

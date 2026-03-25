@@ -27,7 +27,7 @@ func (s *Server) handleBeltRoutes(w http.ResponseWriter, r *http.Request) {
 				writeAuthError(w, err)
 				return
 			}
-			list, fetchErr := s.heritageService.ListBelts(r.Context())
+			list, fetchErr := s.Core.Heritage.ListBelts(r.Context())
 			if fetchErr != nil {
 				internalError(w, fetchErr)
 				return
@@ -43,7 +43,7 @@ func (s *Server) handleBeltRoutes(w http.ResponseWriter, r *http.Request) {
 				badRequest(w, err.Error())
 				return
 			}
-			created, err := s.heritageService.CreateBelt(r.Context(), payload)
+			created, err := s.Core.Heritage.CreateBelt(r.Context(), payload)
 			if err != nil {
 				badRequest(w, err.Error())
 				return
@@ -62,7 +62,7 @@ func (s *Server) handleBeltRoutes(w http.ResponseWriter, r *http.Request) {
 		writeAuthError(w, err)
 		return
 	}
-	belt, err := s.heritageService.GetBelt(r.Context(), id)
+	belt, err := s.Core.Heritage.GetBelt(r.Context(), id)
 	if err != nil {
 		notFound(w)
 		return
@@ -90,7 +90,7 @@ func (s *Server) handleTechniqueRoutes(w http.ResponseWriter, r *http.Request) {
 			}
 			category := r.URL.Query().Get("loai")
 			if category != "" {
-				list, fetchErr := s.heritageService.ListTechniquesByCategory(r.Context(), category)
+				list, fetchErr := s.Core.Heritage.ListTechniquesByCategory(r.Context(), category)
 				if fetchErr != nil {
 					internalError(w, fetchErr)
 					return
@@ -98,7 +98,7 @@ func (s *Server) handleTechniqueRoutes(w http.ResponseWriter, r *http.Request) {
 				success(w, http.StatusOK, list)
 				return
 			}
-			list, fetchErr := s.heritageService.ListTechniques(r.Context())
+			list, fetchErr := s.Core.Heritage.ListTechniques(r.Context())
 			if fetchErr != nil {
 				internalError(w, fetchErr)
 				return
@@ -114,7 +114,7 @@ func (s *Server) handleTechniqueRoutes(w http.ResponseWriter, r *http.Request) {
 				badRequest(w, err.Error())
 				return
 			}
-			created, err := s.heritageService.CreateTechnique(r.Context(), payload)
+			created, err := s.Core.Heritage.CreateTechnique(r.Context(), payload)
 			if err != nil {
 				badRequest(w, err.Error())
 				return
@@ -133,7 +133,7 @@ func (s *Server) handleTechniqueRoutes(w http.ResponseWriter, r *http.Request) {
 		writeAuthError(w, err)
 		return
 	}
-	tech, err := s.heritageService.GetTechnique(r.Context(), id)
+	tech, err := s.Core.Heritage.GetTechnique(r.Context(), id)
 	if err != nil {
 		notFound(w)
 		return

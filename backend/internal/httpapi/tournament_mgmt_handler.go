@@ -78,7 +78,7 @@ func (s *Server) handleTournamentCategories(w http.ResponseWriter, r *http.Reque
 		if !requireRole(w, p, tournamentReadRoles...) {
 			return
 		}
-		cats, err := s.tournamentMgmtSvc.ListCategories(r.Context(), tournamentID)
+		cats, err := s.Extended.TournamentMgmt.ListCategories(r.Context(), tournamentID)
 		if err != nil {
 			internalError(w, err)
 			return
@@ -98,7 +98,7 @@ func (s *Server) handleTournamentCategories(w http.ResponseWriter, r *http.Reque
 			return
 		}
 		cat.TournamentID = tournamentID
-		created, err := s.tournamentMgmtSvc.CreateCategory(r.Context(), &cat)
+		created, err := s.Extended.TournamentMgmt.CreateCategory(r.Context(), &cat)
 		if err != nil {
 			badRequest(w, err.Error())
 			return
@@ -109,7 +109,7 @@ func (s *Server) handleTournamentCategories(w http.ResponseWriter, r *http.Reque
 		if !requireRole(w, p, tournamentReadRoles...) {
 			return
 		}
-		cat, err := s.tournamentMgmtSvc.GetCategory(r.Context(), catID)
+		cat, err := s.Extended.TournamentMgmt.GetCategory(r.Context(), catID)
 		if err != nil {
 			notFoundError(w, "category not found")
 			return
@@ -126,7 +126,7 @@ func (s *Server) handleTournamentCategories(w http.ResponseWriter, r *http.Reque
 			return
 		}
 		cat.ID = catID
-		updated, err := s.tournamentMgmtSvc.UpdateCategory(r.Context(), &cat)
+		updated, err := s.Extended.TournamentMgmt.UpdateCategory(r.Context(), &cat)
 		if err != nil {
 			badRequest(w, err.Error())
 			return
@@ -137,7 +137,7 @@ func (s *Server) handleTournamentCategories(w http.ResponseWriter, r *http.Reque
 		if !requireRole(w, p, tournamentWriteRoles...) {
 			return
 		}
-		if err := s.tournamentMgmtSvc.DeleteCategory(r.Context(), catID); err != nil {
+		if err := s.Extended.TournamentMgmt.DeleteCategory(r.Context(), catID); err != nil {
 			badRequest(w, err.Error())
 			return
 		}
@@ -156,7 +156,7 @@ func (s *Server) handleTournamentRegistrations(w http.ResponseWriter, r *http.Re
 		if !requireRole(w, p, tournamentReadRoles...) {
 			return
 		}
-		regs, err := s.tournamentMgmtSvc.ListRegistrations(r.Context(), tournamentID)
+		regs, err := s.Extended.TournamentMgmt.ListRegistrations(r.Context(), tournamentID)
 		if err != nil {
 			internalError(w, err)
 			return
@@ -176,7 +176,7 @@ func (s *Server) handleTournamentRegistrations(w http.ResponseWriter, r *http.Re
 			return
 		}
 		reg.TournamentID = tournamentID
-		created, err := s.tournamentMgmtSvc.RegisterTeam(r.Context(), &reg)
+		created, err := s.Extended.TournamentMgmt.RegisterTeam(r.Context(), &reg)
 		if err != nil {
 			badRequest(w, err.Error())
 			return
@@ -187,7 +187,7 @@ func (s *Server) handleTournamentRegistrations(w http.ResponseWriter, r *http.Re
 		if !requireRole(w, p, tournamentReadRoles...) {
 			return
 		}
-		reg, err := s.tournamentMgmtSvc.GetRegistration(r.Context(), regID)
+		reg, err := s.Extended.TournamentMgmt.GetRegistration(r.Context(), regID)
 		if err != nil {
 			notFoundError(w, "registration not found")
 			return
@@ -198,7 +198,7 @@ func (s *Server) handleTournamentRegistrations(w http.ResponseWriter, r *http.Re
 		if !requireRole(w, p, tournamentReadRoles...) {
 			return
 		}
-		athletes, err := s.tournamentMgmtSvc.ListRegistrationAthletes(r.Context(), regID)
+		athletes, err := s.Extended.TournamentMgmt.ListRegistrationAthletes(r.Context(), regID)
 		if err != nil {
 			internalError(w, err)
 			return
@@ -218,7 +218,7 @@ func (s *Server) handleTournamentRegistrations(w http.ResponseWriter, r *http.Re
 			return
 		}
 		athlete.RegistrationID = regID
-		created, err := s.tournamentMgmtSvc.AddAthleteToRegistration(r.Context(), &athlete)
+		created, err := s.Extended.TournamentMgmt.AddAthleteToRegistration(r.Context(), &athlete)
 		if err != nil {
 			badRequest(w, err.Error())
 			return
@@ -229,7 +229,7 @@ func (s *Server) handleTournamentRegistrations(w http.ResponseWriter, r *http.Re
 		if !requireRole(w, p, tournamentWriteRoles...) {
 			return
 		}
-		if err := s.tournamentMgmtSvc.SubmitRegistration(r.Context(), regID); err != nil {
+		if err := s.Extended.TournamentMgmt.SubmitRegistration(r.Context(), regID); err != nil {
 			badRequest(w, err.Error())
 			return
 		}
@@ -239,7 +239,7 @@ func (s *Server) handleTournamentRegistrations(w http.ResponseWriter, r *http.Re
 		if !requireRole(w, p, tournamentWriteRoles...) {
 			return
 		}
-		if err := s.tournamentMgmtSvc.ApproveRegistration(r.Context(), regID, p.User.ID); err != nil {
+		if err := s.Extended.TournamentMgmt.ApproveRegistration(r.Context(), regID, p.User.ID); err != nil {
 			badRequest(w, err.Error())
 			return
 		}
@@ -253,7 +253,7 @@ func (s *Server) handleTournamentRegistrations(w http.ResponseWriter, r *http.Re
 			Reason string `json:"reason"`
 		}
 		_ = json.NewDecoder(r.Body).Decode(&body)
-		if err := s.tournamentMgmtSvc.RejectRegistration(r.Context(), regID, p.User.ID, body.Reason); err != nil {
+		if err := s.Extended.TournamentMgmt.RejectRegistration(r.Context(), regID, p.User.ID, body.Reason); err != nil {
 			badRequest(w, err.Error())
 			return
 		}
@@ -272,7 +272,7 @@ func (s *Server) handleTournamentSchedule(w http.ResponseWriter, r *http.Request
 		if !requireRole(w, p, tournamentReadRoles...) {
 			return
 		}
-		slots, err := s.tournamentMgmtSvc.ListScheduleSlots(r.Context(), tournamentID)
+		slots, err := s.Extended.TournamentMgmt.ListScheduleSlots(r.Context(), tournamentID)
 		if err != nil {
 			internalError(w, err)
 			return
@@ -292,7 +292,7 @@ func (s *Server) handleTournamentSchedule(w http.ResponseWriter, r *http.Request
 			return
 		}
 		slot.TournamentID = tournamentID
-		created, err := s.tournamentMgmtSvc.CreateScheduleSlot(r.Context(), &slot)
+		created, err := s.Extended.TournamentMgmt.CreateScheduleSlot(r.Context(), &slot)
 		if err != nil {
 			badRequest(w, err.Error())
 			return
@@ -303,7 +303,7 @@ func (s *Server) handleTournamentSchedule(w http.ResponseWriter, r *http.Request
 		if !requireRole(w, p, tournamentReadRoles...) {
 			return
 		}
-		slot, err := s.tournamentMgmtSvc.GetScheduleSlot(r.Context(), slotID)
+		slot, err := s.Extended.TournamentMgmt.GetScheduleSlot(r.Context(), slotID)
 		if err != nil {
 			notFoundError(w, "schedule slot not found")
 			return
@@ -320,7 +320,7 @@ func (s *Server) handleTournamentSchedule(w http.ResponseWriter, r *http.Request
 			return
 		}
 		slot.ID = slotID
-		updated, err := s.tournamentMgmtSvc.UpdateScheduleSlot(r.Context(), &slot)
+		updated, err := s.Extended.TournamentMgmt.UpdateScheduleSlot(r.Context(), &slot)
 		if err != nil {
 			badRequest(w, err.Error())
 			return
@@ -331,7 +331,7 @@ func (s *Server) handleTournamentSchedule(w http.ResponseWriter, r *http.Request
 		if !requireRole(w, p, tournamentWriteRoles...) {
 			return
 		}
-		if err := s.tournamentMgmtSvc.DeleteScheduleSlot(r.Context(), slotID); err != nil {
+		if err := s.Extended.TournamentMgmt.DeleteScheduleSlot(r.Context(), slotID); err != nil {
 			badRequest(w, err.Error())
 			return
 		}
@@ -350,7 +350,7 @@ func (s *Server) handleTournamentArenas(w http.ResponseWriter, r *http.Request, 
 		if !requireRole(w, p, tournamentReadRoles...) {
 			return
 		}
-		assigns, err := s.tournamentMgmtSvc.ListArenaAssignments(r.Context(), tournamentID)
+		assigns, err := s.Extended.TournamentMgmt.ListArenaAssignments(r.Context(), tournamentID)
 		if err != nil {
 			internalError(w, err)
 			return
@@ -370,7 +370,7 @@ func (s *Server) handleTournamentArenas(w http.ResponseWriter, r *http.Request, 
 			return
 		}
 		assign.TournamentID = tournamentID
-		created, err := s.tournamentMgmtSvc.AssignArena(r.Context(), &assign)
+		created, err := s.Extended.TournamentMgmt.AssignArena(r.Context(), &assign)
 		if err != nil {
 			badRequest(w, err.Error())
 			return
@@ -381,7 +381,7 @@ func (s *Server) handleTournamentArenas(w http.ResponseWriter, r *http.Request, 
 		if !requireRole(w, p, tournamentWriteRoles...) {
 			return
 		}
-		if err := s.tournamentMgmtSvc.RemoveArenaAssignment(r.Context(), assignID); err != nil {
+		if err := s.Extended.TournamentMgmt.RemoveArenaAssignment(r.Context(), assignID); err != nil {
 			badRequest(w, err.Error())
 			return
 		}
@@ -400,7 +400,7 @@ func (s *Server) handleTournamentResults(w http.ResponseWriter, r *http.Request,
 		if !requireRole(w, p, tournamentReadRoles...) {
 			return
 		}
-		results, err := s.tournamentMgmtSvc.ListResults(r.Context(), tournamentID)
+		results, err := s.Extended.TournamentMgmt.ListResults(r.Context(), tournamentID)
 		if err != nil {
 			internalError(w, err)
 			return
@@ -420,7 +420,7 @@ func (s *Server) handleTournamentResults(w http.ResponseWriter, r *http.Request,
 			return
 		}
 		result.TournamentID = tournamentID
-		created, err := s.tournamentMgmtSvc.RecordResult(r.Context(), &result)
+		created, err := s.Extended.TournamentMgmt.RecordResult(r.Context(), &result)
 		if err != nil {
 			badRequest(w, err.Error())
 			return
@@ -431,7 +431,7 @@ func (s *Server) handleTournamentResults(w http.ResponseWriter, r *http.Request,
 		if !requireRole(w, p, tournamentWriteRoles...) {
 			return
 		}
-		if err := s.tournamentMgmtSvc.FinalizeResult(r.Context(), resultID, p.User.ID); err != nil {
+		if err := s.Extended.TournamentMgmt.FinalizeResult(r.Context(), resultID, p.User.ID); err != nil {
 			badRequest(w, err.Error())
 			return
 		}
@@ -450,7 +450,7 @@ func (s *Server) handleTournamentStandings(w http.ResponseWriter, r *http.Reques
 		if !requireRole(w, p, tournamentReadRoles...) {
 			return
 		}
-		standings, err := s.tournamentMgmtSvc.GetTeamStandings(r.Context(), tournamentID)
+		standings, err := s.Extended.TournamentMgmt.GetTeamStandings(r.Context(), tournamentID)
 		if err != nil {
 			internalError(w, err)
 			return
@@ -470,7 +470,7 @@ func (s *Server) handleTournamentStandings(w http.ResponseWriter, r *http.Reques
 			return
 		}
 		ts.TournamentID = tournamentID
-		updated, err := s.tournamentMgmtSvc.UpdateTeamStanding(r.Context(), &ts)
+		updated, err := s.Extended.TournamentMgmt.UpdateTeamStanding(r.Context(), &ts)
 		if err != nil {
 			badRequest(w, err.Error())
 			return
@@ -492,7 +492,7 @@ func (s *Server) handleTournamentStats(w http.ResponseWriter, r *http.Request, p
 	if !requireRole(w, p, tournamentReadRoles...) {
 		return
 	}
-	stats, err := s.tournamentMgmtSvc.GetStats(r.Context(), tournamentID)
+	stats, err := s.Extended.TournamentMgmt.GetStats(r.Context(), tournamentID)
 	if err != nil {
 		internalError(w, err)
 		return
@@ -516,7 +516,7 @@ func (s *Server) handleTournamentExport(w http.ResponseWriter, r *http.Request, 
 
 	switch entity {
 	case "categories":
-		cats, err := s.tournamentMgmtSvc.ListCategories(r.Context(), tournamentID)
+		cats, err := s.Extended.TournamentMgmt.ListCategories(r.Context(), tournamentID)
 		if err != nil {
 			internalError(w, err)
 			return
@@ -525,7 +525,7 @@ func (s *Server) handleTournamentExport(w http.ResponseWriter, r *http.Request, 
 		filename = "noi_dung_" + tournamentID + ".csv"
 
 	case "registrations":
-		regs, err := s.tournamentMgmtSvc.ListRegistrations(r.Context(), tournamentID)
+		regs, err := s.Extended.TournamentMgmt.ListRegistrations(r.Context(), tournamentID)
 		if err != nil {
 			internalError(w, err)
 			return
@@ -534,7 +534,7 @@ func (s *Server) handleTournamentExport(w http.ResponseWriter, r *http.Request, 
 		filename = "dang_ky_" + tournamentID + ".csv"
 
 	case "schedule":
-		slots, err := s.tournamentMgmtSvc.ListScheduleSlots(r.Context(), tournamentID)
+		slots, err := s.Extended.TournamentMgmt.ListScheduleSlots(r.Context(), tournamentID)
 		if err != nil {
 			internalError(w, err)
 			return
@@ -543,7 +543,7 @@ func (s *Server) handleTournamentExport(w http.ResponseWriter, r *http.Request, 
 		filename = "lich_thi_" + tournamentID + ".csv"
 
 	case "results":
-		results, err := s.tournamentMgmtSvc.ListResults(r.Context(), tournamentID)
+		results, err := s.Extended.TournamentMgmt.ListResults(r.Context(), tournamentID)
 		if err != nil {
 			internalError(w, err)
 			return
@@ -552,7 +552,7 @@ func (s *Server) handleTournamentExport(w http.ResponseWriter, r *http.Request, 
 		filename = "ket_qua_" + tournamentID + ".csv"
 
 	case "standings":
-		standings, err := s.tournamentMgmtSvc.GetTeamStandings(r.Context(), tournamentID)
+		standings, err := s.Extended.TournamentMgmt.GetTeamStandings(r.Context(), tournamentID)
 		if err != nil {
 			internalError(w, err)
 			return
@@ -592,7 +592,7 @@ func (s *Server) handleTournamentBatch(w http.ResponseWriter, r *http.Request, p
 			badRequest(w, "invalid JSON")
 			return
 		}
-		result, err := s.tournamentMgmtSvc.BatchApproveRegistrations(r.Context(), tournamentID, body.IDs, p.User.ID)
+		result, err := s.Extended.TournamentMgmt.BatchApproveRegistrations(r.Context(), tournamentID, body.IDs, p.User.ID)
 		if err != nil {
 			internalError(w, err)
 			return
@@ -608,7 +608,7 @@ func (s *Server) handleTournamentBatch(w http.ResponseWriter, r *http.Request, p
 			badRequest(w, "invalid JSON")
 			return
 		}
-		result, err := s.tournamentMgmtSvc.BatchRejectRegistrations(r.Context(), tournamentID, body.IDs, p.User.ID, body.Reason)
+		result, err := s.Extended.TournamentMgmt.BatchRejectRegistrations(r.Context(), tournamentID, body.IDs, p.User.ID, body.Reason)
 		if err != nil {
 			internalError(w, err)
 			return
@@ -623,7 +623,7 @@ func (s *Server) handleTournamentBatch(w http.ResponseWriter, r *http.Request, p
 			badRequest(w, "invalid JSON")
 			return
 		}
-		result, err := s.tournamentMgmtSvc.BatchFinalizeResults(r.Context(), tournamentID, body.IDs, p.User.ID)
+		result, err := s.Extended.TournamentMgmt.BatchFinalizeResults(r.Context(), tournamentID, body.IDs, p.User.ID)
 		if err != nil {
 			internalError(w, err)
 			return
@@ -631,7 +631,7 @@ func (s *Server) handleTournamentBatch(w http.ResponseWriter, r *http.Request, p
 		success(w, http.StatusOK, result)
 
 	case "recalculate-standings":
-		standings, err := s.tournamentMgmtSvc.RecalculateTeamStandings(r.Context(), tournamentID)
+		standings, err := s.Extended.TournamentMgmt.RecalculateTeamStandings(r.Context(), tournamentID)
 		if err != nil {
 			internalError(w, err)
 			return

@@ -98,7 +98,7 @@ func (s *Server) handleCombatScoring(w http.ResponseWriter, r *http.Request, mat
 }
 
 func (s *Server) handleCombatStart(w http.ResponseWriter, r *http.Request, matchID, userID string) {
-	if err := s.scoringService.StartCombatMatch(r.Context(), matchID, userID); err != nil {
+	if err := s.Core.Scoring.StartCombatMatch(r.Context(), matchID, userID); err != nil {
 		internalError(w, err)
 		return
 	}
@@ -136,7 +136,7 @@ func (s *Server) handleCombatScore(w http.ResponseWriter, r *http.Request, match
 		return
 	}
 
-	if err := s.scoringService.RecordCombatScore(r.Context(), matchID, userID, payload.Round, payload.Corner, payload.Points); err != nil {
+	if err := s.Core.Scoring.RecordCombatScore(r.Context(), matchID, userID, payload.Round, payload.Corner, payload.Points); err != nil {
 		internalError(w, err)
 		return
 	}
@@ -169,7 +169,7 @@ func (s *Server) handleCombatPenalty(w http.ResponseWriter, r *http.Request, mat
 		return
 	}
 
-	if err := s.scoringService.RecordPenalty(r.Context(), matchID, userID, payload.Round, payload.Corner, payload.Deduction, payload.Reason); err != nil {
+	if err := s.Core.Scoring.RecordPenalty(r.Context(), matchID, userID, payload.Round, payload.Corner, payload.Deduction, payload.Reason); err != nil {
 		internalError(w, err)
 		return
 	}
@@ -191,7 +191,7 @@ func (s *Server) handleCombatPenalty(w http.ResponseWriter, r *http.Request, mat
 }
 
 func (s *Server) handleCombatEnd(w http.ResponseWriter, r *http.Request, matchID, userID string) {
-	result, err := s.scoringService.EndCombatMatch(r.Context(), matchID, userID)
+	result, err := s.Core.Scoring.EndCombatMatch(r.Context(), matchID, userID)
 	if err != nil {
 		internalError(w, err)
 		return
@@ -215,7 +215,7 @@ func (s *Server) handleCombatEnd(w http.ResponseWriter, r *http.Request, matchID
 }
 
 func (s *Server) handleCombatState(w http.ResponseWriter, r *http.Request, matchID string) {
-	state, err := s.scoringService.BuildCombatState(r.Context(), matchID)
+	state, err := s.Core.Scoring.BuildCombatState(r.Context(), matchID)
 	if err != nil {
 		internalError(w, err)
 		return
@@ -262,7 +262,7 @@ func (s *Server) handleFormsScore(w http.ResponseWriter, r *http.Request, perfID
 		return
 	}
 
-	if err := s.scoringService.SubmitFormsScore(r.Context(), perfID, payload.RefereeID, payload.AthleteID, payload.Score); err != nil {
+	if err := s.Core.Scoring.SubmitFormsScore(r.Context(), perfID, payload.RefereeID, payload.AthleteID, payload.Score); err != nil {
 		internalError(w, err)
 		return
 	}
@@ -283,7 +283,7 @@ func (s *Server) handleFormsScore(w http.ResponseWriter, r *http.Request, perfID
 }
 
 func (s *Server) handleFormsFinalize(w http.ResponseWriter, r *http.Request, perfID, userID string) {
-	result, err := s.scoringService.FinalizeFormsPerformance(r.Context(), perfID)
+	result, err := s.Core.Scoring.FinalizeFormsPerformance(r.Context(), perfID)
 	if err != nil {
 		internalError(w, err)
 		return

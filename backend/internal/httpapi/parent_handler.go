@@ -41,7 +41,7 @@ func (s *Server) handleParentDashboard(w http.ResponseWriter, r *http.Request, p
 	if !requireParentRole(w, p) {
 		return
 	}
-	dash, err := s.parentSvc.GetDashboard(r.Context(), p.User.ID)
+	dash, err := s.Extended.Parent.GetDashboard(r.Context(), p.User.ID)
 	if err != nil {
 		internalError(w, err)
 		return
@@ -56,7 +56,7 @@ func (s *Server) handleParentChildren(w http.ResponseWriter, r *http.Request, p 
 	}
 	switch r.Method {
 	case http.MethodGet:
-		links, err := s.parentSvc.ListAllLinks(r.Context(), p.User.ID)
+		links, err := s.Extended.Parent.ListAllLinks(r.Context(), p.User.ID)
 		if err != nil {
 			internalError(w, err)
 			return
@@ -95,7 +95,7 @@ func (s *Server) handleParentLinkChild(w http.ResponseWriter, r *http.Request, p
 		AthleteName: req.AthleteName,
 		Relation:    req.Relation,
 	}
-	created, err := s.parentSvc.RequestLink(r.Context(), link)
+	created, err := s.Extended.Parent.RequestLink(r.Context(), link)
 	if err != nil {
 		// Validation errors are returned as 400, not 500
 		http.Error(w, err.Error(), http.StatusBadRequest)
@@ -124,7 +124,7 @@ func (s *Server) handleParentChildDetail(w http.ResponseWriter, r *http.Request,
 	// DELETE /api/v1/parent/children/{linkID} — unlink child
 	if r.Method == http.MethodDelete {
 		// Verify ownership: make sure this link belongs to the parent
-		link, err := s.parentSvc.GetLinkByID(r.Context(), linkID)
+		link, err := s.Extended.Parent.GetLinkByID(r.Context(), linkID)
 		if err != nil {
 			http.Error(w, "link not found", http.StatusNotFound)
 			return
@@ -133,7 +133,7 @@ func (s *Server) handleParentChildDetail(w http.ResponseWriter, r *http.Request,
 			http.Error(w, "forbidden: link does not belong to you", http.StatusForbidden)
 			return
 		}
-		if err := s.parentSvc.DeleteLink(r.Context(), linkID); err != nil {
+		if err := s.Extended.Parent.DeleteLink(r.Context(), linkID); err != nil {
 			internalError(w, err)
 			return
 		}
@@ -156,21 +156,21 @@ func (s *Server) handleParentChildDetail(w http.ResponseWriter, r *http.Request,
 	sub := parts[1]
 
 	// Ownership check: verify this athlete is linked to the parent
-	if !s.parentSvc.IsChildOfParent(r.Context(), p.User.ID, athleteID) {
+	if !s.Extended.Parent.IsChildOfParent(r.Context(), p.User.ID, athleteID) {
 		http.Error(w, "forbidden: athlete is not linked to your account", http.StatusForbidden)
 		return
 	}
 
 	switch sub {
 	case "attendance":
-		records, err := s.parentSvc.GetChildAttendance(r.Context(), athleteID)
+		records, err := s.Extended.Parent.GetChildAttendance(r.Context(), athleteID)
 		if err != nil {
 			internalError(w, err)
 			return
 		}
 		success(w, http.StatusOK, records)
 	case "results":
-		results, err := s.parentSvc.GetChildResults(r.Context(), athleteID)
+		results, err := s.Extended.Parent.GetChildResults(r.Context(), athleteID)
 		if err != nil {
 			internalError(w, err)
 			return
@@ -189,7 +189,7 @@ func (s *Server) handleParentConsents(w http.ResponseWriter, r *http.Request, p 
 	}
 	switch r.Method {
 	case http.MethodGet:
-		consents, err := s.parentSvc.ListConsents(r.Context(), p.User.ID)
+		consents, err := s.Extended.Parent.ListConsents(r.Context(), p.User.ID)
 		if err != nil {
 			internalError(w, err)
 			return
@@ -213,7 +213,7 @@ func (s *Server) handleParentConsents(w http.ResponseWriter, r *http.Request, p 
 		}
 
 		// Verify the athlete is linked to this parent
-		if !s.parentSvc.IsChildOfParent(r.Context(), p.User.ID, req.AthleteID) {
+		if !s.Extended.Parent.IsChildOfParent(r.Context(), p.User.ID, req.AthleteID) {
 			http.Error(w, "forbidden: athlete is not linked to your account", http.StatusForbidden)
 			return
 		}
@@ -226,7 +226,7 @@ func (s *Server) handleParentConsents(w http.ResponseWriter, r *http.Request, p 
 			Title:       req.Title,
 			Description: req.Description,
 		}
-		created, err := s.parentSvc.CreateConsent(r.Context(), c)
+		created, err := s.Extended.Parent.CreateConsent(r.Context(), c)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
@@ -253,7 +253,7 @@ func (s *Server) handleParentConsentAction(w http.ResponseWriter, r *http.Reques
 		return
 	}
 	// RevokeConsent now verifies ownership internally
-	if err := s.parentSvc.RevokeConsent(r.Context(), id, p.User.ID); err != nil {
+	if err := s.Extended.Parent.RevokeConsent(r.Context(), id, p.User.ID); err != nil {
 		if strings.Contains(err.Error(), "does not belong") || strings.Contains(err.Error(), "not active") {
 			http.Error(w, err.Error(), http.StatusForbidden)
 			return

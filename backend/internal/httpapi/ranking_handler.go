@@ -30,7 +30,7 @@ func (s *Server) handleRankingRoutes(w http.ResponseWriter, r *http.Request) {
 		}
 		category := r.URL.Query().Get("category")
 		if category != "" {
-			list, fetchErr := s.rankingService.ListAthleteRankingsByCategory(r.Context(), category)
+			list, fetchErr := s.Core.Ranking.ListAthleteRankingsByCategory(r.Context(), category)
 			if fetchErr != nil {
 				internalError(w, fetchErr)
 				return
@@ -38,7 +38,7 @@ func (s *Server) handleRankingRoutes(w http.ResponseWriter, r *http.Request) {
 			success(w, http.StatusOK, list)
 			return
 		}
-		list, fetchErr := s.rankingService.ListAthleteRankings(r.Context())
+		list, fetchErr := s.Core.Ranking.ListAthleteRankings(r.Context())
 		if fetchErr != nil {
 			internalError(w, fetchErr)
 			return
@@ -54,7 +54,7 @@ func (s *Server) handleRankingRoutes(w http.ResponseWriter, r *http.Request) {
 			writeAuthError(w, err)
 			return
 		}
-		list, fetchErr := s.rankingService.ListTeamRankings(r.Context())
+		list, fetchErr := s.Core.Ranking.ListTeamRankings(r.Context())
 		if fetchErr != nil {
 			internalError(w, fetchErr)
 			return
@@ -69,7 +69,7 @@ func (s *Server) handleRankingRoutes(w http.ResponseWriter, r *http.Request) {
 			writeAuthError(w, err)
 			return
 		}
-		item, err := s.rankingService.GetAthleteRanking(r.Context(), id)
+		item, err := s.Core.Ranking.GetAthleteRanking(r.Context(), id)
 		if err != nil {
 			notFound(w)
 			return

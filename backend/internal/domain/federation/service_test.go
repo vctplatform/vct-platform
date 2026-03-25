@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"testing"
 
-	"vct-platform/backend/internal/adapter"
 	"vct-platform/backend/internal/domain/federation"
 )
 
@@ -18,9 +17,9 @@ func idGen() string {
 
 func setup() *federation.Service {
 	return federation.NewService(
-		adapter.NewMemProvinceRepo(),
-		adapter.NewMemUnitRepo(),
-		adapter.NewMemPersonnelRepo(),
+		federation.NewMemProvinceRepo(),
+		federation.NewMemUnitRepo(),
+		federation.NewMemPersonnelRepo(),
 		federation.NewMemoryMasterDataStore(),
 		idGen,
 	)

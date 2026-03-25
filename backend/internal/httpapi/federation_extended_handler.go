@@ -40,7 +40,7 @@ func (s *Server) handleArticles(w http.ResponseWriter, r *http.Request, p auth.P
 		if !requireRole(w, p, federationReadRoles...) {
 			return
 		}
-		articles, err := s.federationSvc.ListArticles(r.Context())
+		articles, err := s.Federation.Main.ListArticles(r.Context())
 		if err != nil {
 			internalError(w, err)
 			return
@@ -73,7 +73,7 @@ func (s *Server) handleArticles(w http.ResponseWriter, r *http.Request, p auth.P
 		if article.Author == "" {
 			article.Author = p.User.DisplayName
 		}
-		if err := s.federationSvc.CreateArticle(r.Context(), article); err != nil {
+		if err := s.Federation.Main.CreateArticle(r.Context(), article); err != nil {
 			federationValidationError(w, err)
 			return
 		}
@@ -89,7 +89,7 @@ func (s *Server) handleArticleByID(w http.ResponseWriter, r *http.Request, p aut
 
 	switch r.Method {
 	case "GET":
-		a, err := s.federationSvc.GetArticle(r.Context(), id)
+		a, err := s.Federation.Main.GetArticle(r.Context(), id)
 		if err != nil {
 			federationNotFound(w, "Bài viết", id)
 			return
@@ -106,7 +106,7 @@ func (s *Server) handleArticleByID(w http.ResponseWriter, r *http.Request, p aut
 			return
 		}
 		article.ID = id
-		if err := s.federationSvc.UpdateArticle(r.Context(), article); err != nil {
+		if err := s.Federation.Main.UpdateArticle(r.Context(), article); err != nil {
 			federationValidationError(w, err)
 			return
 		}
@@ -116,7 +116,7 @@ func (s *Server) handleArticleByID(w http.ResponseWriter, r *http.Request, p aut
 		if !requireRole(w, p, federationWriteRoles...) {
 			return
 		}
-		if err := s.federationSvc.DeleteArticle(r.Context(), id); err != nil {
+		if err := s.Federation.Main.DeleteArticle(r.Context(), id); err != nil {
 			internalError(w, err)
 			return
 		}
@@ -137,7 +137,7 @@ func (s *Server) handlePartners(w http.ResponseWriter, r *http.Request, p auth.P
 		if !requireRole(w, p, federationReadRoles...) {
 			return
 		}
-		partners, err := s.federationSvc.ListPartners(r.Context())
+		partners, err := s.Federation.Main.ListPartners(r.Context())
 		if err != nil {
 			internalError(w, err)
 			return
@@ -155,7 +155,7 @@ func (s *Server) handlePartners(w http.ResponseWriter, r *http.Request, p auth.P
 			badRequest(w, "invalid JSON: "+err.Error())
 			return
 		}
-		if err := s.federationSvc.CreatePartner(r.Context(), partner); err != nil {
+		if err := s.Federation.Main.CreatePartner(r.Context(), partner); err != nil {
 			federationValidationError(w, err)
 			return
 		}
@@ -170,7 +170,7 @@ func (s *Server) handlePartnerByID(w http.ResponseWriter, r *http.Request, p aut
 	id := strings.TrimPrefix(r.URL.Path, "/api/v1/federation/partners/")
 	switch r.Method {
 	case "GET":
-		partner, err := s.federationSvc.GetPartner(r.Context(), id)
+		partner, err := s.Federation.Main.GetPartner(r.Context(), id)
 		if err != nil {
 			federationNotFound(w, "Đối tác", id)
 			return
@@ -186,7 +186,7 @@ func (s *Server) handlePartnerByID(w http.ResponseWriter, r *http.Request, p aut
 			return
 		}
 		partner.ID = id
-		if err := s.federationSvc.UpdatePartner(r.Context(), partner); err != nil {
+		if err := s.Federation.Main.UpdatePartner(r.Context(), partner); err != nil {
 			federationValidationError(w, err)
 			return
 		}
@@ -195,7 +195,7 @@ func (s *Server) handlePartnerByID(w http.ResponseWriter, r *http.Request, p aut
 		if !requireRole(w, p, federationWriteRoles...) {
 			return
 		}
-		s.federationSvc.DeletePartner(r.Context(), id)
+		s.Federation.Main.DeletePartner(r.Context(), id)
 		success(w, http.StatusOK, map[string]string{"status": "partner_deleted"})
 	default:
 		methodNotAllowed(w)
@@ -208,7 +208,7 @@ func (s *Server) handleIntlEvents(w http.ResponseWriter, r *http.Request, p auth
 		if !requireRole(w, p, federationReadRoles...) {
 			return
 		}
-		events, err := s.federationSvc.ListIntlEvents(r.Context())
+		events, err := s.Federation.Main.ListIntlEvents(r.Context())
 		if err != nil {
 			internalError(w, err)
 			return
@@ -226,7 +226,7 @@ func (s *Server) handleIntlEvents(w http.ResponseWriter, r *http.Request, p auth
 			badRequest(w, "invalid JSON: "+err.Error())
 			return
 		}
-		if err := s.federationSvc.CreateIntlEvent(r.Context(), event); err != nil {
+		if err := s.Federation.Main.CreateIntlEvent(r.Context(), event); err != nil {
 			federationValidationError(w, err)
 			return
 		}
@@ -241,7 +241,7 @@ func (s *Server) handleIntlEventByID(w http.ResponseWriter, r *http.Request, p a
 	id := strings.TrimPrefix(r.URL.Path, "/api/v1/federation/intl-events/")
 	switch r.Method {
 	case "GET":
-		event, err := s.federationSvc.GetIntlEvent(r.Context(), id)
+		event, err := s.Federation.Main.GetIntlEvent(r.Context(), id)
 		if err != nil {
 			federationNotFound(w, "Sự kiện QT", id)
 			return
@@ -257,7 +257,7 @@ func (s *Server) handleIntlEventByID(w http.ResponseWriter, r *http.Request, p a
 			return
 		}
 		event.ID = id
-		if err := s.federationSvc.UpdateIntlEvent(r.Context(), event); err != nil {
+		if err := s.Federation.Main.UpdateIntlEvent(r.Context(), event); err != nil {
 			federationValidationError(w, err)
 			return
 		}
@@ -266,7 +266,7 @@ func (s *Server) handleIntlEventByID(w http.ResponseWriter, r *http.Request, p a
 		if !requireRole(w, p, federationWriteRoles...) {
 			return
 		}
-		s.federationSvc.DeleteIntlEvent(r.Context(), id)
+		s.Federation.Main.DeleteIntlEvent(r.Context(), id)
 		success(w, http.StatusOK, map[string]string{"status": "event_deleted"})
 	default:
 		methodNotAllowed(w)
@@ -283,7 +283,7 @@ func (s *Server) handleWorkflows(w http.ResponseWriter, r *http.Request, p auth.
 		if !requireRole(w, p, federationReadRoles...) {
 			return
 		}
-		workflows, err := s.federationSvc.ListWorkflows(r.Context())
+		workflows, err := s.Federation.Main.ListWorkflows(r.Context())
 		if err != nil {
 			internalError(w, err)
 			return
@@ -301,7 +301,7 @@ func (s *Server) handleWorkflows(w http.ResponseWriter, r *http.Request, p auth.
 			badRequest(w, "invalid JSON: "+err.Error())
 			return
 		}
-		if err := s.federationSvc.CreateWorkflow(r.Context(), wf); err != nil {
+		if err := s.Federation.Main.CreateWorkflow(r.Context(), wf); err != nil {
 			federationValidationError(w, err)
 			return
 		}
@@ -316,7 +316,7 @@ func (s *Server) handleWorkflowByID(w http.ResponseWriter, r *http.Request, p au
 	id := strings.TrimPrefix(r.URL.Path, "/api/v1/federation/workflows/")
 	switch r.Method {
 	case "GET":
-		wf, err := s.federationSvc.GetWorkflow(r.Context(), id)
+		wf, err := s.Federation.Main.GetWorkflow(r.Context(), id)
 		if err != nil {
 			federationNotFound(w, "Quy trình", id)
 			return
@@ -332,7 +332,7 @@ func (s *Server) handleWorkflowByID(w http.ResponseWriter, r *http.Request, p au
 			return
 		}
 		wf.ID = id
-		if err := s.federationSvc.UpdateWorkflow(r.Context(), wf); err != nil {
+		if err := s.Federation.Main.UpdateWorkflow(r.Context(), wf); err != nil {
 			federationValidationError(w, err)
 			return
 		}
@@ -341,7 +341,7 @@ func (s *Server) handleWorkflowByID(w http.ResponseWriter, r *http.Request, p au
 		if !requireRole(w, p, federationWriteRoles...) {
 			return
 		}
-		s.federationSvc.DeleteWorkflow(r.Context(), id)
+		s.Federation.Main.DeleteWorkflow(r.Context(), id)
 		success(w, http.StatusOK, map[string]string{"status": "workflow_deleted"})
 	default:
 		methodNotAllowed(w)

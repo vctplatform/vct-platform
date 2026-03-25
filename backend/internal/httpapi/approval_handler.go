@@ -81,7 +81,7 @@ func (s *Server) handleApprovalSubmit(w http.ResponseWriter, r *http.Request, p 
 	}
 	input.RequestedBy = p.User.ID
 
-	created, err := s.approvalSvc.Submit(r.Context(), input)
+	created, err := s.Federation.Approval.Submit(r.Context(), input)
 	if err != nil {
 		badRequest(w, err.Error())
 		return
@@ -96,7 +96,7 @@ func (s *Server) handleApprovalSubmit(w http.ResponseWriter, r *http.Request, p 
 }
 
 func (s *Server) handleApprovalGet(w http.ResponseWriter, r *http.Request, requestID string) {
-	req, err := s.approvalSvc.GetRequest(r.Context(), requestID)
+	req, err := s.Federation.Approval.GetRequest(r.Context(), requestID)
 	if err != nil {
 		notFoundError(w, "approval request not found")
 		return
@@ -105,7 +105,7 @@ func (s *Server) handleApprovalGet(w http.ResponseWriter, r *http.Request, reque
 }
 
 func (s *Server) handleApprovalSteps(w http.ResponseWriter, r *http.Request, requestID string) {
-	steps, err := s.approvalSvc.GetSteps(r.Context(), requestID)
+	steps, err := s.Federation.Approval.GetSteps(r.Context(), requestID)
 	if err != nil {
 		internalError(w, err)
 		return
@@ -114,7 +114,7 @@ func (s *Server) handleApprovalSteps(w http.ResponseWriter, r *http.Request, req
 }
 
 func (s *Server) handleApprovalHistory(w http.ResponseWriter, r *http.Request, requestID string) {
-	history, err := s.approvalSvc.GetHistory(r.Context(), requestID)
+	history, err := s.Federation.Approval.GetHistory(r.Context(), requestID)
 	if err != nil {
 		internalError(w, err)
 		return
@@ -132,13 +132,13 @@ func (s *Server) handleApprovalAction(w http.ResponseWriter, r *http.Request, p 
 	var err error
 	switch action {
 	case "approve":
-		err = s.approvalSvc.Approve(r.Context(), requestID, p.User.ID, body.Comment)
+		err = s.Federation.Approval.Approve(r.Context(), requestID, p.User.ID, body.Comment)
 	case "reject":
-		err = s.approvalSvc.Reject(r.Context(), requestID, p.User.ID, body.Reason)
+		err = s.Federation.Approval.Reject(r.Context(), requestID, p.User.ID, body.Reason)
 	case "return":
-		err = s.approvalSvc.Return(r.Context(), requestID, p.User.ID, body.Reason)
+		err = s.Federation.Approval.Return(r.Context(), requestID, p.User.ID, body.Reason)
 	case "cancel":
-		err = s.approvalSvc.Cancel(r.Context(), requestID, p.User.ID)
+		err = s.Federation.Approval.Cancel(r.Context(), requestID, p.User.ID)
 	default:
 		badRequest(w, "unknown action: "+action)
 		return
@@ -175,7 +175,7 @@ func (s *Server) handleApprovalMyPending(w http.ResponseWriter, r *http.Request,
 		role = string(p.User.Role)
 	}
 
-	requests, err := s.approvalSvc.ListPendingForRole(r.Context(), role)
+	requests, err := s.Federation.Approval.ListPendingForRole(r.Context(), role)
 	if err != nil {
 		internalError(w, err)
 		return
@@ -193,7 +193,7 @@ func (s *Server) handleApprovalMyRequests(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	requests, err := s.approvalSvc.ListMyRequests(r.Context(), p.User.ID)
+	requests, err := s.Federation.Approval.ListMyRequests(r.Context(), p.User.ID)
 	if err != nil {
 		internalError(w, err)
 		return
@@ -380,6 +380,6 @@ func (s *Server) seedDefaultWorkflows() {
 			IsActive:     true,
 		}
 
-		_ = s.workflowRepo.Create(ctx, wf)
+		_ = s.Federation.WorkflowRepo.Create(ctx, wf)
 	}
 }

@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"testing"
 
-	"vct-platform/backend/internal/adapter"
 	"vct-platform/backend/internal/domain/certification"
 )
 
@@ -17,7 +16,7 @@ func idGen() string {
 }
 
 func setup() *certification.Service {
-	return certification.NewService(adapter.NewMemCertRepo(), idGen)
+	return certification.NewService(certification.NewMemCertRepo(), idGen)
 }
 
 func TestIssueCertificate(t *testing.T) {

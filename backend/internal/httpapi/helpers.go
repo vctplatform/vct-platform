@@ -38,6 +38,13 @@ func success(w http.ResponseWriter, status int, payload any) {
 	_ = json.NewEncoder(w).Encode(payload)
 }
 
+func successJSONBytes(w http.ResponseWriter, status int, payload []byte) {
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
+	w.WriteHeader(status)
+	_, _ = w.Write(payload)
+}
+
+
 func badRequest(w http.ResponseWriter, message string) {
 	success(w, http.StatusBadRequest, map[string]string{"message": message})
 }

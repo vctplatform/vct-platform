@@ -474,33 +474,29 @@ CREATE INDEX IF NOT EXISTS idx_marketplace_order_items_order
 
 func (s *PostgresStore) EnsureEntity(_ string) {}
 
-func (s *PostgresStore) List(entity string) []map[string]any {
+func (s *PostgresStore) List(entity string) [][]byte {
 	rows, err := s.pool.Query(
 		context.Background(),
 		`SELECT payload FROM entity_records WHERE entity=$1 ORDER BY id ASC`,
 		entity,
 	)
 	if err != nil {
-		return []map[string]any{}
+		return [][]byte{}
 	}
 	defer rows.Close()
 
-	records := make([]map[string]any, 0)
+	records := make([][]byte, 0)
 	for rows.Next() {
 		var raw []byte
 		if scanErr := rows.Scan(&raw); scanErr != nil {
 			continue
 		}
-		item, decodeErr := decodePayload(raw)
-		if decodeErr != nil {
-			continue
-		}
-		records = append(records, item)
+		records = append(records, raw)
 	}
 	return records
 }
 
-func (s *PostgresStore) GetByID(entity, id string) (map[string]any, bool) {
+func (s *PostgresStore) GetByID(entity, id string) ([]byte, bool) {
 	var raw []byte
 	err := s.pool.QueryRow(
 		context.Background(),
@@ -508,22 +504,15 @@ func (s *PostgresStore) GetByID(entity, id string) (map[string]any, bool) {
 		entity,
 		id,
 	).Scan(&raw)
-	if errors.Is(err, pgx.ErrNoRows) {
-		return nil, false
-	}
-	if err != nil {
+	if errors.Is(err, pgx.ErrNoRows) || err != nil {
 		return nil, false
 	}
 
-	item, decodeErr := decodePayload(raw)
-	if decodeErr != nil {
-		return nil, false
-	}
-	return item, true
+	return raw, true
 }
 
-func (s *PostgresStore) Create(entity string, item map[string]any) (map[string]any, error) {
-	id, err := requireID(item)
+func (s *PostgresStore) Create(entity string, item []byte) ([]byte, error) {
+	id, err := requireIDBytes(item)
 	if err != nil {
 		return nil, err
 	}
@@ -532,57 +521,38 @@ func (s *PostgresStore) Create(entity string, item map[string]any) (map[string]a
 		return nil, fmt.Errorf("%w: %s", apierror.ErrDuplicateID, id)
 	}
 
-	payload, err := json.Marshal(cloneMap(item))
-	if err != nil {
-		return nil, err
-	}
-
 	_, err = s.pool.Exec(
 		context.Background(),
 		`INSERT INTO entity_records(entity, id, payload) VALUES($1, $2, $3)`,
 		entity,
 		id,
-		payload,
+		item,
 	)
 	if err != nil {
 		return nil, err
 	}
 
-	return cloneMap(item), nil
+	return item, nil
 }
 
-func (s *PostgresStore) Update(entity, id string, patch map[string]any) (map[string]any, error) {
-	current, exists := s.GetByID(entity, id)
-	if !exists {
-		return nil, apierror.ErrNotFound
-	}
-
-	next := cloneMap(current)
-	for key, value := range patch {
-		if key == "id" {
-			continue
-		}
-		next[key] = value
-	}
-	next["id"] = id
-
-	payload, err := json.Marshal(next)
-	if err != nil {
-		return nil, err
-	}
-
-	_, err = s.pool.Exec(
+func (s *PostgresStore) Update(entity, id string, patch []byte) ([]byte, error) {
+	var next []byte
+	err := s.pool.QueryRow(
 		context.Background(),
-		`UPDATE entity_records SET payload=$3, updated_at=NOW() WHERE entity=$1 AND id=$2`,
+		`UPDATE entity_records SET payload = (payload || $3) || jsonb_build_object('id', $2::text), updated_at=NOW() WHERE entity=$1 AND id=$2 RETURNING payload`,
 		entity,
 		id,
-		payload,
-	)
+		patch,
+	).Scan(&next)
+	
+	if errors.Is(err, pgx.ErrNoRows) {
+		return nil, apierror.ErrNotFound
+	}
 	if err != nil {
 		return nil, err
 	}
 
-	return cloneMap(next), nil
+	return next, nil
 }
 
 func (s *PostgresStore) Delete(entity, id string) {
@@ -594,7 +564,7 @@ func (s *PostgresStore) Delete(entity, id string) {
 	)
 }
 
-func (s *PostgresStore) ReplaceAll(entity string, items []map[string]any) ([]map[string]any, error) {
+func (s *PostgresStore) ReplaceAll(entity string, items [][]byte) ([][]byte, error) {
 	ctx := context.Background()
 	tx, err := s.pool.Begin(ctx)
 	if err != nil {
@@ -610,20 +580,16 @@ func (s *PostgresStore) ReplaceAll(entity string, items []map[string]any) ([]map
 	}
 
 	for _, item := range items {
-		id, idErr := requireID(item)
+		id, idErr := requireIDBytes(item)
 		if idErr != nil {
 			return nil, idErr
-		}
-		payload, marshalErr := json.Marshal(cloneMap(item))
-		if marshalErr != nil {
-			return nil, marshalErr
 		}
 		_, execErr := tx.Exec(
 			ctx,
 			`INSERT INTO entity_records(entity, id, payload) VALUES($1, $2, $3)`,
 			entity,
 			id,
-			payload,
+			item,
 		)
 		if execErr != nil {
 			return nil, execErr
@@ -639,7 +605,7 @@ func (s *PostgresStore) ReplaceAll(entity string, items []map[string]any) ([]map
 
 func (s *PostgresStore) Import(entity string, payload []any) ImportReport {
 	report := ImportReport{
-		Imported: make([]map[string]any, 0),
+		Imported: make([][]byte, 0),
 		Rejected: make([]RejectedItem, 0),
 	}
 
@@ -662,8 +628,7 @@ func (s *PostgresStore) Import(entity string, payload []any) ImportReport {
 			continue
 		}
 
-		cloned := cloneMap(mapped)
-		body, marshalErr := json.Marshal(cloned)
+		body, marshalErr := json.Marshal(mapped)
 		if marshalErr != nil {
 			report.Rejected = append(report.Rejected, RejectedItem{
 				Item:   item,
@@ -689,7 +654,7 @@ func (s *PostgresStore) Import(entity string, payload []any) ImportReport {
 			})
 			continue
 		}
-		report.Imported = append(report.Imported, cloned)
+		report.Imported = append(report.Imported, body)
 	}
 
 	return report
@@ -697,11 +662,21 @@ func (s *PostgresStore) Import(entity string, payload []any) ImportReport {
 
 func (s *PostgresStore) ExportJSON(entity string) (string, error) {
 	rows := s.List(entity)
-	body, err := json.MarshalIndent(rows, "", "  ")
-	if err != nil {
-		return "", err
+	if len(rows) == 0 {
+		return "[]", nil
 	}
-	return string(body), nil
+	var sb strings.Builder
+	sb.WriteString("[\n")
+	for i, row := range rows {
+		sb.Write(row)
+		if i < len(rows)-1 {
+			sb.WriteString(",\n")
+		} else {
+			sb.WriteString("\n")
+		}
+	}
+	sb.WriteString("]")
+	return sb.String(), nil
 }
 
 func (s *PostgresStore) ExportCSV(entity string) (string, error) {
@@ -710,14 +685,23 @@ func (s *PostgresStore) ExportCSV(entity string) (string, error) {
 		return "", nil
 	}
 
-	headers := sortedKeys(rows[0])
+	var firstItem map[string]any
+	if err := json.Unmarshal(rows[0], &firstItem); err != nil {
+		return "", err
+	}
+	headers := sortedKeys(firstItem)
+
 	builder := &strings.Builder{}
 	writer := csv.NewWriter(builder)
 	if err := writer.Write(headers); err != nil {
 		return "", err
 	}
 
-	for _, row := range rows {
+	for _, rowBytes := range rows {
+		var row map[string]any
+		if err := json.Unmarshal(rowBytes, &row); err != nil {
+			continue
+		}
 		record := make([]string, 0, len(headers))
 		for _, key := range headers {
 			record = append(record, stringifyValue(row[key]))
@@ -764,33 +748,29 @@ type TxStore struct {
 
 func (t *TxStore) EnsureEntity(_ string) {}
 
-func (t *TxStore) List(entity string) []map[string]any {
+func (t *TxStore) List(entity string) [][]byte {
 	rows, err := t.tx.Query(
 		context.Background(),
 		`SELECT payload FROM entity_records WHERE entity=$1 ORDER BY id ASC`,
 		entity,
 	)
 	if err != nil {
-		return []map[string]any{}
+		return [][]byte{}
 	}
 	defer rows.Close()
 
-	records := make([]map[string]any, 0)
+	records := make([][]byte, 0)
 	for rows.Next() {
 		var raw []byte
 		if scanErr := rows.Scan(&raw); scanErr != nil {
 			continue
 		}
-		item, decodeErr := decodePayload(raw)
-		if decodeErr != nil {
-			continue
-		}
-		records = append(records, item)
+		records = append(records, raw)
 	}
 	return records
 }
 
-func (t *TxStore) GetByID(entity, id string) (map[string]any, bool) {
+func (t *TxStore) GetByID(entity, id string) ([]byte, bool) {
 	var raw []byte
 	err := t.tx.QueryRow(
 		context.Background(),
@@ -800,59 +780,36 @@ func (t *TxStore) GetByID(entity, id string) (map[string]any, bool) {
 	if errors.Is(err, pgx.ErrNoRows) || err != nil {
 		return nil, false
 	}
-	item, decodeErr := decodePayload(raw)
-	if decodeErr != nil {
-		return nil, false
-	}
-	return item, true
+	return raw, true
 }
 
-func (t *TxStore) Create(entity string, item map[string]any) (map[string]any, error) {
-	id, err := requireID(item)
-	if err != nil {
-		return nil, err
-	}
-	payload, err := json.Marshal(cloneMap(item))
+func (t *TxStore) Create(entity string, item []byte) ([]byte, error) {
+	id, err := requireIDBytes(item)
 	if err != nil {
 		return nil, err
 	}
 	_, err = t.tx.Exec(
 		context.Background(),
 		`INSERT INTO entity_records(entity, id, payload) VALUES($1, $2, $3)`,
-		entity, id, payload,
+		entity, id, item,
 	)
 	if err != nil {
 		return nil, err
 	}
-	return cloneMap(item), nil
+	return item, nil
 }
 
-func (t *TxStore) Update(entity, id string, patch map[string]any) (map[string]any, error) {
-	current, exists := t.GetByID(entity, id)
-	if !exists {
+func (t *TxStore) Update(entity, id string, patch []byte) ([]byte, error) {
+	var next []byte
+	err := t.tx.QueryRow(
+		context.Background(),
+		`UPDATE entity_records SET payload = (payload || $3) || jsonb_build_object('id', $2::text), updated_at=NOW() WHERE entity=$1 AND id=$2 RETURNING payload`,
+		entity, id, patch,
+	).Scan(&next)
+	if errors.Is(err, pgx.ErrNoRows) || err != nil {
 		return nil, errors.New("khong tim thay ban ghi")
 	}
-	next := cloneMap(current)
-	for key, value := range patch {
-		if key == "id" {
-			continue
-		}
-		next[key] = value
-	}
-	next["id"] = id
-	payload, err := json.Marshal(next)
-	if err != nil {
-		return nil, err
-	}
-	_, err = t.tx.Exec(
-		context.Background(),
-		`UPDATE entity_records SET payload=$3, updated_at=NOW() WHERE entity=$1 AND id=$2`,
-		entity, id, payload,
-	)
-	if err != nil {
-		return nil, err
-	}
-	return cloneMap(next), nil
+	return next, nil
 }
 
 func (t *TxStore) Delete(entity, id string) {
@@ -863,7 +820,7 @@ func (t *TxStore) Delete(entity, id string) {
 	)
 }
 
-func (t *TxStore) ReplaceAll(entity string, items []map[string]any) ([]map[string]any, error) {
+func (t *TxStore) ReplaceAll(entity string, items [][]byte) ([][]byte, error) {
 	_, err := t.tx.Exec(context.Background(), `DELETE FROM entity_records WHERE entity=$1`, entity)
 	if err != nil {
 		return nil, err
@@ -877,7 +834,7 @@ func (t *TxStore) ReplaceAll(entity string, items []map[string]any) ([]map[strin
 }
 
 func (t *TxStore) Import(entity string, payload []any) ImportReport {
-	report := ImportReport{Imported: make([]map[string]any, 0), Rejected: make([]RejectedItem, 0)}
+	report := ImportReport{Imported: make([][]byte, 0), Rejected: make([]RejectedItem, 0)}
 	for _, item := range payload {
 		mapped, ok := item.(map[string]any)
 		if !ok {
@@ -889,7 +846,7 @@ func (t *TxStore) Import(entity string, payload []any) ImportReport {
 			report.Rejected = append(report.Rejected, RejectedItem{Item: item, Reason: err.Error()})
 			continue
 		}
-		body, marshalErr := json.Marshal(cloneMap(mapped))
+		body, marshalErr := json.Marshal(mapped)
 		if marshalErr != nil {
 			report.Rejected = append(report.Rejected, RejectedItem{Item: item, Reason: marshalErr.Error()})
 			continue
@@ -901,18 +858,28 @@ func (t *TxStore) Import(entity string, payload []any) ImportReport {
 			report.Rejected = append(report.Rejected, RejectedItem{Item: item, Reason: execErr.Error()})
 			continue
 		}
-		report.Imported = append(report.Imported, cloneMap(mapped))
+		report.Imported = append(report.Imported, body)
 	}
 	return report
 }
 
 func (t *TxStore) ExportJSON(entity string) (string, error) {
 	rows := t.List(entity)
-	body, err := json.MarshalIndent(rows, "", "  ")
-	if err != nil {
-		return "", err
+	if len(rows) == 0 {
+		return "[]", nil
 	}
-	return string(body), nil
+	var sb strings.Builder
+	sb.WriteString("[\n")
+	for i, row := range rows {
+		sb.Write(row)
+		if i < len(rows)-1 {
+			sb.WriteString(",\n")
+		} else {
+			sb.WriteString("\n")
+		}
+	}
+	sb.WriteString("]")
+	return sb.String(), nil
 }
 
 func (t *TxStore) ExportCSV(entity string) (string, error) {
@@ -920,11 +887,19 @@ func (t *TxStore) ExportCSV(entity string) (string, error) {
 	if len(rows) == 0 {
 		return "", nil
 	}
-	headers := sortedKeys(rows[0])
+	var firstItem map[string]any
+	if err := json.Unmarshal(rows[0], &firstItem); err != nil {
+		return "", err
+	}
+	headers := sortedKeys(firstItem)
 	builder := &strings.Builder{}
 	writer := csv.NewWriter(builder)
 	_ = writer.Write(headers)
-	for _, row := range rows {
+	for _, rowBytes := range rows {
+		var row map[string]any
+		if err := json.Unmarshal(rowBytes, &row); err != nil {
+			continue
+		}
 		record := make([]string, 0, len(headers))
 		for _, key := range headers {
 			record = append(record, stringifyValue(row[key]))
@@ -942,12 +917,4 @@ func (t *TxStore) Close() error { return nil }
 func (s *PostgresStore) Close() error {
 	s.pool.Close()
 	return nil
-}
-
-func decodePayload(raw []byte) (map[string]any, error) {
-	var item map[string]any
-	if err := json.Unmarshal(raw, &item); err != nil {
-		return nil, err
-	}
-	return item, nil
 }

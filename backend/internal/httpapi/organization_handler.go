@@ -26,7 +26,7 @@ func (s *Server) handleTeamRoutes(w http.ResponseWriter, r *http.Request) {
 				writeAuthError(w, err)
 				return
 			}
-			list, fetchErr := s.orgService.ListTeams(r.Context())
+			list, fetchErr := s.Core.Organization.ListTeams(r.Context())
 			if fetchErr != nil {
 				internalError(w, fetchErr)
 				return
@@ -44,7 +44,7 @@ func (s *Server) handleTeamRoutes(w http.ResponseWriter, r *http.Request) {
 				badRequest(w, err.Error())
 				return
 			}
-			created, err := s.orgService.CreateTeam(r.Context(), payload)
+			created, err := s.Core.Organization.CreateTeam(r.Context(), payload)
 			if err != nil {
 				badRequest(w, err.Error())
 				return
@@ -70,7 +70,7 @@ func (s *Server) handleTeamRoutes(w http.ResponseWriter, r *http.Request) {
 				writeAuthError(w, err)
 				return
 			}
-			team, err := s.orgService.GetTeam(r.Context(), id)
+			team, err := s.Core.Organization.GetTeam(r.Context(), id)
 			if err != nil {
 				notFound(w)
 				return
@@ -87,13 +87,20 @@ func (s *Server) handleTeamRoutes(w http.ResponseWriter, r *http.Request) {
 				badRequest(w, "invalid json")
 				return
 			}
-			updatedStore, err := s.store.Update("teams", id, patch)
+			b, err := json.Marshal(patch)
 			if err != nil {
 				badRequest(w, err.Error())
 				return
 			}
-			s.broadcastEntityChange("teams", "updated", id, updatedStore, nil)
-			success(w, http.StatusOK, updatedStore)
+			updatedStore, err := s.store.Update("teams", id, b)
+			if err != nil {
+				badRequest(w, err.Error())
+				return
+			}
+			var updatedMap map[string]any
+			json.Unmarshal(updatedStore, &updatedMap)
+			s.broadcastEntityChange("teams", "updated", id, updatedMap, nil)
+			successJSONBytes(w, http.StatusOK, updatedStore)
 			return
 
 		case http.MethodDelete:

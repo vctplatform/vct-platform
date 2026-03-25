@@ -53,7 +53,7 @@ func (s *Server) handleProvincialDashboard(w http.ResponseWriter, r *http.Reques
 		return
 	}
 	provID := resolveProvinceID(r)
-	stats, err := s.provincialSvc.GetDashboard(r.Context(), provID)
+	stats, err := s.Provincial.Main.GetDashboard(r.Context(), provID)
 	if err != nil {
 		internalError(w, err)
 		return
@@ -78,7 +78,7 @@ func (s *Server) handleProvincialClubs(w http.ResponseWriter, r *http.Request, p
 			return
 		}
 		provID := resolveProvinceID(r)
-		clubs, err := s.provincialSvc.ListClubs(r.Context(), provID)
+		clubs, err := s.Provincial.Main.ListClubs(r.Context(), provID)
 		if err != nil {
 			internalError(w, err)
 			return
@@ -97,7 +97,7 @@ func (s *Server) handleProvincialClubs(w http.ResponseWriter, r *http.Request, p
 		if club.ProvinceID == "" {
 			club.ProvinceID = resolveProvinceID(r)
 		}
-		created, err := s.provincialSvc.CreateClub(r.Context(), club)
+		created, err := s.Provincial.Main.CreateClub(r.Context(), club)
 		if err != nil {
 			badRequest(w, err.Error())
 			return
@@ -108,7 +108,7 @@ func (s *Server) handleProvincialClubs(w http.ResponseWriter, r *http.Request, p
 		if !requireProvincialRead(w, p) {
 			return
 		}
-		club, err := s.provincialSvc.GetClub(r.Context(), id)
+		club, err := s.Provincial.Main.GetClub(r.Context(), id)
 		if err != nil {
 			notFoundError(w, "club not found")
 			return
@@ -119,7 +119,7 @@ func (s *Server) handleProvincialClubs(w http.ResponseWriter, r *http.Request, p
 		if !requireProvincialWrite(w, p) {
 			return
 		}
-		if err := s.provincialSvc.ApproveClub(r.Context(), id); err != nil {
+		if err := s.Provincial.Main.ApproveClub(r.Context(), id); err != nil {
 			badRequest(w, err.Error())
 			return
 		}
@@ -129,7 +129,7 @@ func (s *Server) handleProvincialClubs(w http.ResponseWriter, r *http.Request, p
 		if !requireProvincialWrite(w, p) {
 			return
 		}
-		if err := s.provincialSvc.SuspendClub(r.Context(), id); err != nil {
+		if err := s.Provincial.Main.SuspendClub(r.Context(), id); err != nil {
 			badRequest(w, err.Error())
 			return
 		}
@@ -158,7 +158,7 @@ func (s *Server) handleProvincialAthletes(w http.ResponseWriter, r *http.Request
 		}
 		clubID := r.URL.Query().Get("club_id")
 		if clubID != "" {
-			athletes, err := s.provincialSvc.ListAthletesByClub(r.Context(), clubID)
+			athletes, err := s.Provincial.Main.ListAthletesByClub(r.Context(), clubID)
 			if err != nil {
 				internalError(w, err)
 				return
@@ -167,7 +167,7 @@ func (s *Server) handleProvincialAthletes(w http.ResponseWriter, r *http.Request
 			return
 		}
 		provID := resolveProvinceID(r)
-		athletes, err := s.provincialSvc.ListAthletes(r.Context(), provID)
+		athletes, err := s.Provincial.Main.ListAthletes(r.Context(), provID)
 		if err != nil {
 			internalError(w, err)
 			return
@@ -186,7 +186,7 @@ func (s *Server) handleProvincialAthletes(w http.ResponseWriter, r *http.Request
 		if athlete.ProvinceID == "" {
 			athlete.ProvinceID = resolveProvinceID(r)
 		}
-		created, err := s.provincialSvc.CreateAthlete(r.Context(), athlete)
+		created, err := s.Provincial.Main.CreateAthlete(r.Context(), athlete)
 		if err != nil {
 			badRequest(w, err.Error())
 			return
@@ -197,7 +197,7 @@ func (s *Server) handleProvincialAthletes(w http.ResponseWriter, r *http.Request
 		if !requireProvincialRead(w, p) {
 			return
 		}
-		athlete, err := s.provincialSvc.GetAthlete(r.Context(), id)
+		athlete, err := s.Provincial.Main.GetAthlete(r.Context(), id)
 		if err != nil {
 			notFoundError(w, "athlete not found")
 			return
@@ -214,7 +214,7 @@ func (s *Server) handleProvincialAthletes(w http.ResponseWriter, r *http.Request
 			badRequest(w, "invalid JSON: "+err.Error())
 			return
 		}
-		if err := s.provincialSvc.UpdateAthlete(r.Context(), id, patch); err != nil {
+		if err := s.Provincial.Main.UpdateAthlete(r.Context(), id, patch); err != nil {
 			badRequest(w, err.Error())
 			return
 		}
@@ -224,7 +224,7 @@ func (s *Server) handleProvincialAthletes(w http.ResponseWriter, r *http.Request
 		if !requireProvincialWrite(w, p) {
 			return
 		}
-		if err := s.provincialSvc.ApproveAthlete(r.Context(), id); err != nil {
+		if err := s.Provincial.Main.ApproveAthlete(r.Context(), id); err != nil {
 			badRequest(w, err.Error())
 			return
 		}
@@ -235,7 +235,7 @@ func (s *Server) handleProvincialAthletes(w http.ResponseWriter, r *http.Request
 		if !requireProvincialWrite(w, p) {
 			return
 		}
-		if err := s.provincialSvc.DeactivateAthlete(r.Context(), id); err != nil {
+		if err := s.Provincial.Main.DeactivateAthlete(r.Context(), id); err != nil {
 			badRequest(w, err.Error())
 			return
 		}
@@ -246,7 +246,7 @@ func (s *Server) handleProvincialAthletes(w http.ResponseWriter, r *http.Request
 		if !requireProvincialWrite(w, p) {
 			return
 		}
-		if err := s.provincialSvc.ReactivateAthlete(r.Context(), id); err != nil {
+		if err := s.Provincial.Main.ReactivateAthlete(r.Context(), id); err != nil {
 			badRequest(w, err.Error())
 			return
 		}
@@ -275,7 +275,7 @@ func (s *Server) handleProvincialVoSinh(w http.ResponseWriter, r *http.Request, 
 			return
 		}
 		provID := resolveProvinceID(r)
-		stats, err := s.provincialSvc.GetVoSinhStats(r.Context(), provID)
+		stats, err := s.Provincial.Main.GetVoSinhStats(r.Context(), provID)
 		if err != nil {
 			internalError(w, err)
 			return
@@ -289,7 +289,7 @@ func (s *Server) handleProvincialVoSinh(w http.ResponseWriter, r *http.Request, 
 		}
 		clubID := r.URL.Query().Get("club_id")
 		if clubID != "" {
-			list, err := s.provincialSvc.ListVoSinhByClub(r.Context(), clubID)
+			list, err := s.Provincial.Main.ListVoSinhByClub(r.Context(), clubID)
 			if err != nil {
 				internalError(w, err)
 				return
@@ -298,7 +298,7 @@ func (s *Server) handleProvincialVoSinh(w http.ResponseWriter, r *http.Request, 
 			return
 		}
 		provID := resolveProvinceID(r)
-		list, err := s.provincialSvc.ListVoSinh(r.Context(), provID)
+		list, err := s.Provincial.Main.ListVoSinh(r.Context(), provID)
 		if err != nil {
 			internalError(w, err)
 			return
@@ -318,7 +318,7 @@ func (s *Server) handleProvincialVoSinh(w http.ResponseWriter, r *http.Request, 
 		if vs.ProvinceID == "" {
 			vs.ProvinceID = resolveProvinceID(r)
 		}
-		created, err := s.provincialSvc.CreateVoSinh(r.Context(), vs)
+		created, err := s.Provincial.Main.CreateVoSinh(r.Context(), vs)
 		if err != nil {
 			badRequest(w, err.Error())
 			return
@@ -330,7 +330,7 @@ func (s *Server) handleProvincialVoSinh(w http.ResponseWriter, r *http.Request, 
 		if !requireProvincialRead(w, p) {
 			return
 		}
-		vs, err := s.provincialSvc.GetVoSinh(r.Context(), id)
+		vs, err := s.Provincial.Main.GetVoSinh(r.Context(), id)
 		if err != nil {
 			notFoundError(w, "võ sinh not found")
 			return
@@ -342,7 +342,7 @@ func (s *Server) handleProvincialVoSinh(w http.ResponseWriter, r *http.Request, 
 		if !requireProvincialWrite(w, p) {
 			return
 		}
-		if err := s.provincialSvc.ApproveVoSinh(r.Context(), id); err != nil {
+		if err := s.Provincial.Main.ApproveVoSinh(r.Context(), id); err != nil {
 			badRequest(w, err.Error())
 			return
 		}
@@ -353,7 +353,7 @@ func (s *Server) handleProvincialVoSinh(w http.ResponseWriter, r *http.Request, 
 		if !requireProvincialWrite(w, p) {
 			return
 		}
-		if err := s.provincialSvc.DeactivateVoSinh(r.Context(), id); err != nil {
+		if err := s.Provincial.Main.DeactivateVoSinh(r.Context(), id); err != nil {
 			badRequest(w, err.Error())
 			return
 		}
@@ -364,7 +364,7 @@ func (s *Server) handleProvincialVoSinh(w http.ResponseWriter, r *http.Request, 
 		if !requireProvincialWrite(w, p) {
 			return
 		}
-		if err := s.provincialSvc.ReactivateVoSinh(r.Context(), id); err != nil {
+		if err := s.Provincial.Main.ReactivateVoSinh(r.Context(), id); err != nil {
 			badRequest(w, err.Error())
 			return
 		}
@@ -375,7 +375,7 @@ func (s *Server) handleProvincialVoSinh(w http.ResponseWriter, r *http.Request, 
 		if !requireProvincialRead(w, p) {
 			return
 		}
-		hist, err := s.provincialSvc.ListBeltHistory(r.Context(), id)
+		hist, err := s.Provincial.Main.ListBeltHistory(r.Context(), id)
 		if err != nil {
 			internalError(w, err)
 			return
@@ -392,12 +392,12 @@ func (s *Server) handleProvincialVoSinh(w http.ResponseWriter, r *http.Request, 
 			badRequest(w, "invalid JSON: "+err.Error())
 			return
 		}
-		if err := s.provincialSvc.UpdateVoSinh(r.Context(), id, patch); err != nil {
+		if err := s.Provincial.Main.UpdateVoSinh(r.Context(), id, patch); err != nil {
 			badRequest(w, err.Error())
 			return
 		}
 		// Return the updated record
-		updated, err := s.provincialSvc.GetVoSinh(r.Context(), id)
+		updated, err := s.Provincial.Main.GetVoSinh(r.Context(), id)
 		if err != nil {
 			internalError(w, err)
 			return
@@ -426,7 +426,7 @@ func (s *Server) handleProvincialCoaches(w http.ResponseWriter, r *http.Request,
 			return
 		}
 		provID := resolveProvinceID(r)
-		coaches, err := s.provincialSvc.ListCoaches(r.Context(), provID)
+		coaches, err := s.Provincial.Main.ListCoaches(r.Context(), provID)
 		if err != nil {
 			internalError(w, err)
 			return
@@ -445,7 +445,7 @@ func (s *Server) handleProvincialCoaches(w http.ResponseWriter, r *http.Request,
 		if coach.ProvinceID == "" {
 			coach.ProvinceID = resolveProvinceID(r)
 		}
-		created, err := s.provincialSvc.CreateCoach(r.Context(), coach)
+		created, err := s.Provincial.Main.CreateCoach(r.Context(), coach)
 		if err != nil {
 			badRequest(w, err.Error())
 			return
@@ -456,7 +456,7 @@ func (s *Server) handleProvincialCoaches(w http.ResponseWriter, r *http.Request,
 		if !requireProvincialRead(w, p) {
 			return
 		}
-		coach, err := s.provincialSvc.GetCoach(r.Context(), id)
+		coach, err := s.Provincial.Main.GetCoach(r.Context(), id)
 		if err != nil {
 			notFoundError(w, "coach not found")
 			return
@@ -473,7 +473,7 @@ func (s *Server) handleProvincialCoaches(w http.ResponseWriter, r *http.Request,
 			badRequest(w, "invalid JSON: "+err.Error())
 			return
 		}
-		if err := s.provincialSvc.UpdateCoach(r.Context(), id, patch); err != nil {
+		if err := s.Provincial.Main.UpdateCoach(r.Context(), id, patch); err != nil {
 			badRequest(w, err.Error())
 			return
 		}
@@ -484,7 +484,7 @@ func (s *Server) handleProvincialCoaches(w http.ResponseWriter, r *http.Request,
 		if !requireProvincialWrite(w, p) {
 			return
 		}
-		if err := s.provincialSvc.ApproveCoach(r.Context(), id); err != nil {
+		if err := s.Provincial.Main.ApproveCoach(r.Context(), id); err != nil {
 			badRequest(w, err.Error())
 			return
 		}
@@ -495,7 +495,7 @@ func (s *Server) handleProvincialCoaches(w http.ResponseWriter, r *http.Request,
 		if !requireProvincialWrite(w, p) {
 			return
 		}
-		if err := s.provincialSvc.DeactivateCoach(r.Context(), id); err != nil {
+		if err := s.Provincial.Main.DeactivateCoach(r.Context(), id); err != nil {
 			badRequest(w, err.Error())
 			return
 		}
@@ -524,7 +524,7 @@ func (s *Server) handleProvincialReferees(w http.ResponseWriter, r *http.Request
 			return
 		}
 		provID := resolveProvinceID(r)
-		stats, err := s.provincialSvc.GetRefereeStats(r.Context(), provID)
+		stats, err := s.Provincial.Main.GetRefereeStats(r.Context(), provID)
 		if err != nil {
 			internalError(w, err)
 			return
@@ -537,7 +537,7 @@ func (s *Server) handleProvincialReferees(w http.ResponseWriter, r *http.Request
 			return
 		}
 		provID := resolveProvinceID(r)
-		referees, err := s.provincialSvc.ListReferees(r.Context(), provID)
+		referees, err := s.Provincial.Main.ListReferees(r.Context(), provID)
 		if err != nil {
 			internalError(w, err)
 			return
@@ -557,7 +557,7 @@ func (s *Server) handleProvincialReferees(w http.ResponseWriter, r *http.Request
 		if ref.ProvinceID == "" {
 			ref.ProvinceID = resolveProvinceID(r)
 		}
-		created, err := s.provincialSvc.CreateReferee(r.Context(), ref)
+		created, err := s.Provincial.Main.CreateReferee(r.Context(), ref)
 		if err != nil {
 			badRequest(w, err.Error())
 			return
@@ -569,7 +569,7 @@ func (s *Server) handleProvincialReferees(w http.ResponseWriter, r *http.Request
 		if !requireProvincialRead(w, p) {
 			return
 		}
-		ref, err := s.provincialSvc.GetReferee(r.Context(), id)
+		ref, err := s.Provincial.Main.GetReferee(r.Context(), id)
 		if err != nil {
 			notFoundError(w, "referee not found")
 			return
@@ -586,7 +586,7 @@ func (s *Server) handleProvincialReferees(w http.ResponseWriter, r *http.Request
 			badRequest(w, "invalid JSON: "+err.Error())
 			return
 		}
-		if err := s.provincialSvc.UpdateReferee(r.Context(), id, patch); err != nil {
+		if err := s.Provincial.Main.UpdateReferee(r.Context(), id, patch); err != nil {
 			badRequest(w, err.Error())
 			return
 		}
@@ -597,7 +597,7 @@ func (s *Server) handleProvincialReferees(w http.ResponseWriter, r *http.Request
 		if !requireProvincialWrite(w, p) {
 			return
 		}
-		if err := s.provincialSvc.DeleteReferee(r.Context(), id); err != nil {
+		if err := s.Provincial.Main.DeleteReferee(r.Context(), id); err != nil {
 			badRequest(w, err.Error())
 			return
 		}
@@ -608,7 +608,7 @@ func (s *Server) handleProvincialReferees(w http.ResponseWriter, r *http.Request
 		if !requireProvincialWrite(w, p) {
 			return
 		}
-		if err := s.provincialSvc.ApproveReferee(r.Context(), id); err != nil {
+		if err := s.Provincial.Main.ApproveReferee(r.Context(), id); err != nil {
 			badRequest(w, err.Error())
 			return
 		}
@@ -619,7 +619,7 @@ func (s *Server) handleProvincialReferees(w http.ResponseWriter, r *http.Request
 		if !requireProvincialWrite(w, p) {
 			return
 		}
-		if err := s.provincialSvc.RejectReferee(r.Context(), id); err != nil {
+		if err := s.Provincial.Main.RejectReferee(r.Context(), id); err != nil {
 			badRequest(w, err.Error())
 			return
 		}
@@ -630,7 +630,7 @@ func (s *Server) handleProvincialReferees(w http.ResponseWriter, r *http.Request
 		if !requireProvincialRead(w, p) {
 			return
 		}
-		certs, err := s.provincialSvc.ListRefereeCertificates(r.Context(), id)
+		certs, err := s.Provincial.Main.ListRefereeCertificates(r.Context(), id)
 		if err != nil {
 			internalError(w, err)
 			return
@@ -648,7 +648,7 @@ func (s *Server) handleProvincialReferees(w http.ResponseWriter, r *http.Request
 			return
 		}
 		cert.RefereeID = id
-		created, err := s.provincialSvc.CreateRefereeCertificate(r.Context(), cert)
+		created, err := s.Provincial.Main.CreateRefereeCertificate(r.Context(), cert)
 		if err != nil {
 			badRequest(w, err.Error())
 			return
@@ -672,7 +672,7 @@ func (s *Server) handleProvincialCommittee(w http.ResponseWriter, r *http.Reques
 			return
 		}
 		provID := resolveProvinceID(r)
-		members, err := s.provincialSvc.ListCommittee(r.Context(), provID)
+		members, err := s.Provincial.Main.ListCommittee(r.Context(), provID)
 		if err != nil {
 			internalError(w, err)
 			return
@@ -691,7 +691,7 @@ func (s *Server) handleProvincialCommittee(w http.ResponseWriter, r *http.Reques
 		if member.ProvinceID == "" {
 			member.ProvinceID = resolveProvinceID(r)
 		}
-		created, err := s.provincialSvc.AddCommitteeMember(r.Context(), member)
+		created, err := s.Provincial.Main.AddCommitteeMember(r.Context(), member)
 		if err != nil {
 			badRequest(w, err.Error())
 			return
@@ -702,7 +702,7 @@ func (s *Server) handleProvincialCommittee(w http.ResponseWriter, r *http.Reques
 		if !requireProvincialRead(w, p) {
 			return
 		}
-		member, err := s.provincialSvc.GetCommitteeMember(r.Context(), id)
+		member, err := s.Provincial.Main.GetCommitteeMember(r.Context(), id)
 		if err != nil {
 			notFoundError(w, "member not found")
 			return
@@ -731,7 +731,7 @@ func (s *Server) handleProvincialTransfers(w http.ResponseWriter, r *http.Reques
 			return
 		}
 		provID := resolveProvinceID(r)
-		transfers, err := s.provincialSvc.ListTransfers(r.Context(), provID)
+		transfers, err := s.Provincial.Main.ListTransfers(r.Context(), provID)
 		if err != nil {
 			internalError(w, err)
 			return
@@ -750,7 +750,7 @@ func (s *Server) handleProvincialTransfers(w http.ResponseWriter, r *http.Reques
 		if transfer.ProvinceID == "" {
 			transfer.ProvinceID = resolveProvinceID(r)
 		}
-		created, err := s.provincialSvc.RequestTransfer(r.Context(), transfer)
+		created, err := s.Provincial.Main.RequestTransfer(r.Context(), transfer)
 		if err != nil {
 			badRequest(w, err.Error())
 			return
@@ -761,7 +761,7 @@ func (s *Server) handleProvincialTransfers(w http.ResponseWriter, r *http.Reques
 		if !requireProvincialWrite(w, p) {
 			return
 		}
-		if err := s.provincialSvc.ApproveTransfer(r.Context(), id, p.User.ID); err != nil {
+		if err := s.Provincial.Main.ApproveTransfer(r.Context(), id, p.User.ID); err != nil {
 			badRequest(w, err.Error())
 			return
 		}
@@ -771,7 +771,7 @@ func (s *Server) handleProvincialTransfers(w http.ResponseWriter, r *http.Reques
 		if !requireProvincialWrite(w, p) {
 			return
 		}
-		if err := s.provincialSvc.RejectTransfer(r.Context(), id); err != nil {
+		if err := s.Provincial.Main.RejectTransfer(r.Context(), id); err != nil {
 			badRequest(w, err.Error())
 			return
 		}
@@ -799,7 +799,7 @@ func (s *Server) handleProvincialAssociations(w http.ResponseWriter, r *http.Req
 			return
 		}
 		provID := resolveProvinceID(r)
-		associations, err := s.provincialSvc.ListAssociations(r.Context(), provID)
+		associations, err := s.Provincial.Main.ListAssociations(r.Context(), provID)
 		if err != nil {
 			internalError(w, err)
 			return
@@ -818,7 +818,7 @@ func (s *Server) handleProvincialAssociations(w http.ResponseWriter, r *http.Req
 		if assoc.ProvinceID == "" {
 			assoc.ProvinceID = resolveProvinceID(r)
 		}
-		created, err := s.provincialSvc.CreateAssociation(r.Context(), assoc)
+		created, err := s.Provincial.Main.CreateAssociation(r.Context(), assoc)
 		if err != nil {
 			badRequest(w, err.Error())
 			return
@@ -829,7 +829,7 @@ func (s *Server) handleProvincialAssociations(w http.ResponseWriter, r *http.Req
 		if !requireProvincialRead(w, p) {
 			return
 		}
-		assoc, err := s.provincialSvc.GetAssociation(r.Context(), id)
+		assoc, err := s.Provincial.Main.GetAssociation(r.Context(), id)
 		if err != nil {
 			notFoundError(w, "association not found")
 			return
@@ -840,7 +840,7 @@ func (s *Server) handleProvincialAssociations(w http.ResponseWriter, r *http.Req
 		if !requireProvincialRead(w, p) {
 			return
 		}
-		stats, err := s.provincialSvc.GetAssociationDashboard(r.Context(), id)
+		stats, err := s.Provincial.Main.GetAssociationDashboard(r.Context(), id)
 		if err != nil {
 			internalError(w, err)
 			return
@@ -851,7 +851,7 @@ func (s *Server) handleProvincialAssociations(w http.ResponseWriter, r *http.Req
 		if !requireProvincialWrite(w, p) {
 			return
 		}
-		if err := s.provincialSvc.ApproveAssociation(r.Context(), id); err != nil {
+		if err := s.Provincial.Main.ApproveAssociation(r.Context(), id); err != nil {
 			badRequest(w, err.Error())
 			return
 		}
@@ -861,7 +861,7 @@ func (s *Server) handleProvincialAssociations(w http.ResponseWriter, r *http.Req
 		if !requireProvincialWrite(w, p) {
 			return
 		}
-		if err := s.provincialSvc.SuspendAssociation(r.Context(), id); err != nil {
+		if err := s.Provincial.Main.SuspendAssociation(r.Context(), id); err != nil {
 			badRequest(w, err.Error())
 			return
 		}
@@ -890,7 +890,7 @@ func (s *Server) handleProvincialSubAssociations(w http.ResponseWriter, r *http.
 		}
 		assocID := r.URL.Query().Get("association_id")
 		if assocID != "" {
-			subAssocs, err := s.provincialSvc.ListSubAssociationsByAssociation(r.Context(), assocID)
+			subAssocs, err := s.Provincial.Main.ListSubAssociationsByAssociation(r.Context(), assocID)
 			if err != nil {
 				internalError(w, err)
 				return
@@ -899,7 +899,7 @@ func (s *Server) handleProvincialSubAssociations(w http.ResponseWriter, r *http.
 			return
 		}
 		provID := resolveProvinceID(r)
-		subAssocs, err := s.provincialSvc.ListSubAssociations(r.Context(), provID)
+		subAssocs, err := s.Provincial.Main.ListSubAssociations(r.Context(), provID)
 		if err != nil {
 			internalError(w, err)
 			return
@@ -918,7 +918,7 @@ func (s *Server) handleProvincialSubAssociations(w http.ResponseWriter, r *http.
 		if sa.ProvinceID == "" {
 			sa.ProvinceID = resolveProvinceID(r)
 		}
-		created, err := s.provincialSvc.CreateSubAssociation(r.Context(), sa)
+		created, err := s.Provincial.Main.CreateSubAssociation(r.Context(), sa)
 		if err != nil {
 			badRequest(w, err.Error())
 			return
@@ -929,7 +929,7 @@ func (s *Server) handleProvincialSubAssociations(w http.ResponseWriter, r *http.
 		if !requireProvincialRead(w, p) {
 			return
 		}
-		sa, err := s.provincialSvc.GetSubAssociation(r.Context(), id)
+		sa, err := s.Provincial.Main.GetSubAssociation(r.Context(), id)
 		if err != nil {
 			notFoundError(w, "sub-association not found")
 			return
@@ -940,7 +940,7 @@ func (s *Server) handleProvincialSubAssociations(w http.ResponseWriter, r *http.
 		if !requireProvincialWrite(w, p) {
 			return
 		}
-		if err := s.provincialSvc.ApproveSubAssociation(r.Context(), id); err != nil {
+		if err := s.Provincial.Main.ApproveSubAssociation(r.Context(), id); err != nil {
 			badRequest(w, err.Error())
 			return
 		}
@@ -950,7 +950,7 @@ func (s *Server) handleProvincialSubAssociations(w http.ResponseWriter, r *http.
 		if !requireProvincialWrite(w, p) {
 			return
 		}
-		if err := s.provincialSvc.SuspendSubAssociation(r.Context(), id); err != nil {
+		if err := s.Provincial.Main.SuspendSubAssociation(r.Context(), id); err != nil {
 			badRequest(w, err.Error())
 			return
 		}

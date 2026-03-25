@@ -99,12 +99,17 @@ func (s *Server) handleCMSConfigList(w http.ResponseWriter, r *http.Request, p a
 			badRequest(w, "invalid JSON body")
 			return
 		}
-		created, err := s.store.Create(cmsEntity, body)
+		b, err := json.Marshal(body)
 		if err != nil {
 			badRequest(w, err.Error())
 			return
 		}
-		success(w, http.StatusCreated, created)
+		created, err := s.store.Create(cmsEntity, b)
+		if err != nil {
+			badRequest(w, err.Error())
+			return
+		}
+		successJSONBytes(w, http.StatusCreated, created)
 	default:
 		methodNotAllowed(w)
 	}
@@ -133,17 +138,22 @@ func (s *Server) handleCMSConfigDetail(w http.ResponseWriter, r *http.Request, p
 		}
 		body["id"] = key
 		// Try update first, create if not found
-		updated, err := s.store.Update(cmsEntity, key, body)
+		b, err := json.Marshal(body)
 		if err != nil {
-			created, createErr := s.store.Create(cmsEntity, body)
+			badRequest(w, err.Error())
+			return
+		}
+		updated, err := s.store.Update(cmsEntity, key, b)
+		if err != nil {
+			created, createErr := s.store.Create(cmsEntity, b)
 			if createErr != nil {
 				badRequest(w, createErr.Error())
 				return
 			}
-			success(w, http.StatusCreated, created)
+			successJSONBytes(w, http.StatusCreated, created)
 			return
 		}
-		success(w, http.StatusOK, updated)
+		successJSONBytes(w, http.StatusOK, updated)
 
 	case http.MethodDelete:
 		s.store.Delete(cmsEntity, key)
@@ -173,7 +183,7 @@ func (s *Server) handleCMSPublicTheme(w http.ResponseWriter, r *http.Request) {
 		})
 		return
 	}
-	success(w, http.StatusOK, item)
+	successJSONBytes(w, http.StatusOK, item)
 }
 
 func (s *Server) handleCMSPublicBranding(w http.ResponseWriter, r *http.Request) {
@@ -193,7 +203,7 @@ func (s *Server) handleCMSPublicBranding(w http.ResponseWriter, r *http.Request)
 		})
 		return
 	}
-	success(w, http.StatusOK, item)
+	successJSONBytes(w, http.StatusOK, item)
 }
 
 // ════════════════════════════════════════════════════════════

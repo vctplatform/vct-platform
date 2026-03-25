@@ -26,7 +26,7 @@ func (s *Server) handleRefereeRoutes(w http.ResponseWriter, r *http.Request) {
 				writeAuthError(w, err)
 				return
 			}
-			list, fetchErr := s.orgService.ListReferees(r.Context())
+			list, fetchErr := s.Core.Organization.ListReferees(r.Context())
 			if fetchErr != nil {
 				internalError(w, fetchErr)
 				return
@@ -44,7 +44,7 @@ func (s *Server) handleRefereeRoutes(w http.ResponseWriter, r *http.Request) {
 				badRequest(w, err.Error())
 				return
 			}
-			created, err := s.orgService.CreateReferee(r.Context(), payload)
+			created, err := s.Core.Organization.CreateReferee(r.Context(), payload)
 			if err != nil {
 				badRequest(w, err.Error())
 				return
@@ -70,7 +70,7 @@ func (s *Server) handleRefereeRoutes(w http.ResponseWriter, r *http.Request) {
 				writeAuthError(w, err)
 				return
 			}
-			ref, err := s.orgService.GetReferee(r.Context(), id)
+			ref, err := s.Core.Organization.GetReferee(r.Context(), id)
 			if err != nil {
 				notFound(w)
 				return
@@ -87,13 +87,20 @@ func (s *Server) handleRefereeRoutes(w http.ResponseWriter, r *http.Request) {
 				badRequest(w, "invalid json")
 				return
 			}
-			updatedStore, err := s.store.Update("referees", id, patch)
+			b, err := json.Marshal(patch)
 			if err != nil {
 				badRequest(w, err.Error())
 				return
 			}
-			s.broadcastEntityChange("referees", "updated", id, updatedStore, nil)
-			success(w, http.StatusOK, updatedStore)
+			updatedStore, err := s.store.Update("referees", id, b)
+			if err != nil {
+				badRequest(w, err.Error())
+				return
+			}
+			var updatedMap map[string]any
+			json.Unmarshal(updatedStore, &updatedMap)
+			s.broadcastEntityChange("referees", "updated", id, updatedMap, nil)
+			successJSONBytes(w, http.StatusOK, updatedStore)
 			return
 
 		case http.MethodDelete:
@@ -132,7 +139,7 @@ func (s *Server) handleArenaRoutes(w http.ResponseWriter, r *http.Request) {
 				writeAuthError(w, err)
 				return
 			}
-			list, fetchErr := s.orgService.ListArenas(r.Context())
+			list, fetchErr := s.Core.Organization.ListArenas(r.Context())
 			if fetchErr != nil {
 				internalError(w, fetchErr)
 				return
@@ -150,7 +157,7 @@ func (s *Server) handleArenaRoutes(w http.ResponseWriter, r *http.Request) {
 				badRequest(w, err.Error())
 				return
 			}
-			created, err := s.orgService.CreateArena(r.Context(), payload)
+			created, err := s.Core.Organization.CreateArena(r.Context(), payload)
 			if err != nil {
 				badRequest(w, err.Error())
 				return
@@ -176,7 +183,7 @@ func (s *Server) handleArenaRoutes(w http.ResponseWriter, r *http.Request) {
 				writeAuthError(w, err)
 				return
 			}
-			arena, err := s.orgService.GetArena(r.Context(), id)
+			arena, err := s.Core.Organization.GetArena(r.Context(), id)
 			if err != nil {
 				notFound(w)
 				return
@@ -193,13 +200,20 @@ func (s *Server) handleArenaRoutes(w http.ResponseWriter, r *http.Request) {
 				badRequest(w, "invalid json")
 				return
 			}
-			updatedStore, err := s.store.Update("arenas", id, patch)
+			b, err := json.Marshal(patch)
 			if err != nil {
 				badRequest(w, err.Error())
 				return
 			}
-			s.broadcastEntityChange("arenas", "updated", id, updatedStore, nil)
-			success(w, http.StatusOK, updatedStore)
+			updatedStore, err := s.store.Update("arenas", id, b)
+			if err != nil {
+				badRequest(w, err.Error())
+				return
+			}
+			var updatedMap map[string]any
+			json.Unmarshal(updatedStore, &updatedMap)
+			s.broadcastEntityChange("arenas", "updated", id, updatedMap, nil)
+			successJSONBytes(w, http.StatusOK, updatedStore)
 			return
 
 		case http.MethodDelete:

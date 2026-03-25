@@ -35,9 +35,9 @@ func (s *Server) handlePartnerList(w http.ResponseWriter, r *http.Request, _ aut
 	var partners []international.PartnerOrganization
 	var err error
 	if country != "" {
-		partners, err = s.internationalSvc.ListPartnersByCountry(r.Context(), country)
+		partners, err = s.Federation.International.ListPartnersByCountry(r.Context(), country)
 	} else {
-		partners, err = s.internationalSvc.ListPartners(r.Context())
+		partners, err = s.Federation.International.ListPartners(r.Context())
 	}
 	if err != nil {
 		internalError(w, err)
@@ -52,7 +52,7 @@ func (s *Server) handlePartnerCreate(w http.ResponseWriter, r *http.Request) {
 		badRequest(w, "invalid JSON: "+err.Error())
 		return
 	}
-	created, err := s.internationalSvc.CreatePartner(r.Context(), partner)
+	created, err := s.Federation.International.CreatePartner(r.Context(), partner)
 	if err != nil {
 		badRequest(w, err.Error())
 		return
@@ -68,7 +68,7 @@ func (s *Server) handlePartnerCRUD(w http.ResponseWriter, r *http.Request, _ aut
 	}
 	switch r.Method {
 	case http.MethodGet:
-		partner, err := s.internationalSvc.GetPartner(r.Context(), id)
+		partner, err := s.Federation.International.GetPartner(r.Context(), id)
 		if err != nil {
 			notFoundError(w, "partner not found")
 			return
@@ -80,7 +80,7 @@ func (s *Server) handlePartnerCRUD(w http.ResponseWriter, r *http.Request, _ aut
 			badRequest(w, "invalid JSON: "+err.Error())
 			return
 		}
-		updated, err := s.internationalSvc.UpdatePartner(r.Context(), id, partner)
+		updated, err := s.Federation.International.UpdatePartner(r.Context(), id, partner)
 		if err != nil {
 			badRequest(w, err.Error())
 			return
@@ -98,7 +98,7 @@ func (s *Server) handleIntlEventList(w http.ResponseWriter, r *http.Request, _ a
 		s.handleIntlEventCreate(w, r)
 		return
 	}
-	events, err := s.internationalSvc.ListEvents(r.Context())
+	events, err := s.Federation.International.ListEvents(r.Context())
 	if err != nil {
 		internalError(w, err)
 		return
@@ -112,7 +112,7 @@ func (s *Server) handleIntlEventCreate(w http.ResponseWriter, r *http.Request) {
 		badRequest(w, "invalid JSON: "+err.Error())
 		return
 	}
-	created, err := s.internationalSvc.CreateEvent(r.Context(), event)
+	created, err := s.Federation.International.CreateEvent(r.Context(), event)
 	if err != nil {
 		badRequest(w, err.Error())
 		return
@@ -126,7 +126,7 @@ func (s *Server) handleIntlEventCRUD(w http.ResponseWriter, r *http.Request, _ a
 		badRequest(w, "event ID required")
 		return
 	}
-	event, err := s.internationalSvc.GetEvent(r.Context(), id)
+	event, err := s.Federation.International.GetEvent(r.Context(), id)
 	if err != nil {
 		notFoundError(w, "event not found")
 		return
@@ -145,10 +145,10 @@ func (s *Server) handleDelegationList(w http.ResponseWriter, r *http.Request, _ 
 	var delegations []international.Delegation
 	var err error
 	if eventID != "" {
-		delegations, err = s.internationalSvc.ListDelegationsByEvent(r.Context(), eventID)
+		delegations, err = s.Federation.International.ListDelegationsByEvent(r.Context(), eventID)
 	} else {
 		// No event filter — list all delegations via empty event query
-		delegations, err = s.internationalSvc.ListDelegationsByEvent(r.Context(), "")
+		delegations, err = s.Federation.International.ListDelegationsByEvent(r.Context(), "")
 	}
 	if err != nil {
 		internalError(w, err)
@@ -163,7 +163,7 @@ func (s *Server) handleDelegationCreate(w http.ResponseWriter, r *http.Request) 
 		badRequest(w, "invalid JSON: "+err.Error())
 		return
 	}
-	created, err := s.internationalSvc.CreateDelegation(r.Context(), deleg)
+	created, err := s.Federation.International.CreateDelegation(r.Context(), deleg)
 	if err != nil {
 		badRequest(w, err.Error())
 		return
@@ -179,7 +179,7 @@ func (s *Server) handleDelegationCRUD(w http.ResponseWriter, r *http.Request, _ 
 	}
 	switch r.Method {
 	case http.MethodGet:
-		deleg, err := s.internationalSvc.GetDelegation(r.Context(), id)
+		deleg, err := s.Federation.International.GetDelegation(r.Context(), id)
 		if err != nil {
 			notFoundError(w, "delegation not found")
 			return
@@ -191,7 +191,7 @@ func (s *Server) handleDelegationCRUD(w http.ResponseWriter, r *http.Request, _ 
 			badRequest(w, "invalid JSON: "+err.Error())
 			return
 		}
-		updated, err := s.internationalSvc.UpdateDelegation(r.Context(), id, deleg)
+		updated, err := s.Federation.International.UpdateDelegation(r.Context(), id, deleg)
 		if err != nil {
 			badRequest(w, err.Error())
 			return

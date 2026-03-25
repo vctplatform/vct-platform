@@ -38,7 +38,7 @@ func subscriptionError(w http.ResponseWriter, err error) {
 // handlePlanList handles GET /api/v1/finance/plans
 func (s *Server) handlePlanList(w http.ResponseWriter, r *http.Request, p auth.Principal) {
 	entityType := r.URL.Query().Get("entity_type")
-	plans, err := s.subscriptionSvc.ListPlans(r.Context(), entityType)
+	plans, err := s.Extended.Subscription.ListPlans(r.Context(), entityType)
 	if err != nil {
 		subscriptionError(w, err)
 		return
@@ -62,7 +62,7 @@ func (s *Server) handlePlanCreate(w http.ResponseWriter, r *http.Request, p auth
 		badRequest(w, "Request body không hợp lệ")
 		return
 	}
-	created, err := s.subscriptionSvc.CreatePlan(r.Context(), plan)
+	created, err := s.Extended.Subscription.CreatePlan(r.Context(), plan)
 	if err != nil {
 		subscriptionError(w, err)
 		return
@@ -83,7 +83,7 @@ func (s *Server) handlePlanUpdate(w http.ResponseWriter, r *http.Request, p auth
 		badRequest(w, "Request body không hợp lệ")
 		return
 	}
-	updated, err := s.subscriptionSvc.UpdatePlan(r.Context(), id, patch)
+	updated, err := s.Extended.Subscription.UpdatePlan(r.Context(), id, patch)
 	if err != nil {
 		subscriptionError(w, err)
 		return
@@ -99,7 +99,7 @@ func (s *Server) handlePlanDeactivate(w http.ResponseWriter, r *http.Request, p 
 		return
 	}
 
-	if err := s.subscriptionSvc.DeactivatePlan(r.Context(), id); err != nil {
+	if err := s.Extended.Subscription.DeactivatePlan(r.Context(), id); err != nil {
 		subscriptionError(w, err)
 		return
 	}
@@ -121,7 +121,7 @@ func (s *Server) handlePlanRoutes(w http.ResponseWriter, r *http.Request, p auth
 		case http.MethodDelete:
 			s.handlePlanDeactivate(w, r, p, id)
 		case http.MethodGet:
-			plan, err := s.subscriptionSvc.GetPlan(r.Context(), id)
+			plan, err := s.Extended.Subscription.GetPlan(r.Context(), id)
 			if err != nil {
 				subscriptionError(w, err)
 				return
@@ -155,7 +155,7 @@ func (s *Server) handleSubscriptionList(w http.ResponseWriter, r *http.Request, 
 	if st := r.URL.Query().Get("status"); st != "" {
 		filter.Status = finance.SubscriptionStatus(st)
 	}
-	subs, err := s.subscriptionSvc.ListSubscriptions(r.Context(), filter)
+	subs, err := s.Extended.Subscription.ListSubscriptions(r.Context(), filter)
 	if err != nil {
 		subscriptionError(w, err)
 		return
@@ -175,7 +175,7 @@ func (s *Server) handleSubscriptionCreate(w http.ResponseWriter, r *http.Request
 	}
 	input.CreatedBy = p.User.ID
 
-	sub, bc, err := s.subscriptionSvc.Subscribe(r.Context(), input)
+	sub, bc, err := s.Extended.Subscription.Subscribe(r.Context(), input)
 	if err != nil {
 		subscriptionError(w, err)
 		return
@@ -242,7 +242,7 @@ func (s *Server) handleSubscriptionDetail(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	sub, err := s.subscriptionSvc.GetSubscription(r.Context(), id)
+	sub, err := s.Extended.Subscription.GetSubscription(r.Context(), id)
 	if err != nil {
 		subscriptionError(w, err)
 		return
@@ -256,7 +256,7 @@ func (s *Server) handleSubscriptionRenew(w http.ResponseWriter, r *http.Request,
 		methodNotAllowed(w)
 		return
 	}
-	bc, err := s.subscriptionSvc.RenewSubscription(r.Context(), id, p.User.ID)
+	bc, err := s.Extended.Subscription.RenewSubscription(r.Context(), id, p.User.ID)
 	if err != nil {
 		subscriptionError(w, err)
 		return
@@ -275,7 +275,7 @@ func (s *Server) handleSubscriptionCancel(w http.ResponseWriter, r *http.Request
 	}
 	_ = json.NewDecoder(r.Body).Decode(&body)
 
-	err := s.subscriptionSvc.CancelSubscription(r.Context(), id, body.Reason, p.User.ID)
+	err := s.Extended.Subscription.CancelSubscription(r.Context(), id, body.Reason, p.User.ID)
 	if err != nil {
 		subscriptionError(w, err)
 		return
@@ -297,7 +297,7 @@ func (s *Server) handleSubscriptionUpgrade(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	updated, err := s.subscriptionSvc.UpgradeDowngrade(r.Context(), finance.UpgradeDowngradeInput{
+	updated, err := s.Extended.Subscription.UpgradeDowngrade(r.Context(), finance.UpgradeDowngradeInput{
 		SubscriptionID: id,
 		NewPlanID:      body.NewPlanID,
 		PerformedBy:    p.User.ID,
@@ -321,7 +321,7 @@ func (s *Server) handleSubscriptionReactivate(w http.ResponseWriter, r *http.Req
 		return
 	}
 
-	err := s.subscriptionSvc.ReactivateSubscription(r.Context(), id, p.User.ID)
+	err := s.Extended.Subscription.ReactivateSubscription(r.Context(), id, p.User.ID)
 	if err != nil {
 		subscriptionError(w, err)
 		return
@@ -346,7 +346,7 @@ func (s *Server) handleSubscriptionSuspend(w http.ResponseWriter, r *http.Reques
 	}
 	_ = json.NewDecoder(r.Body).Decode(&body)
 
-	err := s.subscriptionSvc.SuspendSubscription(r.Context(), id, body.Reason, p.User.ID)
+	err := s.Extended.Subscription.SuspendSubscription(r.Context(), id, body.Reason, p.User.ID)
 	if err != nil {
 		subscriptionError(w, err)
 		return
@@ -368,7 +368,7 @@ func (s *Server) handleSubscriptionAutoRenew(w http.ResponseWriter, r *http.Requ
 		return
 	}
 
-	err := s.subscriptionSvc.ToggleAutoRenew(r.Context(), id, body.AutoRenew, p.User.ID)
+	err := s.Extended.Subscription.ToggleAutoRenew(r.Context(), id, body.AutoRenew, p.User.ID)
 	if err != nil {
 		subscriptionError(w, err)
 		return
@@ -382,7 +382,7 @@ func (s *Server) handleSubscriptionBillingCycles(w http.ResponseWriter, r *http.
 		methodNotAllowed(w)
 		return
 	}
-	cycles, err := s.subscriptionSvc.ListBillingCycles(r.Context(), id)
+	cycles, err := s.Extended.Subscription.ListBillingCycles(r.Context(), id)
 	if err != nil {
 		subscriptionError(w, err)
 		return
@@ -399,7 +399,7 @@ func (s *Server) handleSubscriptionRenewalLogs(w http.ResponseWriter, r *http.Re
 		methodNotAllowed(w)
 		return
 	}
-	logs, err := s.subscriptionSvc.ListRenewalLogs(r.Context(), id)
+	logs, err := s.Extended.Subscription.ListRenewalLogs(r.Context(), id)
 	if err != nil {
 		subscriptionError(w, err)
 		return
@@ -418,7 +418,7 @@ func (s *Server) handleExpiringSubscriptions(w http.ResponseWriter, r *http.Requ
 		methodNotAllowed(w)
 		return
 	}
-	subs, err := s.subscriptionSvc.ListExpiringSubscriptions(r.Context(), 30) // within 30 days
+	subs, err := s.Extended.Subscription.ListExpiringSubscriptions(r.Context(), 30) // within 30 days
 	if err != nil {
 		subscriptionError(w, err)
 		return
@@ -443,7 +443,7 @@ func (s *Server) handleBillingCycleList(w http.ResponseWriter, r *http.Request, 
 	if st := r.URL.Query().Get("status"); st != "" {
 		filter.Status = finance.BillingCycleStatus(st)
 	}
-	cycles, err := s.subscriptionSvc.ListAllBillingCycles(r.Context(), filter)
+	cycles, err := s.Extended.Subscription.ListAllBillingCycles(r.Context(), filter)
 	if err != nil {
 		subscriptionError(w, err)
 		return
@@ -463,7 +463,7 @@ func (s *Server) handleBillingCycleMarkPaid(w http.ResponseWriter, r *http.Reque
 	id := strings.TrimPrefix(r.URL.Path, "/api/v1/finance/billing-cycles/")
 	id = strings.TrimSuffix(id, "/pay")
 
-	bc, err := s.subscriptionSvc.MarkBillingCyclePaid(r.Context(), id, p.User.ID)
+	bc, err := s.Extended.Subscription.MarkBillingCyclePaid(r.Context(), id, p.User.ID)
 	if err != nil {
 		subscriptionError(w, err)
 		return

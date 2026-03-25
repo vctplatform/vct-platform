@@ -26,7 +26,7 @@ func (s *Server) handleTournamentRoutes(w http.ResponseWriter, r *http.Request) 
 				writeAuthError(w, err)
 				return
 			}
-			list, fetchErr := s.tournamentCRUD.List(r.Context())
+			list, fetchErr := s.Core.Tournament.List(r.Context())
 			if fetchErr != nil {
 				internalError(w, fetchErr)
 				return
@@ -44,7 +44,7 @@ func (s *Server) handleTournamentRoutes(w http.ResponseWriter, r *http.Request) 
 				badRequest(w, err.Error())
 				return
 			}
-			created, err := s.tournamentCRUD.Create(r.Context(), payload)
+			created, err := s.Core.Tournament.Create(r.Context(), payload)
 			if err != nil {
 				badRequest(w, err.Error())
 				return
@@ -70,7 +70,7 @@ func (s *Server) handleTournamentRoutes(w http.ResponseWriter, r *http.Request) 
 				writeAuthError(w, err)
 				return
 			}
-			t, err := s.tournamentCRUD.GetByID(r.Context(), id)
+			t, err := s.Core.Tournament.GetByID(r.Context(), id)
 			if err != nil {
 				notFound(w)
 				return
@@ -87,7 +87,7 @@ func (s *Server) handleTournamentRoutes(w http.ResponseWriter, r *http.Request) 
 				badRequest(w, "invalid json")
 				return
 			}
-			updated, err := s.tournamentCRUD.Update(r.Context(), id, patch)
+			updated, err := s.Core.Tournament.Update(r.Context(), id, patch)
 			if err != nil {
 				badRequest(w, err.Error())
 				return
@@ -102,7 +102,7 @@ func (s *Server) handleTournamentRoutes(w http.ResponseWriter, r *http.Request) 
 				writeAuthError(w, err)
 				return
 			}
-			if err := s.tournamentCRUD.Delete(r.Context(), id); err != nil {
+			if err := s.Core.Tournament.Delete(r.Context(), id); err != nil {
 				badRequest(w, err.Error())
 				return
 			}

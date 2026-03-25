@@ -551,11 +551,7 @@ func (r *pgPartnerRepo) ListByCountry(ctx context.Context, country string) ([]in
 
 func (r *pgPartnerRepo) Update(ctx context.Context, id string, p international.PartnerOrganization) (*international.PartnerOrganization, error) {
 	p.ID = id
-	patch, err := toMap(p)
-	if err != nil {
-		return nil, err
-	}
-	_, err = r.StoreAdapter.Update(id, patch)
+	_, err := r.StoreAdapter.Update(id, p)
 	if err != nil {
 		return nil, err
 	}
@@ -633,11 +629,7 @@ func (r *pgDelegationRepo) ListByEvent(ctx context.Context, eventID string) ([]i
 
 func (r *pgDelegationRepo) Update(ctx context.Context, id string, d international.Delegation) (*international.Delegation, error) {
 	d.ID = id
-	patch, err := toMap(d)
-	if err != nil {
-		return nil, err
-	}
-	_, err = r.StoreAdapter.Update(id, patch)
+	_, err := r.StoreAdapter.Update(id, d)
 	if err != nil {
 		return nil, err
 	}

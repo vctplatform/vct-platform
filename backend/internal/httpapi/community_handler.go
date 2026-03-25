@@ -26,7 +26,7 @@ func (s *Server) handleClubRoutes(w http.ResponseWriter, r *http.Request) {
 				writeAuthError(w, err)
 				return
 			}
-			list, fetchErr := s.communityService.ListClubs(r.Context())
+			list, fetchErr := s.Core.Community.ListClubs(r.Context())
 			if fetchErr != nil {
 				internalError(w, fetchErr)
 				return
@@ -42,7 +42,7 @@ func (s *Server) handleClubRoutes(w http.ResponseWriter, r *http.Request) {
 				badRequest(w, err.Error())
 				return
 			}
-			created, err := s.communityService.CreateClub(r.Context(), payload)
+			created, err := s.Core.Community.CreateClub(r.Context(), payload)
 			if err != nil {
 				badRequest(w, err.Error())
 				return
@@ -63,7 +63,7 @@ func (s *Server) handleClubRoutes(w http.ResponseWriter, r *http.Request) {
 			writeAuthError(w, err)
 			return
 		}
-		club, err := s.communityService.GetClub(r.Context(), id)
+		club, err := s.Core.Community.GetClub(r.Context(), id)
 		if err != nil {
 			notFound(w)
 			return
@@ -79,7 +79,7 @@ func (s *Server) handleClubRoutes(w http.ResponseWriter, r *http.Request) {
 			badRequest(w, err.Error())
 			return
 		}
-		updated, err := s.communityService.UpdateClub(r.Context(), id, patch)
+		updated, err := s.Core.Community.UpdateClub(r.Context(), id, patch)
 		if err != nil {
 			badRequest(w, err.Error())
 			return
@@ -92,7 +92,7 @@ func (s *Server) handleClubRoutes(w http.ResponseWriter, r *http.Request) {
 			writeAuthError(w, err)
 			return
 		}
-		if err := s.communityService.DeleteClub(r.Context(), id); err != nil {
+		if err := s.Core.Community.DeleteClub(r.Context(), id); err != nil {
 			internalError(w, err)
 			return
 		}
@@ -123,7 +123,7 @@ func (s *Server) handleMemberRoutes(w http.ResponseWriter, r *http.Request) {
 			}
 			clubID := r.URL.Query().Get("clubId")
 			if clubID != "" {
-				list, fetchErr := s.communityService.ListMembersByClub(r.Context(), clubID)
+				list, fetchErr := s.Core.Community.ListMembersByClub(r.Context(), clubID)
 				if fetchErr != nil {
 					internalError(w, fetchErr)
 					return
@@ -131,7 +131,7 @@ func (s *Server) handleMemberRoutes(w http.ResponseWriter, r *http.Request) {
 				success(w, http.StatusOK, list)
 				return
 			}
-			list, fetchErr := s.communityService.ListMembers(r.Context())
+			list, fetchErr := s.Core.Community.ListMembers(r.Context())
 			if fetchErr != nil {
 				internalError(w, fetchErr)
 				return
@@ -147,7 +147,7 @@ func (s *Server) handleMemberRoutes(w http.ResponseWriter, r *http.Request) {
 				badRequest(w, err.Error())
 				return
 			}
-			created, err := s.communityService.CreateMember(r.Context(), payload)
+			created, err := s.Core.Community.CreateMember(r.Context(), payload)
 			if err != nil {
 				badRequest(w, err.Error())
 				return
@@ -182,7 +182,7 @@ func (s *Server) handleCommunityEventRoutes(w http.ResponseWriter, r *http.Reque
 				writeAuthError(w, err)
 				return
 			}
-			list, fetchErr := s.communityService.ListEvents(r.Context())
+			list, fetchErr := s.Core.Community.ListEvents(r.Context())
 			if fetchErr != nil {
 				internalError(w, fetchErr)
 				return
@@ -198,7 +198,7 @@ func (s *Server) handleCommunityEventRoutes(w http.ResponseWriter, r *http.Reque
 				badRequest(w, err.Error())
 				return
 			}
-			created, err := s.communityService.CreateEvent(r.Context(), payload)
+			created, err := s.Core.Community.CreateEvent(r.Context(), payload)
 			if err != nil {
 				badRequest(w, err.Error())
 				return

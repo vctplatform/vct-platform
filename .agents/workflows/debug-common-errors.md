@@ -20,12 +20,15 @@ Lỗi xảy ra ở đâu?
   │   ├─ "Failed to fetch" / Network error → Xem #2 CORS
   │   ├─ 401 Unauthorized → Xem #3 Auth 401
   │   ├─ 404 Not Found → Xem #4 Double API Prefix
-  │   └─ 500/502 Bad Gateway → Xem #5 Backend Crash
+  │   ├─ 500/502 Bad Gateway → Xem #5 Backend Crash
+  │   └─ Trình duyệt treo / chậm dần → Xem #11 Memory Leak
   │
   ├─ Terminal (Backend)
   │   ├─ Compile error → go build ./... → fix imports/types
   │   ├─ Panic → Xem #6 Runtime Panic
-  │   └─ DB connection error → Xem #7 Database
+  │   ├─ DB connection error → Xem #7 Database
+  │   ├─ Postgres lock/timeout → Xem #12 Database Deadlock
+  │   └─ Real-time không nhận sự kiện → Xem #13 WebSocket Issues
   │
   └─ Deployment
       ├─ Build fail → Xem #8 Docker Build
@@ -229,3 +232,57 @@ docker build -t vct-backend ./backend
 **Nguyên nhân**: Render free tier tự sleep sau 15 phút không traffic.
 
 **Fix**: Thêm cron job ping `/healthz` mỗi 14 phút (xem `/deploy-production` workflow).
+
+---
+
+## #11: Memory Leak (Trình duyệt chậm/treo)
+
+**Triệu chứng**: Giao diện bị đơ sau một thời gian sử dụng, tab crash "Out of Memory".
+
+**Debug**:
+1. Trong Chrome DevTools → Memory tab → Take Heap Snapshot.
+2. Kiểm tra lại code xem có dùng `setInterval` nhưng quên `clearInterval` không.
+3. Kiểm tra xem có gắn `addEventListener` trên `window` hoặc `document` nhưng khi component unmount quên remove không.
+4. Có gọi WebSocket reconnect liên tục tạo ra quá nhiều connection mới không?
+
+**Fix**: Luôn cleanup trong `useEffect`:
+```tsx
+useEffect(() => {
+  const timer = setInterval(() => {}, 1000);
+  return () => clearInterval(timer); // Quan trọng
+}, []);
+```
+
+---
+
+## #12: Database Deadlock / Timeout
+
+**Triệu chứng**: Request đang chạy thì treo (hang) vô thời hạn, hoặc API response rất chậm rồi bắn `504 Gateway Timeout`.
+
+**Debug**:
+```sql
+-- Kiểm tra các query đang hold lock quá lâu
+SELECT pid, usename, state, wait_event_type, wait_event, query
+FROM pg_stat_activity
+WHERE state = 'active' AND pid <> pg_backend_pid();
+```
+
+**Nguyên nhân phổ biến**:
+1. Hai transaction update/delete cùng lúc các row đan chéo nhau theo thứ tự khác nhau.
+2. Quên commit/rollback trong code Go khiến connection bị hold (ví dụ do lỗi không xử lý cẩn thận `defer tx.Rollback()`).
+3. Thiếu index gây ra table lock khi DELETE cascade.
+
+---
+
+## #13: WebSocket Issues (Real-time hỏng)
+
+**Triệu chứng**: Scoring board không tự update điểm, không nhận được Notification tự động.
+
+**Debug**:
+1. Mở Network tab của DevTools → Lọc phần **WS**. Có thấy connection màu đỏ không? (Failed to connect).
+2. Kiểm tra backend logs xem có lỗi "Upgrade required" không? (sai Nginx config / thiếu support WS).
+3. Đóng mở lại tab xem socket có reconnect không. Dùng workflow `/add-realtime` để so sánh đoạn mã chuẩn.
+
+**Fix thường gặp**:
+- Thêm cơ chế Ping/Pong keepalive để tránh Load Balancer tự cắt kết nối idle (với Cloudflare/AWS ALB thường là 30-60s).
+- Thêm reconnect backoff logic ở `useWebSocket` hook phía frontend.

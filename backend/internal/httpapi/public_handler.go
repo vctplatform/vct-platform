@@ -1,6 +1,7 @@
 package httpapi
 
 import (
+	"encoding/json"
 	"net/http"
 	"strings"
 )
@@ -60,16 +61,22 @@ func (s *Server) handlePublicScoreboard(w http.ResponseWriter, _ *http.Request) 
 	livePerformances := s.store.List("form_performances")
 
 	var activeMatches []map[string]any
-	for _, m := range liveMatches {
-		if status, ok := m["trang_thai"].(string); ok && status == "dang_dau" {
-			activeMatches = append(activeMatches, m)
+	for _, raw := range liveMatches {
+		var m map[string]any
+		if err := json.Unmarshal(raw, &m); err == nil {
+			if status, ok := m["trang_thai"].(string); ok && status == "dang_dau" {
+				activeMatches = append(activeMatches, m)
+			}
 		}
 	}
 
 	var activePerformances []map[string]any
-	for _, p := range livePerformances {
-		if status, ok := p["trang_thai"].(string); ok && status == "dang_thi" {
-			activePerformances = append(activePerformances, p)
+	for _, raw := range livePerformances {
+		var p map[string]any
+		if err := json.Unmarshal(raw, &p); err == nil {
+			if status, ok := p["trang_thai"].(string); ok && status == "dang_thi" {
+				activePerformances = append(activePerformances, p)
+			}
 		}
 	}
 
@@ -84,7 +91,14 @@ func (s *Server) handlePublicBracket(w http.ResponseWriter, _ *http.Request, id 
 	if id == "" {
 		// List all brackets
 		brackets := s.store.List("brackets")
-		success(w, http.StatusOK, brackets)
+		var bracketsMap []map[string]any
+		for _, raw := range brackets {
+			var m map[string]any
+			if err := json.Unmarshal(raw, &m); err == nil {
+				bracketsMap = append(bracketsMap, m)
+			}
+		}
+		success(w, http.StatusOK, bracketsMap)
 		return
 	}
 
@@ -93,7 +107,7 @@ func (s *Server) handlePublicBracket(w http.ResponseWriter, _ *http.Request, id 
 		notFound(w)
 		return
 	}
-	success(w, http.StatusOK, bracket)
+	successJSONBytes(w, http.StatusOK, bracket)
 }
 
 func (s *Server) handlePublicSchedule(w http.ResponseWriter, r *http.Request) {
@@ -104,7 +118,11 @@ func (s *Server) handlePublicSchedule(w http.ResponseWriter, r *http.Request) {
 	entries := s.store.List("schedule_entries")
 	var filtered []map[string]any
 
-	for _, entry := range entries {
+	for _, raw := range entries {
+		var entry map[string]any
+		if err := json.Unmarshal(raw, &entry); err != nil {
+			continue
+		}
 		if dateFilter != "" {
 			if ngay, ok := entry["ngay"].(string); ok && ngay != dateFilter {
 				continue
@@ -130,9 +148,16 @@ func (s *Server) handlePublicSchedule(w http.ResponseWriter, r *http.Request) {
 
 func (s *Server) handlePublicMedals(w http.ResponseWriter, _ *http.Request) {
 	medals := s.store.List("medals")
+	var medalsMap []map[string]any
+	for _, raw := range medals {
+		var m map[string]any
+		if err := json.Unmarshal(raw, &m); err == nil {
+			medalsMap = append(medalsMap, m)
+		}
+	}
 	success(w, http.StatusOK, map[string]any{
-		"medals": medals,
-		"total":  len(medals),
+		"medals": medalsMap,
+		"total":  len(medalsMap),
 	})
 }
 
@@ -142,7 +167,11 @@ func (s *Server) handlePublicResults(w http.ResponseWriter, r *http.Request) {
 	results := s.store.List("results")
 	var filtered []map[string]any
 
-	for _, result := range results {
+	for _, raw := range results {
+		var result map[string]any
+		if err := json.Unmarshal(raw, &result); err != nil {
+			continue
+		}
 		if categoryFilter != "" {
 			if cat, ok := result["loai"].(string); ok && cat != categoryFilter {
 				continue
@@ -168,7 +197,11 @@ func (s *Server) handlePublicAthleteSearch(w http.ResponseWriter, r *http.Reques
 
 	athletes := s.store.List("athletes")
 	var matched []map[string]any
-	for _, a := range athletes {
+	for _, raw := range athletes {
+		var a map[string]any
+		if err := json.Unmarshal(raw, &a); err != nil {
+			continue
+		}
 		name, _ := a["ho_ten"].(string)
 		if name == "" {
 			name, _ = a["name"].(string)

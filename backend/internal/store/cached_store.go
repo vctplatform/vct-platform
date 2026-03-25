@@ -28,44 +28,45 @@ func (s *CachedStore) Base() DataStore {
 	return s.source
 }
 
-func (s *CachedStore) List(entity string) []map[string]any {
+func (s *CachedStore) List(entity string) [][]byte {
 	cacheKey := fmt.Sprintf("list:%s", entity)
 	if value, ok := s.cache.Get(cacheKey); ok {
-		if rows, castOk := value.([]map[string]any); castOk {
-			return cloneMapSlice(rows)
+		if rows, castOk := value.([][]byte); castOk {
+			return cloneByteSlices(rows)
 		}
 	}
 
 	rows := s.source.List(entity)
-	s.cache.SetForEntity(entity, cacheKey, cloneMapSlice(rows))
+	s.cache.SetForEntity(entity, cacheKey, cloneByteSlices(rows))
 	return rows
 }
 
-func (s *CachedStore) GetByID(entity, id string) (map[string]any, bool) {
+func (s *CachedStore) GetByID(entity, id string) ([]byte, bool) {
 	cacheKey := fmt.Sprintf("item:%s:%s", entity, id)
 	if value, ok := s.cache.Get(cacheKey); ok {
-		if row, castOk := value.(map[string]any); castOk {
-			return cloneMap(row), true
+		if row, castOk := value.([]byte); castOk {
+			return cloneBytes(row), true
 		}
 	}
 
 	row, found := s.source.GetByID(entity, id)
 	if found {
-		s.cache.SetForEntity(entity, cacheKey, cloneMap(row))
+		s.cache.SetForEntity(entity, cacheKey, cloneBytes(row))
 	}
 	return row, found
 }
 
-func (s *CachedStore) Create(entity string, item map[string]any) (map[string]any, error) {
+func (s *CachedStore) Create(entity string, item []byte) ([]byte, error) {
 	created, err := s.source.Create(entity, item)
 	if err != nil {
 		return nil, err
 	}
-	s.invalidateEntity(entity, created["id"])
+	id, _ := requireIDBytes(created)
+	s.invalidateEntity(entity, id)
 	return created, nil
 }
 
-func (s *CachedStore) Update(entity, id string, patch map[string]any) (map[string]any, error) {
+func (s *CachedStore) Update(entity, id string, patch []byte) ([]byte, error) {
 	updated, err := s.source.Update(entity, id, patch)
 	if err != nil {
 		return nil, err
@@ -79,7 +80,7 @@ func (s *CachedStore) Delete(entity, id string) {
 	s.invalidateEntity(entity, id)
 }
 
-func (s *CachedStore) ReplaceAll(entity string, items []map[string]any) ([]map[string]any, error) {
+func (s *CachedStore) ReplaceAll(entity string, items [][]byte) ([][]byte, error) {
 	replaced, err := s.source.ReplaceAll(entity, items)
 	if err != nil {
 		return nil, err
@@ -146,10 +147,22 @@ func (s *CachedStore) invalidateEntity(entity string, id any) {
 	}
 }
 
-func cloneMapSlice(source []map[string]any) []map[string]any {
-	result := make([]map[string]any, 0, len(source))
+func cloneBytes(source []byte) []byte {
+	if source == nil {
+		return nil
+	}
+	result := make([]byte, len(source))
+	copy(result, source)
+	return result
+}
+
+func cloneByteSlices(source [][]byte) [][]byte {
+	if source == nil {
+		return nil
+	}
+	result := make([][]byte, 0, len(source))
 	for _, item := range source {
-		result = append(result, cloneMap(item))
+		result = append(result, cloneBytes(item))
 	}
 	return result
 }
