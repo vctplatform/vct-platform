@@ -34,37 +34,17 @@ const nextConfig = {
   },
 
   // ── Security Headers ────────────────────────────────────────
+  // NOTE: Content-Security-Policy is NOT set here because Next.js 16
+  // automatically injects 'strict-dynamic' into any CSP with script-src,
+  // which blocks all scripts without nonces. CSP should be handled via
+  // middleware.ts with per-request nonce generation if needed.
   async headers() {
     const isProd = process.env.NODE_ENV === 'production'
-
-    // CSP: strict in production (no unsafe-inline/eval), relaxed in dev for HMR
-    // In production, Next.js automatically generates nonces for inline scripts
-    // when the CSP header uses 'strict-dynamic'. The nonce is injected via
-    // the experimental.serverActions and next/script components.
-    const cspDirectives = [
-      "default-src 'self'",
-      isProd
-        ? "script-src 'self' 'unsafe-inline' 'unsafe-eval' 'wasm-unsafe-eval' https://va.vercel-scripts.com"
-        : "script-src 'self' 'unsafe-eval' 'unsafe-inline' 'wasm-unsafe-eval' https://va.vercel-scripts.com",
-      "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
-      "img-src 'self' data: blob: https://images.unsplash.com https://*.googleusercontent.com",
-      "font-src 'self' 'unsafe-inline' data: https://fonts.gstatic.com",
-      `connect-src 'self' wss: ws: https://* http://localhost:* https://vitals.vercel-insights.com`,
-      "frame-ancestors 'none'",
-      "base-uri 'self'",
-      "form-action 'self'",
-      "object-src 'none'",
-      ...(isProd ? ["upgrade-insecure-requests"] : []),
-    ]
 
     return [
       {
         source: '/(.*)',
         headers: [
-          {
-            key: 'Content-Security-Policy',
-            value: cspDirectives.join('; '),
-          },
           {
             key: 'X-Frame-Options',
             value: 'DENY',
@@ -84,14 +64,6 @@ const nextConfig = {
           {
             key: 'X-DNS-Prefetch-Control',
             value: 'on',
-          },
-          {
-            key: 'Cross-Origin-Opener-Policy',
-            value: 'same-origin',
-          },
-          {
-            key: 'Cross-Origin-Embedder-Policy',
-            value: 'credentialless',
           },
           ...(isProd
             ? [
