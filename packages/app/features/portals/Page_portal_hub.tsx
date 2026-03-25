@@ -30,6 +30,7 @@ import { PortalWorkspaceRow } from './portal/PortalWorkspaceRow'
 import { PortalEmptyState } from './portal/PortalEmptyState'
 import { PortalBackground } from './portal/PortalBackground'
 import { PortalWelcomeHeader } from './portal/PortalWelcomeHeader'
+import { PortalActivityFeed } from './portal/PortalActivityFeed'
 import { usePortalState } from './portal/usePortalState'
 
 // ── Workspace destination routes ──
@@ -128,103 +129,113 @@ function PortalHubContent() {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ duration: 0.5 }}
-                className="relative z-10 mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:py-12"
+                className="relative z-10 mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:py-12"
             >
-                {/* Welcome */}
-                <PortalWelcomeHeader name={currentUser.name} count={portal.totalCount} t={t} />
+                <div className="lg:grid lg:grid-cols-12 lg:items-start lg:gap-8">
+                    {/* Main Content Area */}
+                    <div className="lg:col-span-8 xl:col-span-9">
+                        {/* Welcome */}
+                        <PortalWelcomeHeader name={currentUser.name} count={portal.totalCount} t={t} />
 
-            {/* Search + Sort + View Toggle */}
-            <div className="mt-6">
-                <PortalSearchBar
-                    searchQuery={portal.searchQuery}
-                    onSearchChange={portal.setSearchQuery}
-                    sortMode={portal.sortMode}
-                    onSortChange={portal.setSortMode}
-                    viewMode={portal.viewMode}
-                    onViewModeChange={portal.setViewMode}
-                    totalCount={portal.totalCount}
-                    filteredCount={portal.filteredCount}
-                />
-            </div>
+                        {/* Search + Sort + View Toggle */}
+                        <div className="mt-6">
+                            <PortalSearchBar
+                                searchQuery={portal.searchQuery}
+                                onSearchChange={portal.setSearchQuery}
+                                sortMode={portal.sortMode}
+                                onSortChange={portal.setSortMode}
+                                viewMode={portal.viewMode}
+                                onViewModeChange={portal.setViewMode}
+                                totalCount={portal.totalCount}
+                                filteredCount={portal.filteredCount}
+                            />
+                        </div>
 
-            {/* Favorites */}
-            {!portal.searchQuery && portal.pinnedCards.length > 0 && (
-                <div className="mt-6">
-                    <PortalFavorites
-                        cards={portal.pinnedCards}
-                        onClick={handleCardClick}
-                    />
+                        {/* Favorites */}
+                        {!portal.searchQuery && portal.pinnedCards.length > 0 && (
+                            <div className="mt-6">
+                                <PortalFavorites
+                                    cards={portal.pinnedCards}
+                                    onClick={handleCardClick}
+                                />
+                            </div>
+                        )}
+
+                        {/* Recent */}
+                        {!portal.searchQuery && portal.recentCards.length > 0 && (
+                            <div className="mt-6">
+                                <PortalRecent
+                                    cards={portal.recentCards}
+                                    onClick={handleCardClick}
+                                />
+                            </div>
+                        )}
+
+                        {/* Divider */}
+                        {!portal.searchQuery && (portal.pinnedCards.length > 0 || portal.recentCards.length > 0) && (
+                            <div className="mt-8 mb-2 flex items-center gap-3">
+                                <h2 className="text-xs font-extrabold uppercase tracking-widest text-vct-text-muted">
+                                    {t('portal.allWorkspaces')}
+                                </h2>
+                                <div className="h-px flex-1 bg-vct-border/50" />
+                            </div>
+                        )}
+
+                        {/* Category Tabs */}
+                        {portal.searchFilteredCards.length > 0 && (
+                            <div className="mt-8 mb-6">
+                                <PortalCategoryTabs
+                                    activeCategory={portal.activeCategory}
+                                    onSelectCategory={portal.setActiveCategory}
+                                    categoryCounts={portal.categoryCounts}
+                                />
+                            </div>
+                        )}
+
+                        {/* Smart Unified Grid (All workspace cards) */}
+                        {portal.filteredCards.length > 0 ? (
+                            <motion.div
+                                className={
+                                    portal.viewMode === 'list'
+                                        ? 'flex flex-col gap-2'
+                                        : 'grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3'
+                                }
+                                variants={{
+                                    hidden: { opacity: 0 },
+                                    show: {
+                                        opacity: 1,
+                                        transition: { staggerChildren: 0.05 },
+                                    },
+                                }}
+                                initial="hidden"
+                                animate="show"
+                            >
+                                {portal.filteredCards.map((card) => (
+                                    <motion.div
+                                        key={card.id}
+                                        variants={{
+                                            hidden: { opacity: 0, scale: 0.95, y: 10 },
+                                            show: { opacity: 1, scale: 1, y: 0, transition: { type: 'spring', bounce: 0.4 } },
+                                        }}
+                                    >
+                                        {portal.viewMode === 'list' ? (
+                                            <PortalWorkspaceRow card={card} onClick={handleCardClick} />
+                                        ) : (
+                                            <PortalWorkspaceCard card={card} onClick={handleCardClick} />
+                                        )}
+                                    </motion.div>
+                                ))}
+                            </motion.div>
+                        ) : portal.searchQuery ? (
+                            <PortalEmptyState variant="no-results" searchQuery={portal.searchQuery} />
+                        ) : null}
+                    </div>
+
+                    {/* Side Activity Feed */}
+                    <div className="mt-12 lg:mt-0 lg:col-span-4 xl:col-span-3 lg:sticky lg:top-24">
+                        <PortalActivityFeed />
+                    </div>
                 </div>
-            )}
-
-            {/* Recent */}
-            {!portal.searchQuery && portal.recentCards.length > 0 && (
-                <div className="mt-6">
-                    <PortalRecent
-                        cards={portal.recentCards}
-                        onClick={handleCardClick}
-                    />
-                </div>
-            )}
-
-            {/* Divider */}
-            {!portal.searchQuery && (portal.pinnedCards.length > 0 || portal.recentCards.length > 0) && (
-                <div className="mt-8 mb-2 flex items-center gap-3">
-                    <h2 className="text-xs font-extrabold uppercase tracking-widest text-vct-text-muted">
-                        {t('portal.allWorkspaces')}
-                    </h2>
-                    <div className="h-px flex-1 bg-vct-border/50" />
-                </div>
-            )}
-
-            {/* Category Tabs */}
-            {portal.searchFilteredCards.length > 0 && (
-                <div className="mt-8 mb-6">
-                    <PortalCategoryTabs
-                        activeCategory={portal.activeCategory}
-                        onSelectCategory={portal.setActiveCategory}
-                        categoryCounts={portal.categoryCounts}
-                    />
-                </div>
-            )}
-
-            {/* Smart Unified Grid (All workspace cards) */}
-            {portal.filteredCards.length > 0 ? (
-                <motion.div
-                    className={
-                        portal.viewMode === 'list'
-                            ? 'flex flex-col gap-2'
-                            : 'grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'
-                    }
-                    variants={{
-                        hidden: { opacity: 0 },
-                        show: {
-                            opacity: 1,
-                            transition: { staggerChildren: 0.05 },
-                        },
-                    }}
-                    initial="hidden"
-                    animate="show"
-                >
-                    {portal.filteredCards.map((card) => (
-                        <motion.div
-                            key={card.id}
-                            variants={{
-                                hidden: { opacity: 0, scale: 0.95, y: 10 },
-                                show: { opacity: 1, scale: 1, y: 0, transition: { type: 'spring', bounce: 0.4 } },
-                            }}
-                        >
-                            {portal.viewMode === 'list' ? (
-                                <PortalWorkspaceRow card={card} onClick={handleCardClick} />
-                            ) : (
-                                <PortalWorkspaceCard card={card} onClick={handleCardClick} />
-                            )}
-                        </motion.div>
-                    ))}
-                </motion.div>
-            ) : portal.searchQuery ? (
-                <PortalEmptyState variant="no-results" searchQuery={portal.searchQuery} />
-            ) : null}
             </motion.div>
         </div>
     )

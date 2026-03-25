@@ -35,6 +35,10 @@ interface WorkspaceState {
     isImpersonating: boolean
     setImpersonating: (is: boolean) => void
 
+    /** Kiosk Mode / Privacy Mode (blurs sensitive data) */
+    isPrivacyMode: boolean
+    togglePrivacyMode: () => void
+
     /** Set the active workspace (entering a workspace) */
     enterWorkspace: (card: WorkspaceCard) => void
 
@@ -79,10 +83,12 @@ export const useWorkspaceStore = create<WorkspaceState>()(
             searchQuery: '',
             activeCategory: null,
             isImpersonating: false,
+            isPrivacyMode: false,
 
             setSearchQuery: (query) => set({ searchQuery: query }),
             setActiveCategory: (cat) => set({ activeCategory: cat }),
             setImpersonating: (is) => set({ isImpersonating: is }),
+            togglePrivacyMode: () => set((state) => ({ isPrivacyMode: !state.isPrivacyMode })),
 
             enterWorkspace: (card) => {
                 const meta = WORKSPACE_META[card.type]
@@ -164,6 +170,7 @@ export const useWorkspaceStore = create<WorkspaceState>()(
                 pinnedWorkspaceIds: state.pinnedWorkspaceIds,
                 lastAccessedMap: state.lastAccessedMap,
                 isImpersonating: state.isImpersonating,
+                isPrivacyMode: state.isPrivacyMode,
             }),
         }
     )

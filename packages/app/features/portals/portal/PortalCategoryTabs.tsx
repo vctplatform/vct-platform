@@ -38,14 +38,14 @@ export function PortalCategoryTabs({
                     onClick={() => onSelectCategory(null)}
                     className={`relative flex shrink-0 snap-start items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold transition-all duration-200 outline-none focus-visible:ring-2 focus-visible:ring-vct-primary ${
                         activeCategory === null
-                            ? 'text-white'
-                            : 'text-vct-text-muted hover:bg-white/5 hover:text-vct-text'
+                            ? 'text-white dark:text-zinc-900'
+                            : 'text-vct-text-muted hover:bg-black/5 hover:dark:bg-white/5 hover:text-vct-text'
                     }`}
                 >
                     {activeCategory === null && (
                         <motion.div
                             layoutId="active-portal-tab"
-                            className="absolute inset-0 z-0 rounded-full bg-vct-primary shadow-[0_0_15px_rgba(0,178,255,0.3)]"
+                            className="absolute inset-0 z-0 rounded-full bg-zinc-900 shadow-sm dark:bg-zinc-100 dark:shadow-[0_0_15px_rgba(255,255,255,0.3)]"
                             initial={false}
                             transition={{ type: 'spring', bounce: 0.2, duration: 0.6 }}
                         />
@@ -68,27 +68,30 @@ export function PortalCategoryTabs({
                         <button
                             key={key}
                             onClick={() => onSelectCategory(key)}
-                            style={isActive ? { backgroundColor: meta.color, boxShadow: `0 0 15px ${meta.color}4D` } : undefined}
-                            className={`relative flex shrink-0 snap-start items-center gap-2 rounded-full px-4 py-2 text-sm font-medium transition-all duration-200 outline-none focus-visible:ring-2 focus-visible:ring-vct-primary ${
+                            style={{ 
+                                '--tab-color': meta.color,
+                                '--tab-glow': `${meta.color}4D`
+                            } as React.CSSProperties}
+                            className={`relative flex shrink-0 snap-start items-center gap-2 rounded-full px-4 py-2 text-sm font-medium transition-all duration-200 outline-none focus-visible:ring-2 focus-visible:ring-vct-primary bg-(--tab-color)/0 hover:bg-(--tab-color)/10 ${
                                 isActive
-                                    ? 'text-white'
-                                    : 'text-vct-text-muted hover:bg-white/5 hover:text-vct-text'
+                                    ? 'shadow-[0_0_15px_var(--tab-glow)] text-white'
+                                    : 'text-vct-text-muted hover:text-vct-text'
                             }`}
                         >
                             {isActive && (
                                 <motion.div
                                     layoutId="active-portal-tab"
-                                    className="absolute inset-0 z-0 rounded-full"
-                                    style={{ backgroundColor: meta.color }}
+                                    className="absolute inset-0 z-0 rounded-full bg-(--tab-color)"
                                     initial={false}
                                     transition={{ type: 'spring', bounce: 0.2, duration: 0.6 }}
                                 />
                             )}
                             <span className="relative z-10 flex items-center gap-1.5">
-                                <Icon size={16} className={isActive ? 'text-white' : ''} style={!isActive ? { color: meta.color } : undefined} />
+                                { }
+                                <Icon size={16} className={isActive ? 'text-white' : 'text-(--tab-color)'} />
                                 {t(meta.label)}
                                 <span className={`ml-1 flex h-5 min-w-5 items-center justify-center rounded-full px-1.5 text-[10px] font-bold ${
-                                    isActive ? 'bg-black/20 text-white' : 'bg-white/10 text-vct-text-muted'
+                                    isActive ? 'bg-black/20 text-white' : 'bg-black/5 dark:bg-white/10 text-vct-text-muted'
                                 }`}>
                                     {count}
                                 </span>

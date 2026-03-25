@@ -627,6 +627,7 @@ export const en: Record<string, string> = {
     'portal.allWorkspaces': 'All Workspaces',
     'portal.searchPlaceholder': 'Search workspaces...',
     'portal.clearSearch': 'Clear',
+    'portal.allCategories': 'All Categories',
     'portal.noResults': 'No workspaces found',
     'portal.empty': 'No workspaces yet',
     'portal.sortAZ': 'Name A-Z',

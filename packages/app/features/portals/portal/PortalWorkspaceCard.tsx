@@ -32,7 +32,7 @@ function getRelativeTime(timestamp: number): string {
 
 export const PortalWorkspaceCard = ({ card, onClick }: Props) => {
     const { t } = useI18n()
-    const { togglePin, isPinned, lastAccessedMap } = useWorkspaceStore()
+    const { togglePin, isPinned, lastAccessedMap, isPrivacyMode } = useWorkspaceStore()
     const meta = WORKSPACE_META[card.type]
     const pinned = isPinned(card.id)
     const lastAccess = lastAccessedMap[card.id]
@@ -49,11 +49,12 @@ export const PortalWorkspaceCard = ({ card, onClick }: Props) => {
 
     return (
         <motion.button
+            aria-label={`${displayName} - ${typeName}`}
             whileHover={{ y: -4, scale: 1.01 }}
             whileTap={{ scale: 0.98 }}
             type="button"
             onClick={() => onClick(card)}
-            className="group relative flex h-full flex-col gap-4 overflow-hidden rounded-2xl border border-vct-border/40 bg-white/80 p-6 text-left shadow-xs backdrop-blur-xl transition-all duration-300 hover:border-vct-accent/40 hover:shadow-[0_8px_30px_rgb(0,0,0,0.12)] focus:outline-none focus:ring-2 focus:ring-vct-accent/30 dark:border-white/10 dark:bg-white/5 dark:hover:shadow-[0_8px_30px_rgba(255,255,255,0.05)]"
+            className="group relative flex h-full flex-col gap-4 overflow-hidden rounded-2xl border border-vct-border/80 bg-white shadow-xs backdrop-blur-xl transition-all duration-300 hover:border-vct-accent/40 hover:shadow-[0_8px_30px_rgb(0,0,0,0.12)] focus:outline-none focus:ring-2 focus:ring-vct-accent/30 dark:border-white/10 dark:bg-white/5 dark:hover:shadow-[0_8px_30px_rgba(255,255,255,0.05)]"
         >
             {/* Ambient Background Glow Effect inside the card (visible on hover) */}
             <div className="absolute inset-x-0 bottom-0 h-1/2 bg-linear-to-t from-vct-accent/10 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
@@ -69,11 +70,13 @@ export const PortalWorkspaceCard = ({ card, onClick }: Props) => {
                             className="h-10 w-10 rounded-xl object-cover"
                         />
                     ) : (
-                        <div
-                            className="flex h-10 w-10 items-center justify-center rounded-xl backdrop-blur-md"
-                            style={{ backgroundColor: `${card.color}18` }}
+                         <div
+                            className="flex h-10 w-10 items-center justify-center rounded-xl backdrop-blur-md bg-(--card-icon-bg)"
+                            style={{ 
+                                '--card-icon-bg': `${card.color}18` 
+                            } as React.CSSProperties}
                         >
-                            <CardIcon size={20} color={card.color} />
+                            <CardIcon size={20} style={{ color: card.color }} />
                         </div>
                     )}
                     <div className="min-w-0 flex-1">
@@ -129,8 +132,8 @@ export const PortalWorkspaceCard = ({ card, onClick }: Props) => {
 
                 {/* Pending actions */}
                 {(card.pendingActions ?? 0) > 0 && (
-                    <span className="rounded-full bg-red-500/15 px-2 py-0.5 text-red-500">
-                        {card.pendingActions} pending
+                    <span className={`rounded-full px-2 py-0.5 ${isPrivacyMode ? 'bg-zinc-500/15 text-zinc-500 blur-[2px]' : 'bg-red-500/15 text-red-500'}`}>
+                        {isPrivacyMode ? '***' : card.pendingActions} pending
                     </span>
                 )}
 
@@ -144,6 +147,29 @@ export const PortalWorkspaceCard = ({ card, onClick }: Props) => {
                     </span>
                 )}
             </div>
+
+            {/* Sparkline for administrative workspaces */}
+            {['system_admin', 'federation_admin', 'federation_provincial', 'club_management', 'tournament_ops'].includes(card.type) && (
+                <div className="absolute right-0 bottom-0 h-12 w-24 translate-y-2 opacity-30 group-hover:opacity-60 transition-opacity">
+                    <svg viewBox="0 0 100 40" className="h-full w-full overflow-visible">
+                        <motion.path
+                            d={`M 0,${20 + Math.sin(card.id.length) * 10} 
+                               L 20,${25 + Math.cos(card.id.length) * 10} 
+                               L 40,${15 - Math.sin(card.id.length) * 5} 
+                               L 60,${30 + Math.cos(card.id.length) * 8} 
+                               L 80,${10 + Math.sin(card.id.length) * 12} 
+                               L 100,${20}`}
+                            fill="none"
+                            stroke={card.color || 'currentColor'}
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                            initial={{ pathLength: 0 }}
+                            animate={{ pathLength: 1 }}
+                            transition={{ duration: 1.5, delay: 0.5 }}
+                        />
+                    </svg>
+                </div>
+            )}
         </motion.button>
     )
 }

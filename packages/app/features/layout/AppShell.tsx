@@ -174,6 +174,22 @@ const AccessDenied = ({
   )
 }
 
+function PrivacyToggle() {
+  const { isPrivacyMode, togglePrivacyMode } = useWorkspaceStore()
+  
+  return (
+    <button
+      type="button"
+      aria-label="Toggle Privacy Mode"
+      onClick={togglePrivacyMode}
+      title="Toggle Privacy Mode"
+      className={`inline-flex h-9 w-9 items-center justify-center rounded-full border border-vct-border bg-vct-elevated transition hover:border-vct-accent ${isPrivacyMode ? 'text-vct-accent' : 'text-vct-text-muted hover:text-vct-text'}`}
+    >
+      {isPrivacyMode ? <VCT_Icons.EyeOff size={16} /> : <VCT_Icons.Eye size={16} />}
+    </button>
+  )
+}
+
 const ShellLayout = ({ children }: { children: React.ReactNode }) => {
   const pathname = usePathname()
   const router = useRouter()
@@ -424,6 +440,7 @@ const ShellLayout = ({ children }: { children: React.ReactNode }) => {
           </button>
         )}
 
+        <PrivacyToggle />
         <LangToggle />
         <ThemeToggle />
         <NotificationCenter />

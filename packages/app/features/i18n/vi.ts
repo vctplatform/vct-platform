@@ -1,4 +1,4 @@
-﻿// ════════════════════════════════════════════════════════════════
+// ════════════════════════════════════════════════════════════════
 // VCT PLATFORM — Vietnamese Translations
 // ════════════════════════════════════════════════════════════════
 
@@ -620,18 +620,6 @@ export const vi: Record<string, string> = {
 
     // ── Portal Hub v3 ──
     'portal.welcome': 'Chào mừng trở lại',
-    'portal.available': 'khả dụng',
-    'portal.quickSwitch': 'để chuyển nhanh',
-    'portal.favorites': 'Yêu thích',
-    'portal.recent': 'Gần đây',
-    'portal.allWorkspaces': 'Tất cả workspace',
-    'portal.searchPlaceholder': 'Tìm workspace...',
-    'portal.clearSearch': 'Xóa',
-    'portal.noResults': 'Không tìm thấy workspace',
-    'portal.empty': 'Chưa có workspace nào',
-    'portal.sortAZ': 'Tên A-Z',
-    'portal.sortRecent': 'Gần đây nhất',
-    'portal.sortPending': 'Cần xử lý',
     'portal.pin': 'Ghim',
     'portal.unpin': 'Bỏ ghim',
     'portal.viewOnly': 'Chỉ xem',
