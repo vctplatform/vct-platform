@@ -638,6 +638,13 @@ export const en: Record<string, string> = {
     'portal.viewOnly': 'View only',
     'portal.archived': 'Archived',
     'portal.upcoming': 'Upcoming',
+    'portal.activityFeed': 'System Activity',
+    'portal.viewAll': 'View all',
+    'portal.securitySystem': 'Security System',
+    'portal.securityDesc': 'All transactions and data on VCT Platform are end-to-end encrypted following AES-256 standards.',
+    'portal.ecosystem': 'Comprehensive Ecosystem',
+    'portal.accessCount': 'You have access to',
+    'portal.workspaces': 'workspaces',
 
     // ── Workspace Scopes ──
     'ws.scope.sysadmin': 'System Administration',

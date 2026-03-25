@@ -74,7 +74,7 @@ export function PortalCategoryTabs({
                             } as React.CSSProperties}
                             className={`relative flex shrink-0 snap-start items-center gap-2 rounded-full px-4 py-2 text-sm font-medium transition-all duration-200 outline-none focus-visible:ring-2 focus-visible:ring-vct-primary bg-(--tab-color)/0 hover:bg-(--tab-color)/10 ${
                                 isActive
-                                    ? 'shadow-[0_0_15px_var(--tab-glow)] text-white'
+                                    ? 'shadow-[0_0_20px_var(--tab-glow)] text-white dark:text-zinc-900 contrast-more:text-black'
                                     : 'text-vct-text-muted hover:text-vct-text'
                             }`}
                         >
@@ -88,7 +88,7 @@ export function PortalCategoryTabs({
                             )}
                             <span className="relative z-10 flex items-center gap-1.5">
                                 { }
-                                <Icon size={16} className={isActive ? 'text-white' : 'text-(--tab-color)'} />
+                                <Icon size={16} className={isActive ? 'text-white dark:text-zinc-900' : 'text-(--tab-color)'} />
                                 {t(meta.label)}
                                 <span className={`ml-1 flex h-5 min-w-5 items-center justify-center rounded-full px-1.5 text-[10px] font-bold ${
                                     isActive ? 'bg-black/20 text-white' : 'bg-black/5 dark:bg-white/10 text-vct-text-muted'

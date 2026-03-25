@@ -41,7 +41,7 @@ export const PortalSearchBar = ({
                     value={searchQuery}
                     onChange={(e) => onSearchChange(e.target.value)}
                     placeholder={t('portal.searchPlaceholder')}
-                    className="h-11 w-full rounded-xl border border-vct-border bg-[var(--vct-bg-elevated)] pl-11 pr-10 text-sm text-vct-text placeholder:text-vct-text-muted/50 focus:border-vct-accent focus:outline-none focus:ring-2 focus:ring-vct-accent/20 transition-all"
+                    className="h-11 w-full rounded-xl border border-vct-border/60 bg-(--vct-bg-elevated) pl-11 pr-10 text-sm text-vct-text placeholder:text-vct-text-muted/50 focus:border-vct-accent focus:outline-none focus:ring-2 focus:ring-vct-accent/20 transition-all shadow-sm"
                     aria-label={t('portal.searchPlaceholder')}
                 />
                 {searchQuery && (
@@ -70,7 +70,7 @@ export const PortalSearchBar = ({
                 <select
                     value={sortMode}
                     onChange={(e) => onSortChange(e.target.value as SortMode)}
-                    className="h-9 rounded-lg border border-vct-border bg-[var(--vct-bg-elevated)] px-2.5 text-xs font-semibold text-vct-text-muted cursor-pointer focus:border-vct-accent focus:outline-none"
+                    className="h-9 rounded-lg border border-vct-border bg-(--vct-bg-elevated) px-2.5 text-xs font-semibold text-vct-text-muted cursor-pointer focus:border-vct-accent focus:outline-none"
                     aria-label="Sort workspaces"
                 >
                     <option value="recent">{t('portal.sortRecent')}</option>

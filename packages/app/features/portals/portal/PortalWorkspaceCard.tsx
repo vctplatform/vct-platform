@@ -54,7 +54,7 @@ export const PortalWorkspaceCard = ({ card, onClick }: Props) => {
             whileTap={{ scale: 0.98 }}
             type="button"
             onClick={() => onClick(card)}
-            className="group relative flex h-full flex-col gap-4 overflow-hidden rounded-2xl border border-vct-border/80 bg-white shadow-xs backdrop-blur-xl transition-all duration-300 hover:border-vct-accent/40 hover:shadow-[0_8px_30px_rgb(0,0,0,0.12)] focus:outline-none focus:ring-2 focus:ring-vct-accent/30 dark:border-white/10 dark:bg-white/5 dark:hover:shadow-[0_8px_30px_rgba(255,255,255,0.05)]"
+            className="group relative flex h-full flex-col gap-4 overflow-hidden rounded-2xl border border-vct-border/60 bg-white shadow-xs backdrop-blur-xl transition-all duration-300 hover:border-vct-primary/40 hover:shadow-xl hover:shadow-vct-primary/10 focus:outline-none focus:ring-2 focus:ring-vct-accent/30 dark:border-white/10 dark:bg-white/5 dark:hover:shadow-[0_8px_30px_rgba(255,255,255,0.05)]"
         >
             {/* Ambient Background Glow Effect inside the card (visible on hover) */}
             <div className="absolute inset-x-0 bottom-0 h-1/2 bg-linear-to-t from-vct-accent/10 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
@@ -70,7 +70,7 @@ export const PortalWorkspaceCard = ({ card, onClick }: Props) => {
                             className="h-10 w-10 rounded-xl object-cover"
                         />
                     ) : (
-                         <div
+                        <div
                             className="flex h-10 w-10 items-center justify-center rounded-xl backdrop-blur-md bg-(--card-icon-bg)"
                             style={{ 
                                 '--card-icon-bg': `${card.color}18` 
@@ -80,7 +80,7 @@ export const PortalWorkspaceCard = ({ card, onClick }: Props) => {
                         </div>
                     )}
                     <div className="min-w-0 flex-1">
-                        <div className="truncate text-sm font-bold text-vct-text">{displayName}</div>
+                        <div className="truncate text-sm font-bold text-vct-text group-hover:text-vct-primary transition-colors">{displayName}</div>
                         <div className="truncate text-xs text-vct-text-muted">{typeName}</div>
                     </div>
                 </div>
@@ -97,7 +97,7 @@ export const PortalWorkspaceCard = ({ card, onClick }: Props) => {
             </div>
 
             {/* Description */}
-            <p className="line-clamp-2 text-xs leading-relaxed text-vct-text-muted">
+            <p className="line-clamp-2 text-xs leading-relaxed text-vct-text-muted group-hover:text-vct-text/80 transition-colors">
                 {t(card.description)}
             </p>
 
@@ -160,7 +160,7 @@ export const PortalWorkspaceCard = ({ card, onClick }: Props) => {
                                L 80,${10 + Math.sin(card.id.length) * 12} 
                                L 100,${20}`}
                             fill="none"
-                            stroke={card.color || 'currentColor'}
+                            style={{ stroke: card.color || 'currentColor' }}
                             strokeWidth="2"
                             strokeLinecap="round"
                             initial={{ pathLength: 0 }}

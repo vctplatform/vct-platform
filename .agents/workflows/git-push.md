@@ -20,6 +20,7 @@ git diff --stat
 ```
 
 Đánh giá:
+
 - [ ] Có files nào KHÔNG nên commit? (`.env`, debug logs, scratch files)
 - [ ] Có files nào bị conflict?
 - [ ] Thay đổi có thuộc cùng 1 mục đích logic?
@@ -29,15 +30,17 @@ git diff --stat
 ## Bước 2: Quality Check Trước Khi Commit
 
 ### Build verification (bắt buộc):
+
 ```bash
-cd backend && go build ./...
-cd backend && go vet ./...
+cd backend ; go build ./...
+cd backend ; go vet ./...
 npm run typecheck
 ```
 
 > ⚠️ **KHÔNG push nếu build fail.** Fix trước, push sau.
 
 ### Quick checks:
+
 ```bash
 # Debug logs còn sót?
 git diff --cached | grep -i "console.log\|fmt.Println\|TODO\|FIXME" | head -10
@@ -51,6 +54,7 @@ git diff --cached --name-only | grep -i "\.env$\|\.key$\|\.pem$\|secret"
 ## Bước 3: Stage & Commit
 
 ### 3.1 Stage files
+
 ```bash
 # Stage tất cả
 git add -A
@@ -64,6 +68,7 @@ git add .agents/
 ### 3.2 Commit message convention
 
 #### Format:
+
 ```
 <type>(<scope>): <description>
 
@@ -71,26 +76,29 @@ git add .agents/
 ```
 
 #### Types:
-| Type | Khi nào |
-|------|---------|
-| `feat` | Feature mới |
-| `fix` | Bug fix |
-| `refactor` | Refactoring (no behavior change) |
-| `docs` | Documentation only |
-| `style` | Formatting, no code change |
-| `test` | Adding/updating tests |
-| `chore` | Build, deps, config changes |
-| `perf` | Performance improvement |
-| `ci` | CI/CD changes |
-| `wip` | Work in progress (tránh dùng trên main) |
+
+| Type       | Khi nào                                 |
+| ---------- | --------------------------------------- |
+| `feat`     | Feature mới                             |
+| `fix`      | Bug fix                                 |
+| `refactor` | Refactoring (no behavior change)        |
+| `docs`     | Documentation only                      |
+| `style`    | Formatting, no code change              |
+| `test`     | Adding/updating tests                   |
+| `chore`    | Build, deps, config changes             |
+| `perf`     | Performance improvement                 |
+| `ci`       | CI/CD changes                           |
+| `wip`      | Work in progress (tránh dùng trên main) |
 
 #### Scopes phổ biến:
+
 ```
-backend, frontend, ui, auth, federation, athlete, 
+backend, frontend, ui, auth, federation, athlete,
 tournament, club, i18n, db, docker, deps, skills, workflows
 ```
 
 #### Ví dụ:
+
 ```bash
 git commit -m "feat(federation): add regulations CRUD pages"
 git commit -m "fix(sidebar): correct active state for nested routes"
@@ -100,6 +108,7 @@ git commit -m "docs(api): update federation API documentation"
 ```
 
 ### 3.3 Multi-scope commits (nhiều thay đổi lớn):
+
 ```bash
 # Tách thành nhiều commits nếu thay đổi thuộc nhiều mục đích
 git add backend/
@@ -128,6 +137,7 @@ git push -u origin <branch-name>
 ```
 
 ### Xử lý conflicts:
+
 ```bash
 # Nếu push bị reject
 git pull origin main --rebase
@@ -149,6 +159,7 @@ git status
 ```
 
 Checklist:
+
 - [ ] Build pass trước khi commit
 - [ ] Không có secrets trong commit
 - [ ] Không có debug logs trong commit

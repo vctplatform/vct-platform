@@ -29,10 +29,10 @@ export function PortalActivityFeed() {
             <div className="flex items-center justify-between">
                 <h3 className="text-sm font-bold text-vct-text flex items-center gap-2">
                     <VCT_Icons.Activity size={18} className="text-vct-primary" />
-                    {t('portal.activityFeed') || 'Hoạt động Hệ thống'}
+                    {t('portal.activityFeed')}
                 </h3>
                 <button className="text-[10px] font-bold text-vct-primary hover:underline">
-                    {t('portal.viewAll') || 'Xem tất cả'}
+                    {t('portal.viewAll')}
                 </button>
             </div>
 
@@ -63,10 +63,10 @@ export function PortalActivityFeed() {
                 <div className="rounded-xl bg-vct-primary/10 p-4 border border-vct-primary/20">
                     <div className="text-[11px] font-bold text-vct-primary mb-1 flex items-center gap-1">
                         <VCT_Icons.ShieldCheck size={14} />
-                        Hệ thống Bảo mật
+                        {t('portal.securitySystem')}
                     </div>
                     <p className="text-[10px] text-vct-text-muted leading-relaxed">
-                        Mọi giao dịch và dữ liệu trên VCT Platform đều được mã hóa đầu cuối theo tiêu chuẩn AES-256.
+                        {t('portal.securityDesc')}
                     </p>
                 </div>
             </div>
