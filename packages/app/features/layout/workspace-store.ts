@@ -173,7 +173,8 @@ export const useWorkspaceStore = create<WorkspaceState>()(
 // Labels use i18n keys — consumers call t(card.label) to localize
 export function generateWorkspaceCards(
     userRoles: Array<{ role: string; scope_type: string; scope_id: string; scope_name: string }>,
-    userName: string
+    userName: string,
+    options?: { pendingTasks?: number }
 ): WorkspaceCard[] {
     const cards: WorkspaceCard[] = []
     const seen = new Set<string>()
@@ -187,6 +188,7 @@ export function generateWorkspaceCards(
         if (!wsType) continue
 
         const meta = WORKSPACE_META[wsType]
+        const isAdministrative = ['federation_admin', 'federation_provincial', 'club_management', 'system_admin'].includes(wsType)
         cards.push({
             id: key,
             type: wsType,
@@ -196,6 +198,7 @@ export function generateWorkspaceCards(
             icon: meta.icon,
             color: meta.color,
             gradient: meta.gradient,
+            pendingActions: isAdministrative ? options?.pendingTasks : undefined,
         })
     }
 

@@ -57,7 +57,9 @@ interface BackendTokenResponse {
 
 interface BackendLoginResponse extends BackendAuthUser, BackendTokenResponse { }
 
-interface BackendMeResponse extends BackendAuthUser, Partial<BackendTokenResponse> { }
+interface BackendMeResponse extends BackendAuthUser, Partial<BackendTokenResponse> {
+  pendingTasks?: number
+}
 
 interface BackendAuditResponse {
   items: AuthAuditEntry[]
@@ -70,6 +72,7 @@ interface AuthMeResult {
   operationShift?: 'sang' | 'chieu' | 'toi'
   expiresAt: string
   refreshExpiresAt: string
+  pendingTasks?: number
 }
 
 const normalizeWorkspaceAccess = (workspace: WorkspaceAccess): WorkspaceAccess | null => {
@@ -207,6 +210,7 @@ export const authClient = {
       refreshExpiresAt:
         payload.refreshExpiresAt ??
         new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+      pendingTasks: payload.pendingTasks,
     }
   },
 

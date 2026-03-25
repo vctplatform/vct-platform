@@ -75,7 +75,8 @@ function PortalHubContent() {
                 scope_id: r.scopeId ?? 'default',
                 scope_name: r.scopeName ?? '',
             })),
-            currentUser.name
+            currentUser.name,
+            { pendingTasks: currentUser.metadata?.pendingTasks as number | undefined }
         ),
         [currentUser]
     )

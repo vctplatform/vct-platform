@@ -7,8 +7,8 @@
 import { VCT_Icons } from '../../components/vct-icons'
 import { useI18n } from '../../i18n'
 import type { WorkspaceCard } from '../../layout/workspace-types'
-import { WORKSPACE_META } from '../../layout/workspace-types'
 import { useWorkspaceStore } from '../../layout/workspace-store'
+import { PortalWorkspaceCard } from './PortalWorkspaceCard'
 
 interface Props {
     cards: WorkspaceCard[]
@@ -40,45 +40,12 @@ export const PortalRecent = ({ cards, onClick }: Props) => {
                 <VCT_Icons.Clock size={14} />
                 {t('portal.recent')}
             </h2>
-            <div className="divide-y divide-vct-border/50 rounded-xl border border-vct-border/60 bg-[var(--vct-bg-card)]">
-                {cards.map((card) => {
-                    const meta = WORKSPACE_META[card.type]
-                    const iconMap = VCT_Icons as Record<string, React.ComponentType<any>>
-                    const CardIcon = iconMap[card.icon] ?? iconMap[meta?.icon ?? 'Activity'] ?? VCT_Icons.Activity
-                    const displayName = card.scope.name && card.scope.name !== card.label
-                        ? t(card.scope.name)
-                        : t(card.label)
-                    const lastAccess = lastAccessedMap[card.id]
-
-                    return (
-                        <button
-                            key={card.id}
-                            type="button"
-                            onClick={() => onClick(card)}
-                            className="flex w-full items-center gap-3 px-4 py-3 text-left transition-colors hover:bg-[var(--vct-bg-elevated)] first:rounded-t-xl last:rounded-b-xl focus:outline-none focus:ring-2 focus:ring-inset focus:ring-vct-accent/30"
-                        >
-                            {card.logoUrl ? (
-                                <img src={card.logoUrl} alt="" className="h-7 w-7 rounded-lg object-cover" />
-                            ) : (
-                                <div
-                                    className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg"
-                                    style={{ backgroundColor: `${card.color}15` }}
-                                >
-                                    <CardIcon size={14} color={card.color} />
-                                </div>
-                            )}
-                            <div className="min-w-0 flex-1">
-                                <span className="truncate text-sm font-semibold text-vct-text">{displayName}</span>
-                            </div>
-                            {lastAccess && (
-                                <span className="shrink-0 text-[11px] text-vct-text-muted/60">
-                                    {getRelativeTime(lastAccess)}
-                                </span>
-                            )}
-                            <VCT_Icons.ChevronRight size={14} className="shrink-0 text-vct-text-muted/30" />
-                        </button>
-                    )
-                })}
+            <div className="flex gap-4 overflow-x-auto pb-4 snap-x snap-mandatory scrollbar-hide">
+                {cards.map((card) => (
+                    <div key={card.id} className="w-[280px] shrink-0 snap-start sm:w-[320px]">
+                        <PortalWorkspaceCard card={card} onClick={onClick} />
+                    </div>
+                ))}
             </div>
         </section>
     )

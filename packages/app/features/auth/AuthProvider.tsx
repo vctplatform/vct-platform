@@ -368,7 +368,10 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         const nextSession: AuthSession = {
           ...working,
           token: working.accessToken,
-          user: me.user,
+          user: {
+            ...me.user,
+            metadata: { ...me.user.metadata, pendingTasks: me.pendingTasks },
+          },
           expiresAt: me.expiresAt,
           refreshExpiresAt: me.refreshExpiresAt || working.refreshExpiresAt,
         }
@@ -386,7 +389,10 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             safeSetSession({
               ...refreshed,
               token: refreshed.accessToken,
-              user: me.user,
+              user: {
+                ...me.user,
+                metadata: { ...me.user.metadata, pendingTasks: me.pendingTasks },
+              },
               expiresAt: me.expiresAt,
               refreshExpiresAt: me.refreshExpiresAt || refreshed.refreshExpiresAt,
             })
