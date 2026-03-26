@@ -3,33 +3,7 @@
 // ════════════════════════════════════════════════════════════════
 
 export const vi: Record<string, string> = {
-    // ── Portal Hub v3 ──
-    'portal.welcome': 'Chào mừng trở lại',
-    'portal.available': 'hợp lệ',
-    'portal.quickSwitch': 'nhấn để tìm nhanh',
-    'portal.favorites': 'Yêu thích',
-    'portal.recent': 'Truy cập gần đây',
-    'portal.allWorkspaces': 'Tất cả Workspace',
-    'portal.searchPlaceholder': 'Tìm kiếm workspace...',
-    'portal.clearSearch': 'Xóa',
-    'portal.allCategories': 'Tất cả danh mục',
-    'portal.noResults': 'Không tìm thấy workspace nào',
-    'portal.empty': 'Chưa có workspace nào',
-    'portal.sortAZ': 'Tên A-Z',
-    'portal.sortRecent': 'Mới nhất',
-    'portal.sortPending': 'Việc cần làm',
-    'portal.activityFeed': 'Hoạt động Hệ thống',
-    'portal.viewAll': 'Xem tất cả',
-    'portal.securitySystem': 'Hệ thống Bảo mật',
-    'portal.securityDesc': 'Mọi giao dịch và dữ liệu trên VCT Platform đều được mã hóa đầu cuối theo tiêu chuẩn AES-256.',
-    'portal.ecosystem': 'Hệ sinh thái toàn diện',
-    'portal.accessCount': 'Bạn đang có quyền truy cập vào',
-    'portal.workspaces': 'workspace',
-    'portal.pin': 'Ghim',
-    'portal.unpin': 'Bỏ ghim',
-    'portal.viewOnly': 'Chỉ xem',
-    'portal.archived': 'Đã lưu trữ',
-    'portal.upcoming': 'Sắp tới',
+
     'portal.quickSwitchSuffix': 'để tìm kiếm nhanh',
     'portal.pendingCount': 'việc cần làm',    // ── Common ──
     'common.save': 'Lưu',
