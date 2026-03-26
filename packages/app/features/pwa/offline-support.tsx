@@ -13,6 +13,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { VCT_Text } from '@vct/ui'
 
 const __DEV__ = process.env.NODE_ENV !== 'production'
+// eslint-disable-next-line no-console
 const devLog = (...args: unknown[]) => { if (__DEV__) console.log(...args) }
 
 /* ═══════════════════════════════════════════════════════════════
