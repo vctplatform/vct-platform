@@ -54,7 +54,7 @@ export const PortalWorkspaceCard = ({ card, onClick }: Props) => {
             whileTap={{ scale: 0.98 }}
             type="button"
             onClick={() => onClick(card)}
-            className="group relative flex min-h-[180px] flex-col gap-3 rounded-2xl border border-vct-border/60 bg-white p-5 shadow-xs backdrop-blur-xl transition-all duration-300 hover:border-vct-primary/40 hover:shadow-xl hover:shadow-vct-primary/10 focus:outline-none focus:ring-2 focus:ring-vct-accent/30 dark:border-white/10 dark:bg-white/5 dark:hover:shadow-[0_8px_30px_rgba(255,255,255,0.05)]"
+            className="group relative flex min-h-[180px] flex-col gap-3 rounded-2xl border border-slate-200 bg-white/90 p-5 shadow-md transition-all duration-300 hover:border-vct-primary/50 hover:shadow-xl hover:shadow-vct-primary/10 focus:outline-none focus:ring-2 focus:ring-vct-accent/30 dark:border-white/10 dark:bg-white/5 dark:shadow-none dark:backdrop-blur-xl dark:hover:shadow-[0_8px_30px_rgba(255,255,255,0.05)]"
         >
             {/* Ambient Background Glow Effect inside the card (visible on hover) */}
             <div className="absolute inset-x-0 bottom-0 h-1/2 bg-linear-to-t from-vct-accent/10 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
