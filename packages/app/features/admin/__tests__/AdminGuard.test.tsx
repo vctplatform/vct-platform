@@ -13,7 +13,7 @@ vi.mock('../hooks/useAdminShortcuts', () => ({
     useAdminShortcuts: () => {},
 }))
 
-import { AdminGuard } from '@vct/ui'
+import { AdminGuard } from '../components/AdminGuard'
 
 // Mock useI18n
 vi.mock('../../i18n', () => ({

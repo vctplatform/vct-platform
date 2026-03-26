@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react'
 import { VCT_Icons } from '@vct/ui'
 import { useI18n } from '../../i18n'
-import { useAuth } from '../../auth/AuthProvider'
+import { getAccessToken } from '../../auth/token-storage'
 
 interface ActivityItem {
     id: string;
@@ -14,7 +14,6 @@ interface ActivityItem {
 
 export function PortalActivityFeed() {
     const { t } = useI18n()
-    const { getAccessToken } = useAuth()
     const [activities, setActivities] = useState<ActivityItem[]>([])
     const [loading, setLoading] = useState(true)
 

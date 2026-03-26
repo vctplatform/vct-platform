@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeAll, afterAll } from 'vitest'
 import * as React from 'react'
 import { render } from '@testing-library/react'
 import { screen, fireEvent } from '@testing-library/dom'
-import { AdminErrorBoundary } from '@vct/ui'
+import { AdminErrorBoundary } from '../components/AdminErrorBoundary'
 
 // Mock VCT_Icons
 vi.mock('../../components/vct-icons', () => ({

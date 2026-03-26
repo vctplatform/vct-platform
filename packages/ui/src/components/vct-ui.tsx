@@ -9,7 +9,8 @@ export * from './VCT_Tooltip'
 export * from './VCT_Dropdown'
 export * from './VCT_Timeline'
 export * from './VCT_NotificationBell'
-export * from './VCT_CommandPalette'
+// VCT_CommandPalette is app-level (depends on useAuth, useRouter, workspace-store)
+// It lives in packages/app/features/components/ and should NOT be in the UI library
 export { VCT_PageSkeleton } from './VCT_Skeleton'
 export * from './VCT_PageTransition'
 export * from './VCT_ShortcutsPanel'
@@ -22,7 +23,7 @@ export { VCT_PageToolbar } from './VCT_PageToolbar'
 export { VCT_SectionCard } from './VCT_SectionCard'
 export { VCT_EmptyState } from './VCT_EmptyState'
 export { VCT_StatRow } from './VCT_StatRow'
-export type { StatItem } from './VCT_StatRow'
+export { type StatItem } from './VCT_StatRow'
 
 // Phase 6 - UI/UX Upgrade Components
 export * from './VCT_DataGrid'
