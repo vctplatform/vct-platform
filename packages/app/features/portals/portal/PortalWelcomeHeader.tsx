@@ -48,7 +48,7 @@ export function PortalWelcomeHeader({ name, count, t }: WelcomeHeaderProps) {
                 <kbd className="flex items-center justify-center rounded-md border border-vct-border/50 bg-vct-border/20 px-2 py-1 text-[10px] font-bold shadow-xs backdrop-blur-sm">
                     ⌘K
                 </kbd>
-                <span>để tìm kiếm nhanh</span>
+                <span>{t('portal.quickSwitchSuffix')}</span>
             </motion.div>
         </motion.div>
     )

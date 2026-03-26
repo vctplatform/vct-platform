@@ -17,17 +17,17 @@ interface Props {
     onClick: (card: WorkspaceCard) => void
 }
 
-function getRelativeTime(timestamp: number): string {
+function getRelativeTime(timestamp: number, t: (key: string) => string): string {
     const diff = Date.now() - timestamp
     const mins = Math.floor(diff / 60000)
-    if (mins < 1) return 'Vừa xong'
-    if (mins < 60) return `${mins} phút trước`
+    if (mins < 1) return t('time.justNow') || 'Vừa xong'
+    if (mins < 60) return `${mins} ${t('time.minsAgo') || 'phút trước'}`
     const hours = Math.floor(mins / 60)
-    if (hours < 24) return `${hours} giờ trước`
+    if (hours < 24) return `${hours} ${t('time.hoursAgo') || 'giờ trước'}`
     const days = Math.floor(hours / 24)
-    if (days === 1) return 'Hôm qua'
-    if (days < 7) return `${days} ngày trước`
-    return `${Math.floor(days / 7)} tuần trước`
+    if (days === 1) return t('time.yesterday') || 'Hôm qua'
+    if (days < 7) return `${days} ${t('time.daysAgo') || 'ngày trước'}`
+    return `${Math.floor(days / 7)} ${t('time.weeksAgo') || 'tuần trước'}`
 }
 
 export const PortalWorkspaceCard = ({ card, onClick }: Props) => {
@@ -105,9 +105,9 @@ export const PortalWorkspaceCard = ({ card, onClick }: Props) => {
             <div className="flex flex-wrap items-center gap-2 text-[10px] font-semibold">
                 {/* Status dot */}
                 {status === 'active' && (
-                    <span className="flex items-center gap-1 text-emerald-500">
+                    <span className="flex items-center gap-1 text-emerald-600 dark:text-emerald-400">
                         <span className="h-1.5 w-1.5 rounded-full bg-current" />
-                        Active
+                        {t('common.status.active')}
                     </span>
                 )}
                 {status === 'archived' && (
@@ -132,8 +132,8 @@ export const PortalWorkspaceCard = ({ card, onClick }: Props) => {
 
                 {/* Pending actions */}
                 {(card.pendingActions ?? 0) > 0 && (
-                    <span className={`rounded-full px-2 py-0.5 ${isPrivacyMode ? 'bg-zinc-500/15 text-zinc-500 blur-[2px]' : 'bg-red-500/15 text-red-500'}`}>
-                        {isPrivacyMode ? '***' : card.pendingActions} pending
+                    <span className={`rounded-full px-2 py-0.5 ${isPrivacyMode ? 'bg-zinc-500/15 text-zinc-500 blur-[2px]' : 'bg-red-500/15 text-red-600 dark:text-red-400'}`}>
+                        {isPrivacyMode ? '***' : card.pendingActions} {t('portal.pendingCount')}
                     </span>
                 )}
 
@@ -142,8 +142,8 @@ export const PortalWorkspaceCard = ({ card, onClick }: Props) => {
 
                 {/* Last access */}
                 {lastAccess && (
-                    <span className="text-vct-text-muted/70">
-                        {getRelativeTime(lastAccess)}
+                    <span className="text-vct-text-muted">
+                        {getRelativeTime(lastAccess, t)}
                     </span>
                 )}
             </div>

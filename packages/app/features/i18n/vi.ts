@@ -3,6 +3,8 @@
 // ════════════════════════════════════════════════════════════════
 
 export const vi: Record<string, string> = {
+
+
     // ── Common ──
     'common.save': 'Lưu',
     'common.cancel': 'Hủy',
@@ -25,6 +27,9 @@ export const vi: Record<string, string> = {
     'common.none': 'Không có',
     'common.actions': 'Hành động',
     'common.status': 'Trạng thái',
+    'common.status.active': 'Đang hoạt động',
+    'common.status.archived': 'Đã lưu trữ',
+    'common.status.upcoming': 'Sắp tới',
     'common.details': 'Chi tiết',
     'common.export': 'Xuất',
     'common.import': 'Nhập',
@@ -34,6 +39,12 @@ export const vi: Record<string, string> = {
     'common.refresh': 'Làm mới',
     'common.noData': 'Không có dữ liệu',
     'common.viewAll': 'Xem tất cả',
+    'time.justNow': 'Vừa xong',
+    'time.minsAgo': 'phút trước',
+    'time.hoursAgo': 'giờ trước',
+    'time.yesterday': 'Hôm qua',
+    'time.daysAgo': 'ngày trước',
+    'time.weeksAgo': 'tuần trước',
 
     // ── Auth — Login ──
     'auth.platform': 'VCT Platform',
@@ -619,7 +630,27 @@ export const vi: Record<string, string> = {
     'ws.cat.public': 'Khán giả & Công cộng',
 
     // ── Portal Hub v3 ──
-    'portal.welcome': 'Chào mừng trở lại',
+    'portal.welcome': 'Chào mừng trở lại',
+    'portal.available': 'hợp lệ',
+    'portal.quickSwitch': 'nhấn để tìm nhanh',
+    'portal.favorites': 'Yêu thích',
+    'portal.recent': 'Truy cập gần đây',
+    'portal.allWorkspaces': 'Tất cả Workspace',
+    'portal.searchPlaceholder': 'Tìm kiếm workspace...',
+    'portal.clearSearch': 'Xóa',
+    'portal.allCategories': 'Tất cả danh mục',
+    'portal.noResults': 'Không tìm thấy workspace nào',
+    'portal.empty': 'Chưa có workspace nào',
+    'portal.sortAZ': 'Tên A-Z',
+    'portal.sortRecent': 'Mới nhất',
+    'portal.sortPending': 'Việc cần làm',
+    'portal.activityFeed': 'Hoạt động Hệ thống',
+    'portal.viewAll': 'Xem tất cả',
+    'portal.securitySystem': 'Hệ thống Bảo mật',
+    'portal.securityDesc': 'Mọi giao dịch và dữ liệu trên VCT Platform đều được mã hóa đầu cuối theo tiêu chuẩn AES-256.',
+    'portal.ecosystem': 'Hệ sinh thái toàn diện',
+    'portal.accessCount': 'Bạn đang có quyền truy cập vào',
+    'portal.workspaces': 'workspace',
     'portal.pin': 'Ghim',
     'portal.unpin': 'Bỏ ghim',
     'portal.viewOnly': 'Chỉ xem',
