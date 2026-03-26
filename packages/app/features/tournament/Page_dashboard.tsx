@@ -6,15 +6,15 @@ import { motion } from 'framer-motion';
 import { useRouter } from 'next/navigation';
 import {
     VCT_Badge, VCT_Text, VCT_Stack, VCT_Button, VCT_AvatarLetter
-} from '../components/vct-ui';
-import { VCT_PageContainer, VCT_PageHero, VCT_SectionCard, VCT_StatRow } from '../components/vct-ui';
-import { VCT_Timeline, type TimelineEvent } from '../components/VCT_Timeline';
-import { VCT_Icons } from '../components/vct-icons';
+} from '@vct/ui';
+import { VCT_PageContainer, VCT_PageHero, VCT_SectionCard, VCT_StatRow } from '@vct/ui';
+import { VCT_Timeline, type TimelineEvent } from '@vct/ui';
+import { VCT_Icons } from '@vct/ui';
 import { TournamentWorkflowStepper } from './TournamentWorkflowStepper';
 import { TOURNAMENT_CONFIG } from '../data/tournament-config';
 import { repositories, useEntityCollection } from '../data/repository';
 import { useWebSocket } from '../hooks/useWebSocket';
-import type { StatItem } from '../components/VCT_StatRow';
+import type { StatItem } from '@vct/ui';
 
 const ACTIVITY_FEED: TimelineEvent[] = [
     { time: '2 phút trước', title: 'Trận #12 kết thúc', description: 'Nguyễn Văn A thắng điểm 7-5', color: 'var(--vct-success)' },
@@ -124,10 +124,10 @@ export const Page_dashboard = () => {
     const progressPct = kpis.tran_dau.tong > 0 ? Math.round((kpis.tran_dau.da_xong / kpis.tran_dau.tong) * 100) : 0;
 
     const topStats: StatItem[] = [
-        { label: 'Đoàn tham gia', value: kpis.doan, icon: <VCT_Icons.Building2 size={18} />, color: '#0ea5e9' },
-        { label: 'Tổng VĐV', value: kpis.vdv.tong, icon: <VCT_Icons.Users size={18} />, color: '#f59e0b', sub: `♂ ${kpis.vdv.nam} — ♀ ${kpis.vdv.nu}` },
-        { label: 'Trọng Tài', value: kpis.trong_tai, icon: <VCT_Icons.UserCheck size={18} />, color: '#10b981' },
-        { label: 'Trận đấu', value: kpis.tran_dau.tong, icon: <VCT_Icons.Swords size={18} />, color: '#a78bfa', sub: `${kpis.tran_dau.da_xong} xong · ${kpis.tran_dau.dang_dien} đang đấu` },
+        { label: 'Đoàn tham gia', value: kpis.doan, icon: <VCT_Icons.Building2 size={18} />, color: 'var(--vct-accent-cyan)' },
+        { label: 'Tổng VĐV', value: kpis.vdv.tong, icon: <VCT_Icons.Users size={18} />, color: 'var(--vct-warning)', sub: `♂ ${kpis.vdv.nam} — ♀ ${kpis.vdv.nu}` },
+        { label: 'Trọng Tài', value: kpis.trong_tai, icon: <VCT_Icons.UserCheck size={18} />, color: 'var(--vct-success)' },
+        { label: 'Trận đấu', value: kpis.tran_dau.tong, icon: <VCT_Icons.Swords size={18} />, color: 'var(--vct-info)', sub: `${kpis.tran_dau.da_xong} xong · ${kpis.tran_dau.dang_dien} đang đấu` },
     ];
 
     return (
@@ -180,7 +180,7 @@ export const Page_dashboard = () => {
                 {/* Live Arenas */}
                 <VCT_SectionCard
                     title="🔴 Sàn đấu trực tiếp"
-                    accentColor="#ef4444"
+                    accentColor="var(--vct-danger)"
                     headerAction={<VCT_Button variant="secondary" onClick={() => router.push('/combat')} icon={<VCT_Icons.Laptop size={14} />}>Điều hành</VCT_Button>}
                 >
                     <div className="space-y-4">
@@ -228,7 +228,7 @@ export const Page_dashboard = () => {
 
                 <div className="flex flex-col gap-6">
                     {/* Weigh-in progress */}
-                    <VCT_SectionCard title="⚖️ Tiến trình Cân ký" accentColor="#22d3ee" hover onClick={() => router.push('/weigh-in')}>
+                    <VCT_SectionCard title="⚖️ Tiến trình Cân ký" accentColor="var(--vct-accent-cyan)" hover onClick={() => router.push('/weigh-in')}>
                         <div className="flex items-center justify-between text-sm mb-2">
                             <span className="text-vct-text-muted">Đã cân / Tổng số</span>
                             <span className="font-black">{kpis.can_ky.hoan_thanh} / {kpis.can_ky.tong}</span>
@@ -251,7 +251,7 @@ export const Page_dashboard = () => {
                     {/* Complaints */}
                     <VCT_SectionCard
                         title="⚠️ Khiếu nại"
-                        accentColor={kpis.khieu_nai.cho > 0 ? '#ef4444' : '#10b981'}
+                        accentColor={kpis.khieu_nai.cho > 0 ? 'var(--vct-danger)' : 'var(--vct-success)'}
                         hover
                         onClick={() => router.push('/appeals')}
                     >
@@ -281,7 +281,7 @@ export const Page_dashboard = () => {
                 </div>
 
             {/* Activity Feed */}
-                <VCT_SectionCard title="📋 Hoạt động gần đây" accentColor="#0ea5e9">
+                <VCT_SectionCard title="📋 Hoạt động gần đây" accentColor="var(--vct-accent-cyan)">
                     <VCT_Timeline events={[...wsEvents, ...ACTIVITY_FEED].slice(0, 10)} maxHeight={280} />
                 </VCT_SectionCard>
             </div>
@@ -289,13 +289,13 @@ export const Page_dashboard = () => {
             {/* 4. LEADERBOARD */}
             <VCT_SectionCard
                 title="🏆 Top 3 Đoàn Xuất Sắc"
-                accentColor="#eab308"
+                accentColor="var(--vct-gold)"
                 headerAction={<VCT_Button variant="secondary" onClick={() => router.push('/medals')}>Bảng tổng sắp</VCT_Button>}
             >
                 {kpis.top_huy_chuong.length > 0 ? (
                     <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
                         {kpis.top_huy_chuong.map((m, i) => {
-                            const colors = ['#eab308', '#94a3b8', '#b45309'];
+                            const colors = ['var(--vct-gold)', 'var(--vct-text-tertiary)', 'var(--vct-warning)'];
                             return (
                                 <div key={m.id} className="vct-card-hover flex items-center gap-4 rounded-xl border border-vct-border bg-vct-bg p-4"
                                     style={{ borderColor: `${colors[i]}30` }}

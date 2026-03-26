@@ -6,10 +6,10 @@ import { motion } from 'framer-motion';
 import {
     VCT_Card, VCT_Badge, VCT_Button, VCT_Text, VCT_Stack, VCT_Toast,
     VCT_EmptyState, VCT_Select
-} from '../components/vct-ui';
-import { VCT_PageContainer, VCT_StatRow } from '../components/vct-ui';
-import type { StatItem } from '../components/VCT_StatRow';
-import { VCT_Icons } from '../components/vct-icons';
+} from '@vct/ui';
+import { VCT_PageContainer, VCT_StatRow } from '@vct/ui';
+import type { StatItem } from '@vct/ui';
+import { VCT_Icons } from '@vct/ui';
 import { useHangCans, genId } from '../hooks/useTournamentAPI';
 import type { VanDongVien } from '../data/types';
 import { repositories, useEntityCollection } from '../data/repository';
@@ -111,14 +111,14 @@ function drawWithConstraint(vdvs: VanDongVien[]): DrawSlot[] {
 // COLOR HELPERS
 // ════════════════════════════════════════
 const TEAM_COLORS: Record<string, string> = {};
-const PALETTE = ['#3b82f6', '#ef4444', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899', '#14b8a6', '#f97316'];
+const PALETTE = ['var(--vct-info)', 'var(--vct-danger)', 'var(--vct-success)', 'var(--vct-warning)', 'var(--vct-info)', 'var(--vct-accent-pink)', '#14b8a6', 'var(--vct-warning)'];
 let colorIdx = 0;
 function getTeamColor(doanId: string): string {
     if (!TEAM_COLORS[doanId]) {
-        TEAM_COLORS[doanId] = PALETTE[colorIdx % PALETTE.length] || '#64748b';
+        TEAM_COLORS[doanId] = PALETTE[colorIdx % PALETTE.length] || 'var(--vct-text-tertiary)';
         colorIdx++;
     }
-    return TEAM_COLORS[doanId] || '#64748b';
+    return TEAM_COLORS[doanId] || 'var(--vct-text-tertiary)';
 }
 
 // ════════════════════════════════════════
@@ -255,9 +255,9 @@ export const Page_boc_tham = () => {
                         </VCT_Text>
                     </div>
                     <VCT_StatRow items={[
-                        { label: 'Đã bốc', value: totalDrawn, icon: <VCT_Icons.Shuffle size={18} />, color: '#3b82f6' },
-                        { label: 'Xác nhận', value: totalConfirmed, icon: <VCT_Icons.CheckCircle size={18} />, color: '#10b981' },
-                        { label: 'Nháp', value: totalDraft, icon: <VCT_Icons.Edit size={18} />, color: '#f59e0b' },
+                        { label: 'Đã bốc', value: totalDrawn, icon: <VCT_Icons.Shuffle size={18} />, color: 'var(--vct-info)' },
+                        { label: 'Xác nhận', value: totalConfirmed, icon: <VCT_Icons.CheckCircle size={18} />, color: 'var(--vct-success)' },
+                        { label: 'Nháp', value: totalDraft, icon: <VCT_Icons.Edit size={18} />, color: 'var(--vct-warning)' },
                     ] as StatItem[]} />
                 </VCT_Stack>
             </motion.div>

@@ -6,25 +6,25 @@ import {
     VCT_Badge, VCT_Button, VCT_Text, VCT_Stack, VCT_Toast,
     VCT_Modal, VCT_Input, VCT_Field, VCT_Select,
     VCT_StatusPipeline, VCT_EmptyState, VCT_AvatarLetter
-} from '../components/vct-ui';
-import { VCT_PageContainer, VCT_StatRow } from '../components/vct-ui';
-import type { StatItem } from '../components/VCT_StatRow';
-import { VCT_Icons } from '../components/vct-icons';
+} from '@vct/ui';
+import { VCT_PageContainer, VCT_StatRow } from '@vct/ui';
+import type { StatItem } from '@vct/ui';
+import { VCT_Icons } from '@vct/ui';
 import { genId } from '../hooks/useTournamentAPI';
 import { TRANG_THAI_KN_MAP, type KhieuNai, type TrangThaiKN, type LoaiKN } from '../data/types';
 import { repositories, useEntityCollection } from '../data/repository';
 import { useToast } from '../hooks/use-toast';
 
 const LOAI_MAP: Record<LoaiKN, { label: string; color: string }> = {
-    khieu_nai: { label: 'Khiếu nại', color: '#f59e0b' },
-    khang_nghi: { label: 'Kháng nghị', color: '#ef4444' },
+    khieu_nai: { label: 'Khiếu nại', color: 'var(--vct-warning)' },
+    khang_nghi: { label: 'Kháng nghị', color: 'var(--vct-danger)' },
 };
 
 const PIPELINE = [
-    { key: 'moi', label: 'Mới', color: '#ef4444' },
-    { key: 'dang_xu_ly', label: 'Đang xử lý', color: '#f59e0b' },
-    { key: 'chap_nhan', label: 'Chấp nhận', color: '#10b981' },
-    { key: 'bac_bo', label: 'Bác bỏ', color: '#94a3b8' },
+    { key: 'moi', label: 'Mới', color: 'var(--vct-danger)' },
+    { key: 'dang_xu_ly', label: 'Đang xử lý', color: 'var(--vct-warning)' },
+    { key: 'chap_nhan', label: 'Chấp nhận', color: 'var(--vct-success)' },
+    { key: 'bac_bo', label: 'Bác bỏ', color: 'var(--vct-text-tertiary)' },
 ];
 
 const BLANK: Partial<KhieuNai> = { doan_ten: '', loai: 'khieu_nai', noi_dung_lien_quan: '', tran_dau_id: '', ly_do: '', bang_chung: '' };
@@ -84,10 +84,10 @@ export const Page_appeals = () => {
             )}
 
             <VCT_StatRow items={[
-                { label: 'Tổng', value: items.length, icon: <VCT_Icons.Alert size={18} />, color: '#0ea5e9' },
-                { label: 'Mới', value: items.filter(i => i.trang_thai === 'moi').length, icon: <VCT_Icons.Alert size={18} />, color: '#ef4444', sub: 'Cần xử lý ngay' },
-                { label: 'Đang xử lý', value: items.filter(i => i.trang_thai === 'dang_xu_ly').length, icon: <VCT_Icons.Clock size={18} />, color: '#f59e0b' },
-                { label: 'Giải quyết', value: items.filter(i => i.trang_thai === 'chap_nhan' || i.trang_thai === 'bac_bo').length, icon: <VCT_Icons.Check size={18} />, color: '#10b981' },
+                { label: 'Tổng', value: items.length, icon: <VCT_Icons.Alert size={18} />, color: 'var(--vct-accent-cyan)' },
+                { label: 'Mới', value: items.filter(i => i.trang_thai === 'moi').length, icon: <VCT_Icons.Alert size={18} />, color: 'var(--vct-danger)', sub: 'Cần xử lý ngay' },
+                { label: 'Đang xử lý', value: items.filter(i => i.trang_thai === 'dang_xu_ly').length, icon: <VCT_Icons.Clock size={18} />, color: 'var(--vct-warning)' },
+                { label: 'Giải quyết', value: items.filter(i => i.trang_thai === 'chap_nhan' || i.trang_thai === 'bac_bo').length, icon: <VCT_Icons.Check size={18} />, color: 'var(--vct-success)' },
             ] as StatItem[]} className="mb-6" />
 
             <VCT_StatusPipeline stages={pStages} activeStage={filter} onStageClick={setFilter} />
@@ -124,7 +124,7 @@ export const Page_appeals = () => {
                                                     <div {...{ style: { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 16 } }}>
                                                         <div><span className="text-[11px] opacity-50">Lý do</span><div {...{ style: { fontSize: 13, fontWeight: 600 } }}>{item.ly_do}</div></div>
                                                         <div><span className="text-[11px] opacity-50">Bằng chứng</span><div {...{ style: { fontSize: 13, fontWeight: 600 } }}>{item.bang_chung || '—'}</div></div>
-                                                        {item.ket_luan && <div><span className="text-[11px] opacity-50">Kết luận</span><div {...{ style: { fontSize: 13, fontWeight: 600, color: '#10b981' } }}>{item.ket_luan}</div></div>}
+                                                        {item.ket_luan && <div><span className="text-[11px] opacity-50">Kết luận</span><div {...{ style: { fontSize: 13, fontWeight: 600, color: 'var(--vct-success)' } }}>{item.ket_luan}</div></div>}
                                                         {item.nguoi_xu_ly && <div><span className="text-[11px] opacity-50">Người xử lý</span><div {...{ style: { fontSize: 13, fontWeight: 600 } }}>{item.nguoi_xu_ly} — {item.thoi_gian_xu_ly}</div></div>}
                                                     </div>
                                                     {(item.trang_thai === 'moi' || item.trang_thai === 'dang_xu_ly') && (
@@ -162,7 +162,7 @@ export const Page_appeals = () => {
             <VCT_Modal isOpen={!!resolveModal} onClose={() => setResolveModal(null)} title="Xử lý Khiếu nại" width="500px" footer={
                 <VCT_Stack direction="row" gap={8} {...{ style: { width: '100%' } }} justify="flex-end">
                     <VCT_Button variant="secondary" onClick={() => handleResolve('dang_xu_ly')}>⏳ Đang xử lý</VCT_Button>
-                    <VCT_Button variant="secondary" onClick={() => handleResolve('bac_bo')} {...{ style: { color: '#ef4444' } }}>✗ Bác bỏ</VCT_Button>
+                    <VCT_Button variant="secondary" onClick={() => handleResolve('bac_bo')} {...{ style: { color: 'var(--vct-danger)' } }}>✗ Bác bỏ</VCT_Button>
                     <VCT_Button onClick={() => handleResolve('chap_nhan')}>✓ Chấp nhận</VCT_Button>
                 </VCT_Stack>
             }>

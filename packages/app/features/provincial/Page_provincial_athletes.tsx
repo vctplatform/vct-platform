@@ -2,10 +2,10 @@
 
 import * as React from 'react'
 import { useState, useEffect, useMemo, useCallback } from 'react'
-import { VCT_Badge, VCT_Button, VCT_Stack, VCT_Toast, VCT_SearchInput, VCT_EmptyState, VCT_FilterChips, VCT_AvatarLetter } from '../components/vct-ui'
-import { VCT_PageContainer, VCT_StatRow } from '../components/vct-ui'
-import type { StatItem } from '../components/VCT_StatRow'
-import { VCT_Icons } from '../components/vct-icons'
+import { VCT_Badge, VCT_Button, VCT_Stack, VCT_Toast, VCT_SearchInput, VCT_EmptyState, VCT_FilterChips, VCT_AvatarLetter } from '@vct/ui'
+import { VCT_PageContainer, VCT_StatRow } from '@vct/ui'
+import type { StatItem } from '@vct/ui'
+import { VCT_Icons } from '@vct/ui'
 
 const API = '/api/v1/provincial'
 
@@ -57,10 +57,10 @@ export const Page_provincial_athletes = () => {
             </div>
 
             <VCT_StatRow items={[
-                { label: 'Tổng VĐV', value: athletes.length, icon: <VCT_Icons.Users size={18} />, color: '#0ea5e9' },
-                { label: 'Nam', value: athletes.filter(a => a.gender === 'nam').length, icon: <VCT_Icons.User size={18} />, color: '#3b82f6' },
-                { label: 'Nữ', value: athletes.filter(a => a.gender === 'nu').length, icon: <VCT_Icons.User size={18} />, color: '#ec4899' },
-                { label: 'Đang tập luyện', value: athletes.filter(a => a.status === 'active').length, icon: <VCT_Icons.Activity size={18} />, color: '#10b981' },
+                { label: 'Tổng VĐV', value: athletes.length, icon: <VCT_Icons.Users size={18} />, color: 'var(--vct-accent-cyan)' },
+                { label: 'Nam', value: athletes.filter(a => a.gender === 'nam').length, icon: <VCT_Icons.User size={18} />, color: 'var(--vct-info)' },
+                { label: 'Nữ', value: athletes.filter(a => a.gender === 'nu').length, icon: <VCT_Icons.User size={18} />, color: 'var(--vct-accent-pink)' },
+                { label: 'Đang tập luyện', value: athletes.filter(a => a.status === 'active').length, icon: <VCT_Icons.Activity size={18} />, color: 'var(--vct-success)' },
             ] as StatItem[]} className="mb-6" />
 
             <VCT_FilterChips filters={activeFilters} onRemove={(k) => { if (k === 'gender') setGenderFilter(null); if (k === 'search') setSearch('') }} onClearAll={() => { setGenderFilter(null); setSearch('') }} />

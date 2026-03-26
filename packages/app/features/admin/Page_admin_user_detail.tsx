@@ -3,15 +3,15 @@
 import * as React from 'react'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { VCT_AvatarLetter, VCT_Badge } from '../components/vct-ui-data-display'
-import { VCT_Button } from '../components/vct-ui-layout'
-import { VCT_SectionCard } from '../components/VCT_SectionCard'
-import type { StatItem } from '../components/VCT_StatRow'
-import { VCT_Icons } from '../components/vct-icons'
-import { VCT_Timeline } from '../components/VCT_Timeline'
-import type { TimelineEvent } from '../components/VCT_Timeline'
-import { VCT_ConfirmDialog } from '../components/vct-ui'
-import { VCT_StatRow } from '../components/VCT_StatRow'
+import { VCT_AvatarLetter, VCT_Badge } from '@vct/ui'
+import { VCT_Button } from '@vct/ui'
+import { VCT_SectionCard } from '@vct/ui'
+import type { StatItem } from '@vct/ui'
+import { VCT_Icons } from '@vct/ui'
+import { VCT_Timeline } from '@vct/ui'
+import type { TimelineEvent } from '@vct/ui'
+import { VCT_ConfirmDialog } from '@vct/ui'
+import { VCT_StatRow } from '@vct/ui'
 import { ROLE_COLORS, STATUS_MAP, getRoleLabel, type SystemUser } from './admin-users.data'
 import { AdminPageShell, useShellToast } from './components/AdminPageShell'
 import { useAdminFetch } from './hooks/useAdminAPI'
@@ -54,35 +54,35 @@ const buildTimelineEvents = (user: SystemUser): TimelineEvent[] => [
         title: `Đăng nhập gần nhất từ ${user.email}`,
         description: user.status === 'locked' ? 'IP: 45.67.89.12 — Bị chặn sau 5 lần thất bại' : 'IP: 192.168.1.100 — Chrome 120.0',
         icon: <VCT_Icons.Clock size={14} />,
-        color: user.status === 'locked' ? '#ef4444' : '#0ea5e9',
+        color: user.status === 'locked' ? 'var(--vct-danger)' : 'var(--vct-accent-cyan)',
     },
     {
         time: '09/03/2024 16:20',
         title: `Cập nhật phạm vi: ${user.scope}`,
         description: 'admin@vct.vn đã thay đổi',
         icon: <VCT_Icons.Shield size={14} />,
-        color: '#8b5cf6',
+        color: 'var(--vct-info)',
     },
     {
         time: '07/03/2024 11:05',
         title: `Đồng bộ vai trò ${getRoleLabel(user.role)}`,
         description: 'Hệ thống tự động áp dụng role mới',
         icon: <VCT_Icons.CheckCircle size={14} />,
-        color: '#10b981',
+        color: 'var(--vct-success)',
     },
     {
         time: '05/03/2024 09:00',
         title: 'Thay đổi mật khẩu',
         description: 'Tự thay đổi qua portal',
         icon: <VCT_Icons.Lock size={14} />,
-        color: '#f59e0b',
+        color: 'var(--vct-warning)',
     },
     {
         time: user.created_at,
         title: 'Tạo tài khoản',
         description: 'Onboard vào hệ thống VCT Platform',
         icon: <VCT_Icons.Plus size={14} />,
-        color: '#10b981',
+        color: 'var(--vct-success)',
     },
 ]
 
@@ -176,17 +176,17 @@ const Page_admin_user_detail_Content = ({ userId }: PageAdminUserDetailProps) =>
         )
     }
 
-    const accentColor = ROLE_COLORS[user.role] ?? '#0ea5e9'
+    const accentColor = ROLE_COLORS[user.role] ?? 'var(--vct-accent-cyan)'
     const statusMeta = STATUS_MAP[user.status]
     const roleLabel = getRoleLabel(user.role)
     const timelineEvents = buildTimelineEvents(user)
     const responsibilities = ROLE_RESPONSIBILITIES[user.role] ?? []
     const permissions = ROLE_PERMISSIONS[user.role] ?? []
     const statItems: StatItem[] = [
-        { label: 'Trạng thái', value: statusMeta.label, icon: user.status === 'active' ? <VCT_Icons.CheckCircle size={16} /> : <VCT_Icons.AlertCircle size={16} />, color: user.status === 'active' ? '#10b981' : '#ef4444' },
-        { label: 'Phiên cuối', value: user.last_login, icon: <VCT_Icons.Clock size={16} />, color: '#f59e0b' },
+        { label: 'Trạng thái', value: statusMeta.label, icon: user.status === 'active' ? <VCT_Icons.CheckCircle size={16} /> : <VCT_Icons.AlertCircle size={16} />, color: user.status === 'active' ? 'var(--vct-success)' : 'var(--vct-danger)' },
+        { label: 'Phiên cuối', value: user.last_login, icon: <VCT_Icons.Clock size={16} />, color: 'var(--vct-warning)' },
         { label: 'Phạm vi', value: user.scope, icon: <VCT_Icons.Building2 size={16} />, color: accentColor },
-        { label: 'Ngày tạo', value: user.created_at, icon: <VCT_Icons.Calendar size={16} />, color: '#8b5cf6' },
+        { label: 'Ngày tạo', value: user.created_at, icon: <VCT_Icons.Calendar size={16} />, color: 'var(--vct-info)' },
     ]
 
     const handleCopyId = () => {

@@ -2,9 +2,9 @@
 
 import React, { useState, useMemo } from 'react'
 import { useApiQuery } from '../hooks/useApiQuery'
-import { VCT_PageContainer, VCT_PageHero } from '../components/VCT_PageContainer'
-import { VCT_Icons } from '../components/vct-icons'
-import { VCT_Badge, VCT_Button, VCT_EmptyState } from '../components/vct-ui'
+import { VCT_PageContainer, VCT_PageHero } from '@vct/ui'
+import { VCT_Icons } from '@vct/ui'
+import { VCT_Badge, VCT_Button, VCT_EmptyState } from '@vct/ui'
 import { exportToExcel } from '../../utils/exportUtils'
 
 // ════════════════════════════════════════
@@ -66,10 +66,10 @@ export function Page_federation_invoices() {
     }
 
     const kpis = [
-        { label: 'Tổng hóa đơn', value: invoices.length, icon: <VCT_Icons.FileText size={16} />, color: '#8b5cf6' },
-        { label: 'Đã thu', value: fmt(totalIncome), icon: <VCT_Icons.TrendingUp size={16} />, color: '#10b981' },
-        { label: 'Đã chi', value: fmt(totalExpense), icon: <VCT_Icons.TrendingDown size={16} />, color: '#ef4444' },
-        { label: 'Quá hạn', value: invoices.filter(i => i.status === 'overdue').length, icon: <VCT_Icons.AlertCircle size={16} />, color: '#f59e0b' },
+        { label: 'Tổng hóa đơn', value: invoices.length, icon: <VCT_Icons.FileText size={16} />, color: 'var(--vct-info)' },
+        { label: 'Đã thu', value: fmt(totalIncome), icon: <VCT_Icons.TrendingUp size={16} />, color: 'var(--vct-success)' },
+        { label: 'Đã chi', value: fmt(totalExpense), icon: <VCT_Icons.TrendingDown size={16} />, color: 'var(--vct-danger)' },
+        { label: 'Quá hạn', value: invoices.filter(i => i.status === 'overdue').length, icon: <VCT_Icons.AlertCircle size={16} />, color: 'var(--vct-warning)' },
     ]
 
     return (
@@ -134,7 +134,7 @@ export function Page_federation_invoices() {
                                                 {inv.type === 'income' ? '↑ Thu' : '↓ Chi'}
                                             </span>
                                         </td>
-                                        <td className="px-4 py-3 text-sm font-bold" style={{ color: inv.type === 'income' ? '#10b981' : '#ef4444' }}>{fmt(inv.amount)}</td>
+                                        <td className="px-4 py-3 text-sm font-bold" style={{ color: inv.type === 'income' ? 'var(--vct-success)' : 'var(--vct-danger)' }}>{fmt(inv.amount)}</td>
                                         <td className="px-4 py-3 text-xs text-vct-text-muted">{inv.due_date}</td>
                                         <td className="px-4 py-3"><VCT_Badge text={st.label} type={st.type} /></td>
                                     </tr>

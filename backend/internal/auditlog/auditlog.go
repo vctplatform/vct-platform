@@ -45,10 +45,10 @@ const (
 
 // Actor represents who performed the action.
 type Actor struct {
-	Type  ActorType `json:"type"`
-	ID    string    `json:"id"`
-	Name  string    `json:"name,omitempty"`
-	IP    string    `json:"ip,omitempty"`
+	Type ActorType `json:"type"`
+	ID   string    `json:"id"`
+	Name string    `json:"name,omitempty"`
+	IP   string    `json:"ip,omitempty"`
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -60,7 +60,7 @@ type Entry struct {
 	ID         string            `json:"id"`
 	Timestamp  time.Time         `json:"timestamp"`
 	Action     Action            `json:"action"`
-	Resource   string            `json:"resource"`    // e.g., "athlete", "tournament"
+	Resource   string            `json:"resource"` // e.g., "athlete", "tournament"
 	ResourceID string            `json:"resource_id"`
 	Actor      Actor             `json:"actor"`
 	TenantID   string            `json:"tenant_id,omitempty"`

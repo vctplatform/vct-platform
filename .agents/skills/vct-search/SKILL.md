@@ -11,6 +11,12 @@ description: Full-text search integration for VCT Platform using Meilisearch —
 
 ---
 
+> 🚨 **MANDATORY COMPLIANCE**: You must strictly enforce the rules defined in `docs/architecture/search-architecture.md`. Wildcard `LIKE '%...%'` queries on large tables are banned. Meilisearch with CDC syncing is the mandatory full-text search engine.
+
+
+> [!IMPORTANT]
+> **SUPREME ARCHITECTURE DIRECTIVE**: You are strictly bound by the 19 architecture pillars documented in `docs/architecture/`. As a VCT AI Agent, your absolute highest priority is 100% compliance with these rules. You MUST NOT generate code, propose designs, or execute workflows that violate these foundational rules. They are unchangeable and strictly enforced.
+
 ## 1. Architecture
 
 ```

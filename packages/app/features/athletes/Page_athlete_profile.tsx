@@ -1,8 +1,8 @@
 'use client'
 import React, { useState, useCallback } from 'react'
-import { VCT_Icons } from '../components/vct-icons'
-import { VCT_Image } from '../components/VCT_Image'
-import { VCT_PageContainer, VCT_SectionCard, VCT_EmptyState, VCT_StatRow, VCT_Badge } from '../components/vct-ui'
+import { VCT_Icons } from '@vct/ui'
+import { VCT_Image } from '@vct/ui'
+import { VCT_PageContainer, VCT_SectionCard, VCT_EmptyState, VCT_StatRow, VCT_Badge } from '@vct/ui'
 import { useApiQuery } from '../hooks/useApiQuery'
 import { AthleteProfile } from '@vct/shared-types'
 import { useRouter } from 'next/navigation'
@@ -143,7 +143,7 @@ export function Page_athlete_profile() {
                 {/* LEFT COL: INFO */}
                 <div className="space-y-6">
                     <div className="relative p-6 rounded-3xl border border-vct-border bg-vct-elevated text-center overflow-hidden">
-                        <div className="absolute top-0 left-0 w-full h-24 bg-gradient-to-r from-[#3b82f6]/20 to-[#8b5cf6]/20"></div>
+                        <div className="absolute top-0 left-0 w-full h-24 bg-gradient-to-r from-(--vct-info)/20 to-(--vct-info)/20"></div>
                         <div className="relative w-32 h-32 mx-auto mt-4 mb-4 rounded-full border-4 border-vct-bg shadow-lg bg-vct-border overflow-hidden">
                             {profile.photo_url ? <VCT_Image src={profile.photo_url} className="w-full h-full" fill objectFit="cover" alt="avatar" sizes="128px" /> : <div className="w-full h-full flex items-center justify-center text-4xl">🥋</div>}
                             {isEditing && (
@@ -153,7 +153,7 @@ export function Page_athlete_profile() {
                             )}
                         </div>
                         <h2 className="text-xl font-bold text-vct-text">{profile?.full_name}</h2>
-                        <div className="text-sm text-[#3b82f6] font-bold mt-1">ID: {profile.id}</div>
+                        <div className="text-sm text-(--vct-info) font-bold mt-1">ID: {profile.id}</div>
                         <VCT_Badge variant={profile.status === 'active' ? 'success' : 'neutral'} className="mt-3">
                             {profile.status === 'active' ? 'Đang hoạt động' : 'Tạm ngưng'}
                         </VCT_Badge>
@@ -184,13 +184,13 @@ export function Page_athlete_profile() {
                         </div>
                     </div>
 
-                    <VCT_SectionCard title="Thể chất" icon={<VCT_Icons.Activity size={18} />} accentColor="#10b981">
+                    <VCT_SectionCard title="Thể chất" icon={<VCT_Icons.Activity size={18} />} accentColor="var(--vct-success)">
                         <div className="flex gap-4">
-                            <div className="flex-1 p-4 rounded-2xl bg-[#10b981]/10 border border-[#10b981]/20 text-center">
-                                <div className="text-3xl font-black text-[#10b981] mb-1">
-                                    {isEditing ? <input type="number" defaultValue={profile.weight} className="bg-transparent w-full text-center outline-none border-b border-[#10b981]/50 focus:border-[#10b981]" /> : profile.weight || '--'}
+                            <div className="flex-1 p-4 rounded-2xl bg-(--vct-success)/10 border border-(--vct-success)/20 text-center">
+                                <div className="text-3xl font-black text-(--vct-success) mb-1">
+                                    {isEditing ? <input type="number" defaultValue={profile.weight} className="bg-transparent w-full text-center outline-none border-b border-(--vct-success)/50 focus:border-(--vct-success)" /> : profile.weight || '--'}
                                 </div>
-                                <div className="text-xs font-bold text-[#10b981]/70 uppercase">Cân nặng (kg)</div>
+                                <div className="text-xs font-bold text-(--vct-success)/70 uppercase">Cân nặng (kg)</div>
                             </div>
                             <div className="flex-1 p-4 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-center">
                                 <div className="text-3xl font-black text-amber-500 mb-1">
@@ -206,16 +206,16 @@ export function Page_athlete_profile() {
                 <div className="lg:col-span-2 space-y-6">
                     <VCT_StatRow
                         items={[
-                            { label: 'Elo Rating', value: profile.elo_rating, color: '#3b82f6' },
-                            { label: 'Giải thi đấu', value: profile.total_tournaments, color: '#8b5cf6' },
-                            { label: 'Huy chương', value: profile.total_medals, color: '#eab308' }
+                            { label: 'Elo Rating', value: profile.elo_rating, color: 'var(--vct-info)' },
+                            { label: 'Giải thi đấu', value: profile.total_tournaments, color: 'var(--vct-info)' },
+                            { label: 'Huy chương', value: profile.total_medals, color: 'var(--vct-gold)' }
                         ]}
                         cols={3}
                     />
 
-                    <VCT_SectionCard title="Đẳng cấp & Thăng đai" icon={<VCT_Icons.Award size={18} />} accentColor="#eab308">
+                    <VCT_SectionCard title="Đẳng cấp & Thăng đai" icon={<VCT_Icons.Award size={18} />} accentColor="var(--vct-gold)">
                         <div className="flex items-center gap-6 mb-8 p-4 bg-vct-bg rounded-2xl border border-vct-border">
-                            <div className="w-16 h-16 rounded-full border-4 border-[#eab308]/30 flex items-center justify-center bg-[#eab308]/10 text-2xl shadow-inner">🥋</div>
+                            <div className="w-16 h-16 rounded-full border-4 border-(--vct-gold)/30 flex items-center justify-center bg-(--vct-gold)/10 text-2xl shadow-inner">🥋</div>
                             <div>
                                 <div className="text-sm font-bold text-vct-text-muted tracking-wide uppercase mb-1">Đẳng cấp hiện tại</div>
                                 <div className="text-2xl font-black text-amber-500">{profile.belt_label}</div>
@@ -243,7 +243,7 @@ export function Page_athlete_profile() {
                         </div>
                     </VCT_SectionCard>
 
-                    <VCT_SectionCard title="Chỉ số Kỹ năng" icon={<VCT_Icons.TrendingUp size={18} />} accentColor="#8b5cf6">
+                    <VCT_SectionCard title="Chỉ số Kỹ năng" icon={<VCT_Icons.TrendingUp size={18} />} accentColor="var(--vct-info)">
                         {profile.skill_stats && profile.skill_stats.length > 0 ? (
                             <div className="space-y-3">
                                 {profile.skill_stats.map(s => (

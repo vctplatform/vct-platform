@@ -4,9 +4,9 @@ import React, { useState, useMemo } from 'react'
 import {
     VCT_Badge, VCT_Button, VCT_Stack,
     VCT_PageContainer, VCT_StatRow
-} from '../components/vct-ui'
-import type { StatItem } from '../components/VCT_StatRow'
-import { VCT_Icons } from '../components/vct-icons'
+} from '@vct/ui'
+import type { StatItem } from '@vct/ui'
+import { VCT_Icons } from '@vct/ui'
 
 // ════════════════════════════════════════
 // FEDERATION — LỊCH HOẠT ĐỘNG TỔNG HỢP
@@ -22,12 +22,12 @@ interface CalendarEvent {
 }
 
 const EVENT_TYPE_MAP: Record<EventType, { label: string; color: string; icon: string }> = {
-    tournament: { label: 'Giải đấu', color: '#ef4444', icon: '🏆' },
-    belt_exam: { label: 'Thi thăng đai', color: '#f59e0b', icon: '🥋' },
-    training: { label: 'Tập huấn', color: '#8b5cf6', icon: '📋' },
-    meeting: { label: 'Họp BCH', color: '#0ea5e9', icon: '🤝' },
-    international: { label: 'Quốc tế', color: '#10b981', icon: '🌍' },
-    ceremony: { label: 'Lễ tân', color: '#ec4899', icon: '🎊' },
+    tournament: { label: 'Giải đấu', color: 'var(--vct-danger)', icon: '🏆' },
+    belt_exam: { label: 'Thi thăng đai', color: 'var(--vct-warning)', icon: '🥋' },
+    training: { label: 'Tập huấn', color: 'var(--vct-info)', icon: '📋' },
+    meeting: { label: 'Họp BCH', color: 'var(--vct-accent-cyan)', icon: '🤝' },
+    international: { label: 'Quốc tế', color: 'var(--vct-success)', icon: '🌍' },
+    ceremony: { label: 'Lễ tân', color: 'var(--vct-accent-pink)', icon: '🎊' },
 }
 
 const STATUS_MAP: Record<string, { label: string; type: 'success' | 'warning' | 'info' | 'neutral' | 'error' }> = {
@@ -86,10 +86,10 @@ export function Page_federation_calendar() {
             </div>
 
             <VCT_StatRow items={[
-                { label: 'Tổng sự kiện', value: SEED_EVENTS.length, icon: <VCT_Icons.Calendar size={18} />, color: '#8b5cf6' },
-                { label: 'Sắp tới', value: upcoming, icon: <VCT_Icons.Clock size={18} />, color: '#0ea5e9' },
-                { label: 'Đang diễn ra', value: ongoing, icon: <VCT_Icons.Check size={18} />, color: '#10b981' },
-                { label: 'Loại sự kiện', value: Object.keys(EVENT_TYPE_MAP).length, icon: <VCT_Icons.List size={18} />, color: '#f59e0b' },
+                { label: 'Tổng sự kiện', value: SEED_EVENTS.length, icon: <VCT_Icons.Calendar size={18} />, color: 'var(--vct-info)' },
+                { label: 'Sắp tới', value: upcoming, icon: <VCT_Icons.Clock size={18} />, color: 'var(--vct-accent-cyan)' },
+                { label: 'Đang diễn ra', value: ongoing, icon: <VCT_Icons.Check size={18} />, color: 'var(--vct-success)' },
+                { label: 'Loại sự kiện', value: Object.keys(EVENT_TYPE_MAP).length, icon: <VCT_Icons.List size={18} />, color: 'var(--vct-warning)' },
             ] as StatItem[]} className="mb-6" />
 
             {/* Toolbar */}

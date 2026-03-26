@@ -6,10 +6,10 @@ import {
     VCT_Card, VCT_Badge, VCT_Button, VCT_Text, VCT_Stack,
     VCT_Toast, VCT_Modal, VCT_Divider, VCT_Input, VCT_Field, VCT_Select,
     VCT_ConfirmDialog, VCT_EmptyState, VCT_SearchInput
-} from '../components/vct-ui';
-import { VCT_PageContainer, VCT_StatRow } from '../components/vct-ui';
-import type { StatItem } from '../components/VCT_StatRow';
-import { VCT_Icons } from '../components/vct-icons';
+} from '@vct/ui';
+import { VCT_PageContainer, VCT_StatRow } from '@vct/ui';
+import type { StatItem } from '@vct/ui';
+import { VCT_Icons } from '@vct/ui';
 
 import { genId } from '../hooks/useTournamentAPI';
 import type { SanDau, TrangThaiSan, TrangThaiTrangBi } from '../data/types';
@@ -17,18 +17,18 @@ import { repositories, useEntityCollection } from '../data/repository';
 import { useToast } from '../hooks/use-toast';
 
 const TRANG_THAI_SAN_MAP: Record<TrangThaiSan, { label: string; color: string; type: string; icon: any }> = {
-    dong: { label: 'Đóng', color: '#94a3b8', type: 'info', icon: VCT_Icons.Moon },
-    san_sang: { label: 'Sẵn sàng', color: '#10b981', type: 'success', icon: VCT_Icons.Check },
-    dang_chuan_bi: { label: 'Đang chuẩn bị', color: '#f59e0b', type: 'warning', icon: VCT_Icons.Clock },
-    dang_thi_dau: { label: 'Đang thi đấu', color: '#ef4444', type: 'danger', icon: VCT_Icons.Activity },
-    su_co: { label: 'Sự cố', color: '#ef4444', type: 'danger', icon: VCT_Icons.Alert },
-    bao_tri: { label: 'Bảo trì', color: '#f59e0b', type: 'warning', icon: VCT_Icons.Wrench },
+    dong: { label: 'Đóng', color: 'var(--vct-text-tertiary)', type: 'info', icon: VCT_Icons.Moon },
+    san_sang: { label: 'Sẵn sàng', color: 'var(--vct-success)', type: 'success', icon: VCT_Icons.Check },
+    dang_chuan_bi: { label: 'Đang chuẩn bị', color: 'var(--vct-warning)', type: 'warning', icon: VCT_Icons.Clock },
+    dang_thi_dau: { label: 'Đang thi đấu', color: 'var(--vct-danger)', type: 'danger', icon: VCT_Icons.Activity },
+    su_co: { label: 'Sự cố', color: 'var(--vct-danger)', type: 'danger', icon: VCT_Icons.Alert },
+    bao_tri: { label: 'Bảo trì', color: 'var(--vct-warning)', type: 'warning', icon: VCT_Icons.Wrench },
 };
 
 const TRANG_BI_MAP: Record<TrangThaiTrangBi, { label: string; color: string }> = {
-    tot: { label: 'Tốt', color: '#10b981' },
-    thieu: { label: 'Thiếu', color: '#f59e0b' },
-    hong: { label: 'Hỏng', color: '#ef4444' },
+    tot: { label: 'Tốt', color: 'var(--vct-success)' },
+    thieu: { label: 'Thiếu', color: 'var(--vct-warning)' },
+    hong: { label: 'Hỏng', color: 'var(--vct-danger)' },
 };
 
 const BLANK_ARENA: Partial<SanDau> = {
@@ -48,7 +48,7 @@ const BLANK_ARENA: Partial<SanDau> = {
 // ════════════════════════════════════════
 const LiveScoreboard = ({ color, name, score, team, isWinner }: { color: 'red' | 'blue', name: string, score: number | string, team: string, isWinner?: boolean }) => {
     const isRed = color === 'red';
-    const themeColor = isRed ? '#ef4444' : '#3b82f6';
+    const themeColor = isRed ? 'var(--vct-danger)' : 'var(--vct-info)';
 
     return (
         <div {...{ style: {
@@ -60,7 +60,7 @@ const LiveScoreboard = ({ color, name, score, team, isWinner }: { color: 'red' |
         } }}>
             <div {...{ style: {
                 position: 'absolute', top: 0, [isRed ? 'left' : 'right']: 0,
-                padding: '2px 8px', background: themeColor, color: '#fff',
+                padding: '2px 8px', background: themeColor, color: 'var(--vct-bg-elevated)',
                 fontSize: '9px', fontWeight: 900,
                 borderBottomRightRadius: isRed ? 8 : 0, borderBottomLeftRadius: isRed ? 0 : 8,
                 letterSpacing: '0.05em'
@@ -215,10 +215,10 @@ export const Page_san_dau = () => {
 
             {/* ── KPI HEADER ── */}
             <VCT_StatRow items={[
-                { label: 'Tổng Sàn', value: arenas.length, icon: <VCT_Icons.Columns size={18} />, color: '#0ea5e9' },
-                { label: 'LIVE', value: liveArenas, icon: <VCT_Icons.Activity size={18} />, color: '#ef4444' },
-                { label: 'Trận hôm nay', value: totalMatches, icon: <VCT_Icons.List size={18} />, color: '#8b5cf6', sub: `Xong: ${totalDone}` },
-                { label: 'Sẵn sàng', value: arenas.filter(a => a.trang_thai === 'san_sang').length, icon: <VCT_Icons.Check size={18} />, color: '#10b981' },
+                { label: 'Tổng Sàn', value: arenas.length, icon: <VCT_Icons.Columns size={18} />, color: 'var(--vct-accent-cyan)' },
+                { label: 'LIVE', value: liveArenas, icon: <VCT_Icons.Activity size={18} />, color: 'var(--vct-danger)' },
+                { label: 'Trận hôm nay', value: totalMatches, icon: <VCT_Icons.List size={18} />, color: 'var(--vct-info)', sub: `Xong: ${totalDone}` },
+                { label: 'Sẵn sàng', value: arenas.filter(a => a.trang_thai === 'san_sang').length, icon: <VCT_Icons.Check size={18} />, color: 'var(--vct-success)' },
             ] as StatItem[]} className="mb-6" />
 
             {/* ── HEADER ── */}
@@ -346,7 +346,7 @@ export const Page_san_dau = () => {
                                             <>
                                                 <div {...{ style: { textAlign: 'center', marginBottom: '12px', position: 'relative', zIndex: 1 } }}>
                                                     <VCT_Text variant="small" {...{ style: { color: 'var(--vct-accent-cyan)', fontWeight: 800 } }}>{arena.noi_dung}</VCT_Text>
-                                                    <div {...{ style: { color: '#f59e0b', fontSize: 13, fontWeight: 700, marginTop: 4 } }}>Hiệp {arena.match_live.hiep} • {arena.match_live.time}</div>
+                                                    <div {...{ style: { color: 'var(--vct-warning)', fontSize: 13, fontWeight: 700, marginTop: 4 } }}>Hiệp {arena.match_live.hiep} • {arena.match_live.time}</div>
                                                 </div>
                                                 <VCT_Stack direction="row" gap={12} {...{ style: { position: 'relative', zIndex: 1, marginBottom: '16px' } }}>
                                                     <LiveScoreboard
@@ -371,12 +371,12 @@ export const Page_san_dau = () => {
                                                     <VCT_Button
                                                         size="small"
                                                         variant="secondary"
-                                                        {...{ style: { flex: 1, background: 'rgba(239, 68, 68, 0.1)', color: '#ef4444', borderColor: '#ef4444' } }}
+                                                        {...{ style: { flex: 1, background: 'rgba(239, 68, 68, 0.1)', color: 'var(--vct-danger)', borderColor: 'var(--vct-danger)' } }}
                                                         onClick={() => showToast(`Dừng trận đấu tại ${arena.ten}`, 'info')}
                                                     >Tạm dừng</VCT_Button>
                                                     <VCT_Button
                                                         size="small"
-                                                        {...{ style: { flex: 1, background: '#10b981', borderColor: '#10b981' } }}
+                                                        {...{ style: { flex: 1, background: 'var(--vct-success)', borderColor: 'var(--vct-success)' } }}
                                                         onClick={() => showToast(`Kết thúc trận đấu tại ${arena.ten}`, 'success')}
                                                     >Kết thúc</VCT_Button>
                                                 </VCT_Stack>
@@ -392,7 +392,7 @@ export const Page_san_dau = () => {
                                     {/* QUEUE STRIP */}
                                     {arena.queue.length > 0 && (
                                         <div {...{ style: { marginTop: 16, display: 'flex', alignItems: 'center', gap: 12, padding: '10px 14px', background: 'var(--vct-bg-elevated)', borderRadius: 12, border: '1px solid var(--vct-border-subtle)' } }}>
-                                            <VCT_Text variant="small" {...{ style: { color: '#f59e0b', flexShrink: 0, fontWeight: 800 } }}>TIẾP THEO</VCT_Text>
+                                            <VCT_Text variant="small" {...{ style: { color: 'var(--vct-warning)', flexShrink: 0, fontWeight: 800 } }}>TIẾP THEO</VCT_Text>
                                             <div {...{ style: { flex: 1, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' } }}>
                                                 <span {...{ style: { fontSize: 13, fontWeight: 700 } }}>{arena.queue[0]?.vdv1} vs {arena.queue[0]?.vdv2}</span>
                                                 <span {...{ style: { fontSize: 11, opacity: 0.5, marginLeft: 8 } }}>({arena.queue[0]?.noi_dung})</span>
@@ -405,7 +405,7 @@ export const Page_san_dau = () => {
                                         <VCT_Button variant="secondary" onClick={() => openEditArena(arena)} {...{ style: { width: 40, padding: 0, flexShrink: 0 } }} title="Sửa thông tin sàn">
                                             <VCT_Icons.Edit size={16} />
                                         </VCT_Button>
-                                        <VCT_Button variant="secondary" onClick={() => setDeleteTarget(arena)} {...{ style: { width: 40, padding: 0, color: '#ef4444', borderColor: 'rgba(239,68,68,0.35)', flexShrink: 0 } }} title="Xóa sàn">
+                                        <VCT_Button variant="secondary" onClick={() => setDeleteTarget(arena)} {...{ style: { width: 40, padding: 0, color: 'var(--vct-danger)', borderColor: 'rgba(239,68,68,0.35)', flexShrink: 0 } }} title="Xóa sàn">
                                             <VCT_Icons.Trash size={16} />
                                         </VCT_Button>
                                         <VCT_Button variant="secondary" onClick={() => setExpandedArenaId(isExpanded ? null : arena.id)} {...{ style: { padding: '0 16px', flexShrink: 0, whiteSpace: 'nowrap' } }}>

@@ -272,4 +272,3 @@ func HTTPMiddleware(breaker *Breaker) func(http.Handler) http.Handler {
 		})
 	}
 }
-

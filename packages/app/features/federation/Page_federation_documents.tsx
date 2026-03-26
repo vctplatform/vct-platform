@@ -6,10 +6,10 @@ import { useApiFetch } from './useApiFetch'
 import {
     VCT_Badge, VCT_Button, VCT_Stack,
     VCT_SearchInput, VCT_EmptyState, VCT_FilterChips
-} from '../components/vct-ui'
-import { VCT_PageContainer, VCT_StatRow } from '../components/vct-ui'
-import type { StatItem } from '../components/VCT_StatRow'
-import { VCT_Icons } from '../components/vct-icons'
+} from '@vct/ui'
+import { VCT_PageContainer, VCT_StatRow } from '@vct/ui'
+import type { StatItem } from '@vct/ui'
+import { VCT_Icons } from '@vct/ui'
 
 // ════════════════════════════════════════
 // FEDERATION — OFFICIAL DOCUMENTS
@@ -24,11 +24,11 @@ interface OfficialDocument {
 }
 
 const DOC_TYPE_MAP: Record<DocType, { label: string; color: string }> = {
-    decision: { label: 'Quyết định', color: '#8b5cf6' },
-    circular: { label: 'Thông báo', color: '#0ea5e9' },
-    regulation: { label: 'Quy chế', color: '#ef4444' },
-    report: { label: 'Báo cáo', color: '#f59e0b' },
-    certificate: { label: 'Chứng nhận', color: '#10b981' },
+    decision: { label: 'Quyết định', color: 'var(--vct-info)' },
+    circular: { label: 'Thông báo', color: 'var(--vct-accent-cyan)' },
+    regulation: { label: 'Quy chế', color: 'var(--vct-danger)' },
+    report: { label: 'Báo cáo', color: 'var(--vct-warning)' },
+    certificate: { label: 'Chứng nhận', color: 'var(--vct-success)' },
 }
 
 const STATUS_MAP: Record<DocStatus, { label: string; type: any }> = {
@@ -87,10 +87,10 @@ export const Page_federation_documents = () => {
             </div>
 
             <VCT_StatRow items={[
-                { label: 'Tổng văn bản', value: docs.length, icon: <VCT_Icons.FileText size={18} />, color: '#8b5cf6' },
-                { label: 'Đã ban hành', value: docs.filter(d => d.status === 'published').length, icon: <VCT_Icons.Check size={18} />, color: '#10b981' },
-                { label: 'Chờ duyệt', value: docs.filter(d => d.status === 'pending_approval').length, icon: <VCT_Icons.Clock size={18} />, color: '#f59e0b' },
-                { label: 'Bản nháp', value: docs.filter(d => d.status === 'draft').length, icon: <VCT_Icons.Edit size={18} />, color: '#64748b' },
+                { label: 'Tổng văn bản', value: docs.length, icon: <VCT_Icons.FileText size={18} />, color: 'var(--vct-info)' },
+                { label: 'Đã ban hành', value: docs.filter(d => d.status === 'published').length, icon: <VCT_Icons.Check size={18} />, color: 'var(--vct-success)' },
+                { label: 'Chờ duyệt', value: docs.filter(d => d.status === 'pending_approval').length, icon: <VCT_Icons.Clock size={18} />, color: 'var(--vct-warning)' },
+                { label: 'Bản nháp', value: docs.filter(d => d.status === 'draft').length, icon: <VCT_Icons.Edit size={18} />, color: 'var(--vct-text-tertiary)' },
             ] as StatItem[]} className="mb-6" />
 
             <VCT_FilterChips filters={activeFilters} onRemove={(k) => { if (k === 'type') setTypeFilter(''); if (k === 'status') setStatusFilter(''); }} onClearAll={() => { setTypeFilter(''); setStatusFilter(''); }} />

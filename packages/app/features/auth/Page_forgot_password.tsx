@@ -6,8 +6,8 @@
 
 import * as React from 'react'
 import { useState } from 'react'
-import { VCT_Toast } from '../components/vct-ui'
-import { VCT_Icons } from '../components/vct-icons'
+import { VCT_Toast } from '@vct/ui'
+import { VCT_Icons } from '@vct/ui'
 
 type Step = 'email' | 'verify' | 'reset' | 'done'
 

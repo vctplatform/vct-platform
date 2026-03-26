@@ -3,8 +3,8 @@
 import * as React from 'react'
 import type { MarketplaceProduct } from '@vct/shared-types'
 
-import { VCT_Badge, VCT_Button } from '../components/vct-ui'
-import { VCT_Icons } from '../components/vct-icons'
+import { VCT_Badge, VCT_Button } from '@vct/ui'
+import { VCT_Icons } from '@vct/ui'
 import {
   categoryAccentMap,
   formatCurrencyVND,

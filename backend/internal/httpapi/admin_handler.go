@@ -27,7 +27,7 @@ func isAdmin(role auth.UserRole) bool {
 
 func requireAdmin(w http.ResponseWriter, p auth.Principal) bool {
 	if !isAdmin(p.User.Role) {
-		badRequest(w, "Bạn không có quyền truy cập quản trị")
+		apiError(w, http.StatusBadRequest, CodeBadRequest, "Bạn không có quyền truy cập quản trị")
 		return false
 	}
 	return true
@@ -96,22 +96,22 @@ func (s *Server) handleCMSConfigList(w http.ResponseWriter, r *http.Request, p a
 	case http.MethodPost:
 		var body map[string]any
 		if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
-			badRequest(w, "invalid JSON body")
+			apiError(w, http.StatusBadRequest, CodeBadRequest, "invalid JSON body")
 			return
 		}
 		b, err := json.Marshal(body)
 		if err != nil {
-			badRequest(w, err.Error())
+			apiError(w, http.StatusBadRequest, CodeBadRequest, err.Error())
 			return
 		}
 		created, err := s.store.Create(cmsEntity, b)
 		if err != nil {
-			badRequest(w, err.Error())
+			apiError(w, http.StatusBadRequest, CodeBadRequest, err.Error())
 			return
 		}
 		successJSONBytes(w, http.StatusCreated, created)
 	default:
-		methodNotAllowed(w)
+		apiMethodNotAllowed(w)
 	}
 }
 
@@ -125,7 +125,7 @@ func (s *Server) handleCMSConfigDetail(w http.ResponseWriter, r *http.Request, p
 	case http.MethodGet:
 		item, found := s.store.GetByID(cmsEntity, key)
 		if !found {
-			notFound(w)
+			apiError(w, http.StatusNotFound, CodeNotFound, "Không tìm thấy tài nguyên")
 			return
 		}
 		success(w, http.StatusOK, item)
@@ -133,21 +133,21 @@ func (s *Server) handleCMSConfigDetail(w http.ResponseWriter, r *http.Request, p
 	case http.MethodPut:
 		var body map[string]any
 		if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
-			badRequest(w, "invalid JSON body")
+			apiError(w, http.StatusBadRequest, CodeBadRequest, "invalid JSON body")
 			return
 		}
 		body["id"] = key
 		// Try update first, create if not found
 		b, err := json.Marshal(body)
 		if err != nil {
-			badRequest(w, err.Error())
+			apiError(w, http.StatusBadRequest, CodeBadRequest, err.Error())
 			return
 		}
 		updated, err := s.store.Update(cmsEntity, key, b)
 		if err != nil {
 			created, createErr := s.store.Create(cmsEntity, b)
 			if createErr != nil {
-				badRequest(w, createErr.Error())
+				apiError(w, http.StatusBadRequest, CodeBadRequest, createErr.Error())
 				return
 			}
 			successJSONBytes(w, http.StatusCreated, created)
@@ -160,7 +160,7 @@ func (s *Server) handleCMSConfigDetail(w http.ResponseWriter, r *http.Request, p
 		success(w, http.StatusOK, map[string]string{"message": "Đã xóa config"})
 
 	default:
-		methodNotAllowed(w)
+		apiMethodNotAllowed(w)
 	}
 }
 
@@ -168,7 +168,7 @@ func (s *Server) handleCMSConfigDetail(w http.ResponseWriter, r *http.Request, p
 
 func (s *Server) handleCMSPublicTheme(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
-		methodNotAllowed(w)
+		apiMethodNotAllowed(w)
 		return
 	}
 	item, found := s.store.GetByID(cmsEntity, "theme")
@@ -188,7 +188,7 @@ func (s *Server) handleCMSPublicTheme(w http.ResponseWriter, r *http.Request) {
 
 func (s *Server) handleCMSPublicBranding(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
-		methodNotAllowed(w)
+		apiMethodNotAllowed(w)
 		return
 	}
 	item, found := s.store.GetByID(cmsEntity, "branding")
@@ -213,7 +213,7 @@ func (s *Server) handleCMSPublicBranding(w http.ResponseWriter, r *http.Request)
 
 func (s *Server) handleAdminDashboardStats(w http.ResponseWriter, r *http.Request, p auth.Principal) {
 	if r.Method != http.MethodGet {
-		methodNotAllowed(w)
+		apiMethodNotAllowed(w)
 		return
 	}
 	if !requireAdmin(w, p) {
@@ -267,14 +267,14 @@ func (s *Server) handleAdminDashboardStats(w http.ResponseWriter, r *http.Reques
 	}
 
 	success(w, http.StatusOK, map[string]any{
-		"services":     services,
-		"timeline":     timeline,
-		"goroutines":   runtime.NumGoroutine(),
-		"memory_mb":    memStats.Alloc / 1024 / 1024,
-		"gc_runs":      memStats.NumGC,
-		"ws_clients":   wsClients,
-		"storage":      s.storageDriver,
-		"go_version":   runtime.Version(),
+		"services":   services,
+		"timeline":   timeline,
+		"goroutines": runtime.NumGoroutine(),
+		"memory_mb":  memStats.Alloc / 1024 / 1024,
+		"gc_runs":    memStats.NumGC,
+		"ws_clients": wsClients,
+		"storage":    s.storageDriver,
+		"go_version": runtime.Version(),
 	})
 }
 
@@ -285,7 +285,7 @@ func (s *Server) handleAdminDashboardStats(w http.ResponseWriter, r *http.Reques
 
 func (s *Server) handleAdminHealth(w http.ResponseWriter, r *http.Request, p auth.Principal) {
 	if r.Method != http.MethodGet {
-		methodNotAllowed(w)
+		apiMethodNotAllowed(w)
 		return
 	}
 	if !requireAdmin(w, p) {
@@ -363,7 +363,7 @@ func (s *Server) handleAdminConfig(w http.ResponseWriter, r *http.Request, p aut
 			"message": "Cập nhật cấu hình thành công",
 		})
 	default:
-		methodNotAllowed(w)
+		apiMethodNotAllowed(w)
 	}
 }
 
@@ -376,7 +376,7 @@ func (s *Server) handleAdminFeatureFlags(w http.ResponseWriter, r *http.Request,
 		return
 	}
 	if r.Method != http.MethodGet {
-		methodNotAllowed(w)
+		apiMethodNotAllowed(w)
 		return
 	}
 
@@ -392,7 +392,7 @@ func (s *Server) handleAdminFeatureFlags(w http.ResponseWriter, r *http.Request,
 		        COALESCE(scope,'global'), created_at, updated_at
 		 FROM system.feature_flags ORDER BY flag_key`)
 	if err != nil {
-		internalError(w, err)
+		apiInternal(w, err)
 		return
 	}
 	defer rows.Close()
@@ -429,7 +429,7 @@ func (s *Server) handleAdminFeatureFlagDetail(w http.ResponseWriter, r *http.Req
 	switch r.Method {
 	case http.MethodPut, http.MethodPatch:
 		if s.sqlDB == nil {
-			badRequest(w, "Database chưa cấu hình")
+			apiError(w, http.StatusBadRequest, CodeBadRequest, "Database chưa cấu hình")
 			return
 		}
 		var body struct {
@@ -437,14 +437,14 @@ func (s *Server) handleAdminFeatureFlagDetail(w http.ResponseWriter, r *http.Req
 			RolloutPct *int  `json:"rollout_pct"`
 		}
 		if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
-			badRequest(w, "invalid request body")
+			apiError(w, http.StatusBadRequest, CodeBadRequest, "invalid request body")
 			return
 		}
 		if body.Enabled != nil {
 			if _, err := s.sqlDB.ExecContext(r.Context(),
 				`UPDATE system.feature_flags SET is_enabled=$1, flag_value=$1, updated_at=NOW() WHERE id=$2`,
 				*body.Enabled, flagID); err != nil {
-				internalError(w, err)
+				apiInternal(w, err)
 				return
 			}
 		}
@@ -452,14 +452,14 @@ func (s *Server) handleAdminFeatureFlagDetail(w http.ResponseWriter, r *http.Req
 			if _, err := s.sqlDB.ExecContext(r.Context(),
 				`UPDATE system.feature_flags SET rollout_pct=$1, rollout_percent=$1, updated_at=NOW() WHERE id=$2`,
 				*body.RolloutPct, flagID); err != nil {
-				internalError(w, err)
+				apiInternal(w, err)
 				return
 			}
 		}
 		success(w, http.StatusOK, map[string]string{"message": "Đã cập nhật feature flag"})
 
 	default:
-		methodNotAllowed(w)
+		apiMethodNotAllowed(w)
 	}
 }
 
@@ -511,7 +511,7 @@ func (s *Server) handleAdminUsers(w http.ResponseWriter, r *http.Request, p auth
 	case http.MethodPost:
 		var body auth.RegisterRequest
 		if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
-			badRequest(w, "invalid request body")
+			apiError(w, http.StatusBadRequest, CodeBadRequest, "invalid request body")
 			return
 		}
 		result, err := s.authService.Register(body, auth.RequestContext{
@@ -519,7 +519,7 @@ func (s *Server) handleAdminUsers(w http.ResponseWriter, r *http.Request, p auth
 			UserAgent: r.UserAgent(),
 		})
 		if err != nil {
-			badRequest(w, err.Error())
+			apiError(w, http.StatusBadRequest, CodeBadRequest, err.Error())
 			return
 		}
 		success(w, http.StatusCreated, map[string]any{
@@ -529,7 +529,7 @@ func (s *Server) handleAdminUsers(w http.ResponseWriter, r *http.Request, p auth
 		})
 
 	default:
-		methodNotAllowed(w)
+		apiMethodNotAllowed(w)
 	}
 }
 
@@ -542,7 +542,7 @@ func (s *Server) handleAdminUserDetail(w http.ResponseWriter, r *http.Request, p
 	switch r.Method {
 	case http.MethodGet:
 		if s.sqlDB == nil {
-			notFound(w)
+			apiError(w, http.StatusNotFound, CodeNotFound, "Không tìm thấy tài nguyên")
 			return
 		}
 		var id, username, fullName, role, email string
@@ -552,7 +552,7 @@ func (s *Server) handleAdminUserDetail(w http.ResponseWriter, r *http.Request, p
 			`SELECT id, username, COALESCE(full_name,''), role, is_active, COALESCE(email,''), created_at
 			 FROM core.users WHERE id=$1`, userID).Scan(&id, &username, &fullName, &role, &active, &email, &createdAt)
 		if err != nil {
-			notFound(w)
+			apiError(w, http.StatusNotFound, CodeNotFound, "Không tìm thấy tài nguyên")
 			return
 		}
 		success(w, http.StatusOK, map[string]any{
@@ -567,7 +567,7 @@ func (s *Server) handleAdminUserDetail(w http.ResponseWriter, r *http.Request, p
 
 	case http.MethodPut, http.MethodPatch:
 		if s.sqlDB == nil {
-			badRequest(w, "Database chưa cấu hình")
+			apiError(w, http.StatusBadRequest, CodeBadRequest, "Database chưa cấu hình")
 			return
 		}
 		var body struct {
@@ -575,14 +575,14 @@ func (s *Server) handleAdminUserDetail(w http.ResponseWriter, r *http.Request, p
 			Active *bool  `json:"active"`
 		}
 		if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
-			badRequest(w, "invalid request body")
+			apiError(w, http.StatusBadRequest, CodeBadRequest, "invalid request body")
 			return
 		}
 		if body.Role != "" {
 			if _, err := s.sqlDB.ExecContext(r.Context(),
 				`UPDATE core.users SET role=$1, updated_at=NOW() WHERE id=$2`,
 				body.Role, userID); err != nil {
-				internalError(w, err)
+				apiInternal(w, err)
 				return
 			}
 		}
@@ -590,7 +590,7 @@ func (s *Server) handleAdminUserDetail(w http.ResponseWriter, r *http.Request, p
 			if _, err := s.sqlDB.ExecContext(r.Context(),
 				`UPDATE core.users SET is_active=$1, updated_at=NOW() WHERE id=$2`,
 				*body.Active, userID); err != nil {
-				internalError(w, err)
+				apiInternal(w, err)
 				return
 			}
 		}
@@ -598,19 +598,19 @@ func (s *Server) handleAdminUserDetail(w http.ResponseWriter, r *http.Request, p
 
 	case http.MethodDelete:
 		if s.sqlDB == nil {
-			badRequest(w, "Database chưa cấu hình")
+			apiError(w, http.StatusBadRequest, CodeBadRequest, "Database chưa cấu hình")
 			return
 		}
 		if _, err := s.sqlDB.ExecContext(r.Context(),
 			`UPDATE core.users SET is_active=false, updated_at=NOW() WHERE id=$1`,
 			userID); err != nil {
-			internalError(w, err)
+			apiInternal(w, err)
 			return
 		}
 		success(w, http.StatusOK, map[string]string{"message": "Đã vô hiệu hóa người dùng"})
 
 	default:
-		methodNotAllowed(w)
+		apiMethodNotAllowed(w)
 	}
 }
 
@@ -628,7 +628,7 @@ type adminRoleInfo struct {
 
 func (s *Server) handleAdminRoles(w http.ResponseWriter, r *http.Request, p auth.Principal) {
 	if r.Method != http.MethodGet {
-		methodNotAllowed(w)
+		apiMethodNotAllowed(w)
 		return
 	}
 	if !requireAdmin(w, p) {
@@ -664,7 +664,7 @@ func (s *Server) handleAdminRoles(w http.ResponseWriter, r *http.Request, p auth
 
 func (s *Server) handleAdminAuditLogs(w http.ResponseWriter, r *http.Request, p auth.Principal) {
 	if r.Method != http.MethodGet {
-		methodNotAllowed(w)
+		apiMethodNotAllowed(w)
 		return
 	}
 	if !requireAdmin(w, p) {
@@ -701,7 +701,7 @@ func (s *Server) handleAdminAuditLogs(w http.ResponseWriter, r *http.Request, p 
 
 func (s *Server) handleAdminNotificationStats(w http.ResponseWriter, r *http.Request, p auth.Principal) {
 	if r.Method != http.MethodGet {
-		methodNotAllowed(w)
+		apiMethodNotAllowed(w)
 		return
 	}
 	if !requireAdmin(w, p) {
@@ -717,7 +717,7 @@ func (s *Server) handleAdminNotificationStats(w http.ResponseWriter, r *http.Req
 
 func (s *Server) handleAdminDocumentsIssued(w http.ResponseWriter, r *http.Request, p auth.Principal) {
 	if r.Method != http.MethodGet {
-		methodNotAllowed(w)
+		apiMethodNotAllowed(w)
 		return
 	}
 	if !requireAdmin(w, p) {
@@ -733,7 +733,7 @@ func (s *Server) handleAdminDocumentsIssued(w http.ResponseWriter, r *http.Reque
 
 func (s *Server) handleAdminIntegrityAlerts(w http.ResponseWriter, r *http.Request, p auth.Principal) {
 	if r.Method != http.MethodGet {
-		methodNotAllowed(w)
+		apiMethodNotAllowed(w)
 		return
 	}
 	if !requireAdmin(w, p) {
@@ -749,7 +749,7 @@ func (s *Server) handleAdminIntegrityAlerts(w http.ResponseWriter, r *http.Reque
 
 func (s *Server) handleAdminDataQualityScores(w http.ResponseWriter, r *http.Request, p auth.Principal) {
 	if r.Method != http.MethodGet {
-		methodNotAllowed(w)
+		apiMethodNotAllowed(w)
 		return
 	}
 	if !requireAdmin(w, p) {
@@ -765,7 +765,7 @@ func (s *Server) handleAdminDataQualityScores(w http.ResponseWriter, r *http.Req
 
 func (s *Server) handleAdminDataQualityRules(w http.ResponseWriter, r *http.Request, p auth.Principal) {
 	if r.Method != http.MethodGet {
-		methodNotAllowed(w)
+		apiMethodNotAllowed(w)
 		return
 	}
 	if !requireAdmin(w, p) {

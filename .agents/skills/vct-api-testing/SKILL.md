@@ -9,7 +9,13 @@ description: API integration testing patterns for VCT Platform — httptest-base
 
 ---
 
+
+> [!IMPORTANT]
+> **SUPREME ARCHITECTURE DIRECTIVE**: You are strictly bound by the 19 architecture pillars documented in `docs/architecture/`. As a VCT AI Agent, your absolute highest priority is 100% compliance with these rules. You MUST NOT generate code, propose designs, or execute workflows that violate these foundational rules. They are unchangeable and strictly enforced.
+
 ## 1. Test Architecture
+
+> **CRITICAL RULE**: API Integration testing MUST strictly comply with the authoritative rules defined in `docs/architecture/qa-testing-architecture.md`. You MUST use `httptest` with isolated Database containers (Testcontainers), test entirely via Interfaces, and NEVER accept flaky network setups in CI.
 
 ```
 internal/httpapi/

@@ -1,9 +1,9 @@
 'use client'
 
 import * as React from 'react'
-import { VCT_PageContainer, VCT_StatRow } from '../components/vct-ui'
-import type { StatItem } from '../components/VCT_StatRow'
-import { VCT_Icons } from '../components/vct-icons'
+import { VCT_PageContainer, VCT_StatRow } from '@vct/ui'
+import type { StatItem } from '@vct/ui'
+import { VCT_Icons } from '@vct/ui'
 
 // ════════════════════════════════════════════════════════════════
 // PROVINCIAL — ATHLETE MANAGEMENT (Quản lý VĐV cấp tỉnh)
@@ -23,9 +23,9 @@ const MOCK_ATHLETES = [
 ]
 
 const STATUS_MAP: Record<string, { label: string; color: string }> = {
-    ACTIVE: { label: 'Thi đấu', color: '#10b981' },
-    SUSPENDED: { label: 'Tạm nghỉ', color: '#f59e0b' },
-    RETIRED: { label: 'Nghỉ', color: '#ef4444' },
+    ACTIVE: { label: 'Thi đấu', color: 'var(--vct-success)' },
+    SUSPENDED: { label: 'Tạm nghỉ', color: 'var(--vct-warning)' },
+    RETIRED: { label: 'Nghỉ', color: 'var(--vct-danger)' },
 }
 
 export const Page_province_athletes = () => {
@@ -54,10 +54,10 @@ export const Page_province_athletes = () => {
             </div>
 
             <VCT_StatRow items={[
-                { label: 'Tổng VĐV', value: MOCK_ATHLETES.length, icon: <VCT_Icons.Users size={18} />, color: '#10b981' },
-                { label: 'Nam', value: maleCount, icon: <VCT_Icons.User size={18} />, color: '#0ea5e9' },
+                { label: 'Tổng VĐV', value: MOCK_ATHLETES.length, icon: <VCT_Icons.Users size={18} />, color: 'var(--vct-success)' },
+                { label: 'Nam', value: maleCount, icon: <VCT_Icons.User size={18} />, color: 'var(--vct-accent-cyan)' },
                 { label: 'Nữ', value: femaleCount, icon: <VCT_Icons.User size={18} />, color: '#f472b6' },
-                { label: 'Có thành tích', value: achievementCount, icon: <VCT_Icons.Award size={18} />, color: '#f59e0b' },
+                { label: 'Có thành tích', value: achievementCount, icon: <VCT_Icons.Award size={18} />, color: 'var(--vct-warning)' },
             ] as StatItem[]} className="mb-6" />
 
             {/* Filters */}
@@ -105,7 +105,7 @@ export const Page_province_athletes = () => {
                                     <td className="p-3 text-(--vct-text-secondary)">{a.clubName}</td>
                                     <td className="p-3 text-center text-(--vct-text-secondary)">{a.gender}</td>
                                     <td className="p-3 text-center">
-                                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg text-xs font-bold" style={{ background: '#f59e0b22', color: '#f59e0b' }}>
+                                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg text-xs font-bold" style={{ background: '#f59e0b22', color: 'var(--vct-warning)' }}>
                                             {a.beltName}
                                         </span>
                                     </td>

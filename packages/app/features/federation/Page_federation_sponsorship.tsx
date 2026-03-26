@@ -1,9 +1,9 @@
 'use client'
 
 import React, { useState } from 'react'
-import { VCT_PageContainer, VCT_PageHero } from '../components/VCT_PageContainer'
-import { VCT_Icons } from '../components/vct-icons'
-import { VCT_Badge, VCT_Button } from '../components/vct-ui'
+import { VCT_PageContainer, VCT_PageHero } from '@vct/ui'
+import { VCT_Icons } from '@vct/ui'
+import { VCT_Badge, VCT_Button } from '@vct/ui'
 
 // ════════════════════════════════════════
 // FEDERATION — TÀI TRỢ & NHÀ TÀI TRỢ
@@ -17,11 +17,11 @@ interface Sponsor {
 }
 
 const TIER_MAP: Record<string, { label: string; color: string; icon: string }> = {
-    diamond: { label: 'Kim cương', color: '#06b6d4', icon: '💎' },
-    gold: { label: 'Vàng', color: '#f59e0b', icon: '🥇' },
-    silver: { label: 'Bạc', color: '#94a3b8', icon: '🥈' },
-    bronze: { label: 'Đồng', color: '#d97706', icon: '🥉' },
-    media: { label: 'Truyền thông', color: '#8b5cf6', icon: '📺' },
+    diamond: { label: 'Kim cương', color: 'var(--vct-accent-cyan)', icon: '💎' },
+    gold: { label: 'Vàng', color: 'var(--vct-warning)', icon: '🥇' },
+    silver: { label: 'Bạc', color: 'var(--vct-text-tertiary)', icon: '🥈' },
+    bronze: { label: 'Đồng', color: 'var(--vct-warning)', icon: '🥉' },
+    media: { label: 'Truyền thông', color: 'var(--vct-info)', icon: '📺' },
 }
 
 const fmt = (n: number) => {
@@ -45,10 +45,10 @@ export function Page_federation_sponsorship() {
     const totalValue = SEED.filter(s => s.status === 'active').reduce((s, sp) => s + sp.amount, 0)
 
     const kpis = [
-        { label: 'Nhà tài trợ', value: SEED.length, icon: <VCT_Icons.Heart size={16} />, color: '#ec4899' },
-        { label: 'Đang hoạt động', value: SEED.filter(s => s.status === 'active').length, icon: <VCT_Icons.CheckCircle size={16} />, color: '#10b981' },
-        { label: 'Tổng giá trị', value: fmt(totalValue), icon: <VCT_Icons.DollarSign size={16} />, color: '#f59e0b' },
-        { label: 'Đang đàm phán', value: SEED.filter(s => s.status === 'negotiating').length, icon: <VCT_Icons.Clock size={16} />, color: '#0ea5e9' },
+        { label: 'Nhà tài trợ', value: SEED.length, icon: <VCT_Icons.Heart size={16} />, color: 'var(--vct-accent-pink)' },
+        { label: 'Đang hoạt động', value: SEED.filter(s => s.status === 'active').length, icon: <VCT_Icons.CheckCircle size={16} />, color: 'var(--vct-success)' },
+        { label: 'Tổng giá trị', value: fmt(totalValue), icon: <VCT_Icons.DollarSign size={16} />, color: 'var(--vct-warning)' },
+        { label: 'Đang đàm phán', value: SEED.filter(s => s.status === 'negotiating').length, icon: <VCT_Icons.Clock size={16} />, color: 'var(--vct-accent-cyan)' },
     ]
 
     return (

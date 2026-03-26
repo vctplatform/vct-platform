@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
     VCT_Text, VCT_Badge,
-} from 'app/features/components/vct-ui'
+} from '@vct/ui'
 import { useAuth } from 'app/features/auth/AuthProvider'
 
 /* ── Types ──────────────────────────────────────────────────── */
@@ -123,7 +123,7 @@ function ErrorBanner({ message, onRetry }: { message: string; onRetry: () => voi
                     whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}
                     onClick={onRetry}
                     className="px-3 py-1.5 rounded-lg text-sm font-medium cursor-pointer border-none"
-                    style={{ background: 'rgba(239,68,68,0.15)', color: '#f87171' }}
+                    style={{ background: 'rgba(239,68,68,0.15)', color: 'var(--vct-danger)' }}
                 >Thử lại</motion.button>
             </div>
         </div>
@@ -175,7 +175,7 @@ export function Page_ParentDashboard() {
                         👪
                     </div>
                     <div>
-                        <VCT_Text variant="h1" style={{ color: '#fff', margin: 0, fontSize: '1.5rem' }}>
+                        <VCT_Text variant="h1" style={{ color: 'var(--vct-bg-elevated)', margin: 0, fontSize: '1.5rem' }}>
                             Cổng Phụ Huynh
                         </VCT_Text>
                         <VCT_Text variant="small" style={{ color: 'rgba(255,255,255,0.5)' }}>
@@ -239,10 +239,10 @@ export function Page_ParentDashboard() {
 
 function OverviewTab({ data }: { data: DashboardData }) {
     const stats = [
-        { label: 'Con em', value: data.children_count, icon: '👨‍👧‍👦', colorClass: 'text-[#3b82f6]' },
-        { label: 'Đồng thuận', value: data.active_consents, icon: '✅', colorClass: 'text-[#22c55e]' },
-        { label: 'Chờ xử lý', value: data.pending_consents, icon: '⏳', colorClass: 'text-[#f59e0b]' },
-        { label: 'Sự kiện sắp tới', value: data.upcoming_events, icon: '🏆', colorClass: 'text-[#8b5cf6]' },
+        { label: 'Con em', value: data.children_count, icon: '👨‍👧‍👦', colorClass: 'text-(--vct-info)' },
+        { label: 'Đồng thuận', value: data.active_consents, icon: '✅', colorClass: 'text-(--vct-success)' },
+        { label: 'Chờ xử lý', value: data.pending_consents, icon: '⏳', colorClass: 'text-(--vct-warning)' },
+        { label: 'Sự kiện sắp tới', value: data.upcoming_events, icon: '🏆', colorClass: 'text-(--vct-info)' },
     ]
 
     return (
@@ -265,7 +265,7 @@ function OverviewTab({ data }: { data: DashboardData }) {
             </div>
 
             {/* Children Quick Cards */}
-            <VCT_Text variant="h2" style={{ color: '#fff', marginBottom: '0.75rem' }}>
+            <VCT_Text variant="h2" style={{ color: 'var(--vct-bg-elevated)', marginBottom: '0.75rem' }}>
                 👨‍👧‍👦 Con em của bạn
             </VCT_Text>
             <div className="grid gap-3 mb-6">
@@ -290,7 +290,7 @@ function OverviewTab({ data }: { data: DashboardData }) {
             </div>
 
             {/* Recent Results */}
-            <VCT_Text variant="h2" style={{ color: '#fff', marginBottom: '0.75rem' }}>
+            <VCT_Text variant="h2" style={{ color: 'var(--vct-bg-elevated)', marginBottom: '0.75rem' }}>
                 🏆 Thành tích gần đây
             </VCT_Text>
             <div className="grid gap-2">
@@ -361,7 +361,7 @@ function ChildrenTab({ linkedChildren, onRefresh, onNavigateTab, apiFetch }: {
 
     return (
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}>
-            <VCT_Text variant="h2" style={{ color: '#fff', marginBottom: '1rem' }}>
+            <VCT_Text variant="h2" style={{ color: 'var(--vct-bg-elevated)', marginBottom: '1rem' }}>
                 👨‍👧‍👦 Quản lý con em
             </VCT_Text>
 
@@ -387,9 +387,9 @@ function ChildrenTab({ linkedChildren, onRefresh, onNavigateTab, apiFetch }: {
 
                         <div className="grid grid-cols-3 gap-2">
                             {[
-                                { label: '📊 Kết quả', bg: 'rgba(59,130,246,0.1)', color: '#60a5fa', border: 'rgba(59,130,246,0.2)', tab: 'overview' as Tab },
+                                { label: '📊 Kết quả', bg: 'rgba(59,130,246,0.1)', color: 'var(--vct-info)', border: 'rgba(59,130,246,0.2)', tab: 'overview' as Tab },
                                 { label: '📅 Điểm danh', bg: 'rgba(34,197,94,0.1)', color: '#4ade80', border: 'rgba(34,197,94,0.2)', tab: 'attendance' as Tab },
-                                { label: '📋 Đồng thuận', bg: 'rgba(139,92,246,0.1)', color: '#a78bfa', border: 'rgba(139,92,246,0.2)', tab: 'consents' as Tab },
+                                { label: '📋 Đồng thuận', bg: 'rgba(139,92,246,0.1)', color: 'var(--vct-info)', border: 'rgba(139,92,246,0.2)', tab: 'consents' as Tab },
                             ].map(btn => (
                                 <motion.button
                                     key={btn.label}
@@ -429,7 +429,7 @@ function ChildrenTab({ linkedChildren, onRefresh, onNavigateTab, apiFetch }: {
                             onClick={(e) => e.stopPropagation()}
                             className="w-full max-w-md rounded-2xl p-6 vct-modal-panel"
                         >
-                            <VCT_Text variant="h2" style={{ color: '#fff', marginBottom: '1.5rem' }}>
+                            <VCT_Text variant="h2" style={{ color: 'var(--vct-bg-elevated)', marginBottom: '1.5rem' }}>
                                 ➕ Liên kết con em mới
                             </VCT_Text>
                             <div className="grid gap-4">
@@ -542,7 +542,7 @@ function ConsentsTab({ linkedChildren, onRefresh, apiFetch }: { linkedChildren: 
     return (
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}>
             <div className="flex justify-between items-center mb-4">
-                <VCT_Text variant="h2" style={{ color: '#fff', margin: 0 }}>📋 E-Consent</VCT_Text>
+                <VCT_Text variant="h2" style={{ color: 'var(--vct-bg-elevated)', margin: 0 }}>📋 E-Consent</VCT_Text>
                 <motion.button
                     whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}
                     onClick={() => setShowNewModal(true)}
@@ -670,7 +670,7 @@ function NewConsentModal({ linkedChildren, onClose, onSuccess, apiFetch }: {
                 onClick={(e) => e.stopPropagation()}
                 className="w-full max-w-md rounded-2xl p-6 vct-modal-panel"
             >
-                <VCT_Text variant="h2" style={{ color: '#fff', marginBottom: '1.5rem' }}>📋 Ký đồng thuận mới</VCT_Text>
+                <VCT_Text variant="h2" style={{ color: 'var(--vct-bg-elevated)', marginBottom: '1.5rem' }}>📋 Ký đồng thuận mới</VCT_Text>
                 <div className="grid gap-4">
                     <div>
                         <label className="text-xs text-white/50 uppercase tracking-wider font-semibold mb-1 block">Chọn con em</label>
@@ -743,9 +743,9 @@ function NewConsentModal({ linkedChildren, onClose, onSuccess, apiFetch }: {
 /* ── Attendance Tab ────────────────────────────────────────── */
 
 const statusMap: Record<string, { icon: string; label: string; color: string }> = {
-    present: { icon: '✅', label: 'Có mặt', color: '#22c55e' },
-    late: { icon: '⏰', label: 'Trễ', color: '#f59e0b' },
-    absent: { icon: '❌', label: 'Vắng', color: '#ef4444' },
+    present: { icon: '✅', label: 'Có mặt', color: 'var(--vct-success)' },
+    late: { icon: '⏰', label: 'Trễ', color: 'var(--vct-warning)' },
+    absent: { icon: '❌', label: 'Vắng', color: 'var(--vct-danger)' },
 }
 
 function AttendanceTab({ linkedChildren, apiFetch }: { linkedChildren: ChildLink[]; apiFetch: ApiFetch }) {
@@ -792,7 +792,7 @@ function AttendanceTab({ linkedChildren, apiFetch }: { linkedChildren: ChildLink
     return (
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}>
             <div className="flex justify-between items-center mb-4">
-                <VCT_Text variant="h2" style={{ color: '#fff', margin: 0 }}>
+                <VCT_Text variant="h2" style={{ color: 'var(--vct-bg-elevated)', margin: 0 }}>
                     📅 Điểm danh tập luyện
                 </VCT_Text>
                 {approvedChildren.length > 1 && (
@@ -820,10 +820,10 @@ function AttendanceTab({ linkedChildren, apiFetch }: { linkedChildren: ChildLink
                     {/* Stats Row */}
                     <div className="grid grid-cols-4 gap-2 mb-6">
                         {[
-                            { label: 'Tổng buổi', value: total, colorClass: 'text-[#3b82f6]' },
-                            { label: 'Có mặt', value: present, colorClass: 'text-[#22c55e]' },
-                            { label: 'Trễ', value: late, colorClass: 'text-[#f59e0b]' },
-                            { label: 'Vắng', value: absent, colorClass: 'text-[#ef4444]' },
+                            { label: 'Tổng buổi', value: total, colorClass: 'text-(--vct-info)' },
+                            { label: 'Có mặt', value: present, colorClass: 'text-(--vct-success)' },
+                            { label: 'Trễ', value: late, colorClass: 'text-(--vct-warning)' },
+                            { label: 'Vắng', value: absent, colorClass: 'text-(--vct-danger)' },
                         ].map((s, i) => (
                             <motion.div
                                 key={s.label} custom={i} variants={fadeUp} initial="hidden" animate="visible"
@@ -839,10 +839,10 @@ function AttendanceTab({ linkedChildren, apiFetch }: { linkedChildren: ChildLink
                     <div className="rounded-xl p-4 mb-6 bg-white/4 border border-white/8">
                         <div className="flex justify-between items-center mb-2">
                             <VCT_Text variant="small" style={{ color: 'rgba(255,255,255,0.5)' }}>Tỷ lệ chuyên cần</VCT_Text>
-                            <span className={`font-bold ${rate >= 80 ? 'text-[#22c55e]' : 'text-[#f59e0b]'}`}>{rate}%</span>
+                            <span className={`font-bold ${rate >= 80 ? 'text-(--vct-success)' : 'text-(--vct-warning)'}`}>{rate}%</span>
                         </div>
                         <div className="w-full h-3 rounded-full bg-white/10">
-                            <motion.div className={`h-3 rounded-full ${rate >= 80 ? 'bg-[#22c55e]' : 'bg-[#f59e0b]'}`} initial={{ width: 0 }}
+                            <motion.div className={`h-3 rounded-full ${rate >= 80 ? 'bg-(--vct-success)' : 'bg-(--vct-warning)'}`} initial={{ width: 0 }}
                                 animate={{ width: `${rate}%` }}
                                 transition={{ duration: 1, ease: 'easeOut' }} />
                         </div>
@@ -879,7 +879,7 @@ function AttendanceTab({ linkedChildren, apiFetch }: { linkedChildren: ChildLink
                     {/* Records */}
                     <div className="grid gap-2">
                         {attendance.map((a, i) => {
-                            const s = statusMap[a.status] || { icon: '❓', label: 'Không rõ', color: '#94a3b8' }
+                            const s = statusMap[a.status] || { icon: '❓', label: 'Không rõ', color: 'var(--vct-text-tertiary)' }
                             return (
                                 <motion.div
                                     key={i} custom={i} variants={fadeUp} initial="hidden" animate="visible"

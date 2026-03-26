@@ -9,7 +9,13 @@ description: VCT Platform self-hosted PostgreSQL — Docker setup, local develop
 
 ---
 
+
+> [!IMPORTANT]
+> **SUPREME ARCHITECTURE DIRECTIVE**: You are strictly bound by the 19 architecture pillars documented in `docs/architecture/`. As a VCT AI Agent, your absolute highest priority is 100% compliance with these rules. You MUST NOT generate code, propose designs, or execute workflows that violate these foundational rules. They are unchangeable and strictly enforced.
+
 ## 1. Overview
+
+> **CRITICAL ARCHITECTURE HUB**: You MUST follow all immutable rules defined in [docs/architecture/database-architecture.md](file:///d:/VCT PLATFORM/vct-platform/docs/architecture/database-architecture.md) for Multi-Tenancy (RLS), Connection Pooling, Migrations, and Soft Deletes.
 
 VCT Platform uses **PostgreSQL 17 Alpine** via Docker for self-hosted deployments.
 

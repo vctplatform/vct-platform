@@ -2,10 +2,10 @@
 
 import * as React from 'react'
 import { useRouter } from 'next/navigation'
-import { VCT_PageContainer, VCT_PageHero, VCT_SectionCard, VCT_StatRow } from '../components/vct-ui'
-import { VCT_Icons } from '../components/vct-icons'
+import { VCT_PageContainer, VCT_PageHero, VCT_SectionCard, VCT_StatRow } from '@vct/ui'
+import { VCT_Icons } from '@vct/ui'
 import { useI18n } from '../i18n'
-import type { StatItem } from '../components/VCT_StatRow'
+import type { StatItem } from '@vct/ui'
 
 // ════════════════════════════════════════
 // MAIN COMPONENT
@@ -21,18 +21,18 @@ export const Page_command_center = () => {
             : (now.getHours() < 12 ? 'Good morning' : now.getHours() < 18 ? 'Good afternoon' : 'Good evening')
 
     const QUICK_STATS: StatItem[] = [
-        { label: lang === 'vi' ? 'Tổng VĐV' : 'Total Athletes', value: '12,458', icon: <VCT_Icons.Users size={18} />, color: '#0ea5e9', sub: lang === 'vi' ? '+128 tháng này' : '+128 this month' },
-        { label: lang === 'vi' ? 'CLB đang hoạt động' : 'Active Clubs', value: '340', icon: <VCT_Icons.Building size={18} />, color: '#10b981', sub: lang === 'vi' ? '+12 CLB mới' : '+12 new clubs' },
-        { label: lang === 'vi' ? 'Giải đấu sắp tới' : 'Upcoming Tournaments', value: '5', icon: <VCT_Icons.Trophy size={18} />, color: '#f59e0b', sub: lang === 'vi' ? '2 giải tuần này' : '2 this week' },
-        { label: lang === 'vi' ? 'HLV & Trọng tài' : 'Coaches & Referees', value: '1,250', icon: <VCT_Icons.Award size={18} />, color: '#8b5cf6', sub: lang === 'vi' ? '98% đã chứng nhận' : '98% certified' },
+        { label: lang === 'vi' ? 'Tổng VĐV' : 'Total Athletes', value: '12,458', icon: <VCT_Icons.Users size={18} />, color: 'var(--vct-accent-cyan)', sub: lang === 'vi' ? '+128 tháng này' : '+128 this month' },
+        { label: lang === 'vi' ? 'CLB đang hoạt động' : 'Active Clubs', value: '340', icon: <VCT_Icons.Building size={18} />, color: 'var(--vct-success)', sub: lang === 'vi' ? '+12 CLB mới' : '+12 new clubs' },
+        { label: lang === 'vi' ? 'Giải đấu sắp tới' : 'Upcoming Tournaments', value: '5', icon: <VCT_Icons.Trophy size={18} />, color: 'var(--vct-warning)', sub: lang === 'vi' ? '2 giải tuần này' : '2 this week' },
+        { label: lang === 'vi' ? 'HLV & Trọng tài' : 'Coaches & Referees', value: '1,250', icon: <VCT_Icons.Award size={18} />, color: 'var(--vct-info)', sub: lang === 'vi' ? '98% đã chứng nhận' : '98% certified' },
     ]
 
     const RECENT_ACTIONS = [
-        { icon: '🏆', text: lang === 'vi' ? 'Giải Vô Địch QG 2026 đã mở đăng ký' : 'National Championship 2026 registration opened', time: lang === 'vi' ? '15 phút trước' : '15 min ago', color: '#f59e0b' },
-        { icon: '✅', text: lang === 'vi' ? '23 VĐV mới được phê duyệt hồ sơ' : '23 new athletes approved', time: lang === 'vi' ? '1 giờ trước' : '1 hour ago', color: '#10b981' },
-        { icon: '📋', text: lang === 'vi' ? 'Kỳ thi thăng cấp Q2/2026 đã tạo' : 'Q2/2026 Belt Exam created', time: lang === 'vi' ? '3 giờ trước' : '3 hours ago', color: '#3b82f6' },
-        { icon: '💰', text: lang === 'vi' ? 'Hội phí tháng 3 đã thu: 85%' : 'March fees collected: 85%', time: lang === 'vi' ? '5 giờ trước' : '5 hours ago', color: '#8b5cf6' },
-        { icon: '🎓', text: lang === 'vi' ? 'Khóa đào tạo Trọng tài cấp QG: 80% hoàn thành' : 'National Referee Training: 80% complete', time: lang === 'vi' ? '1 ngày trước' : '1 day ago', color: '#0ea5e9' },
+        { icon: '🏆', text: lang === 'vi' ? 'Giải Vô Địch QG 2026 đã mở đăng ký' : 'National Championship 2026 registration opened', time: lang === 'vi' ? '15 phút trước' : '15 min ago', color: 'var(--vct-warning)' },
+        { icon: '✅', text: lang === 'vi' ? '23 VĐV mới được phê duyệt hồ sơ' : '23 new athletes approved', time: lang === 'vi' ? '1 giờ trước' : '1 hour ago', color: 'var(--vct-success)' },
+        { icon: '📋', text: lang === 'vi' ? 'Kỳ thi thăng cấp Q2/2026 đã tạo' : 'Q2/2026 Belt Exam created', time: lang === 'vi' ? '3 giờ trước' : '3 hours ago', color: 'var(--vct-info)' },
+        { icon: '💰', text: lang === 'vi' ? 'Hội phí tháng 3 đã thu: 85%' : 'March fees collected: 85%', time: lang === 'vi' ? '5 giờ trước' : '5 hours ago', color: 'var(--vct-info)' },
+        { icon: '🎓', text: lang === 'vi' ? 'Khóa đào tạo Trọng tài cấp QG: 80% hoàn thành' : 'National Referee Training: 80% complete', time: lang === 'vi' ? '1 ngày trước' : '1 day ago', color: 'var(--vct-accent-cyan)' },
     ]
 
     const UPCOMING = [
@@ -47,10 +47,10 @@ export const Page_command_center = () => {
     }
 
     const QUICK_NAV = [
-        { icon: <VCT_Icons.Users size={24} />, label: t('dashboard.quickNav.athletes'), color: '#0ea5e9', path: '/athletes' },
-        { icon: <VCT_Icons.Building size={24} />, label: t('dashboard.quickNav.clubs'), color: '#10b981', path: '/clubs' },
-        { icon: <VCT_Icons.Trophy size={24} />, label: t('dashboard.quickNav.tournaments'), color: '#f59e0b', path: '/giai-dau' },
-        { icon: <VCT_Icons.Award size={24} />, label: t('dashboard.quickNav.rankings'), color: '#8b5cf6', path: '/rankings' },
+        { icon: <VCT_Icons.Users size={24} />, label: t('dashboard.quickNav.athletes'), color: 'var(--vct-accent-cyan)', path: '/athletes' },
+        { icon: <VCT_Icons.Building size={24} />, label: t('dashboard.quickNav.clubs'), color: 'var(--vct-success)', path: '/clubs' },
+        { icon: <VCT_Icons.Trophy size={24} />, label: t('dashboard.quickNav.tournaments'), color: 'var(--vct-warning)', path: '/giai-dau' },
+        { icon: <VCT_Icons.Award size={24} />, label: t('dashboard.quickNav.rankings'), color: 'var(--vct-info)', path: '/rankings' },
     ]
 
     return (
@@ -94,7 +94,7 @@ export const Page_command_center = () => {
                     title={t('dashboard.recentActivity')}
                     icon={<VCT_Icons.Activity size={18} />}
                     className="lg:col-span-2"
-                    accentColor="#0ea5e9"
+                    accentColor="var(--vct-accent-cyan)"
                 >
                     <div className="space-y-2.5">
                         {RECENT_ACTIONS.map((act, i) => (
@@ -122,7 +122,7 @@ export const Page_command_center = () => {
                 <VCT_SectionCard
                     title={t('dashboard.upcomingTournaments')}
                     icon={<VCT_Icons.Calendar size={18} />}
-                    accentColor="#f59e0b"
+                    accentColor="var(--vct-warning)"
                 >
                     <div className="space-y-3">
                         {UPCOMING.map((ev, i) => (

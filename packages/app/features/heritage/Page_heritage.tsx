@@ -4,10 +4,10 @@ import * as React from 'react'
 import { useState, useMemo } from 'react'
 import {
     VCT_Button, VCT_Stack, VCT_SearchInput
-} from '../components/vct-ui'
-import { VCT_PageContainer, VCT_PageHero, VCT_StatRow } from '../components/vct-ui'
-import type { StatItem } from '../components/VCT_StatRow'
-import { VCT_Icons } from '../components/vct-icons'
+} from '@vct/ui'
+import { VCT_PageContainer, VCT_PageHero, VCT_StatRow } from '@vct/ui'
+import type { StatItem } from '@vct/ui'
+import { VCT_Icons } from '@vct/ui'
 import { useBeltRanks, useLineageTree } from '../hooks/useHeritageAPI'
 
 // ════════════════════════════════════════
@@ -106,10 +106,10 @@ export const Page_heritage = () => {
     }, [lineage])
 
     const kpis: StatItem[] = [
-        { label: 'Hệ Phái ĐK', value: lineage?.length || 15, icon: <VCT_Icons.Network size={18} />, color: '#0ea5e9' },
-        { label: 'Đại Võ Sư', value: 45, icon: <VCT_Icons.Star size={18} />, color: '#f59e0b' },
-        { label: 'Hồng Đai', value: belts?.length || 320, icon: <VCT_Icons.Award size={18} />, color: '#ef4444' },
-        { label: 'Di Sản Lưu Trữ', value: '2.5k', icon: <VCT_Icons.Library size={18} />, color: '#8b5cf6' },
+        { label: 'Hệ Phái ĐK', value: lineage?.length || 15, icon: <VCT_Icons.Network size={18} />, color: 'var(--vct-accent-cyan)' },
+        { label: 'Đại Võ Sư', value: 45, icon: <VCT_Icons.Star size={18} />, color: 'var(--vct-warning)' },
+        { label: 'Hồng Đai', value: belts?.length || 320, icon: <VCT_Icons.Award size={18} />, color: 'var(--vct-danger)' },
+        { label: 'Di Sản Lưu Trữ', value: '2.5k', icon: <VCT_Icons.Library size={18} />, color: 'var(--vct-info)' },
     ]
 
     return (

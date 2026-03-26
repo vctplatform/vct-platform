@@ -4,9 +4,9 @@ import * as React from 'react'
 import { useState, useMemo } from 'react'
 import {
     VCT_Badge, VCT_Stack, VCT_PageContainer, VCT_StatRow
-} from '../components/vct-ui'
-import type { StatItem } from '../components/VCT_StatRow'
-import { VCT_Icons } from '../components/vct-icons'
+} from '@vct/ui'
+import type { StatItem } from '@vct/ui'
+import { VCT_Icons } from '@vct/ui'
 import { useIntlPartners, useIntlEvents, type InternationalPartner, type InternationalEvent } from '../hooks/useFederationAPI'
 
 // ════════════════════════════════════════
@@ -78,10 +78,10 @@ export function Page_federation_international() {
             </div>
 
             <VCT_StatRow items={[
-                { label: 'Đối tác QT', value: partners.length, icon: <VCT_Icons.Globe size={18} />, color: '#8b5cf6' },
-                { label: 'Đang hoạt động', value: activePartners, icon: <VCT_Icons.CheckCircle size={18} />, color: '#10b981' },
-                { label: 'Sự kiện QT', value: events.length, icon: <VCT_Icons.Calendar size={18} />, color: '#0ea5e9' },
-                { label: 'Tổng huy chương', value: totalMedals, icon: <VCT_Icons.Award size={18} />, color: '#f59e0b' },
+                { label: 'Đối tác QT', value: partners.length, icon: <VCT_Icons.Globe size={18} />, color: 'var(--vct-info)' },
+                { label: 'Đang hoạt động', value: activePartners, icon: <VCT_Icons.CheckCircle size={18} />, color: 'var(--vct-success)' },
+                { label: 'Sự kiện QT', value: events.length, icon: <VCT_Icons.Calendar size={18} />, color: 'var(--vct-accent-cyan)' },
+                { label: 'Tổng huy chương', value: totalMedals, icon: <VCT_Icons.Award size={18} />, color: 'var(--vct-warning)' },
             ] as StatItem[]} className="mb-6" />
 
             {/* ── Tab Bar + Search ── */}

@@ -109,13 +109,13 @@ func (r *pgPlanRepo) List(ctx context.Context, entityType string) ([]finance.Sub
 		       max_athletes, is_active, sort_order, created_at, updated_at
 		FROM platform.subscription_plans
 		WHERE is_deleted = false AND is_active = true`
-	
+
 	args := []any{}
 	if entityType != "" {
 		q += " AND entity_type = $1"
 		args = append(args, entityType)
 	}
-	
+
 	q += " ORDER BY sort_order ASC, price_yearly ASC"
 
 	rows, err := r.db.QueryContext(ctx, q, args...)
@@ -151,8 +151,8 @@ func (r *pgPlanRepo) Update(ctx context.Context, id string, patch map[string]int
 
 	for k, v := range patch {
 		if k != "name" && k != "description" && k != "is_active" && k != "price_monthly" &&
-		   k != "price_yearly" && k != "max_members" && k != "max_tournaments" &&
-		   k != "max_athletes" && k != "features" && k != "sort_order" && k != "updated_at" {
+			k != "price_yearly" && k != "max_members" && k != "max_tournaments" &&
+			k != "max_athletes" && k != "features" && k != "sort_order" && k != "updated_at" {
 			continue
 		}
 		setFields = append(setFields, fmt.Sprintf("%s = $%d", k, argIdx))
@@ -165,7 +165,7 @@ func (r *pgPlanRepo) Update(ctx context.Context, id string, patch map[string]int
 	}
 
 	q := fmt.Sprintf(`UPDATE platform.subscription_plans SET %s WHERE id = $1 AND is_deleted = false`, strings.Join(setFields, ", "))
-	
+
 	cmd, err := r.db.ExecContext(ctx, q, args...)
 	if err != nil {
 		return fmt.Errorf("update plan: %w", err)
@@ -334,17 +334,17 @@ func (r *pgSubRepo) List(ctx context.Context, filter finance.SubscriptionFilter)
 		args = append(args, filter.ExpiringBefore)
 		argIdx++
 	}
-	
+
 	sortCol := "created_at"
 	sortDir := "DESC"
-	
+
 	if filter.SortBy == "entity_name" || filter.SortBy == "current_period_end" || filter.SortBy == "status" || filter.SortBy == "plan_name" {
 		sortCol = filter.SortBy
 	}
 	if filter.SortDir == "asc" || filter.SortDir == "ASC" {
 		sortDir = "ASC"
 	}
-	
+
 	q += fmt.Sprintf(" ORDER BY %s %s", sortCol, sortDir)
 
 	rows, err := r.db.QueryContext(ctx, q, args...)
@@ -367,14 +367,14 @@ func (r *pgSubRepo) List(ctx context.Context, filter finance.SubscriptionFilter)
 		); err != nil {
 			return nil, fmt.Errorf("scan sub: %w", err)
 		}
-		
+
 		s.CurrentPeriodStart = strings.Split(start, " ")[0]
 		s.CurrentPeriodEnd = strings.Split(end, " ")[0]
 		if trialEnd != nil {
 			t := strings.Split(*trialEnd, " ")[0]
 			s.TrialEndDate = &t
 		}
-		
+
 		subs = append(subs, s)
 	}
 
@@ -392,8 +392,8 @@ func (r *pgSubRepo) Update(ctx context.Context, id string, patch map[string]inte
 
 	for k, v := range patch {
 		if k != "status" && k != "plan_id" && k != "plan_code" && k != "plan_name" &&
-		   k != "current_period_start" && k != "current_period_end" && 
-		   k != "cancelled_at" && k != "cancel_reason" && k != "auto_renew" && k != "updated_at" {
+			k != "current_period_start" && k != "current_period_end" &&
+			k != "cancelled_at" && k != "cancel_reason" && k != "auto_renew" && k != "updated_at" {
 			continue
 		}
 		setFields = append(setFields, fmt.Sprintf("%s = $%d", k, argIdx))
@@ -406,7 +406,7 @@ func (r *pgSubRepo) Update(ctx context.Context, id string, patch map[string]inte
 	}
 
 	q := fmt.Sprintf(`UPDATE platform.subscriptions SET %s WHERE id = $1 AND is_deleted = false`, strings.Join(setFields, ", "))
-	
+
 	cmd, err := r.db.ExecContext(ctx, q, args...)
 	if err != nil {
 		return fmt.Errorf("update subscription: %w", err)
@@ -585,7 +585,7 @@ func (r *pgBillingRepo) Update(ctx context.Context, id string, patch map[string]
 	}
 
 	q := fmt.Sprintf(`UPDATE platform.billing_cycles SET %s WHERE id = $1 AND is_deleted = false`, strings.Join(setFields, ", "))
-	
+
 	cmd, err := r.db.ExecContext(ctx, q, args...)
 	if err != nil {
 		return fmt.Errorf("update billing cycle: %w", err)

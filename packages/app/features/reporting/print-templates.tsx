@@ -14,7 +14,7 @@
 
 'use client'
 
-import { VCT_Text } from 'app/features/components/vct-ui'
+import { VCT_Text } from '@vct/ui'
 
 /* ═══════════════════════════════════════════════════════════════
    SHARED PRINT STYLES
@@ -22,7 +22,7 @@ import { VCT_Text } from 'app/features/components/vct-ui'
 
 const printStyles = `
 @media print {
-  body { background: #fff !important; margin: 0; }
+  body { background: var(--vct-bg-elevated) !important; margin: 0; }
   .no-print { display: none !important; }
   .print-page { page-break-after: always; }
 }
@@ -49,8 +49,8 @@ interface CertificateData {
 export function PrintCertificate({ data }: { data: CertificateData }) {
     const medalColors = {
         gold: { border: '#d4a017', bg: 'linear-gradient(135deg, #fef3c7, #fde68a)', icon: '🥇', text: 'HUY CHƯƠNG VÀNG' },
-        silver: { border: '#94a3b8', bg: 'linear-gradient(135deg, #f1f5f9, #e2e8f0)', icon: '🥈', text: 'HUY CHƯƠNG BẠC' },
-        bronze: { border: '#b45309', bg: 'linear-gradient(135deg, #fef3c7, #fed7aa)', icon: '🥉', text: 'HUY CHƯƠNG ĐỒNG' },
+        silver: { border: 'var(--vct-text-tertiary)', bg: 'linear-gradient(135deg, #f1f5f9, #e2e8f0)', icon: '🥈', text: 'HUY CHƯƠNG BẠC' },
+        bronze: { border: 'var(--vct-warning)', bg: 'linear-gradient(135deg, #fef3c7, #fed7aa)', icon: '🥉', text: 'HUY CHƯƠNG ĐỒNG' },
     }
     const m = medalColors[data.medal]
 
@@ -83,7 +83,7 @@ export function PrintCertificate({ data }: { data: CertificateData }) {
                     {data.tournamentName}
                 </div>
 
-                <div style={{ fontSize: 36, fontWeight: 700, color: '#1a1a1a', marginBottom: 4 }}>
+                <div style={{ fontSize: 36, fontWeight: 700, color: 'var(--vct-bg-base)', marginBottom: 4 }}>
                     GIẤY CHỨNG NHẬN
                 </div>
                 <div style={{ fontSize: 64, margin: '12px 0' }}>{m.icon}</div>
@@ -92,7 +92,7 @@ export function PrintCertificate({ data }: { data: CertificateData }) {
                 </div>
 
                 <div style={{ fontSize: 14, color: '#666', marginBottom: 8 }}>Chứng nhận vận động viên</div>
-                <div style={{ fontSize: 32, fontWeight: 700, color: '#1a1a1a', marginBottom: 8 }}>
+                <div style={{ fontSize: 32, fontWeight: 700, color: 'var(--vct-bg-base)', marginBottom: 8 }}>
                     {data.athleteName}
                 </div>
                 <div style={{ fontSize: 18, color: '#444', marginBottom: 24 }}>
@@ -152,7 +152,7 @@ export function PrintMatchReport({ data }: { data: MatchReportData }) {
         border: '1px solid #ccc', padding: '8px 12px', fontSize: 13, textAlign: 'center',
     }
     const headerStyle: React.CSSProperties = {
-        ...cellStyle, background: '#f5f5f5', fontWeight: 700, fontSize: 12,
+        ...cellStyle, background: 'var(--vct-bg-base)', fontWeight: 700, fontSize: 12,
     }
 
     return (
@@ -188,9 +188,9 @@ export function PrintMatchReport({ data }: { data: MatchReportData }) {
                 <table style={{ width: '100%', borderCollapse: 'collapse', marginBottom: 16 }}>
                     <thead>
                         <tr>
-                            <th style={{ ...headerStyle, background: '#fee2e2', color: '#dc2626' }}>🔴 GÓC ĐỎ</th>
+                            <th style={{ ...headerStyle, background: 'var(--vct-danger-muted)', color: 'var(--vct-danger)' }}>🔴 GÓC ĐỎ</th>
                             <th style={headerStyle}>VS</th>
-                            <th style={{ ...headerStyle, background: '#dbeafe', color: '#2563eb' }}>🔵 GÓC XANH</th>
+                            <th style={{ ...headerStyle, background: 'var(--vct-info-muted)', color: 'var(--vct-info)' }}>🔵 GÓC XANH</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -212,27 +212,27 @@ export function PrintMatchReport({ data }: { data: MatchReportData }) {
                     <thead>
                         <tr>
                             <th style={headerStyle}>Hiệp</th>
-                            <th style={{ ...headerStyle, background: '#fee2e2' }}>Điểm Đỏ</th>
-                            <th style={{ ...headerStyle, background: '#dbeafe' }}>Điểm Xanh</th>
+                            <th style={{ ...headerStyle, background: 'var(--vct-danger-muted)' }}>Điểm Đỏ</th>
+                            <th style={{ ...headerStyle, background: 'var(--vct-info-muted)' }}>Điểm Xanh</th>
                         </tr>
                     </thead>
                     <tbody>
                         {data.rounds.map((r) => (
                             <tr key={r.round}>
                                 <td style={cellStyle}>Hiệp {r.round}</td>
-                                <td style={{ ...cellStyle, fontWeight: 700, color: '#dc2626' }}>{r.red}</td>
-                                <td style={{ ...cellStyle, fontWeight: 700, color: '#2563eb' }}>{r.blue}</td>
+                                <td style={{ ...cellStyle, fontWeight: 700, color: 'var(--vct-danger)' }}>{r.red}</td>
+                                <td style={{ ...cellStyle, fontWeight: 700, color: 'var(--vct-info)' }}>{r.blue}</td>
                             </tr>
                         ))}
                         <tr>
                             <td style={{ ...headerStyle }}>Phạm lỗi</td>
-                            <td style={{ ...cellStyle, color: '#dc2626' }}>{data.penaltiesRed}</td>
-                            <td style={{ ...cellStyle, color: '#2563eb' }}>{data.penaltiesBlue}</td>
+                            <td style={{ ...cellStyle, color: 'var(--vct-danger)' }}>{data.penaltiesRed}</td>
+                            <td style={{ ...cellStyle, color: 'var(--vct-info)' }}>{data.penaltiesBlue}</td>
                         </tr>
                         <tr>
                             <td style={{ ...headerStyle, fontWeight: 700 }}>TỔNG</td>
-                            <td style={{ ...cellStyle, fontWeight: 800, fontSize: 18, color: '#dc2626' }}>{data.totalRed}</td>
-                            <td style={{ ...cellStyle, fontWeight: 800, fontSize: 18, color: '#2563eb' }}>{data.totalBlue}</td>
+                            <td style={{ ...cellStyle, fontWeight: 800, fontSize: 18, color: 'var(--vct-danger)' }}>{data.totalRed}</td>
+                            <td style={{ ...cellStyle, fontWeight: 800, fontSize: 18, color: 'var(--vct-info)' }}>{data.totalBlue}</td>
                         </tr>
                     </tbody>
                 </table>
@@ -240,7 +240,7 @@ export function PrintMatchReport({ data }: { data: MatchReportData }) {
                 {/* Result */}
                 <div style={{ textAlign: 'center', padding: 16, border: '2px solid #22c55e', borderRadius: 8, marginBottom: 20 }}>
                     <div style={{ fontSize: 13, color: '#666' }}>KẾT QUẢ</div>
-                    <div style={{ fontSize: 20, fontWeight: 800, color: '#22c55e' }}>🏆 {data.winner}</div>
+                    <div style={{ fontSize: 20, fontWeight: 800, color: 'var(--vct-success)' }}>🏆 {data.winner}</div>
                     <div style={{ fontSize: 13, color: '#666' }}>Hình thức: {data.reason}</div>
                 </div>
 
@@ -308,12 +308,12 @@ export function PrintMedalTable({ data, tournamentName }: { data: MedalRow[]; to
                 <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                     <thead>
                         <tr>
-                            <th style={{ ...cellStyle, background: '#f5f5f5', fontWeight: 700 }}>Hạng</th>
-                            <th style={{ ...cellStyle, background: '#f5f5f5', fontWeight: 700, textAlign: 'left' }}>Đoàn</th>
+                            <th style={{ ...cellStyle, background: 'var(--vct-bg-base)', fontWeight: 700 }}>Hạng</th>
+                            <th style={{ ...cellStyle, background: 'var(--vct-bg-base)', fontWeight: 700, textAlign: 'left' }}>Đoàn</th>
                             <th style={{ ...cellStyle, background: '#fef3c7', fontWeight: 700 }}>🥇 Vàng</th>
-                            <th style={{ ...cellStyle, background: '#f1f5f9', fontWeight: 700 }}>🥈 Bạc</th>
+                            <th style={{ ...cellStyle, background: 'var(--vct-text-primary)', fontWeight: 700 }}>🥈 Bạc</th>
                             <th style={{ ...cellStyle, background: '#fed7aa', fontWeight: 700 }}>🥉 Đồng</th>
-                            <th style={{ ...cellStyle, background: '#f5f5f5', fontWeight: 700 }}>Tổng</th>
+                            <th style={{ ...cellStyle, background: 'var(--vct-bg-base)', fontWeight: 700 }}>Tổng</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -321,8 +321,8 @@ export function PrintMedalTable({ data, tournamentName }: { data: MedalRow[]; to
                             <tr key={row.rank} style={{ background: row.rank <= 3 ? '#fffbeb' : undefined }}>
                                 <td style={{ ...cellStyle, fontWeight: row.rank <= 3 ? 700 : 400 }}>{row.rank}</td>
                                 <td style={{ ...cellStyle, textAlign: 'left', fontWeight: 600 }}>{row.team}</td>
-                                <td style={{ ...cellStyle, fontWeight: 700, color: '#b45309' }}>{row.gold}</td>
-                                <td style={{ ...cellStyle, color: '#64748b' }}>{row.silver}</td>
+                                <td style={{ ...cellStyle, fontWeight: 700, color: 'var(--vct-warning)' }}>{row.gold}</td>
+                                <td style={{ ...cellStyle, color: 'var(--vct-text-tertiary)' }}>{row.silver}</td>
                                 <td style={{ ...cellStyle, color: '#92400e' }}>{row.bronze}</td>
                                 <td style={{ ...cellStyle, fontWeight: 700 }}>{row.total}</td>
                             </tr>
@@ -376,7 +376,7 @@ export function PrintAthleteBadge({ data }: { data: AthleteBadgeData }) {
                         {data.name.charAt(0)}
                     </div>
                     <div style={{ flex: 1 }}>
-                        <div style={{ fontSize: 14, fontWeight: 700, color: '#1a1a1a' }}>{data.name}</div>
+                        <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--vct-bg-base)' }}>{data.name}</div>
                         <div style={{ fontSize: 10, color: '#666', marginTop: 2 }}>{data.team}</div>
                         <div style={{ fontSize: 10, color: '#666' }}>{data.category}</div>
                         <div style={{ fontSize: 10, color: '#666' }}>{data.weightClass}</div>
@@ -423,7 +423,7 @@ export function PrintWeighInReport({ data, date, tournamentName }: { data: Weigh
                     <thead>
                         <tr>
                             {['STT', 'Họ tên VĐV', 'Đoàn', 'Hạng cân', 'Cân nặng TT', 'Kết quả'].map((h) => (
-                                <th key={h} style={{ ...cellStyle, background: '#f5f5f5', fontWeight: 700 }}>{h}</th>
+                                <th key={h} style={{ ...cellStyle, background: 'var(--vct-bg-base)', fontWeight: 700 }}>{h}</th>
                             ))}
                         </tr>
                     </thead>
@@ -438,7 +438,7 @@ export function PrintWeighInReport({ data, date, tournamentName }: { data: Weigh
                                 <td style={{
                                     ...cellStyle,
                                     fontWeight: 700,
-                                    color: row.result === 'dat' ? '#16a34a' : '#dc2626',
+                                    color: row.result === 'dat' ? 'var(--vct-success)' : 'var(--vct-danger)',
                                 }}>
                                     {row.result === 'dat' ? '✓ Đạt' : '✗ Không đạt'}
                                 </td>

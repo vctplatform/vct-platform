@@ -6,9 +6,9 @@
 'use client';
 import React, { useState, useMemo } from 'react';
 import { useApiQuery, useApiMutation } from '../hooks/useApiQuery';
-import { VCT_PageContainer, VCT_PageHero } from '../components/VCT_PageContainer';
-import { VCT_Icons } from '../components/vct-icons';
-import { VCT_EmptyState, VCT_Badge } from '../components/vct-ui';
+import { VCT_PageContainer, VCT_PageHero } from '@vct/ui';
+import { VCT_Icons } from '@vct/ui';
+import { VCT_EmptyState, VCT_Badge } from '@vct/ui';
 import { useAuth } from '../auth/AuthProvider';
 
 // ── Types ────────────────────────────────────────────────────
@@ -42,11 +42,11 @@ interface MyRequestsResponse {
 // ── Metadata ─────────────────────────────────────────────────
 
 const STATUS_META: Record<string, { label: string; color: string; icon: React.ReactNode }> = {
-    pending: { label: 'Chờ duyệt', color: '#f59e0b', icon: <VCT_Icons.Clock size={14} /> },
-    approved: { label: 'Đã duyệt', color: '#10b981', icon: <VCT_Icons.CheckCircle size={14} /> },
-    rejected: { label: 'Từ chối', color: '#ef4444', icon: <VCT_Icons.X size={14} /> },
-    returned: { label: 'Trả lại', color: '#8b5cf6', icon: <VCT_Icons.ArrowRight size={14} /> },
-    cancelled: { label: 'Đã hủy', color: '#64748b', icon: <VCT_Icons.X size={14} /> },
+    pending: { label: 'Chờ duyệt', color: 'var(--vct-warning)', icon: <VCT_Icons.Clock size={14} /> },
+    approved: { label: 'Đã duyệt', color: 'var(--vct-success)', icon: <VCT_Icons.CheckCircle size={14} /> },
+    rejected: { label: 'Từ chối', color: 'var(--vct-danger)', icon: <VCT_Icons.X size={14} /> },
+    returned: { label: 'Trả lại', color: 'var(--vct-info)', icon: <VCT_Icons.ArrowRight size={14} /> },
+    cancelled: { label: 'Đã hủy', color: 'var(--vct-text-tertiary)', icon: <VCT_Icons.X size={14} /> },
 };
 
 const WORKFLOW_LABELS: Record<string, string> = {
@@ -286,7 +286,7 @@ interface ApprovalCardProps {
 }
 
 function ApprovalCard({ request, showActions, onApprove, onReject, formatDate }: ApprovalCardProps) {
-    const fallback = { label: 'Chờ duyệt', color: '#f59e0b', icon: <VCT_Icons.Clock size={14} /> };
+    const fallback = { label: 'Chờ duyệt', color: 'var(--vct-warning)', icon: <VCT_Icons.Clock size={14} /> };
     const st = STATUS_META[request.status] || fallback;
 
     return (
@@ -360,9 +360,9 @@ function ApprovalCard({ request, showActions, onApprove, onReject, formatDate }:
                                 className="flex-1 rounded-full transition-all"
                                 style={{
                                     background: i < request.current_step
-                                        ? (request.status === 'rejected' ? '#ef4444' : '#10b981')
+                                        ? (request.status === 'rejected' ? 'var(--vct-danger)' : 'var(--vct-success)')
                                         : i === request.current_step - 1
-                                            ? '#f59e0b'
+                                            ? 'var(--vct-warning)'
                                             : 'transparent',
                                 }}
                             />

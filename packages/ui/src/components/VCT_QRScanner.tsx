@@ -9,7 +9,7 @@
 
 import { useEffect, useRef, useState, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { VCT_Text, VCT_Button, VCT_Card } from 'app/features/components/vct-ui'
+import { VCT_Text, VCT_Button, VCT_Card } from '..'
 
 /* ═══════════════════════════════════════════════════════════════
    QR SCANNER COMPONENT

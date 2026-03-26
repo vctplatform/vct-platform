@@ -5,18 +5,18 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
     VCT_Badge, VCT_Button, VCT_Text, VCT_Stack, VCT_Toast,
     VCT_Modal, VCT_StatusPipeline, VCT_EmptyState, VCT_SegmentedControl, VCT_Card
-} from '../components/vct-ui';
-import { VCT_PageContainer, VCT_StatRow } from '../components/vct-ui';
-import type { StatItem } from '../components/VCT_StatRow';
-import { VCT_Icons } from '../components/vct-icons';
+} from '@vct/ui';
+import { VCT_PageContainer, VCT_StatRow } from '@vct/ui';
+import type { StatItem } from '@vct/ui';
+import { VCT_Icons } from '@vct/ui';
 import type { TranDauDK, TrangThaiTranDau, VongDau } from '../data/types';
 import { repositories, useEntityCollection } from '../data/repository';
 import { useToast } from '../hooks/use-toast';
 
 const ST_MAP: Record<TrangThaiTranDau, { label: string; color: string; type: string }> = {
-    dang_dau: { label: '🔴 LIVE', color: '#ef4444', type: 'warning' },
-    chua_dau: { label: 'Chờ thi đấu', color: '#f59e0b', type: 'info' },
-    ket_thuc: { label: 'Kết thúc', color: '#10b981', type: 'success' },
+    dang_dau: { label: '🔴 LIVE', color: 'var(--vct-danger)', type: 'warning' },
+    chua_dau: { label: 'Chờ thi đấu', color: 'var(--vct-warning)', type: 'info' },
+    ket_thuc: { label: 'Kết thúc', color: 'var(--vct-success)', type: 'success' },
 };
 const VONG_MAP: Record<VongDau, string> = { vong_loai: 'Vòng loại', tu_ket: 'Tứ kết', ban_ket: 'Bán kết', chung_ket: 'Chung kết' };
 
@@ -95,9 +95,9 @@ export const Page_combat = () => {
     }, [matches, filter, vongFilter]);
 
     const pStages = useMemo(() => [
-        { key: 'dang_dau', label: '🔴 LIVE', color: '#ef4444', count: matches.filter(m => m.trang_thai === 'dang_dau').length },
-        { key: 'chua_dau', label: 'Chờ', color: '#f59e0b', count: matches.filter(m => m.trang_thai === 'chua_dau').length },
-        { key: 'ket_thuc', label: 'Xong', color: '#10b981', count: matches.filter(m => m.trang_thai === 'ket_thuc').length },
+        { key: 'dang_dau', label: '🔴 LIVE', color: 'var(--vct-danger)', count: matches.filter(m => m.trang_thai === 'dang_dau').length },
+        { key: 'chua_dau', label: 'Chờ', color: 'var(--vct-warning)', count: matches.filter(m => m.trang_thai === 'chua_dau').length },
+        { key: 'ket_thuc', label: 'Xong', color: 'var(--vct-success)', count: matches.filter(m => m.trang_thai === 'ket_thuc').length },
     ], [matches]);
 
     // ── SCORING ──
@@ -136,7 +136,7 @@ export const Page_combat = () => {
 
         const event: MatchEvent = {
             hiep: match.hiep || 1, time: timer.formatted, side,
-            action: `Cảnh cáo (${newW[side]})`, points: -1, color: '#f59e0b',
+            action: `Cảnh cáo (${newW[side]})`, points: -1, color: 'var(--vct-warning)',
         };
         setEventLogs(p => ({ ...p, [matchId]: [...(p[matchId] || []), event] }));
         showToast(`🟡 Cảnh cáo ${side === 'do' ? 'Đỏ' : 'Xanh'} (${newW[side]})`, 'warning');
@@ -190,12 +190,12 @@ export const Page_combat = () => {
                         </VCT_Stack>
                         {isLive && isActive && (
                             <motion.div animate={{ scale: [1, 1.05, 1] }} transition={{ duration: 1, repeat: Infinity }}
-                                style={{ fontSize: 28, fontWeight: 900, fontFamily: 'monospace', color: timer.seconds <= 10 ? '#ef4444' : '#1e40af', background: timer.seconds <= 10 ? 'rgba(239,68,68,0.1)' : 'rgba(59,130,246,0.08)', padding: '4px 16px', borderRadius: 12 }}
+                                style={{ fontSize: 28, fontWeight: 900, fontFamily: 'monospace', color: timer.seconds <= 10 ? 'var(--vct-danger)' : '#1e40af', background: timer.seconds <= 10 ? 'rgba(239,68,68,0.1)' : 'rgba(59,130,246,0.08)', padding: '4px 16px', borderRadius: 12 }}
                             >
                                 ⏱ {timer.formatted}
                             </motion.div>
                         )}
-                        {isLive && !isActive && <span style={{ fontSize: 13, fontWeight: 800, color: '#ef4444', fontFamily: 'monospace' }}>Hiệp {m.hiep}</span>}
+                        {isLive && !isActive && <span style={{ fontSize: 13, fontWeight: 800, color: 'var(--vct-danger)', fontFamily: 'monospace' }}>Hiệp {m.hiep}</span>}
                     </VCT_Stack>
 
                     {/* Scoreboard */}
@@ -203,7 +203,7 @@ export const Page_combat = () => {
                         {isLive && <motion.div animate={{ opacity: [0.03, 0.08, 0.03] }} transition={{ duration: 2, repeat: Infinity }} className="absolute inset-0 bg-gradient-to-r from-blue-500/10 via-transparent to-red-500/10" />}
                         {/* Blue */}
                         <div style={{ textAlign: 'center', flex: 1 }}>
-                            <div style={{ width: 18, height: 18, borderRadius: '50%', background: '#3b82f6', margin: '0 auto 8px', boxShadow: isLive ? '0 0 16px rgba(59,130,246,0.6)' : 'none' }} />
+                            <div style={{ width: 18, height: 18, borderRadius: '50%', background: 'var(--vct-info)', margin: '0 auto 8px', boxShadow: isLive ? '0 0 16px rgba(59,130,246,0.6)' : 'none' }} />
                             <VCT_Text style={{ fontWeight: 900, fontSize: 16 }}>{m.vdv_xanh.ten}</VCT_Text>
                             <VCT_Text variant="small" style={{ opacity: 0.5 }}>{m.vdv_xanh.doan}</VCT_Text>
                             {w.xanh > 0 && <div style={{ marginTop: 4 }}>{Array.from({ length: w.xanh }).map((_, i) => <span key={i} style={{ fontSize: 14 }}>🟡</span>)}</div>}
@@ -211,16 +211,16 @@ export const Page_combat = () => {
                         {/* Score */}
                         <div style={{ textAlign: 'center', minWidth: 140 }}>
                             <div style={{ fontSize: 56, fontWeight: 900, letterSpacing: '0.05em', fontFamily: 'monospace', lineHeight: 1 }}>
-                                <span style={{ color: '#3b82f6' }}>{m.diem_xanh}</span>
+                                <span style={{ color: 'var(--vct-info)' }}>{m.diem_xanh}</span>
                                 <span style={{ opacity: 0.15, margin: '0 6px' }}>:</span>
-                                <span style={{ color: '#ef4444' }}>{m.diem_do}</span>
+                                <span style={{ color: 'var(--vct-danger)' }}>{m.diem_do}</span>
                             </div>
                             {isLive && <div style={{ marginTop: 4, fontSize: 11, fontWeight: 700, opacity: 0.4 }}>Hiệp {m.hiep || 1}</div>}
-                            {m.ket_qua && <div style={{ marginTop: 8, fontSize: 13, fontWeight: 700, color: '#10b981' }}>{m.ket_qua}</div>}
+                            {m.ket_qua && <div style={{ marginTop: 8, fontSize: 13, fontWeight: 700, color: 'var(--vct-success)' }}>{m.ket_qua}</div>}
                         </div>
                         {/* Red */}
                         <div style={{ textAlign: 'center', flex: 1 }}>
-                            <div style={{ width: 18, height: 18, borderRadius: '50%', background: '#ef4444', margin: '0 auto 8px', boxShadow: isLive ? '0 0 16px rgba(239,68,68,0.6)' : 'none' }} />
+                            <div style={{ width: 18, height: 18, borderRadius: '50%', background: 'var(--vct-danger)', margin: '0 auto 8px', boxShadow: isLive ? '0 0 16px rgba(239,68,68,0.6)' : 'none' }} />
                             <VCT_Text style={{ fontWeight: 900, fontSize: 16 }}>{m.vdv_do.ten}</VCT_Text>
                             <VCT_Text variant="small" style={{ opacity: 0.5 }}>{m.vdv_do.doan}</VCT_Text>
                             {w.do > 0 && <div style={{ marginTop: 4 }}>{Array.from({ length: w.do }).map((_, i) => <span key={i} style={{ fontSize: 14 }}>🟡</span>)}</div>}
@@ -237,7 +237,7 @@ export const Page_combat = () => {
                             <div style={{ display: 'grid', gridTemplateColumns: '1fr auto 1fr', gap: 12, padding: 16, borderRadius: 14, background: 'rgba(59,130,246,0.03)', border: '1px solid var(--vct-border-subtle)' }}>
                                 {/* Xanh round scores */}
                                 <div>
-                                    <div style={{ fontSize: 11, fontWeight: 800, color: '#3b82f6', textTransform: 'uppercase', marginBottom: 8, textAlign: 'center' }}>🔵 {m.vdv_xanh.ten}</div>
+                                    <div style={{ fontSize: 11, fontWeight: 800, color: 'var(--vct-info)', textTransform: 'uppercase', marginBottom: 8, textAlign: 'center' }}>🔵 {m.vdv_xanh.ten}</div>
                                     <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
                                         {ROUNDS.map(r => (
                                             <div key={r} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -246,12 +246,12 @@ export const Page_combat = () => {
                                                     type="number"
                                                     value={m.diem_hiep_xanh?.[r - 1] || 0}
                                                     onChange={(e) => updateRoundScore(m.id, 'xanh', r, parseInt(e.target.value) || 0)}
-                                                    style={{ flex: 1, padding: '6px 8px', borderRadius: 6, border: '1px solid rgba(59,130,246,0.2)', background: 'white', fontSize: 13, fontWeight: 700, color: '#3b82f6' }}
+                                                    style={{ flex: 1, padding: '6px 8px', borderRadius: 6, border: '1px solid rgba(59,130,246,0.2)', background: 'white', fontSize: 13, fontWeight: 700, color: 'var(--vct-info)' }}
                                                 />
                                             </div>
                                         ))}
                                         <button onClick={() => addWarning(m.id, 'xanh')}
-                                            style={{ padding: '6px 12px', borderRadius: 8, border: '1px solid rgba(245,158,11,0.3)', background: 'rgba(245,158,11,0.05)', cursor: 'pointer', fontSize: 12, fontWeight: 600, color: '#f59e0b', marginTop: 4 }}
+                                            style={{ padding: '6px 12px', borderRadius: 8, border: '1px solid rgba(245,158,11,0.3)', background: 'rgba(245,158,11,0.05)', cursor: 'pointer', fontSize: 12, fontWeight: 600, color: 'var(--vct-warning)', marginTop: 4 }}
                                         >🟡 Cảnh cáo</button>
                                     </div>
                                 </div>
@@ -260,15 +260,15 @@ export const Page_combat = () => {
                                 <div style={{ display: 'flex', flexDirection: 'column', gap: 12, justifyContent: 'center', alignItems: 'center', minWidth: 100 }}>
                                     <VCT_Button variant="secondary" onClick={() => nextHiep(m.id)} style={{ fontSize: 11, width: '100%' }}>⏭ Hiệp tiếp</VCT_Button>
                                     <div style={{ borderTop: '1px solid var(--vct-border-subtle)', width: '100%', margin: '4px 0' }} />
-                                    <VCT_Button variant="secondary" onClick={() => knockout(m.id, 'xanh')} style={{ fontSize: 11, color: '#3b82f6', width: '100%' }}>💥 KO Xanh</VCT_Button>
-                                    <VCT_Button variant="secondary" onClick={() => knockout(m.id, 'do')} style={{ fontSize: 11, color: '#ef4444', width: '100%' }}>💥 KO Đỏ</VCT_Button>
+                                    <VCT_Button variant="secondary" onClick={() => knockout(m.id, 'xanh')} style={{ fontSize: 11, color: 'var(--vct-info)', width: '100%' }}>💥 KO Xanh</VCT_Button>
+                                    <VCT_Button variant="secondary" onClick={() => knockout(m.id, 'do')} style={{ fontSize: 11, color: 'var(--vct-danger)', width: '100%' }}>💥 KO Đỏ</VCT_Button>
                                     <div style={{ borderTop: '1px solid var(--vct-border-subtle)', width: '100%', margin: '4px 0' }} />
                                     <VCT_Button variant="danger" onClick={() => endMatch(m.id)} style={{ fontSize: 11, width: '100%' }}>🏁 Kết thúc</VCT_Button>
                                 </div>
 
                                 {/* Do round scores */}
                                 <div>
-                                    <div style={{ fontSize: 11, fontWeight: 800, color: '#ef4444', textTransform: 'uppercase', marginBottom: 8, textAlign: 'center' }}>🔴 {m.vdv_do.ten}</div>
+                                    <div style={{ fontSize: 11, fontWeight: 800, color: 'var(--vct-danger)', textTransform: 'uppercase', marginBottom: 8, textAlign: 'center' }}>🔴 {m.vdv_do.ten}</div>
                                     <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
                                         {ROUNDS.map(r => (
                                             <div key={r} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -277,12 +277,12 @@ export const Page_combat = () => {
                                                     type="number"
                                                     value={m.diem_hiep_do?.[r - 1] || 0}
                                                     onChange={(e) => updateRoundScore(m.id, 'do', r, parseInt(e.target.value) || 0)}
-                                                    style={{ flex: 1, padding: '6px 8px', borderRadius: 6, border: '1px solid rgba(239,68,68,0.2)', background: 'white', fontSize: 13, fontWeight: 700, color: '#ef4444' }}
+                                                    style={{ flex: 1, padding: '6px 8px', borderRadius: 6, border: '1px solid rgba(239,68,68,0.2)', background: 'white', fontSize: 13, fontWeight: 700, color: 'var(--vct-danger)' }}
                                                 />
                                             </div>
                                         ))}
                                         <button onClick={() => addWarning(m.id, 'do')}
-                                            style={{ padding: '6px 12px', borderRadius: 8, border: '1px solid rgba(245,158,11,0.3)', background: 'rgba(245,158,11,0.05)', cursor: 'pointer', fontSize: 12, fontWeight: 600, color: '#f59e0b', marginTop: 4 }}
+                                            style={{ padding: '6px 12px', borderRadius: 8, border: '1px solid rgba(245,158,11,0.3)', background: 'rgba(245,158,11,0.05)', cursor: 'pointer', fontSize: 12, fontWeight: 600, color: 'var(--vct-warning)', marginTop: 4 }}
                                         >🟡 Cảnh cáo</button>
                                     </div>
                                 </div>
@@ -297,7 +297,7 @@ export const Page_combat = () => {
                                             <span style={{ fontSize: 10, fontFamily: 'monospace', opacity: 0.4, minWidth: 50 }}>H{e.hiep} {e.time}</span>
                                             <span style={{ width: 8, height: 8, borderRadius: '50%', background: e.color, flexShrink: 0 }} />
                                             <span style={{ fontWeight: 600 }}>{e.action}</span>
-                                            <span style={{ marginLeft: 'auto', fontWeight: 900, color: e.points > 0 ? e.color : '#f59e0b', fontFamily: 'monospace' }}>{e.points > 0 ? `+${e.points}` : e.points}</span>
+                                            <span style={{ marginLeft: 'auto', fontWeight: 900, color: e.points > 0 ? e.color: 'var(--vct-warning)', fontFamily: 'monospace' }}>{e.points > 0 ? `+${e.points}` : e.points}</span>
                                         </div>
                                     ))}
                                 </div>
@@ -341,10 +341,10 @@ export const Page_combat = () => {
             )}
 
             <VCT_StatRow items={[
-                { label: 'Tổng trận', value: matches.length, icon: <VCT_Icons.Swords size={18} />, color: '#0ea5e9' },
-                { label: 'LIVE', value: matches.filter(m => m.trang_thai === 'dang_dau').length, icon: <VCT_Icons.Play size={18} />, color: '#ef4444', sub: '🔴 LIVE' },
-                { label: 'Kết thúc', value: matches.filter(m => m.trang_thai === 'ket_thuc').length, icon: <VCT_Icons.Check size={18} />, color: '#10b981' },
-                { label: 'Chờ', value: matches.filter(m => m.trang_thai === 'chua_dau').length, icon: <VCT_Icons.Clock size={18} />, color: '#f59e0b' },
+                { label: 'Tổng trận', value: matches.length, icon: <VCT_Icons.Swords size={18} />, color: 'var(--vct-accent-cyan)' },
+                { label: 'LIVE', value: matches.filter(m => m.trang_thai === 'dang_dau').length, icon: <VCT_Icons.Play size={18} />, color: 'var(--vct-danger)', sub: '🔴 LIVE' },
+                { label: 'Kết thúc', value: matches.filter(m => m.trang_thai === 'ket_thuc').length, icon: <VCT_Icons.Check size={18} />, color: 'var(--vct-success)' },
+                { label: 'Chờ', value: matches.filter(m => m.trang_thai === 'chua_dau').length, icon: <VCT_Icons.Clock size={18} />, color: 'var(--vct-warning)' },
             ] as StatItem[]} className="mb-6" />
 
             <VCT_StatusPipeline stages={pStages} activeStage={filter === 'all' ? null : filter} onStageClick={(k) => setFilter(k || 'all')} />

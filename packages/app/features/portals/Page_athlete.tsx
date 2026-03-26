@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { motion } from 'framer-motion'
 import {
     VCT_Text, VCT_Card, VCT_Badge, VCT_Button,
-} from 'app/features/components/vct-ui'
+} from '@vct/ui'
 import { useChannel, useRealtimeStatus } from 'app/features/data/repository/realtime-client'
 
 /* ── Types ──────────────────────────────────────────────────── */
@@ -77,12 +77,12 @@ export function Page_AthletePortal() {
                 <div className="flex items-center gap-3">
                     <div
                         className="w-14 h-14 rounded-full flex items-center justify-center text-2xl font-bold"
-                        style={{ background: 'rgba(255,255,255,0.2)', color: '#fff' }}
+                        style={{ background: 'rgba(255,255,255,0.2)', color: 'var(--vct-bg-elevated)' }}
                     >
                         {PROFILE.hoTen.charAt(0)}
                     </div>
                     <div>
-                        <VCT_Text variant="h2" style={{ color: '#fff', margin: 0 }}>{PROFILE.hoTen}</VCT_Text>
+                        <VCT_Text variant="h2" style={{ color: 'var(--vct-bg-elevated)', margin: 0 }}>{PROFILE.hoTen}</VCT_Text>
                         <VCT_Text variant="small" style={{ color: 'rgba(255,255,255,0.8)' }}>
                             {PROFILE.team} · {PROFILE.gioiTinh} · {PROFILE.canNang}kg
                         </VCT_Text>
@@ -165,7 +165,7 @@ function OverviewTab() {
                 </VCT_Card>
                 <VCT_Card>
                     <div className="p-3 text-center">
-                        <div style={{ fontSize: '1.5rem', fontWeight: 800, color: '#ef4444' }}>
+                        <div style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--vct-danger)' }}>
                             {MY_RESULTS.filter((r) => r.result === 'loss').length}
                         </div>
                         <VCT_Text variant="small" style={{ color: 'var(--vct-text-tertiary)' }}>Thua</VCT_Text>
@@ -173,7 +173,7 @@ function OverviewTab() {
                 </VCT_Card>
                 <VCT_Card>
                     <div className="p-3 text-center">
-                        <div style={{ fontSize: '1.5rem', fontWeight: 800, color: '#22c55e' }}>
+                        <div style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--vct-success)' }}>
                             {WEIGH_IN_STATUS.ketQua === 'dat' ? '✓' : '✗'}
                         </div>
                         <VCT_Text variant="small" style={{ color: 'var(--vct-text-tertiary)' }}>Cân nặng</VCT_Text>
@@ -268,7 +268,7 @@ function ResultsTab() {
                             </VCT_Text>
                         </div>
                         <div className="text-right">
-                            <div style={{ fontSize: '1.25rem', fontWeight: 800, color: item.result === 'win' ? '#22c55e' : '#ef4444' }}>
+                            <div style={{ fontSize: '1.25rem', fontWeight: 800, color: item.result === 'win' ? 'var(--vct-success)' : 'var(--vct-danger)' }}>
                                 {item.score}
                             </div>
                             <VCT_Badge type={item.result === 'win' ? 'success' : 'danger'} text={item.result === 'win' ? 'Thắng' : 'Thua'} />

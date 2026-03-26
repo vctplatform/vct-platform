@@ -77,9 +77,9 @@ func TestTTLExpiration(t *testing.T) {
 func TestStats(t *testing.T) {
 	s := NewStore(time.Minute)
 
-	s.Check("key-1")                                         // miss
+	s.Check("key-1") // miss
 	s.Complete("key-1", &CachedResponse{StatusCode: 200})
-	s.Check("key-1")                                         // hit
+	s.Check("key-1") // hit
 
 	stats := s.Stats()
 	if stats.Hits != 1 {

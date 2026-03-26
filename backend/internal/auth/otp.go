@@ -18,7 +18,7 @@ type OTPEntry struct {
 	Email       string
 	DisplayName string
 	Phone       string
-	Password    string     // plaintext, hashed on verification
+	Password    string // plaintext, hashed on verification
 	Role        UserRole
 	ExpiresAt   time.Time
 	Attempts    int

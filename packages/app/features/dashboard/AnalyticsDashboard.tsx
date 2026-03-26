@@ -29,12 +29,12 @@ interface AnalyticsData {
 function getAnalyticsData(): AnalyticsData {
   return {
     overview: [
-      { label: 'Tổng VĐV', value: '12,450', icon: '🥋', trend: { direction: 'up', percentage: 8.2 }, color: '#2563eb' },
+      { label: 'Tổng VĐV', value: '12,450', icon: '🥋', trend: { direction: 'up', percentage: 8.2 }, color: 'var(--vct-info)' },
       { label: 'Tổng CLB', value: '342', icon: '🏛️', trend: { direction: 'up', percentage: 3.5 }, color: '#7c3aed' },
-      { label: 'Giải đang tổ chức', value: '5', icon: '🏆', trend: { direction: 'flat', percentage: 0 }, color: '#f59e0b' },
-      { label: 'Trọng tài hoạt động', value: '890', icon: '👨‍⚖️', trend: { direction: 'up', percentage: 5.1 }, color: '#16a34a' },
-      { label: 'ELO trung bình', value: '1,234', icon: '📊', trend: { direction: 'up', percentage: 2.3 }, color: '#ec4899' },
-      { label: 'Thu/Chi tháng', value: '₫245M', icon: '💰', trend: { direction: 'down', percentage: 1.2 }, color: '#ef4444' },
+      { label: 'Giải đang tổ chức', value: '5', icon: '🏆', trend: { direction: 'flat', percentage: 0 }, color: 'var(--vct-warning)' },
+      { label: 'Trọng tài hoạt động', value: '890', icon: '👨‍⚖️', trend: { direction: 'up', percentage: 5.1 }, color: 'var(--vct-success)' },
+      { label: 'ELO trung bình', value: '1,234', icon: '📊', trend: { direction: 'up', percentage: 2.3 }, color: 'var(--vct-accent-pink)' },
+      { label: 'Thu/Chi tháng', value: '₫245M', icon: '💰', trend: { direction: 'down', percentage: 1.2 }, color: 'var(--vct-danger)' },
     ],
     athletesByProvince: [
       { name: 'TP.HCM', count: 3200 }, { name: 'Hà Nội', count: 2800 },
@@ -49,13 +49,13 @@ function getAnalyticsData(): AnalyticsData {
       { month: 'T10', count: 11 }, { month: 'T11', count: 14 }, { month: 'T12', count: 8 },
     ],
     beltDistribution: [
-      { belt: 'Bạch đai', count: 4500, color: '#e2e8f0' },
-      { belt: 'Lam đai 1', count: 2800, color: '#60a5fa' },
-      { belt: 'Lam đai 2', count: 1900, color: '#3b82f6' },
-      { belt: 'Hoàng đai 1', count: 1200, color: '#fbbf24' },
-      { belt: 'Hoàng đai 2', count: 800, color: '#f59e0b' },
-      { belt: 'Hoàng đai 3', count: 450, color: '#d97706' },
-      { belt: 'Huyền đai', count: 300, color: '#1e293b' },
+      { belt: 'Bạch đai', count: 4500, color: 'var(--vct-border-subtle)' },
+      { belt: 'Lam đai 1', count: 2800, color: 'var(--vct-info)' },
+      { belt: 'Lam đai 2', count: 1900, color: 'var(--vct-info)' },
+      { belt: 'Hoàng đai 1', count: 1200, color: 'var(--vct-warning)' },
+      { belt: 'Hoàng đai 2', count: 800, color: 'var(--vct-warning)' },
+      { belt: 'Hoàng đai 3', count: 450, color: 'var(--vct-warning)' },
+      { belt: 'Huyền đai', count: 300, color: 'var(--vct-bg-input)' },
     ],
     recentActivity: [
       { action: 'Giải VCT TP.HCM kết thúc', time: '2 giờ trước', user: 'BTC' },
@@ -115,8 +115,8 @@ export function AnalyticsDashboard() {
             <Text style={s.cardValue}>{card.value}</Text>
             <Text style={s.cardLabel}>{card.label}</Text>
             {card.trend && (
-              <View style={[s.trend, { backgroundColor: card.trend.direction === 'up' ? '#f0fdf4' : card.trend.direction === 'down' ? '#fef2f2' : '#f8fafc' }]}>
-                <Text style={[s.trendText, { color: card.trend.direction === 'up' ? '#16a34a' : card.trend.direction === 'down' ? '#dc2626' : '#64748b' }]}>
+              <View style={[s.trend, { backgroundColor: card.trend.direction === 'up' ? '#f0fdf4' : card.trend.direction === 'down' ? '#fef2f2' : 'var(--vct-bg-glass-heavy)' }]}>
+                <Text style={[s.trendText, { color: card.trend.direction === 'up' ? 'var(--vct-success)' : card.trend.direction === 'down' ? 'var(--vct-danger)' : 'var(--vct-text-tertiary)' }]}>
                   {card.trend.direction === 'up' ? '↑' : card.trend.direction === 'down' ? '↓' : '→'} {card.trend.percentage}%
                 </Text>
               </View>
@@ -134,7 +134,7 @@ export function AnalyticsDashboard() {
           return (
             <View key={i} style={s.barRow}>
               <Text style={s.barLabel}>{item.name}</Text>
-              <View style={[s.bar, { width: barWidth, backgroundColor: '#3b82f6' }]} />
+              <View style={[s.bar, { width: barWidth, backgroundColor: 'var(--vct-info)' }]} />
               <Text style={s.barValue}>{item.count.toLocaleString()}</Text>
             </View>
           )
@@ -182,40 +182,40 @@ export function AnalyticsDashboard() {
 // ── Styles ──────────────────────────────────────────────────
 
 const s = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#f8fafc' },
-  loading: { textAlign: 'center', marginTop: 100, fontSize: 16, color: '#64748b' },
-  header: { padding: 20, paddingTop: 16, backgroundColor: '#1e293b' },
-  headerTitle: { fontSize: 24, fontWeight: '800', color: '#ffffff' },
-  headerSub: { fontSize: 14, color: '#94a3b8', marginTop: 4 },
-  tabBar: { flexDirection: 'row', backgroundColor: '#ffffff', paddingHorizontal: 12, paddingVertical: 8, gap: 8 },
-  tab: { paddingVertical: 8, paddingHorizontal: 16, borderRadius: 20, backgroundColor: '#f1f5f9' },
-  tabActive: { backgroundColor: '#2563eb' },
-  tabText: { fontSize: 13, fontWeight: '600', color: '#64748b' },
-  tabTextActive: { color: '#ffffff' },
+  container: { flex: 1, backgroundColor: 'var(--vct-bg-glass-heavy)' },
+  loading: { textAlign: 'center', marginTop: 100, fontSize: 16, color: 'var(--vct-text-tertiary)' },
+  header: { padding: 20, paddingTop: 16, backgroundColor: 'var(--vct-bg-input)' },
+  headerTitle: { fontSize: 24, fontWeight: '800', color: 'var(--vct-bg-elevated)' },
+  headerSub: { fontSize: 14, color: 'var(--vct-text-tertiary)', marginTop: 4 },
+  tabBar: { flexDirection: 'row', backgroundColor: 'var(--vct-bg-elevated)', paddingHorizontal: 12, paddingVertical: 8, gap: 8 },
+  tab: { paddingVertical: 8, paddingHorizontal: 16, borderRadius: 20, backgroundColor: 'var(--vct-text-primary)' },
+  tabActive: { backgroundColor: 'var(--vct-info)' },
+  tabText: { fontSize: 13, fontWeight: '600', color: 'var(--vct-text-tertiary)' },
+  tabTextActive: { color: 'var(--vct-bg-elevated)' },
   cardsGrid: { flexDirection: 'row', flexWrap: 'wrap', padding: 12, gap: 12, justifyContent: 'space-between' },
   card: {
-    width: (SCREEN_WIDTH - 36) / 2, backgroundColor: '#ffffff', borderRadius: 16, padding: 16,
+    width: (SCREEN_WIDTH - 36) / 2, backgroundColor: 'var(--vct-bg-elevated)', borderRadius: 16, padding: 16,
     shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.05, shadowRadius: 8, elevation: 2,
   },
   cardIcon: { fontSize: 28, marginBottom: 8 },
-  cardValue: { fontSize: 22, fontWeight: '800', color: '#0f172a' },
-  cardLabel: { fontSize: 12, color: '#64748b', marginTop: 2 },
+  cardValue: { fontSize: 22, fontWeight: '800', color: 'var(--vct-text-primary)' },
+  cardLabel: { fontSize: 12, color: 'var(--vct-text-tertiary)', marginTop: 2 },
   trend: { marginTop: 8, paddingVertical: 4, paddingHorizontal: 8, borderRadius: 8, alignSelf: 'flex-start' },
   trendText: { fontSize: 12, fontWeight: '700' },
-  section: { margin: 12, backgroundColor: '#ffffff', borderRadius: 16, padding: 16, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.05, shadowRadius: 8, elevation: 2 },
-  sectionTitle: { fontSize: 16, fontWeight: '700', color: '#0f172a', marginBottom: 16 },
+  section: { margin: 12, backgroundColor: 'var(--vct-bg-elevated)', borderRadius: 16, padding: 16, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.05, shadowRadius: 8, elevation: 2 },
+  sectionTitle: { fontSize: 16, fontWeight: '700', color: 'var(--vct-text-primary)', marginBottom: 16 },
   barRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 10, gap: 8 },
-  barLabel: { width: 60, fontSize: 12, color: '#475569', fontWeight: '500', textAlign: 'right' },
+  barLabel: { width: 60, fontSize: 12, color: 'var(--vct-text-secondary)', fontWeight: '500', textAlign: 'right' },
   bar: { height: 20, borderRadius: 4, minWidth: 4 },
-  barValue: { fontSize: 12, color: '#64748b', fontWeight: '600', width: 45, textAlign: 'right' },
+  barValue: { fontSize: 12, color: 'var(--vct-text-tertiary)', fontWeight: '600', width: 45, textAlign: 'right' },
   beltRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 10, gap: 8 },
   beltDot: { width: 12, height: 12, borderRadius: 6 },
-  beltName: { width: 80, fontSize: 12, color: '#475569', fontWeight: '500' },
-  beltBarBg: { flex: 1, height: 16, backgroundColor: '#f1f5f9', borderRadius: 8, overflow: 'hidden' },
+  beltName: { width: 80, fontSize: 12, color: 'var(--vct-text-secondary)', fontWeight: '500' },
+  beltBarBg: { flex: 1, height: 16, backgroundColor: 'var(--vct-text-primary)', borderRadius: 8, overflow: 'hidden' },
   beltBar: { height: 16, borderRadius: 8 },
-  beltCount: { width: 40, fontSize: 12, color: '#64748b', fontWeight: '600', textAlign: 'right' },
+  beltCount: { width: 40, fontSize: 12, color: 'var(--vct-text-tertiary)', fontWeight: '600', textAlign: 'right' },
   activityRow: { flexDirection: 'row', alignItems: 'flex-start', marginBottom: 16, gap: 12 },
-  activityDot: { width: 8, height: 8, borderRadius: 4, backgroundColor: '#3b82f6', marginTop: 5 },
-  activityAction: { fontSize: 14, color: '#0f172a', fontWeight: '500' },
-  activityMeta: { fontSize: 12, color: '#94a3b8', marginTop: 2 },
+  activityDot: { width: 8, height: 8, borderRadius: 4, backgroundColor: 'var(--vct-info)', marginTop: 5 },
+  activityAction: { fontSize: 14, color: 'var(--vct-text-primary)', fontWeight: '500' },
+  activityMeta: { fontSize: 12, color: 'var(--vct-text-tertiary)', marginTop: 2 },
 })

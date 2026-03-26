@@ -1,20 +1,20 @@
 'use client'
 
 import * as React from 'react'
-import { VCT_Stack } from '../components/vct-ui'
-import { VCT_PageContainer, VCT_StatRow } from '../components/vct-ui'
-import type { StatItem } from '../components/VCT_StatRow'
-import { VCT_Icons } from '../components/vct-icons'
+import { VCT_Stack } from '@vct/ui'
+import { VCT_PageContainer, VCT_StatRow } from '@vct/ui'
+import type { StatItem } from '@vct/ui'
+import { VCT_Icons } from '@vct/ui'
 
 // ════════════════════════════════════════
 // PROVINCIAL ADMIN — DASHBOARD
 // ════════════════════════════════════════
 
 const QUICK_ACTIONS = [
-    { label: 'Đăng ký CLB mới', icon: '🏢', color: '#10b981', path: '/province/clubs' },
-    { label: 'Cập nhật VĐV', icon: '🥋', color: '#0ea5e9', path: '/province/athletes' },
-    { label: 'Đề xuất giải đấu', icon: '🏆', color: '#f59e0b', path: '/province/tournaments' },
-    { label: 'Gửi báo cáo', icon: '📊', color: '#8b5cf6', path: '/province/reports' },
+    { label: 'Đăng ký CLB mới', icon: '🏢', color: 'var(--vct-success)', path: '/province/clubs' },
+    { label: 'Cập nhật VĐV', icon: '🥋', color: 'var(--vct-accent-cyan)', path: '/province/athletes' },
+    { label: 'Đề xuất giải đấu', icon: '🏆', color: 'var(--vct-warning)', path: '/province/tournaments' },
+    { label: 'Gửi báo cáo', icon: '📊', color: 'var(--vct-info)', path: '/province/reports' },
 ]
 
 const RECENT_ACTIVITIES = [
@@ -33,10 +33,10 @@ export const Page_provincial_dashboard = () => {
             </div>
 
             <VCT_StatRow items={[
-                { label: 'CLB trực thuộc', value: 22, icon: <VCT_Icons.Home size={18} />, color: '#10b981' },
-                { label: 'VĐV đăng ký', value: 650, icon: <VCT_Icons.Users size={18} />, color: '#0ea5e9' },
-                { label: 'HLV', value: 40, icon: <VCT_Icons.Award size={18} />, color: '#f59e0b' },
-                { label: 'Giải trong năm', value: 3, icon: <VCT_Icons.Trophy size={18} />, color: '#8b5cf6' },
+                { label: 'CLB trực thuộc', value: 22, icon: <VCT_Icons.Home size={18} />, color: 'var(--vct-success)' },
+                { label: 'VĐV đăng ký', value: 650, icon: <VCT_Icons.Users size={18} />, color: 'var(--vct-accent-cyan)' },
+                { label: 'HLV', value: 40, icon: <VCT_Icons.Award size={18} />, color: 'var(--vct-warning)' },
+                { label: 'Giải trong năm', value: 3, icon: <VCT_Icons.Trophy size={18} />, color: 'var(--vct-info)' },
             ] as StatItem[]} className="mb-6" />
 
             <div className="grid gap-6 grid-cols-1 lg:grid-cols-2">
@@ -59,7 +59,7 @@ export const Page_provincial_dashboard = () => {
                     <div className="space-y-3">
                         {RECENT_ACTIVITIES.map(a => (
                             <div key={a.id} className="flex items-start gap-3 p-3 rounded-xl bg-(--vct-bg-glass)">
-                                <div className="w-2 h-2 rounded-full mt-1.5 flex-shrink-0" style={{ background: a.type === 'success' ? '#10b981' : a.type === 'warning' ? '#f59e0b' : '#0ea5e9' }} />
+                                <div className="w-2 h-2 rounded-full mt-1.5 flex-shrink-0" style={{ background: a.type === 'success' ? 'var(--vct-success)' : a.type === 'warning' ? 'var(--vct-warning)' : 'var(--vct-accent-cyan)' }} />
                                 <div>
                                     <div className="text-sm text-(--vct-text-primary)">{a.text}</div>
                                     <div className="text-xs opacity-50 mt-0.5">{a.time}</div>

@@ -1,5 +1,9 @@
 # VCT Platform - AI Agent Rules
 
+## 🛡️ Architecture Guard Rails (Platinum Standard)
+
+**CRITICAL MANDATE**: Before writing any new code, generating components, or designing database schemas, you MUST strictly adhere to the 26 rules defined in `docs/architecture/architecture-guard-rails.md`. This document is the ultimate source of truth (Platinum Standard) for the project. Any code generated that violates these 26 Golden Guard Rails is unacceptable.
+
 ## Auto-Run Commands
 
 Always set `SafeToAutoRun: true` for the following types of commands, as they are safe and do not have destructive side effects:

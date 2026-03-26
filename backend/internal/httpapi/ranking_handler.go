@@ -21,7 +21,7 @@ func (s *Server) handleRankingRoutes(w http.ResponseWriter, r *http.Request) {
 	switch {
 	case path == "" || path == "athletes":
 		if r.Method != http.MethodGet {
-			methodNotAllowed(w)
+			apiMethodNotAllowed(w)
 			return
 		}
 		if err := s.authorizeEntityAction(&principal, "rankings", authz.ActionView); err != nil {
@@ -32,7 +32,7 @@ func (s *Server) handleRankingRoutes(w http.ResponseWriter, r *http.Request) {
 		if category != "" {
 			list, fetchErr := s.Core.Ranking.ListAthleteRankingsByCategory(r.Context(), category)
 			if fetchErr != nil {
-				internalError(w, fetchErr)
+				apiInternal(w, fetchErr)
 				return
 			}
 			success(w, http.StatusOK, list)
@@ -40,14 +40,14 @@ func (s *Server) handleRankingRoutes(w http.ResponseWriter, r *http.Request) {
 		}
 		list, fetchErr := s.Core.Ranking.ListAthleteRankings(r.Context())
 		if fetchErr != nil {
-			internalError(w, fetchErr)
+			apiInternal(w, fetchErr)
 			return
 		}
 		success(w, http.StatusOK, list)
 
 	case path == "teams":
 		if r.Method != http.MethodGet {
-			methodNotAllowed(w)
+			apiMethodNotAllowed(w)
 			return
 		}
 		if err := s.authorizeEntityAction(&principal, "rankings", authz.ActionView); err != nil {
@@ -56,7 +56,7 @@ func (s *Server) handleRankingRoutes(w http.ResponseWriter, r *http.Request) {
 		}
 		list, fetchErr := s.Core.Ranking.ListTeamRankings(r.Context())
 		if fetchErr != nil {
-			internalError(w, fetchErr)
+			apiInternal(w, fetchErr)
 			return
 		}
 		success(w, http.StatusOK, list)
@@ -71,7 +71,7 @@ func (s *Server) handleRankingRoutes(w http.ResponseWriter, r *http.Request) {
 		}
 		item, err := s.Core.Ranking.GetAthleteRanking(r.Context(), id)
 		if err != nil {
-			notFound(w)
+			apiError(w, http.StatusNotFound, CodeNotFound, "Không tìm thấy tài nguyên")
 			return
 		}
 		success(w, http.StatusOK, item)

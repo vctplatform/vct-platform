@@ -5,9 +5,9 @@ import { useState, useMemo } from 'react'
 import {
     VCT_Button, VCT_Stack, VCT_SearchInput, VCT_Badge,
     VCT_PageContainer, VCT_StatRow
-} from '../components/vct-ui'
-import type { StatItem } from '../components/VCT_StatRow'
-import { VCT_Icons } from '../components/vct-icons'
+} from '@vct/ui'
+import type { StatItem } from '@vct/ui'
+import { VCT_Icons } from '@vct/ui'
 
 // ════════════════════════════════════════
 // MOCK DATA
@@ -47,10 +47,10 @@ export const Page_marketplace = () => {
 
             {/* ── KPI ── */}
             <VCT_StatRow items={[
-                { label: 'Sản phẩm', value: 124, icon: <VCT_Icons.ShoppingBag size={18} />, color: '#0ea5e9' },
-                { label: 'Đã bán', value: 38, icon: <VCT_Icons.Check size={18} />, color: '#10b981' },
-                { label: 'Uy tín', value: 56, icon: <VCT_Icons.Star size={18} />, color: '#f59e0b' },
-                { label: 'Doanh số', value: '245M', icon: <VCT_Icons.DollarSign size={18} />, color: '#8b5cf6' },
+                { label: 'Sản phẩm', value: 124, icon: <VCT_Icons.ShoppingBag size={18} />, color: 'var(--vct-accent-cyan)' },
+                { label: 'Đã bán', value: 38, icon: <VCT_Icons.Check size={18} />, color: 'var(--vct-success)' },
+                { label: 'Uy tín', value: 56, icon: <VCT_Icons.Star size={18} />, color: 'var(--vct-warning)' },
+                { label: 'Doanh số', value: '245M', icon: <VCT_Icons.DollarSign size={18} />, color: 'var(--vct-info)' },
             ] as StatItem[]} className="mb-8" />
 
             {/* ── SEARCH ── */}
@@ -67,7 +67,7 @@ export const Page_marketplace = () => {
                             {product.image}
                             {product.status === 'sold' && (
                                 <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
-                                    <span className="bg-[#ef4444] text-white text-xs font-black px-3 py-1 rounded-full">ĐÃ BÁN</span>
+                                    <span className="bg-(--vct-danger) text-white text-xs font-black px-3 py-1 rounded-full">ĐÃ BÁN</span>
                                 </div>
                             )}
                             <div className="absolute top-3 right-3">

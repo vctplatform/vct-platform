@@ -6,9 +6,9 @@ import {
     VCT_Badge, VCT_Button, VCT_Stack,
     VCT_Modal, VCT_Input,
     VCT_ConfirmDialog
-} from '../components/vct-ui'
-import type { StatItem } from '../components/VCT_StatRow'
-import { VCT_Icons } from '../components/vct-icons'
+} from '@vct/ui'
+import type { StatItem } from '@vct/ui'
+import { VCT_Icons } from '@vct/ui'
 import { AdminPageShell, useShellToast } from './components/AdminPageShell'
 import { useAdminFetch } from './hooks/useAdminAPI'
 import { useAdminMutation } from './hooks/useAdminMutation'
@@ -42,12 +42,12 @@ interface CMSCategory {
 // CMS CONFIG CATEGORIES
 // ════════════════════════════════════════
 const CMS_CATEGORIES: CMSCategory[] = [
-    { id: 'branding', label: 'Thương hiệu', icon: <VCT_Icons.Star size={18} />, description: 'Logo, tên, favicon, slogan nền tảng', color: '#f59e0b' },
-    { id: 'theme', label: 'Giao diện', icon: <VCT_Icons.Palette size={18} />, description: 'Màu sắc, dark/light mode, font chữ', color: '#8b5cf6' },
-    { id: 'navigation', label: 'Điều hướng', icon: <VCT_Icons.Columns size={18} />, description: 'Menu chính, sidebar, footer links', color: '#0ea5e9' },
-    { id: 'homepage', label: 'Trang chủ', icon: <VCT_Icons.Home size={18} />, description: 'Hero banner, thông báo, nổi bật', color: '#10b981' },
-    { id: 'seo', label: 'SEO & Meta', icon: <VCT_Icons.Globe size={18} />, description: 'Title, description, OG image', color: '#06b6d4' },
-    { id: 'advanced', label: 'Nâng cao', icon: <VCT_Icons.Settings size={18} />, description: 'Custom CSS, HTML head inject, scripts', color: '#ef4444' },
+    { id: 'branding', label: 'Thương hiệu', icon: <VCT_Icons.Star size={18} />, description: 'Logo, tên, favicon, slogan nền tảng', color: 'var(--vct-warning)' },
+    { id: 'theme', label: 'Giao diện', icon: <VCT_Icons.Palette size={18} />, description: 'Màu sắc, dark/light mode, font chữ', color: 'var(--vct-info)' },
+    { id: 'navigation', label: 'Điều hướng', icon: <VCT_Icons.Columns size={18} />, description: 'Menu chính, sidebar, footer links', color: 'var(--vct-accent-cyan)' },
+    { id: 'homepage', label: 'Trang chủ', icon: <VCT_Icons.Home size={18} />, description: 'Hero banner, thông báo, nổi bật', color: 'var(--vct-success)' },
+    { id: 'seo', label: 'SEO & Meta', icon: <VCT_Icons.Globe size={18} />, description: 'Title, description, OG image', color: 'var(--vct-accent-cyan)' },
+    { id: 'advanced', label: 'Nâng cao', icon: <VCT_Icons.Settings size={18} />, description: 'Custom CSS, HTML head inject, scripts', color: 'var(--vct-danger)' },
 ]
 
 // Default CMS config template (shown when no data from API)
@@ -59,10 +59,10 @@ const DEFAULT_CMS_ITEMS: Omit<CMSConfigItem, 'id' | 'updated_at'>[] = [
     { key: 'branding.favicon_url', value: '/favicon.ico', category: 'branding', label: 'Favicon URL', description: 'Đường dẫn favicon', type: 'text' },
     { key: 'branding.copyright', value: '© 2024 VCT Platform', category: 'branding', label: 'Copyright', description: 'Text copyright hiển thị ở footer', type: 'text' },
     // Theme
-    { key: 'theme.primary_color', value: '#0ea5e9', category: 'theme', label: 'Màu chính (Primary)', description: 'Màu accent chính cho nút, link, highlight', type: 'color' },
-    { key: 'theme.secondary_color', value: '#8b5cf6', category: 'theme', label: 'Màu phụ (Secondary)', description: 'Màu phụ cho badges, icons, gradient', type: 'color' },
-    { key: 'theme.success_color', value: '#10b981', category: 'theme', label: 'Màu thành công', description: 'Màu cho badge success, thông báo OK', type: 'color' },
-    { key: 'theme.danger_color', value: '#ef4444', category: 'theme', label: 'Màu nguy hiểm', description: 'Màu cho lỗi, xóa, cảnh báo nghiêm trọng', type: 'color' },
+    { key: 'theme.primary_color', value: 'var(--vct-accent-cyan)', category: 'theme', label: 'Màu chính (Primary)', description: 'Màu accent chính cho nút, link, highlight', type: 'color' },
+    { key: 'theme.secondary_color', value: 'var(--vct-info)', category: 'theme', label: 'Màu phụ (Secondary)', description: 'Màu phụ cho badges, icons, gradient', type: 'color' },
+    { key: 'theme.success_color', value: 'var(--vct-success)', category: 'theme', label: 'Màu thành công', description: 'Màu cho badge success, thông báo OK', type: 'color' },
+    { key: 'theme.danger_color', value: 'var(--vct-danger)', category: 'theme', label: 'Màu nguy hiểm', description: 'Màu cho lỗi, xóa, cảnh báo nghiêm trọng', type: 'color' },
     { key: 'theme.default_mode', value: 'dark', category: 'theme', label: 'Theme mặc định', description: 'Chế độ hiển thị mặc định cho người dùng mới', type: 'select', options: ['light', 'dark', 'system'] },
     { key: 'theme.border_radius', value: '12', category: 'theme', label: 'Border Radius (px)', description: 'Độ bo tròn mặc định cho card, button', type: 'number' },
     // Navigation
@@ -73,7 +73,7 @@ const DEFAULT_CMS_ITEMS: Omit<CMSConfigItem, 'id' | 'updated_at'>[] = [
     { key: 'homepage.hero_title', value: 'Nền Tảng Quản Trị Võ Cổ Truyền', category: 'homepage', label: 'Hero Title', description: 'Tiêu đề lớn trên trang chủ', type: 'text' },
     { key: 'homepage.hero_subtitle', value: 'Số hóa toàn diện hệ sinh thái võ cổ truyền Việt Nam', category: 'homepage', label: 'Hero Subtitle', description: 'Mô tả dưới tiêu đề hero', type: 'text' },
     { key: 'homepage.announcement', value: '', category: 'homepage', label: 'Thông báo Banner', description: 'Nội dung thông báo hiển thị trên header (để trống = ẩn)', type: 'text' },
-    { key: 'homepage.announcement_color', value: '#f59e0b', category: 'homepage', label: 'Màu Banner Thông báo', description: 'Màu nền của banner thông báo', type: 'color' },
+    { key: 'homepage.announcement_color', value: 'var(--vct-warning)', category: 'homepage', label: 'Màu Banner Thông báo', description: 'Màu nền của banner thông báo', type: 'color' },
     // SEO
     { key: 'seo.site_title', value: 'VCT Platform — Quản trị Võ Cổ Truyền', category: 'seo', label: 'Site Title', description: 'Tiêu đề hiển thị trên tab trình duyệt', type: 'text' },
     { key: 'seo.meta_description', value: 'Nền tảng quản trị toàn diện cho Võ Cổ Truyền Việt Nam.', category: 'seo', label: 'Meta Description', description: 'Mô tả hiển thị trên Google Search', type: 'text' },
@@ -119,7 +119,7 @@ const ConfigFieldEditor = ({ item, value, onChange }: {
 }) => {
     switch (item.type) {
         case 'color':
-            return <ColorPicker value={String(value || '#000000')} onChange={onChange} />
+            return <ColorPicker value={String(value || 'var(--vct-text-primary)')} onChange={onChange} />
         case 'boolean':
             return (
                 <button
@@ -127,7 +127,7 @@ const ConfigFieldEditor = ({ item, value, onChange }: {
                     onClick={() => onChange(!value)}
                     aria-label={`Chuyển đổi ${item.label}`}
                     className={`relative w-14 h-7 rounded-full transition-all duration-200 ${
-                        value ? 'bg-[#10b981]' : 'bg-(--vct-bg-base) border border-(--vct-border-strong)'
+                        value ? 'bg-(--vct-success)' : 'bg-(--vct-bg-base) border border-(--vct-border-strong)'
                     }`}
                 >
                     <div className={`absolute top-0.5 w-6 h-6 rounded-full bg-white shadow-md transition-transform duration-200 ${
@@ -153,7 +153,7 @@ const ConfigFieldEditor = ({ item, value, onChange }: {
                             onClick={() => onChange(opt)}
                             className={`px-4 py-2 rounded-lg text-xs font-bold border transition-all ${
                                 value === opt
-                                    ? 'bg-[#0ea5e920] border-[#0ea5e9] text-[#0ea5e9]'
+                                    ? 'bg-[#0ea5e920] border-(--vct-accent-cyan) text-(--vct-accent-cyan)'
                                     : 'bg-(--vct-bg-base) border-(--vct-border-subtle) text-(--vct-text-tertiary) hover:border-(--vct-border-strong)'
                             }`}
                         >
@@ -269,17 +269,17 @@ const Page_admin_cms_Content = () => {
     const activeCat = CMS_CATEGORIES.find(c => c.id === activeCategory)
 
     const stats: StatItem[] = [
-        { label: 'Cấu hình', value: DEFAULT_CMS_ITEMS.length, icon: <VCT_Icons.Settings size={18} />, color: '#0ea5e9' },
-        { label: 'Đã thay đổi', value: dirtyKeys.size, icon: <VCT_Icons.Edit size={18} />, color: dirtyKeys.size > 0 ? '#f59e0b' : '#10b981' },
-        { label: 'Danh mục', value: CMS_CATEGORIES.length, icon: <VCT_Icons.Layers size={18} />, color: '#8b5cf6' },
-        { label: 'Trạng thái', value: saving ? 'Saving...' : dirtyKeys.size > 0 ? 'Unsaved' : 'Synced', icon: <VCT_Icons.CheckCircle size={18} />, color: dirtyKeys.size > 0 ? '#f59e0b' : '#10b981' },
+        { label: 'Cấu hình', value: DEFAULT_CMS_ITEMS.length, icon: <VCT_Icons.Settings size={18} />, color: 'var(--vct-accent-cyan)' },
+        { label: 'Đã thay đổi', value: dirtyKeys.size, icon: <VCT_Icons.Edit size={18} />, color: dirtyKeys.size > 0 ? 'var(--vct-warning)' : 'var(--vct-success)' },
+        { label: 'Danh mục', value: CMS_CATEGORIES.length, icon: <VCT_Icons.Layers size={18} />, color: 'var(--vct-info)' },
+        { label: 'Trạng thái', value: saving ? 'Saving...' : dirtyKeys.size > 0 ? 'Unsaved' : 'Synced', icon: <VCT_Icons.CheckCircle size={18} />, color: dirtyKeys.size > 0 ? 'var(--vct-warning)' : 'var(--vct-success)' },
     ]
 
     return (
         <AdminPageShell
             title="CMS — Quản Trị Nội Dung"
             subtitle="Cấu hình giao diện, thương hiệu và nội dung toàn hệ thống — không cần đụng code."
-            icon={<VCT_Icons.Layout size={28} className="text-[#8b5cf6]" />}
+            icon={<VCT_Icons.Layout size={28} className="text-(--vct-info)" />}
             breadcrumbs={[
                 { label: 'Admin', href: '/admin', icon: <VCT_Icons.Home size={14} /> },
                 { label: 'CMS' },
@@ -308,8 +308,8 @@ const Page_admin_cms_Content = () => {
             {dirtyKeys.size > 0 && (
                 <div className="mb-6 p-4 rounded-xl border border-[#f59e0b40] bg-[#f59e0b10] flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                        <VCT_Icons.AlertCircle size={20} className="text-[#f59e0b]" />
-                        <span className="text-sm font-semibold text-[#f59e0b]">
+                        <VCT_Icons.AlertCircle size={20} className="text-(--vct-warning)" />
+                        <span className="text-sm font-semibold text-(--vct-warning)">
                             {dirtyKeys.size} thay đổi chưa lưu
                         </span>
                     </div>
@@ -382,7 +382,7 @@ const Page_admin_cms_Content = () => {
                                     <div>
                                         <div className="font-bold text-sm text-(--vct-text-primary) flex items-center gap-2">
                                             {item.label}
-                                            {isDirty && <span className="w-2 h-2 rounded-full bg-[#f59e0b] animate-pulse" />}
+                                            {isDirty && <span className="w-2 h-2 rounded-full bg-(--vct-warning) animate-pulse" />}
                                         </div>
                                         <div className="text-[10px] font-mono text-(--vct-text-tertiary) mt-0.5">{item.key}</div>
                                     </div>
@@ -448,7 +448,7 @@ const Page_admin_cms_Content = () => {
                     <div className="rounded-xl border border-(--vct-border-subtle) p-4 bg-(--vct-bg-base)">
                         <div className="text-[10px] uppercase tracking-wider text-(--vct-text-tertiary) font-bold mb-3">Trang chủ</div>
                         {configs['homepage.announcement'] && (
-                            <div className="admin-announcement-banner" style={{ '--_banner-color': configs['homepage.announcement_color'] || '#f59e0b' } as React.CSSProperties}>
+                            <div className="admin-announcement-banner" style={{ '--_banner-color': configs['homepage.announcement_color'] || 'var(--vct-warning)' } as React.CSSProperties}>
                                 📢 {configs['homepage.announcement']}
                             </div>
                         )}

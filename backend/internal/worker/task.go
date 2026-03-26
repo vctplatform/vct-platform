@@ -81,15 +81,15 @@ func DefaultConfig() DispatcherConfig {
 
 // DispatcherStats holds typed dispatcher statistics.
 type DispatcherStats struct {
-	Running    bool  `json:"running"`
-	Workers    int   `json:"workers"`
-	QueueSize  int   `json:"queue_size"`
-	QueueCap   int   `json:"queue_cap"`
-	Processed  int64 `json:"processed"`
-	Failed     int64 `json:"failed"`
-	Retried    int64 `json:"retried"`
-	Panics     int64 `json:"panics"`
-	Handlers   int   `json:"handlers"`
+	Running   bool  `json:"running"`
+	Workers   int   `json:"workers"`
+	QueueSize int   `json:"queue_size"`
+	QueueCap  int   `json:"queue_cap"`
+	Processed int64 `json:"processed"`
+	Failed    int64 `json:"failed"`
+	Retried   int64 `json:"retried"`
+	Panics    int64 `json:"panics"`
+	Handlers  int   `json:"handlers"`
 }
 
 // Dispatcher manages a pool of workers that process tasks from a queue.
@@ -379,4 +379,3 @@ func (d *Dispatcher) process(log *slog.Logger, task *Task) {
 		"duration", task.Duration,
 	)
 }
-

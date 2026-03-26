@@ -23,9 +23,9 @@ type Counter struct {
 	value atomic.Int64
 }
 
-func (c *Counter) Inc()          { c.value.Add(1) }
-func (c *Counter) Add(n int64)   { c.value.Add(n) }
-func (c *Counter) Value() int64  { return c.value.Load() }
+func (c *Counter) Inc()         { c.value.Add(1) }
+func (c *Counter) Add(n int64)  { c.value.Add(n) }
+func (c *Counter) Value() int64 { return c.value.Load() }
 
 // ═══════════════════════════════════════════════════════════════
 // Gauge — Value that can go up and down

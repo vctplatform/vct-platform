@@ -5,10 +5,10 @@ import { useState, useMemo } from 'react'
 import {
     VCT_Badge, VCT_Button, VCT_Stack,
     VCT_SearchInput, VCT_Select, VCT_Tabs,
-} from '../components/vct-ui'
-import type { StatItem } from '../components/VCT_StatRow'
-import { VCT_Icons } from '../components/vct-icons'
-import { VCT_Drawer } from '../components/VCT_Drawer'
+} from '@vct/ui'
+import type { StatItem } from '@vct/ui'
+import { VCT_Icons } from '@vct/ui'
+import { VCT_Drawer } from '@vct/ui'
 import { AdminDataTable } from './components/AdminDataTable'
 import { AdminPageShell, useShellToast } from './components/AdminPageShell'
 import { useAdminFetch } from './hooks/useAdminAPI'
@@ -136,10 +136,10 @@ const Page_admin_federation_Content = () => {
     const totalClubs = units.reduce((a, u) => a + u.clubs, 0)
 
     const stats: StatItem[] = [
-        { icon: <VCT_Icons.Building size={20} />, label: 'Tổ chức', value: units.length, color: '#0ea5e9' },
-        { icon: <VCT_Icons.MapPin size={20} />, label: 'Liên đoàn tỉnh', value: units.filter(u => u.type === 'provincial').length, color: '#94a3b8' },
-        { icon: <VCT_Icons.Users size={20} />, label: 'Tổng VĐV', value: totalAthletes.toLocaleString(), color: '#10b981' },
-        { icon: <VCT_Icons.Home size={20} />, label: 'Tổng CLB', value: totalClubs, color: '#f59e0b' },
+        { icon: <VCT_Icons.Building size={20} />, label: 'Tổ chức', value: units.length, color: 'var(--vct-accent-cyan)' },
+        { icon: <VCT_Icons.MapPin size={20} />, label: 'Liên đoàn tỉnh', value: units.filter(u => u.type === 'provincial').length, color: 'var(--vct-text-tertiary)' },
+        { icon: <VCT_Icons.Users size={20} />, label: 'Tổng VĐV', value: totalAthletes.toLocaleString(), color: 'var(--vct-success)' },
+        { icon: <VCT_Icons.Home size={20} />, label: 'Tổng CLB', value: totalClubs, color: 'var(--vct-warning)' },
     ]
 
     const handleApprove = async (id: string) => {
@@ -157,7 +157,7 @@ const Page_admin_federation_Content = () => {
         <AdminPageShell
             title={t('admin.federation.title')}
             subtitle="Tổ chức, nhân sự, và cơ cấu Liên đoàn VCT các cấp"
-            icon={<VCT_Icons.Building size={28} className="text-[#8b5cf6]" />}
+            icon={<VCT_Icons.Building size={28} className="text-(--vct-info)" />}
             stats={stats}
         >
             <VCT_Tabs tabs={tabItems} activeTab={tab} onChange={v => setTab(v as typeof tab)} className="mb-6" />

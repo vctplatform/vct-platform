@@ -2,10 +2,10 @@
 
 import * as React from 'react'
 import { useState, useEffect, useMemo, useCallback } from 'react'
-import { VCT_Badge, VCT_Button, VCT_Stack, VCT_Toast, VCT_SearchInput, VCT_EmptyState, VCT_AvatarLetter } from '../components/vct-ui'
-import { VCT_PageContainer, VCT_StatRow } from '../components/vct-ui'
-import type { StatItem } from '../components/VCT_StatRow'
-import { VCT_Icons } from '../components/vct-icons'
+import { VCT_Badge, VCT_Button, VCT_Stack, VCT_Toast, VCT_SearchInput, VCT_EmptyState, VCT_AvatarLetter } from '@vct/ui'
+import { VCT_PageContainer, VCT_StatRow } from '@vct/ui'
+import type { StatItem } from '@vct/ui'
+import { VCT_Icons } from '@vct/ui'
 
 // ═══════════════════════════════════════════════════════════════
 // VCT PLATFORM — PROVINCIAL REFEREE MANAGEMENT
@@ -35,10 +35,10 @@ interface RefereeStats {
 type TabKey = 'all' | 'active' | 'pending' | 'inactive'
 
 const RANK_MAP: Record<string, { label: string; color: string }> = {
-    quoc_gia: { label: 'Quốc gia', color: '#a78bfa' },
-    cap_1: { label: 'Cấp I', color: '#22d3ee' },
-    cap_2: { label: 'Cấp II', color: '#10b981' },
-    cap_3: { label: 'Cấp III', color: '#94a3b8' },
+    quoc_gia: { label: 'Quốc gia', color: 'var(--vct-info)' },
+    cap_1: { label: 'Cấp I', color: 'var(--vct-accent-cyan)' },
+    cap_2: { label: 'Cấp II', color: 'var(--vct-success)' },
+    cap_3: { label: 'Cấp III', color: 'var(--vct-text-tertiary)' },
 }
 
 const EXPERTISE_MAP: Record<string, string> = {
@@ -183,10 +183,10 @@ export const Page_provincial_referees = () => {
 
             {/* Stats Row */}
             <VCT_StatRow items={[
-                { label: 'Tổng trọng tài', value: stats?.total ?? referees.length, icon: <VCT_Icons.Shield size={18} />, color: '#ef4444' },
-                { label: 'Đang hoạt động', value: stats?.active ?? referees.filter(r => r.status === 'active').length, icon: <VCT_Icons.Activity size={18} />, color: '#10b981' },
-                { label: 'Chờ duyệt', value: stats?.pending ?? referees.filter(r => r.status === 'pending').length, icon: <VCT_Icons.Clock size={18} />, color: '#f59e0b' },
-                { label: 'Tạm nghỉ', value: stats?.inactive ?? 0, icon: <VCT_Icons.Clock size={18} />, color: '#94a3b8' },
+                { label: 'Tổng trọng tài', value: stats?.total ?? referees.length, icon: <VCT_Icons.Shield size={18} />, color: 'var(--vct-danger)' },
+                { label: 'Đang hoạt động', value: stats?.active ?? referees.filter(r => r.status === 'active').length, icon: <VCT_Icons.Activity size={18} />, color: 'var(--vct-success)' },
+                { label: 'Chờ duyệt', value: stats?.pending ?? referees.filter(r => r.status === 'pending').length, icon: <VCT_Icons.Clock size={18} />, color: 'var(--vct-warning)' },
+                { label: 'Tạm nghỉ', value: stats?.inactive ?? 0, icon: <VCT_Icons.Clock size={18} />, color: 'var(--vct-text-tertiary)' },
             ] as StatItem[]} className="mb-6" />
 
             {/* Tabs */}

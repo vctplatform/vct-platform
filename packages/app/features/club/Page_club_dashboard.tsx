@@ -7,10 +7,10 @@ import {
   VCT_ProgressBar,
   VCT_Stack,
   VCT_Toast,
-} from '../components/vct-ui'
-import { VCT_PageContainer, VCT_StatRow } from '../components/vct-ui'
-import type { StatItem } from '../components/VCT_StatRow'
-import { VCT_Icons } from '../components/vct-icons'
+} from '@vct/ui'
+import { VCT_PageContainer, VCT_StatRow } from '@vct/ui'
+import type { StatItem } from '@vct/ui'
+import { VCT_Icons } from '@vct/ui'
 import {
   ATTENDANCE_SEED,
   BELT_EXAM_SEED,
@@ -86,14 +86,14 @@ export const Page_club_dashboard = () => {
       label: 'Thanh vien hoat dong',
       value: activeMemberCount,
       icon: <VCT_Icons.Users size={18} />,
-      color: '#0ea5e9',
+      color: 'var(--vct-accent-cyan)',
       sub: `${pendingMemberCount} cho duyet`,
     },
     {
       label: 'Lop hoc hoat dong',
       value: classes.filter((item) => item.status === 'active').length,
       icon: <VCT_Icons.Book size={18} />,
-      color: '#10b981',
+      color: 'var(--vct-success)',
       sub: `${todayClassCount} lop hom nay`,
     },
     {
@@ -103,14 +103,14 @@ export const Page_club_dashboard = () => {
           (item) => item.status === 'registration' || item.status === 'upcoming'
         ).length,
       icon: <VCT_Icons.Trophy size={18} />,
-      color: '#f59e0b',
+      color: 'var(--vct-warning)',
       sub: `${ongoingTournamentCount} dang dien ra`,
     },
     {
       label: 'So du quy',
       value: formatCurrency(financeSummary.balance),
       icon: <VCT_Icons.DollarSign size={18} />,
-      color: financeSummary.balance < 0 ? '#ef4444' : '#8b5cf6',
+      color: financeSummary.balance < 0 ? 'var(--vct-danger)' : 'var(--vct-info)',
       sub: `Thu: ${formatCurrency(financeSummary.totalIncome)}`,
     },
   ]
@@ -240,10 +240,10 @@ export const Page_club_dashboard = () => {
 
       {/* New module KPIs */}
       <VCT_StatRow items={[
-        { label: 'Tỷ lệ điểm danh', value: `${attendanceRate}%`, icon: <VCT_Icons.Activity size={18} />, color: attendanceRate >= 80 ? '#10b981' : '#f59e0b' },
-        { label: 'Giá trị thiết bị', value: formatCurrency(equipmentValue), icon: <VCT_Icons.Layers size={18} />, color: '#8b5cf6', sub: needReplace > 0 ? `${needReplace} cần thay` : undefined },
-        { label: 'Cơ sở vật chất', value: facilities.length, icon: <VCT_Icons.Building size={18} />, color: '#0ea5e9', sub: overdueMaint > 0 ? `${overdueMaint} quá hạn bảo trì` : undefined },
-        { label: 'Sắp thi đai', value: upcomingExams, icon: <VCT_Icons.Award size={18} />, color: '#f59e0b' },
+        { label: 'Tỷ lệ điểm danh', value: `${attendanceRate}%`, icon: <VCT_Icons.Activity size={18} />, color: attendanceRate >= 80 ? 'var(--vct-success)' : 'var(--vct-warning)' },
+        { label: 'Giá trị thiết bị', value: formatCurrency(equipmentValue), icon: <VCT_Icons.Layers size={18} />, color: 'var(--vct-info)', sub: needReplace > 0 ? `${needReplace} cần thay` : undefined },
+        { label: 'Cơ sở vật chất', value: facilities.length, icon: <VCT_Icons.Building size={18} />, color: 'var(--vct-accent-cyan)', sub: overdueMaint > 0 ? `${overdueMaint} quá hạn bảo trì` : undefined },
+        { label: 'Sắp thi đai', value: upcomingExams, icon: <VCT_Icons.Award size={18} />, color: 'var(--vct-warning)' },
       ] as StatItem[]} className="mb-6" />
 
       <div className="mb-6 grid grid-cols-1 gap-4 lg:grid-cols-3">

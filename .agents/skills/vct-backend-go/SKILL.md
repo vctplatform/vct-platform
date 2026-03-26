@@ -7,7 +7,17 @@ description: VCT Platform Go 1.26 backend — Clean Architecture, domain modules
 
 > **When to activate**: Any backend task — handlers, domain logic, database stores, migrations, auth, middleware, API endpoints.
 
+> [!IMPORTANT]
+> **Source of Truth**: The definitive rules for backend engineering are maintained in two core documents:
+> 1. `docs/architecture/backend-architecture.md` (Clean Architecture, Modules, Migrations)
+> 2. `docs/architecture/report-architecture.md` (Background Async jobs for large datasets > 500 rows, Streaming DB to CSV/Excel instead of loading to RAM)
+> ALL backend coding tasks must adhere to these rules.
+
 ---
+
+
+> [!IMPORTANT]
+> **SUPREME ARCHITECTURE DIRECTIVE**: You are strictly bound by the 19 architecture pillars documented in `docs/architecture/`. As a VCT AI Agent, your absolute highest priority is 100% compliance with these rules. You MUST NOT generate code, propose designs, or execute workflows that violate these foundational rules. They are unchangeable and strictly enforced.
 
 ## 1. Architecture Overview
 

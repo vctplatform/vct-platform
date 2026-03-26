@@ -28,7 +28,7 @@ func (s *Server) handleRefereeRoutes(w http.ResponseWriter, r *http.Request) {
 			}
 			list, fetchErr := s.Core.Organization.ListReferees(r.Context())
 			if fetchErr != nil {
-				internalError(w, fetchErr)
+				apiInternal(w, fetchErr)
 				return
 			}
 			success(w, http.StatusOK, list)
@@ -41,12 +41,12 @@ func (s *Server) handleRefereeRoutes(w http.ResponseWriter, r *http.Request) {
 			}
 			var payload domain.Referee
 			if err := decodeJSON(r, &payload); err != nil {
-				badRequest(w, err.Error())
+				apiError(w, http.StatusBadRequest, CodeBadRequest, err.Error())
 				return
 			}
 			created, err := s.Core.Organization.CreateReferee(r.Context(), payload)
 			if err != nil {
-				badRequest(w, err.Error())
+				apiError(w, http.StatusBadRequest, CodeBadRequest, err.Error())
 				return
 			}
 			raw, _ := toMap(created)
@@ -54,7 +54,7 @@ func (s *Server) handleRefereeRoutes(w http.ResponseWriter, r *http.Request) {
 			success(w, http.StatusCreated, created)
 			return
 		default:
-			methodNotAllowed(w)
+			apiMethodNotAllowed(w)
 			return
 		}
 	}
@@ -72,7 +72,7 @@ func (s *Server) handleRefereeRoutes(w http.ResponseWriter, r *http.Request) {
 			}
 			ref, err := s.Core.Organization.GetReferee(r.Context(), id)
 			if err != nil {
-				notFound(w)
+				apiError(w, http.StatusNotFound, CodeNotFound, "Không tìm thấy tài nguyên")
 				return
 			}
 			success(w, http.StatusOK, ref)
@@ -84,17 +84,17 @@ func (s *Server) handleRefereeRoutes(w http.ResponseWriter, r *http.Request) {
 			}
 			var patch map[string]interface{}
 			if err := json.NewDecoder(r.Body).Decode(&patch); err != nil {
-				badRequest(w, "invalid json")
+				apiError(w, http.StatusBadRequest, CodeBadRequest, "invalid json")
 				return
 			}
 			b, err := json.Marshal(patch)
 			if err != nil {
-				badRequest(w, err.Error())
+				apiError(w, http.StatusBadRequest, CodeBadRequest, err.Error())
 				return
 			}
 			updatedStore, err := s.store.Update("referees", id, b)
 			if err != nil {
-				badRequest(w, err.Error())
+				apiError(w, http.StatusBadRequest, CodeBadRequest, err.Error())
 				return
 			}
 			var updatedMap map[string]any
@@ -113,11 +113,11 @@ func (s *Server) handleRefereeRoutes(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusNoContent)
 			return
 		default:
-			methodNotAllowed(w)
+			apiMethodNotAllowed(w)
 			return
 		}
 	default:
-		notFound(w)
+		apiError(w, http.StatusNotFound, CodeNotFound, "Không tìm thấy tài nguyên")
 		return
 	}
 }
@@ -141,7 +141,7 @@ func (s *Server) handleArenaRoutes(w http.ResponseWriter, r *http.Request) {
 			}
 			list, fetchErr := s.Core.Organization.ListArenas(r.Context())
 			if fetchErr != nil {
-				internalError(w, fetchErr)
+				apiInternal(w, fetchErr)
 				return
 			}
 			success(w, http.StatusOK, list)
@@ -154,12 +154,12 @@ func (s *Server) handleArenaRoutes(w http.ResponseWriter, r *http.Request) {
 			}
 			var payload domain.Arena
 			if err := decodeJSON(r, &payload); err != nil {
-				badRequest(w, err.Error())
+				apiError(w, http.StatusBadRequest, CodeBadRequest, err.Error())
 				return
 			}
 			created, err := s.Core.Organization.CreateArena(r.Context(), payload)
 			if err != nil {
-				badRequest(w, err.Error())
+				apiError(w, http.StatusBadRequest, CodeBadRequest, err.Error())
 				return
 			}
 			raw, _ := toMap(created)
@@ -167,7 +167,7 @@ func (s *Server) handleArenaRoutes(w http.ResponseWriter, r *http.Request) {
 			success(w, http.StatusCreated, created)
 			return
 		default:
-			methodNotAllowed(w)
+			apiMethodNotAllowed(w)
 			return
 		}
 	}
@@ -185,7 +185,7 @@ func (s *Server) handleArenaRoutes(w http.ResponseWriter, r *http.Request) {
 			}
 			arena, err := s.Core.Organization.GetArena(r.Context(), id)
 			if err != nil {
-				notFound(w)
+				apiError(w, http.StatusNotFound, CodeNotFound, "Không tìm thấy tài nguyên")
 				return
 			}
 			success(w, http.StatusOK, arena)
@@ -197,17 +197,17 @@ func (s *Server) handleArenaRoutes(w http.ResponseWriter, r *http.Request) {
 			}
 			var patch map[string]interface{}
 			if err := json.NewDecoder(r.Body).Decode(&patch); err != nil {
-				badRequest(w, "invalid json")
+				apiError(w, http.StatusBadRequest, CodeBadRequest, "invalid json")
 				return
 			}
 			b, err := json.Marshal(patch)
 			if err != nil {
-				badRequest(w, err.Error())
+				apiError(w, http.StatusBadRequest, CodeBadRequest, err.Error())
 				return
 			}
 			updatedStore, err := s.store.Update("arenas", id, b)
 			if err != nil {
-				badRequest(w, err.Error())
+				apiError(w, http.StatusBadRequest, CodeBadRequest, err.Error())
 				return
 			}
 			var updatedMap map[string]any
@@ -226,11 +226,11 @@ func (s *Server) handleArenaRoutes(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusNoContent)
 			return
 		default:
-			methodNotAllowed(w)
+			apiMethodNotAllowed(w)
 			return
 		}
 	default:
-		notFound(w)
+		apiError(w, http.StatusNotFound, CodeNotFound, "Không tìm thấy tài nguyên")
 		return
 	}
 }

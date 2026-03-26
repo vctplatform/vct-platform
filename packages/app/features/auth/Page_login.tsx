@@ -3,8 +3,8 @@ import * as React from 'react'
 import { useEffect, useState, useMemo } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Image from 'next/image'
-import { VCT_Toast } from '../components/vct-ui'
-import { VCT_Icons } from '../components/vct-icons'
+import { VCT_Toast } from '@vct/ui'
+import { VCT_Icons } from '@vct/ui'
 import { useAuth } from './AuthProvider'
 import { useI18n } from '../i18n'
 import type { LoginInput } from './types'
@@ -73,10 +73,10 @@ export const Page_login = () => {
   }
 
   const features = [
-    { icon: <VCT_Icons.Building size={15} />, label: t('feat1'), c: '#10b981', href: '/federation' },
-    { icon: <VCT_Icons.Trophy size={15} />, label: t('feat2'), c: '#3b82f6', href: '/tournament' },
+    { icon: <VCT_Icons.Building size={15} />, label: t('feat1'), c: 'var(--vct-success)', href: '/federation' },
+    { icon: <VCT_Icons.Trophy size={15} />, label: t('feat2'), c: 'var(--vct-info)', href: '/tournament' },
     { icon: <VCT_Icons.BarChart2 size={15} />, label: t('feat3'), c: '#a855f7', href: '/rankings' },
-    { icon: <VCT_Icons.Book size={15} />, label: t('feat4'), c: '#f59e0b', href: '/training' },
+    { icon: <VCT_Icons.Book size={15} />, label: t('feat4'), c: 'var(--vct-warning)', href: '/training' },
   ]
 
   return (
@@ -527,13 +527,13 @@ const CSS = `
 /* ── Inputs ── */
 .v-inp { display: flex; flex-direction: column; gap: 5px; transition: all 0.3s; }
 .v-inp label { font-size: 11.5px; font-weight: 650; color: var(--tx); transition: color 0.3s; }
-.v-inp--focus label { color: #10b981; }
+.v-inp--focus label { color: var(--vct-success); }
 .v-inp__r { display: flex; justify-content: space-between; align-items: center; }
-.v-inp__link { font-size: 10.5px; font-weight: 600; color: #10b981; text-decoration: none; }
-.v-inp__link:hover { color: #34d399; }
+.v-inp__link { font-size: 10.5px; font-weight: 600; color: var(--vct-success); text-decoration: none; }
+.v-inp__link:hover { color: var(--vct-success); }
 .v-inp__w { position: relative; display: flex; align-items: center; }
 .v-inp__ic { position: absolute; left: 13px; color: var(--tx-m); pointer-events: none; z-index: 2; transition: color 0.3s; }
-.v-inp--focus .v-inp__ic { color: #10b981; }
+.v-inp--focus .v-inp__ic { color: var(--vct-success); }
 .v-inp__w input {
   width: 100%; padding: 11px 14px 11px 38px;
   border-radius: 14px;
@@ -573,7 +573,7 @@ const CSS = `
 }
 .v-ck input:checked + .v-ck__box {
   background: linear-gradient(135deg, #10b981, #0d9488);
-  border-color: #10b981; color: #fff;
+  border-color: var(--vct-success); color: var(--vct-bg-elevated);
 }
 
 /* ── Submit ── */
@@ -584,7 +584,7 @@ const CSS = `
   border-radius: 14px; border: none;
   background: linear-gradient(135deg, #059669 0%, #0d9488 40%, #0284c7 80%, #6366f1 100%);
   background-size: 200% auto;
-  color: #fff; font-family: inherit;
+  color: var(--vct-bg-elevated); font-family: inherit;
   font-size: 14px; font-weight: 700; letter-spacing: -0.01em;
   cursor: pointer; transition: all 0.4s ease;
   box-shadow: 0 4px 24px -4px rgba(5,150,105,0.35), inset 0 1px 0 rgba(255,255,255,0.15);
@@ -609,7 +609,7 @@ const CSS = `
 .v-btn__spin {
   width: 15px; height: 15px;
   border: 2px solid rgba(255,255,255,0.3);
-  border-top-color: #fff; border-radius: 50%;
+  border-top-color: var(--vct-bg-elevated); border-radius: 50%;
   animation: spin 0.55s linear infinite;
 }
 @keyframes spin { to { transform: rotate(360deg); } }
@@ -629,8 +629,8 @@ const CSS = `
 .v-demo__b:hover { background: var(--glass-h); border-color: rgba(245,158,11,0.25); }
 
 .v-foot { margin: 0; text-align: center; font-size: 12px; color: var(--tx); }
-.v-foot a { font-weight: 700; color: #10b981; text-decoration: none; }
-.v-foot a:hover { color: #34d399; text-decoration: underline; }
+.v-foot a { font-weight: 700; color: var(--vct-success); text-decoration: none; }
+.v-foot a:hover { color: var(--vct-success); text-decoration: underline; }
 
 /* ── Stats ── */
 .v-stats {

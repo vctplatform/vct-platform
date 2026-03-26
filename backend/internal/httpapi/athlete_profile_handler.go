@@ -44,7 +44,7 @@ func (s *Server) handleAthleteProfileList(w http.ResponseWriter, r *http.Request
 			list, err = s.Extended.AthleteProfile.ListProfiles(r.Context())
 		}
 		if err != nil {
-			internalError(w, err)
+			apiInternal(w, err)
 			return
 		}
 		success(w, http.StatusOK, list)
@@ -52,12 +52,12 @@ func (s *Server) handleAthleteProfileList(w http.ResponseWriter, r *http.Request
 	case http.MethodPost:
 		var payload athlete.AthleteProfile
 		if err := json.NewDecoder(r.Body).Decode(&payload); err != nil {
-			badRequest(w, "invalid JSON: "+err.Error())
+			apiError(w, http.StatusBadRequest, CodeBadRequest, "invalid JSON: "+err.Error())
 			return
 		}
 		created, err := s.Extended.AthleteProfile.CreateProfile(r.Context(), payload)
 		if err != nil {
-			badRequest(w, err.Error())
+			apiError(w, http.StatusBadRequest, CodeBadRequest, err.Error())
 			return
 		}
 		success(w, http.StatusCreated, created)
@@ -76,7 +76,7 @@ func (s *Server) handleAthleteProfileMe(w http.ResponseWriter, r *http.Request, 
 	}
 	profile, err := s.Extended.AthleteProfile.GetByUserID(r.Context(), p.User.ID)
 	if err != nil {
-		notFoundError(w, "athlete profile not found for current user")
+		apiError(w, http.StatusNotFound, CodeNotFound, "athlete profile not found for current user")
 		return
 	}
 	success(w, http.StatusOK, profile)
@@ -106,7 +106,7 @@ func (s *Server) handleAthleteProfileByID(w http.ResponseWriter, r *http.Request
 	case http.MethodGet:
 		profile, err := s.Extended.AthleteProfile.GetProfile(r.Context(), id)
 		if err != nil {
-			notFoundError(w, err.Error())
+			apiError(w, http.StatusNotFound, CodeNotFound, err.Error())
 			return
 		}
 		success(w, http.StatusOK, profile)
@@ -114,11 +114,11 @@ func (s *Server) handleAthleteProfileByID(w http.ResponseWriter, r *http.Request
 	case http.MethodPatch:
 		var patch map[string]interface{}
 		if err := json.NewDecoder(r.Body).Decode(&patch); err != nil {
-			badRequest(w, "invalid JSON: "+err.Error())
+			apiError(w, http.StatusBadRequest, CodeBadRequest, "invalid JSON: "+err.Error())
 			return
 		}
 		if err := s.Extended.AthleteProfile.UpdateProfile(r.Context(), id, patch); err != nil {
-			internalError(w, err)
+			apiInternal(w, err)
 			return
 		}
 		profile, _ := s.Extended.AthleteProfile.GetProfile(r.Context(), id)
@@ -126,7 +126,7 @@ func (s *Server) handleAthleteProfileByID(w http.ResponseWriter, r *http.Request
 
 	case http.MethodDelete:
 		if err := s.Extended.AthleteProfile.DeleteProfile(r.Context(), id); err != nil {
-			internalError(w, err)
+			apiInternal(w, err)
 			return
 		}
 		success(w, http.StatusOK, map[string]string{"deleted": id})
@@ -143,7 +143,7 @@ func (s *Server) handleProfileClubs(w http.ResponseWriter, r *http.Request, _ au
 	case http.MethodGet:
 		list, err := s.Extended.AthleteProfile.ListMyClubs(r.Context(), athleteID)
 		if err != nil {
-			internalError(w, err)
+			apiInternal(w, err)
 			return
 		}
 		success(w, http.StatusOK, list)
@@ -151,13 +151,13 @@ func (s *Server) handleProfileClubs(w http.ResponseWriter, r *http.Request, _ au
 	case http.MethodPost:
 		var payload athlete.ClubMembership
 		if err := json.NewDecoder(r.Body).Decode(&payload); err != nil {
-			badRequest(w, "invalid JSON: "+err.Error())
+			apiError(w, http.StatusBadRequest, CodeBadRequest, "invalid JSON: "+err.Error())
 			return
 		}
 		payload.AthleteID = athleteID
 		created, err := s.Extended.AthleteProfile.JoinClub(r.Context(), payload)
 		if err != nil {
-			badRequest(w, err.Error())
+			apiError(w, http.StatusBadRequest, CodeBadRequest, err.Error())
 			return
 		}
 		success(w, http.StatusCreated, created)
@@ -174,7 +174,7 @@ func (s *Server) handleProfileTournaments(w http.ResponseWriter, r *http.Request
 	case http.MethodGet:
 		list, err := s.Extended.AthleteProfile.ListMyTournaments(r.Context(), athleteID)
 		if err != nil {
-			internalError(w, err)
+			apiInternal(w, err)
 			return
 		}
 		success(w, http.StatusOK, list)
@@ -182,13 +182,13 @@ func (s *Server) handleProfileTournaments(w http.ResponseWriter, r *http.Request
 	case http.MethodPost:
 		var payload athlete.TournamentEntry
 		if err := json.NewDecoder(r.Body).Decode(&payload); err != nil {
-			badRequest(w, "invalid JSON: "+err.Error())
+			apiError(w, http.StatusBadRequest, CodeBadRequest, "invalid JSON: "+err.Error())
 			return
 		}
 		payload.AthleteID = athleteID
 		created, err := s.Extended.AthleteProfile.EnterTournament(r.Context(), payload)
 		if err != nil {
-			badRequest(w, err.Error())
+			apiError(w, http.StatusBadRequest, CodeBadRequest, err.Error())
 			return
 		}
 		success(w, http.StatusCreated, created)
@@ -216,7 +216,7 @@ func (s *Server) handleClubMembershipList(w http.ResponseWriter, r *http.Request
 			list, err = s.Extended.AthleteProfile.ListMyClubs(r.Context(), "")
 		}
 		if err != nil {
-			internalError(w, err)
+			apiInternal(w, err)
 			return
 		}
 		if list == nil {
@@ -227,12 +227,12 @@ func (s *Server) handleClubMembershipList(w http.ResponseWriter, r *http.Request
 	case http.MethodPost:
 		var payload athlete.ClubMembership
 		if err := json.NewDecoder(r.Body).Decode(&payload); err != nil {
-			badRequest(w, "invalid JSON: "+err.Error())
+			apiError(w, http.StatusBadRequest, CodeBadRequest, "invalid JSON: "+err.Error())
 			return
 		}
 		created, err := s.Extended.AthleteProfile.JoinClub(r.Context(), payload)
 		if err != nil {
-			badRequest(w, err.Error())
+			apiError(w, http.StatusBadRequest, CodeBadRequest, err.Error())
 			return
 		}
 		success(w, http.StatusCreated, created)
@@ -249,7 +249,7 @@ func (s *Server) handleClubMembershipByID(w http.ResponseWriter, r *http.Request
 	case http.MethodGet:
 		m, err := s.Extended.AthleteProfile.ListMyClubs(r.Context(), id)
 		if err != nil {
-			notFoundError(w, err.Error())
+			apiError(w, http.StatusNotFound, CodeNotFound, err.Error())
 			return
 		}
 		success(w, http.StatusOK, m)
@@ -257,18 +257,18 @@ func (s *Server) handleClubMembershipByID(w http.ResponseWriter, r *http.Request
 	case http.MethodPatch:
 		var patch map[string]interface{}
 		if err := json.NewDecoder(r.Body).Decode(&patch); err != nil {
-			badRequest(w, "invalid JSON: "+err.Error())
+			apiError(w, http.StatusBadRequest, CodeBadRequest, "invalid JSON: "+err.Error())
 			return
 		}
 		if err := s.Extended.AthleteProfile.UpdateMembership(r.Context(), id, patch); err != nil {
-			internalError(w, err)
+			apiInternal(w, err)
 			return
 		}
 		success(w, http.StatusOK, map[string]string{"updated": id})
 
 	case http.MethodDelete:
 		if err := s.Extended.AthleteProfile.LeaveClub(r.Context(), id); err != nil {
-			internalError(w, err)
+			apiInternal(w, err)
 			return
 		}
 		success(w, http.StatusOK, map[string]string{"deleted": id})
@@ -295,7 +295,7 @@ func (s *Server) handleTournamentEntryList(w http.ResponseWriter, r *http.Reques
 			list, err = s.Extended.AthleteProfile.ListMyTournaments(r.Context(), "")
 		}
 		if err != nil {
-			internalError(w, err)
+			apiInternal(w, err)
 			return
 		}
 		if list == nil {
@@ -306,12 +306,12 @@ func (s *Server) handleTournamentEntryList(w http.ResponseWriter, r *http.Reques
 	case http.MethodPost:
 		var payload athlete.TournamentEntry
 		if err := json.NewDecoder(r.Body).Decode(&payload); err != nil {
-			badRequest(w, "invalid JSON: "+err.Error())
+			apiError(w, http.StatusBadRequest, CodeBadRequest, "invalid JSON: "+err.Error())
 			return
 		}
 		created, err := s.Extended.AthleteProfile.EnterTournament(r.Context(), payload)
 		if err != nil {
-			badRequest(w, err.Error())
+			apiError(w, http.StatusBadRequest, CodeBadRequest, err.Error())
 			return
 		}
 		success(w, http.StatusCreated, created)
@@ -328,7 +328,7 @@ func (s *Server) handleTournamentEntryByID(w http.ResponseWriter, r *http.Reques
 	case http.MethodGet:
 		entry, err := s.Extended.AthleteProfile.GetEntry(r.Context(), id)
 		if err != nil {
-			notFoundError(w, err.Error())
+			apiError(w, http.StatusNotFound, CodeNotFound, err.Error())
 			return
 		}
 		success(w, http.StatusOK, entry)
@@ -339,24 +339,24 @@ func (s *Server) handleTournamentEntryByID(w http.ResponseWriter, r *http.Reques
 			Notes  string `json:"notes,omitempty"`
 		}
 		if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
-			badRequest(w, "invalid JSON: "+err.Error())
+			apiError(w, http.StatusBadRequest, CodeBadRequest, "invalid JSON: "+err.Error())
 			return
 		}
 		if body.Status != "" {
 			switch body.Status {
 			case "approve":
 				if err := s.Extended.AthleteProfile.ApproveEntry(r.Context(), id); err != nil {
-					internalError(w, err)
+					apiInternal(w, err)
 					return
 				}
 			case "reject":
 				if err := s.Extended.AthleteProfile.RejectEntry(r.Context(), id); err != nil {
-					internalError(w, err)
+					apiInternal(w, err)
 					return
 				}
 			default:
 				if err := s.Extended.AthleteProfile.UpdateEntryStatus(r.Context(), id, athlete.EntryStatus(body.Status)); err != nil {
-					internalError(w, err)
+					apiInternal(w, err)
 					return
 				}
 			}
@@ -378,7 +378,7 @@ func (s *Server) handleAthleteProfileStats(w http.ResponseWriter, r *http.Reques
 	}
 	stats, err := s.Extended.AthleteProfile.GetStats(r.Context())
 	if err != nil {
-		internalError(w, err)
+		apiInternal(w, err)
 		return
 	}
 	success(w, http.StatusOK, stats)
@@ -394,7 +394,7 @@ func (s *Server) handleAthleteProfileSearch(w http.ResponseWriter, r *http.Reque
 	query := r.URL.Query().Get("q")
 	list, err := s.Extended.AthleteProfile.SearchProfiles(r.Context(), query)
 	if err != nil {
-		internalError(w, err)
+		apiInternal(w, err)
 		return
 	}
 	if list == nil {
@@ -417,7 +417,7 @@ func (s *Server) handleTrainingSessionList(w http.ResponseWriter, r *http.Reques
 			list = []athlete.TrainingSession{}
 		}
 		if err != nil {
-			internalError(w, err)
+			apiInternal(w, err)
 			return
 		}
 		if list == nil {
@@ -428,12 +428,12 @@ func (s *Server) handleTrainingSessionList(w http.ResponseWriter, r *http.Reques
 	case http.MethodPost:
 		var payload athlete.TrainingSession
 		if err := json.NewDecoder(r.Body).Decode(&payload); err != nil {
-			badRequest(w, "invalid JSON: "+err.Error())
+			apiError(w, http.StatusBadRequest, CodeBadRequest, "invalid JSON: "+err.Error())
 			return
 		}
 		created, err := s.Extended.TrainingSession.CreateSession(r.Context(), payload)
 		if err != nil {
-			badRequest(w, err.Error())
+			apiError(w, http.StatusBadRequest, CodeBadRequest, err.Error())
 			return
 		}
 		success(w, http.StatusCreated, created)
@@ -446,7 +446,7 @@ func (s *Server) handleTrainingSessionList(w http.ResponseWriter, r *http.Reques
 func (s *Server) handleTrainingSessionByID(w http.ResponseWriter, r *http.Request, _ auth.Principal) {
 	id := strings.TrimPrefix(r.URL.Path, "/api/v1/training-sessions/")
 	if id == "" {
-		badRequest(w, "missing session id")
+		apiError(w, http.StatusBadRequest, CodeBadRequest, "missing session id")
 		return
 	}
 
@@ -454,7 +454,7 @@ func (s *Server) handleTrainingSessionByID(w http.ResponseWriter, r *http.Reques
 	case http.MethodGet:
 		sess, err := s.Extended.TrainingSession.GetSession(r.Context(), id)
 		if err != nil {
-			notFoundError(w, err.Error())
+			apiError(w, http.StatusNotFound, CodeNotFound, err.Error())
 			return
 		}
 		success(w, http.StatusOK, sess)
@@ -462,11 +462,11 @@ func (s *Server) handleTrainingSessionByID(w http.ResponseWriter, r *http.Reques
 	case http.MethodPatch:
 		var patch map[string]interface{}
 		if err := json.NewDecoder(r.Body).Decode(&patch); err != nil {
-			badRequest(w, "invalid JSON: "+err.Error())
+			apiError(w, http.StatusBadRequest, CodeBadRequest, "invalid JSON: "+err.Error())
 			return
 		}
 		if err := s.Extended.TrainingSession.UpdateSession(r.Context(), id, patch); err != nil {
-			internalError(w, err)
+			apiInternal(w, err)
 			return
 		}
 		sess, _ := s.Extended.TrainingSession.GetSession(r.Context(), id)
@@ -474,7 +474,7 @@ func (s *Server) handleTrainingSessionByID(w http.ResponseWriter, r *http.Reques
 
 	case http.MethodDelete:
 		if err := s.Extended.TrainingSession.DeleteSession(r.Context(), id); err != nil {
-			internalError(w, err)
+			apiInternal(w, err)
 			return
 		}
 		success(w, http.StatusNoContent, nil)
@@ -491,12 +491,12 @@ func (s *Server) handleTrainingSessionStats(w http.ResponseWriter, r *http.Reque
 	}
 	athleteID := r.URL.Query().Get("athleteId")
 	if athleteID == "" {
-		badRequest(w, "athleteId query parameter is required")
+		apiError(w, http.StatusBadRequest, CodeBadRequest, "athleteId query parameter is required")
 		return
 	}
 	stats, err := s.Extended.TrainingSession.GetAttendanceStats(r.Context(), athleteID)
 	if err != nil {
-		internalError(w, err)
+		apiInternal(w, err)
 		return
 	}
 	success(w, http.StatusOK, stats)

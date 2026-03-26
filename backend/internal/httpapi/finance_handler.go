@@ -46,7 +46,7 @@ func (s *Server) handlePaymentRecord(w http.ResponseWriter, r *http.Request, p a
 		ProofURL      string  `json:"proof_url,omitempty"`
 	}
 	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
-		badRequest(w, "Request body không hợp lệ")
+		apiError(w, http.StatusBadRequest, CodeBadRequest, "Request body không hợp lệ")
 		return
 	}
 	success(w, http.StatusOK, map[string]string{

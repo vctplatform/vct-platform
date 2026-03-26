@@ -2,9 +2,9 @@
 
 import * as React from 'react'
 import { useState } from 'react'
-import { VCT_Badge, VCT_Button, VCT_Stack, VCT_AvatarLetter, VCT_Tabs, VCT_SearchInput } from '../components/vct-ui'
-import { VCT_PageContainer } from '../components/vct-ui'
-import { VCT_Icons } from '../components/vct-icons'
+import { VCT_Badge, VCT_Button, VCT_Stack, VCT_AvatarLetter, VCT_Tabs, VCT_SearchInput } from '@vct/ui'
+import { VCT_PageContainer } from '@vct/ui'
+import { VCT_Icons } from '@vct/ui'
 
 // ════════════════════════════════════════
 // MOCK DATA
@@ -67,7 +67,7 @@ export const Page_organization_detail = () => {
             {/* HEADER */}
             <div className="bg-(--vct-bg-elevated) border border-(--vct-border-strong) rounded-2xl p-6 mb-6">
                 <div className="flex flex-col md:flex-row gap-6 items-start">
-                    <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-(--vct-accent-cyan) to-[#8b5cf6] flex items-center justify-center text-white text-2xl font-black">
+                    <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-(--vct-accent-cyan) to-(--vct-info) flex items-center justify-center text-white text-2xl font-black">
                         {o.short_name.slice(0, 2)}
                     </div>
                     <div className="flex-1">
@@ -87,11 +87,11 @@ export const Page_organization_detail = () => {
                 </div>
 
                 <div className="grid grid-cols-2 sm:grid-cols-5 gap-4 mt-6 pt-6 border-t border-(--vct-border-subtle)">
-                    <div className="text-center p-3 bg-(--vct-bg-base) rounded-xl"><div className="text-xl font-black text-[#0ea5e9]">{MEMBER_CLUBS.length}</div><div className="text-[10px] text-(--vct-text-tertiary)">CLB</div></div>
-                    <div className="text-center p-3 bg-(--vct-bg-base) rounded-xl"><div className="text-xl font-black text-[#10b981]">{totalMembers}</div><div className="text-[10px] text-(--vct-text-tertiary)">VĐV</div></div>
-                    <div className="text-center p-3 bg-(--vct-bg-base) rounded-xl"><div className="text-xl font-black text-[#f59e0b]">{totalCoaches}</div><div className="text-[10px] text-(--vct-text-tertiary)">HLV</div></div>
-                    <div className="text-center p-3 bg-(--vct-bg-base) rounded-xl"><div className="text-xl font-black text-[#8b5cf6]">{RECENT_TOURNAMENTS.length}</div><div className="text-[10px] text-(--vct-text-tertiary)">Giải đấu</div></div>
-                    <div className="text-center p-3 bg-(--vct-bg-base) rounded-xl"><div className="text-xl font-black text-[#ec4899]">{MEMBERS.length}</div><div className="text-[10px] text-(--vct-text-tertiary)">Cán bộ</div></div>
+                    <div className="text-center p-3 bg-(--vct-bg-base) rounded-xl"><div className="text-xl font-black text-(--vct-accent-cyan)">{MEMBER_CLUBS.length}</div><div className="text-[10px] text-(--vct-text-tertiary)">CLB</div></div>
+                    <div className="text-center p-3 bg-(--vct-bg-base) rounded-xl"><div className="text-xl font-black text-(--vct-success)">{totalMembers}</div><div className="text-[10px] text-(--vct-text-tertiary)">VĐV</div></div>
+                    <div className="text-center p-3 bg-(--vct-bg-base) rounded-xl"><div className="text-xl font-black text-(--vct-warning)">{totalCoaches}</div><div className="text-[10px] text-(--vct-text-tertiary)">HLV</div></div>
+                    <div className="text-center p-3 bg-(--vct-bg-base) rounded-xl"><div className="text-xl font-black text-(--vct-info)">{RECENT_TOURNAMENTS.length}</div><div className="text-[10px] text-(--vct-text-tertiary)">Giải đấu</div></div>
+                    <div className="text-center p-3 bg-(--vct-bg-base) rounded-xl"><div className="text-xl font-black text-(--vct-accent-pink)">{MEMBERS.length}</div><div className="text-[10px] text-(--vct-text-tertiary)">Cán bộ</div></div>
                 </div>
             </div>
 
@@ -100,7 +100,7 @@ export const Page_organization_detail = () => {
             {activeTab === 'overview' && (
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                     <div className="bg-(--vct-bg-elevated) border border-(--vct-border-strong) rounded-2xl p-6">
-                        <h3 className="font-bold text-(--vct-text-primary) mb-4 flex items-center gap-2"><VCT_Icons.Trophy size={18} className="text-[#f59e0b]" /> Giải đấu gần đây</h3>
+                        <h3 className="font-bold text-(--vct-text-primary) mb-4 flex items-center gap-2"><VCT_Icons.Trophy size={18} className="text-(--vct-warning)" /> Giải đấu gần đây</h3>
                         <div className="space-y-3">
                             {RECENT_TOURNAMENTS.map(t => (
                                 <div key={t.id} className="flex items-center justify-between p-3 bg-(--vct-bg-base) rounded-xl border border-(--vct-border-subtle) hover:border-(--vct-accent-cyan) transition-colors cursor-pointer">
@@ -111,7 +111,7 @@ export const Page_organization_detail = () => {
                         </div>
                     </div>
                     <div className="bg-(--vct-bg-elevated) border border-(--vct-border-strong) rounded-2xl p-6">
-                        <h3 className="font-bold text-(--vct-text-primary) mb-4 flex items-center gap-2"><VCT_Icons.Building2 size={18} className="text-[#0ea5e9]" /> CLB nổi bật</h3>
+                        <h3 className="font-bold text-(--vct-text-primary) mb-4 flex items-center gap-2"><VCT_Icons.Building2 size={18} className="text-(--vct-accent-cyan)" /> CLB nổi bật</h3>
                         <div className="space-y-3">
                             {MEMBER_CLUBS.filter(c => c.status === 'active').slice(0, 4).map(c => (
                                 <div key={c.id} className="flex items-center justify-between p-3 bg-(--vct-bg-base) rounded-xl border border-(--vct-border-subtle)">
@@ -172,7 +172,7 @@ export const Page_organization_detail = () => {
                         {FINANCE_SUMMARY.map((f, i) => (
                             <div key={i} className="flex items-center justify-between p-3 bg-(--vct-bg-base) rounded-xl border border-(--vct-border-subtle)">
                                 <span className="text-sm text-(--vct-text-secondary)">{f.label}</span>
-                                <span className={`font-bold text-sm ${f.type === 'income' ? 'text-[#10b981]' : 'text-[#ef4444]'}`}>{f.amount}</span>
+                                <span className={`font-bold text-sm ${f.type === 'income' ? 'text-(--vct-success)' : 'text-(--vct-danger)'}`}>{f.amount}</span>
                             </div>
                         ))}
                         <div className="flex items-center justify-between p-4 bg-(--vct-accent-cyan)/5 rounded-xl border border-(--vct-accent-cyan)/20 mt-4">

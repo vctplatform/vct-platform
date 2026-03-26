@@ -141,6 +141,8 @@ func (s *Server) Handler() http.Handler {
 	s.handleAdminRoutes(mux)
 	// ── Domain Events ────────────────────────────────────────
 	mux.HandleFunc("/api/v1/events/recent", s.withAuth(s.handleRecentEvents))
+	// ── Portal Features ──────────────────────────────────────
+	mux.HandleFunc("/api/v1/portal/activities", s.withAuth(s.handlePortalActivities))
 	// Generic entity CRUD (catch-all for unmigrated entities)
 	mux.HandleFunc("/api/v1/", s.handleEntityRoutes)
 

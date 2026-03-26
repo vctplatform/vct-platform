@@ -2,10 +2,10 @@
 
 import * as React from 'react'
 import { useState, useEffect, useMemo, useCallback } from 'react'
-import { VCT_Badge, VCT_Button, VCT_Stack, VCT_Toast, VCT_SearchInput, VCT_EmptyState, VCT_AvatarLetter } from '../components/vct-ui'
-import { VCT_PageContainer, VCT_StatRow } from '../components/vct-ui'
-import type { StatItem } from '../components/VCT_StatRow'
-import { VCT_Icons } from '../components/vct-icons'
+import { VCT_Badge, VCT_Button, VCT_Stack, VCT_Toast, VCT_SearchInput, VCT_EmptyState, VCT_AvatarLetter } from '@vct/ui'
+import { VCT_PageContainer, VCT_StatRow } from '@vct/ui'
+import type { StatItem } from '@vct/ui'
+import { VCT_Icons } from '@vct/ui'
 
 const API = '/api/v1/provincial'
 
@@ -48,9 +48,9 @@ export const Page_provincial_certifications = () => {
             </div>
 
             <VCT_StatRow items={[
-                { label: 'Tổng chứng nhận', value: certs.length, icon: <VCT_Icons.Award size={18} />, color: '#f59e0b' },
-                { label: 'Còn hiệu lực', value: certs.filter(c => c.status === 'valid').length, icon: <VCT_Icons.Activity size={18} />, color: '#10b981' },
-                { label: 'Đẳng cấp', value: certs.filter(c => c.type === 'belt').length, icon: <VCT_Icons.Star size={18} />, color: '#8b5cf6' },
+                { label: 'Tổng chứng nhận', value: certs.length, icon: <VCT_Icons.Award size={18} />, color: 'var(--vct-warning)' },
+                { label: 'Còn hiệu lực', value: certs.filter(c => c.status === 'valid').length, icon: <VCT_Icons.Activity size={18} />, color: 'var(--vct-success)' },
+                { label: 'Đẳng cấp', value: certs.filter(c => c.type === 'belt').length, icon: <VCT_Icons.Star size={18} />, color: 'var(--vct-info)' },
             ] as StatItem[]} className="mb-6" />
 
             <VCT_Stack direction="row" gap={16} align="center" justify="space-between" className="mb-5">
@@ -73,7 +73,7 @@ export const Page_provincial_certifications = () => {
                                     <tr key={c.id} className="border-b border-(--vct-border-subtle) hover:bg-(--vct-bg-hover) transition-colors">
                                         <td className="px-4 py-3"><VCT_Stack direction="row" gap={10} align="center"><VCT_AvatarLetter name={c.holder_name} size={36} /><div className="font-semibold text-sm">{c.holder_name}</div></VCT_Stack></td>
                                         <td className="px-4 py-3"><VCT_Badge text={TYPE_MAP[c.type] || c.type} type="info" /></td>
-                                        <td className="px-4 py-3 text-sm font-semibold" style={{ color: '#8b5cf6' }}>{c.level}</td>
+                                        <td className="px-4 py-3 text-sm font-semibold" style={{ color: 'var(--vct-info)' }}>{c.level}</td>
                                         <td className="px-4 py-3 text-xs font-mono opacity-70">{c.cert_number}</td>
                                         <td className="px-4 py-3 text-sm">{c.issue_date}</td>
                                         <td className="px-4 py-3 text-sm">{c.expiry_date || '—'}</td>

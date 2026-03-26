@@ -55,13 +55,13 @@ const MOCK_CLUBS: Club[] = [
 // ── Level Badge ──────────────────────────────────────────────
 
 const LEVEL_LABELS: Record<string, { label: string; color: string }> = {
-    quoc_gia: { label: 'Quốc gia', color: '#dc2626' },
-    tinh: { label: 'Tỉnh/Thành', color: '#2563eb' },
-    khu_vuc: { label: 'Khu vực', color: '#16a34a' },
+    quoc_gia: { label: 'Quốc gia', color: 'var(--vct-danger)' },
+    tinh: { label: 'Tỉnh/Thành', color: 'var(--vct-info)' },
+    khu_vuc: { label: 'Khu vực', color: 'var(--vct-success)' },
 }
 
 function LevelBadge({ level }: { level: string }) {
-    const config = LEVEL_LABELS[level] || { label: level, color: '#6b7280' }
+    const config = LEVEL_LABELS[level] || { label: level, color: 'var(--vct-text-tertiary)' }
     return (
         <span style={{ display: 'inline-flex', alignItems: 'center', padding: '2px 10px', borderRadius: 999, fontSize: 12, fontWeight: 600, background: `${config.color}18`, color: config.color, border: `1px solid ${config.color}30` }}>
             {config.label}
@@ -73,13 +73,13 @@ function LevelBadge({ level }: { level: string }) {
 
 function StatCard({ icon: Icon, label, value, color }: { icon: any; label: string; value: number | string; color: string }) {
     return (
-        <div style={{ background: '#fff', borderRadius: 12, padding: '20px 24px', display: 'flex', alignItems: 'center', gap: 16, border: '1px solid #e5e7eb', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
+        <div style={{ background: 'var(--vct-bg-elevated)', borderRadius: 12, padding: '20px 24px', display: 'flex', alignItems: 'center', gap: 16, border: '1px solid #e5e7eb', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
             <div style={{ width: 48, height: 48, borderRadius: 12, background: `${color}14`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 <Icon size={24} style={{ color }} />
             </div>
             <div>
-                <div style={{ fontSize: 28, fontWeight: 700, color: '#111827', lineHeight: 1 }}>{value}</div>
-                <div style={{ fontSize: 13, color: '#6b7280', marginTop: 4 }}>{label}</div>
+                <div style={{ fontSize: 28, fontWeight: 700, color: 'var(--vct-text-primary)', lineHeight: 1 }}>{value}</div>
+                <div style={{ fontSize: 13, color: 'var(--vct-text-tertiary)', marginTop: 4 }}>{label}</div>
             </div>
         </div>
     )
@@ -117,25 +117,25 @@ export default function Page_federations() {
             {/* Header */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
                 <div>
-                    <h1 style={{ fontSize: 28, fontWeight: 700, color: '#111827', margin: 0 }}>Tổ chức & Liên đoàn</h1>
-                    <p style={{ fontSize: 14, color: '#6b7280', margin: '4px 0 0' }}>Quản lý cấu trúc Liên đoàn → Câu lạc bộ</p>
+                    <h1 style={{ fontSize: 28, fontWeight: 700, color: 'var(--vct-text-primary)', margin: 0 }}>Tổ chức & Liên đoàn</h1>
+                    <p style={{ fontSize: 14, color: 'var(--vct-text-tertiary)', margin: '4px 0 0' }}>Quản lý cấu trúc Liên đoàn → Câu lạc bộ</p>
                 </div>
-                <button onClick={() => setShowCreate(true)} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '10px 20px', borderRadius: 8, background: '#dc2626', color: '#fff', border: 'none', cursor: 'pointer', fontWeight: 600, fontSize: 14 }}>
+                <button onClick={() => setShowCreate(true)} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '10px 20px', borderRadius: 8, background: 'var(--vct-danger)', color: 'var(--vct-bg-elevated)', border: 'none', cursor: 'pointer', fontWeight: 600, fontSize: 14 }}>
                     <Plus size={18} /> Thêm Liên đoàn
                 </button>
             </div>
 
             {/* Stats */}
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16, marginBottom: 24 }}>
-                <StatCard icon={Building2} label="Liên đoàn" value={totals.federations} color="#dc2626" />
-                <StatCard icon={Users} label="Câu lạc bộ" value={totals.clubs} color="#2563eb" />
-                <StatCard icon={Trophy} label="Thành viên" value={totals.members.toLocaleString('vi-VN')} color="#16a34a" />
+                <StatCard icon={Building2} label="Liên đoàn" value={totals.federations} color="var(--vct-danger)" />
+                <StatCard icon={Users} label="Câu lạc bộ" value={totals.clubs} color="var(--vct-info)" />
+                <StatCard icon={Trophy} label="Thành viên" value={totals.members.toLocaleString('vi-VN')} color="var(--vct-success)" />
             </div>
 
             {/* Search & Filter */}
             <div style={{ display: 'flex', gap: 12, marginBottom: 20 }}>
                 <div style={{ flex: 1, position: 'relative' }}>
-                    <Search size={18} style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', color: '#9ca3af' }} />
+                    <Search size={18} style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', color: 'var(--vct-text-secondary)' }} />
                     <input
                         type="text"
                         placeholder="Tìm kiếm liên đoàn..."
@@ -159,7 +159,7 @@ export default function Page_federations() {
             {/* Content: Federation List + Detail */}
             <div style={{ display: 'grid', gridTemplateColumns: selectedFed ? '1fr 1fr' : '1fr', gap: 20 }}>
                 {/* Federation List */}
-                <div style={{ background: '#fff', borderRadius: 12, border: '1px solid #e5e7eb', overflow: 'hidden' }}>
+                <div style={{ background: 'var(--vct-bg-elevated)', borderRadius: 12, border: '1px solid #e5e7eb', overflow: 'hidden' }}>
                     <div style={{ padding: '16px 20px', borderBottom: '1px solid #f3f4f6', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                         <span style={{ fontSize: 15, fontWeight: 600, color: '#374151' }}>Danh sách Liên đoàn ({filteredFederations.length})</span>
                     </div>
@@ -179,19 +179,19 @@ export default function Page_federations() {
                                     transition: 'background 0.15s',
                                 }}
                             >
-                                <div style={{ width: 44, height: 44, borderRadius: 10, background: '#fee2e2', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                                    <Building2 size={22} style={{ color: '#dc2626' }} />
+                                <div style={{ width: 44, height: 44, borderRadius: 10, background: 'var(--vct-danger-muted)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                                    <Building2 size={22} style={{ color: 'var(--vct-danger)' }} />
                                 </div>
                                 <div style={{ flex: 1, minWidth: 0 }}>
-                                    <div style={{ fontSize: 14, fontWeight: 600, color: '#111827', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{fed.name}</div>
+                                    <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--vct-text-primary)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{fed.name}</div>
                                     <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 4 }}>
                                         <LevelBadge level={fed.level} />
-                                        <span style={{ fontSize: 12, color: '#9ca3af' }}>{fed.code}</span>
+                                        <span style={{ fontSize: 12, color: 'var(--vct-text-secondary)' }}>{fed.code}</span>
                                     </div>
                                 </div>
                                 <div style={{ textAlign: 'right', flexShrink: 0 }}>
-                                    <div style={{ fontSize: 14, fontWeight: 600, color: '#111827' }}>{fed.club_count || 0}</div>
-                                    <div style={{ fontSize: 11, color: '#9ca3af' }}>CLB</div>
+                                    <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--vct-text-primary)' }}>{fed.club_count || 0}</div>
+                                    <div style={{ fontSize: 11, color: 'var(--vct-text-secondary)' }}>CLB</div>
                                 </div>
                                 <ChevronRight size={16} style={{ color: '#d1d5db', flexShrink: 0 }} />
                             </div>
@@ -201,16 +201,16 @@ export default function Page_federations() {
 
                 {/* Detail Panel */}
                 {selectedFed && (
-                    <div style={{ background: '#fff', borderRadius: 12, border: '1px solid #e5e7eb', overflow: 'hidden' }}>
+                    <div style={{ background: 'var(--vct-bg-elevated)', borderRadius: 12, border: '1px solid #e5e7eb', overflow: 'hidden' }}>
                         <div style={{ padding: '20px 24px', borderBottom: '1px solid #f3f4f6', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                             <div>
-                                <h2 style={{ fontSize: 18, fontWeight: 700, color: '#111827', margin: 0 }}>{selectedFed.name}</h2>
+                                <h2 style={{ fontSize: 18, fontWeight: 700, color: 'var(--vct-text-primary)', margin: 0 }}>{selectedFed.name}</h2>
                                 <div style={{ display: 'flex', gap: 8, marginTop: 6 }}>
                                     <LevelBadge level={selectedFed.level} />
-                                    <span style={{ fontSize: 13, color: '#6b7280' }}>Mã: {selectedFed.code}</span>
+                                    <span style={{ fontSize: 13, color: 'var(--vct-text-tertiary)' }}>Mã: {selectedFed.code}</span>
                                 </div>
                             </div>
-                            <button style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '8px 16px', borderRadius: 8, border: '1px solid #d1d5db', background: '#fff', cursor: 'pointer', fontSize: 13, fontWeight: 500 }}>
+                            <button style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '8px 16px', borderRadius: 8, border: '1px solid #d1d5db', background: 'var(--vct-bg-elevated)', cursor: 'pointer', fontSize: 13, fontWeight: 500 }}>
                                 <Edit size={14} /> Sửa
                             </button>
                         </div>
@@ -219,26 +219,26 @@ export default function Page_federations() {
                             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 24 }}>
                                 {selectedFed.president && (
                                     <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                                        <Users size={16} style={{ color: '#6b7280' }} />
-                                        <div><div style={{ fontSize: 11, color: '#9ca3af' }}>Chủ tịch</div><div style={{ fontSize: 14, fontWeight: 500, color: '#111827' }}>{selectedFed.president}</div></div>
+                                        <Users size={16} style={{ color: 'var(--vct-text-tertiary)' }} />
+                                        <div><div style={{ fontSize: 11, color: 'var(--vct-text-secondary)' }}>Chủ tịch</div><div style={{ fontSize: 14, fontWeight: 500, color: 'var(--vct-text-primary)' }}>{selectedFed.president}</div></div>
                                     </div>
                                 )}
                                 {selectedFed.established_year && (
                                     <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                                        <Trophy size={16} style={{ color: '#6b7280' }} />
-                                        <div><div style={{ fontSize: 11, color: '#9ca3af' }}>Thành lập</div><div style={{ fontSize: 14, fontWeight: 500, color: '#111827' }}>{selectedFed.established_year}</div></div>
+                                        <Trophy size={16} style={{ color: 'var(--vct-text-tertiary)' }} />
+                                        <div><div style={{ fontSize: 11, color: 'var(--vct-text-secondary)' }}>Thành lập</div><div style={{ fontSize: 14, fontWeight: 500, color: 'var(--vct-text-primary)' }}>{selectedFed.established_year}</div></div>
                                     </div>
                                 )}
                                 {selectedFed.address && (
                                     <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                                        <MapPin size={16} style={{ color: '#6b7280' }} />
-                                        <div><div style={{ fontSize: 11, color: '#9ca3af' }}>Địa chỉ</div><div style={{ fontSize: 14, fontWeight: 500, color: '#111827' }}>{selectedFed.address}</div></div>
+                                        <MapPin size={16} style={{ color: 'var(--vct-text-tertiary)' }} />
+                                        <div><div style={{ fontSize: 11, color: 'var(--vct-text-secondary)' }}>Địa chỉ</div><div style={{ fontSize: 14, fontWeight: 500, color: 'var(--vct-text-primary)' }}>{selectedFed.address}</div></div>
                                     </div>
                                 )}
                                 {selectedFed.phone && (
                                     <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                                        <Phone size={16} style={{ color: '#6b7280' }} />
-                                        <div><div style={{ fontSize: 11, color: '#9ca3af' }}>Điện thoại</div><div style={{ fontSize: 14, fontWeight: 500, color: '#111827' }}>{selectedFed.phone}</div></div>
+                                        <Phone size={16} style={{ color: 'var(--vct-text-tertiary)' }} />
+                                        <div><div style={{ fontSize: 11, color: 'var(--vct-text-secondary)' }}>Điện thoại</div><div style={{ fontSize: 14, fontWeight: 500, color: 'var(--vct-text-primary)' }}>{selectedFed.phone}</div></div>
                                     </div>
                                 )}
                             </div>
@@ -248,22 +248,22 @@ export default function Page_federations() {
                                 Câu lạc bộ trực thuộc ({selectedClubs.length})
                             </h3>
                             {selectedClubs.length === 0 ? (
-                                <div style={{ textAlign: 'center', padding: '32px 0', color: '#9ca3af', fontSize: 14 }}>
+                                <div style={{ textAlign: 'center', padding: '32px 0', color: 'var(--vct-text-secondary)', fontSize: 14 }}>
                                     Chưa có CLB nào
                                 </div>
                             ) : (
                                 selectedClubs.map(club => (
                                     <div key={club.id} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '12px 16px', borderRadius: 8, border: '1px solid #f3f4f6', marginBottom: 8, background: '#fafafa' }}>
-                                        <div style={{ width: 36, height: 36, borderRadius: 8, background: '#dbeafe', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                            <Building2 size={18} style={{ color: '#2563eb' }} />
+                                        <div style={{ width: 36, height: 36, borderRadius: 8, background: 'var(--vct-info-muted)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                            <Building2 size={18} style={{ color: 'var(--vct-info)' }} />
                                         </div>
                                         <div style={{ flex: 1 }}>
-                                            <div style={{ fontSize: 14, fontWeight: 600, color: '#111827' }}>{club.name}</div>
-                                            <div style={{ fontSize: 12, color: '#6b7280' }}>{club.city}, {club.province} • HLV: {club.head_coach}</div>
+                                            <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--vct-text-primary)' }}>{club.name}</div>
+                                            <div style={{ fontSize: 12, color: 'var(--vct-text-tertiary)' }}>{club.city}, {club.province} • HLV: {club.head_coach}</div>
                                         </div>
                                         <div style={{ textAlign: 'right' }}>
-                                            <div style={{ fontSize: 14, fontWeight: 600, color: '#2563eb' }}>{club.member_count}</div>
-                                            <div style={{ fontSize: 11, color: '#9ca3af' }}>thành viên</div>
+                                            <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--vct-info)' }}>{club.member_count}</div>
+                                            <div style={{ fontSize: 11, color: 'var(--vct-text-secondary)' }}>thành viên</div>
                                         </div>
                                     </div>
                                 ))

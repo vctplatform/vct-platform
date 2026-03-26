@@ -19,8 +19,8 @@ import (
 type Tenant struct {
 	ID        string            `json:"id"`
 	Name      string            `json:"name"`
-	Slug      string            `json:"slug"`      // URL-safe identifier
-	Plan      string            `json:"plan"`       // "free", "pro", "enterprise"
+	Slug      string            `json:"slug"` // URL-safe identifier
+	Plan      string            `json:"plan"` // "free", "pro", "enterprise"
 	Active    bool              `json:"active"`
 	Settings  map[string]string `json:"settings"`
 	CreatedAt time.Time         `json:"created_at"`
@@ -76,9 +76,9 @@ type Resolver interface {
 type Strategy int
 
 const (
-	StrategyHeader    Strategy = iota // X-Tenant-ID header
-	StrategySubdomain                // subdomain: {slug}.example.com
-	StrategyPathPrefix               // path: /t/{slug}/...
+	StrategyHeader     Strategy = iota // X-Tenant-ID header
+	StrategySubdomain                  // subdomain: {slug}.example.com
+	StrategyPathPrefix                 // path: /t/{slug}/...
 )
 
 const (

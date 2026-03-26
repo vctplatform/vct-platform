@@ -1,8 +1,8 @@
 'use client'
 
 import * as React from 'react'
-import { VCT_Icons } from '../../components/vct-icons'
-import { VCT_Button } from '../../components/vct-ui'
+import { VCT_Icons } from '@vct/ui'
+import { VCT_Button } from '@vct/ui'
 
 interface AdminErrorStateProps {
     message?: string
@@ -21,7 +21,7 @@ export const AdminErrorState: React.FC<AdminErrorStateProps> = ({
 }) => (
     <div className="flex flex-col items-center justify-center py-16 px-4">
         <div className="w-16 h-16 rounded-full bg-[#ef444415] flex items-center justify-center mb-4">
-            <VCT_Icons.AlertTriangle size={32} className="text-[#ef4444]" />
+            <VCT_Icons.AlertTriangle size={32} className="text-(--vct-danger)" />
         </div>
         <h3 className="text-lg font-bold text-(--vct-text-primary) mb-1">{message}</h3>
         {detail && (

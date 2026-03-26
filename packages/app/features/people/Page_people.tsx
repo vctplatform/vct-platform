@@ -4,10 +4,10 @@ import * as React from 'react'
 import { useState, useMemo } from 'react'
 import {
     VCT_Button, VCT_Stack, VCT_SearchInput, VCT_Badge, VCT_Tabs
-} from '../components/vct-ui'
-import { VCT_PageContainer, VCT_PageHero, VCT_SectionCard, VCT_StatRow } from '../components/vct-ui'
-import { VCT_Icons } from '../components/vct-icons'
-import type { StatItem } from '../components/VCT_StatRow'
+} from '@vct/ui'
+import { VCT_PageContainer, VCT_PageHero, VCT_SectionCard, VCT_StatRow } from '@vct/ui'
+import { VCT_Icons } from '@vct/ui'
+import type { StatItem } from '@vct/ui'
 import { useAthletes, useCoaches, useReferees } from '../hooks/usePeopleAPI'
 
 // ════════════════════════════════════════
@@ -25,10 +25,10 @@ interface Person {
 }
 
 const ROLE_MAP: Record<string, { label: string; color: string }> = {
-    athlete: { label: 'VĐV', color: '#0ea5e9' },
-    coach: { label: 'HLV', color: '#10b981' },
-    referee: { label: 'Trọng tài', color: '#f59e0b' },
-    staff: { label: 'Nhân sự', color: '#8b5cf6' },
+    athlete: { label: 'VĐV', color: 'var(--vct-accent-cyan)' },
+    coach: { label: 'HLV', color: 'var(--vct-success)' },
+    referee: { label: 'Trọng tài', color: 'var(--vct-warning)' },
+    staff: { label: 'Nhân sự', color: 'var(--vct-info)' },
 }
 
 const MOCK_PEOPLE: Person[] = [
@@ -92,10 +92,10 @@ export const Page_people = () => {
     }, [search, roleFilter, people])
 
     const kpis: StatItem[] = [
-        { label: 'Tổng VĐV', value: people.filter(p => p.role === 'athlete').length, icon: <VCT_Icons.Users size={18} />, color: '#0ea5e9' },
-        { label: 'HLV', value: people.filter(p => p.role === 'coach').length, icon: <VCT_Icons.UserCheck size={18} />, color: '#10b981' },
-        { label: 'Trọng tài', value: people.filter(p => p.role === 'referee').length, icon: <VCT_Icons.Shield size={18} />, color: '#f59e0b' },
-        { label: 'Hồ sơ chờ duyệt', value: people.filter(p => p.status === 'pending').length, icon: <VCT_Icons.Clock size={18} />, color: '#ef4444' },
+        { label: 'Tổng VĐV', value: people.filter(p => p.role === 'athlete').length, icon: <VCT_Icons.Users size={18} />, color: 'var(--vct-accent-cyan)' },
+        { label: 'HLV', value: people.filter(p => p.role === 'coach').length, icon: <VCT_Icons.UserCheck size={18} />, color: 'var(--vct-success)' },
+        { label: 'Trọng tài', value: people.filter(p => p.role === 'referee').length, icon: <VCT_Icons.Shield size={18} />, color: 'var(--vct-warning)' },
+        { label: 'Hồ sơ chờ duyệt', value: people.filter(p => p.status === 'pending').length, icon: <VCT_Icons.Clock size={18} />, color: 'var(--vct-danger)' },
     ]
 
     return (
@@ -137,7 +137,7 @@ export const Page_people = () => {
             </div>
 
             {/* ── TABLE ── */}
-            <VCT_SectionCard flush accentColor="#0ea5e9">
+            <VCT_SectionCard flush accentColor="var(--vct-accent-cyan)">
                 <table className="w-full text-left border-collapse">
                     <thead>
                         <tr className="bg-vct-elevated border-b border-vct-border text-[11px] uppercase tracking-wider text-vct-text-muted font-bold">
@@ -155,7 +155,7 @@ export const Page_people = () => {
                             <tr key={person.id} className="hover:bg-vct-accent/3 transition-colors group cursor-pointer">
                                 <td className="p-4">
                                     <div className="flex items-center gap-3">
-                                        <div className="w-9 h-9 rounded-full flex items-center justify-center font-bold text-white text-xs shrink-0 shadow-md" style={{ background: ROLE_MAP[person.role]?.color ?? '#94a3b8' }}>
+                                        <div className="w-9 h-9 rounded-full flex items-center justify-center font-bold text-white text-xs shrink-0 shadow-md" style={{ background: ROLE_MAP[person.role]?.color ?? 'var(--vct-text-tertiary)' }}>
                                             {person.name.split(' ').pop()?.[0]}
                                         </div>
                                         <div>

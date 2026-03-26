@@ -21,7 +21,7 @@ func (s *Server) handleMasterBelts(w http.ResponseWriter, r *http.Request, _ aut
 	case "GET":
 		belts, err := s.Federation.Main.ListMasterBelts(r.Context())
 		if err != nil {
-			internalError(w, err)
+			apiInternal(w, err)
 			return
 		}
 		success(w, http.StatusOK, map[string]any{"belts": belts, "total": len(belts)})
@@ -29,24 +29,24 @@ func (s *Server) handleMasterBelts(w http.ResponseWriter, r *http.Request, _ aut
 	case "POST":
 		var belt federation.MasterBelt
 		if err := json.NewDecoder(r.Body).Decode(&belt); err != nil {
-			badRequest(w, "invalid JSON: "+err.Error())
+			apiError(w, http.StatusBadRequest, CodeBadRequest, "invalid JSON: "+err.Error())
 			return
 		}
 		if err := s.Federation.Main.CreateMasterBelt(r.Context(), belt); err != nil {
-			badRequest(w, err.Error())
+			apiError(w, http.StatusBadRequest, CodeBadRequest, err.Error())
 			return
 		}
 		success(w, http.StatusCreated, map[string]string{"status": "belt_created"})
 
 	default:
-		methodNotAllowed(w)
+		apiMethodNotAllowed(w)
 	}
 }
 
 func (s *Server) handleMasterBeltByID(w http.ResponseWriter, r *http.Request, _ auth.Principal) {
 	level := strings.TrimPrefix(r.URL.Path, "/api/v1/federation/master/belts/")
 	if level == "" {
-		badRequest(w, "belt level required")
+		apiError(w, http.StatusBadRequest, CodeBadRequest, "belt level required")
 		return
 	}
 
@@ -54,7 +54,7 @@ func (s *Server) handleMasterBeltByID(w http.ResponseWriter, r *http.Request, _ 
 	case "GET":
 		belt, err := s.Federation.Main.GetMasterBelt(r.Context(), level)
 		if err != nil {
-			notFoundError(w, "belt not found")
+			apiError(w, http.StatusNotFound, CodeNotFound, "belt not found")
 			return
 		}
 		success(w, http.StatusOK, belt)
@@ -62,31 +62,31 @@ func (s *Server) handleMasterBeltByID(w http.ResponseWriter, r *http.Request, _ 
 	case "PUT":
 		var belt federation.MasterBelt
 		if err := json.NewDecoder(r.Body).Decode(&belt); err != nil {
-			badRequest(w, "invalid JSON: "+err.Error())
+			apiError(w, http.StatusBadRequest, CodeBadRequest, "invalid JSON: "+err.Error())
 			return
 		}
 		// Parse path level param to int for MasterBelt.Level
 		var levelInt int
 		if _, err := fmt.Sscanf(level, "%d", &levelInt); err != nil {
-			badRequest(w, "invalid belt level: "+level)
+			apiError(w, http.StatusBadRequest, CodeBadRequest, "invalid belt level: "+level)
 			return
 		}
 		belt.Level = levelInt
 		if err := s.Federation.Main.UpdateMasterBelt(r.Context(), belt); err != nil {
-			badRequest(w, err.Error())
+			apiError(w, http.StatusBadRequest, CodeBadRequest, err.Error())
 			return
 		}
 		success(w, http.StatusOK, map[string]string{"status": "belt_updated"})
 
 	case "DELETE":
 		if err := s.Federation.Main.DeleteMasterBelt(r.Context(), level); err != nil {
-			badRequest(w, err.Error())
+			apiError(w, http.StatusBadRequest, CodeBadRequest, err.Error())
 			return
 		}
 		success(w, http.StatusOK, map[string]string{"status": "belt_deleted"})
 
 	default:
-		methodNotAllowed(w)
+		apiMethodNotAllowed(w)
 	}
 }
 
@@ -97,7 +97,7 @@ func (s *Server) handleMasterWeights(w http.ResponseWriter, r *http.Request, _ a
 	case "GET":
 		weights, err := s.Federation.Main.ListMasterWeights(r.Context())
 		if err != nil {
-			internalError(w, err)
+			apiInternal(w, err)
 			return
 		}
 		success(w, http.StatusOK, map[string]any{"weight_classes": weights, "total": len(weights)})
@@ -105,24 +105,24 @@ func (s *Server) handleMasterWeights(w http.ResponseWriter, r *http.Request, _ a
 	case "POST":
 		var wc federation.MasterWeightClass
 		if err := json.NewDecoder(r.Body).Decode(&wc); err != nil {
-			badRequest(w, "invalid JSON: "+err.Error())
+			apiError(w, http.StatusBadRequest, CodeBadRequest, "invalid JSON: "+err.Error())
 			return
 		}
 		if err := s.Federation.Main.CreateMasterWeight(r.Context(), wc); err != nil {
-			badRequest(w, err.Error())
+			apiError(w, http.StatusBadRequest, CodeBadRequest, err.Error())
 			return
 		}
 		success(w, http.StatusCreated, map[string]string{"status": "weight_class_created"})
 
 	default:
-		methodNotAllowed(w)
+		apiMethodNotAllowed(w)
 	}
 }
 
 func (s *Server) handleMasterWeightByID(w http.ResponseWriter, r *http.Request, _ auth.Principal) {
 	id := strings.TrimPrefix(r.URL.Path, "/api/v1/federation/master/weights/")
 	if id == "" {
-		badRequest(w, "weight class id required")
+		apiError(w, http.StatusBadRequest, CodeBadRequest, "weight class id required")
 		return
 	}
 
@@ -130,7 +130,7 @@ func (s *Server) handleMasterWeightByID(w http.ResponseWriter, r *http.Request, 
 	case "GET":
 		wc, err := s.Federation.Main.GetMasterWeight(r.Context(), id)
 		if err != nil {
-			notFoundError(w, "weight class not found")
+			apiError(w, http.StatusNotFound, CodeNotFound, "weight class not found")
 			return
 		}
 		success(w, http.StatusOK, wc)
@@ -138,25 +138,25 @@ func (s *Server) handleMasterWeightByID(w http.ResponseWriter, r *http.Request, 
 	case "PUT":
 		var wc federation.MasterWeightClass
 		if err := json.NewDecoder(r.Body).Decode(&wc); err != nil {
-			badRequest(w, "invalid JSON: "+err.Error())
+			apiError(w, http.StatusBadRequest, CodeBadRequest, "invalid JSON: "+err.Error())
 			return
 		}
 		wc.ID = id
 		if err := s.Federation.Main.UpdateMasterWeight(r.Context(), wc); err != nil {
-			badRequest(w, err.Error())
+			apiError(w, http.StatusBadRequest, CodeBadRequest, err.Error())
 			return
 		}
 		success(w, http.StatusOK, map[string]string{"status": "weight_class_updated"})
 
 	case "DELETE":
 		if err := s.Federation.Main.DeleteMasterWeight(r.Context(), id); err != nil {
-			badRequest(w, err.Error())
+			apiError(w, http.StatusBadRequest, CodeBadRequest, err.Error())
 			return
 		}
 		success(w, http.StatusOK, map[string]string{"status": "weight_class_deleted"})
 
 	default:
-		methodNotAllowed(w)
+		apiMethodNotAllowed(w)
 	}
 }
 
@@ -167,7 +167,7 @@ func (s *Server) handleMasterAges(w http.ResponseWriter, r *http.Request, _ auth
 	case "GET":
 		ages, err := s.Federation.Main.ListMasterAges(r.Context())
 		if err != nil {
-			internalError(w, err)
+			apiInternal(w, err)
 			return
 		}
 		success(w, http.StatusOK, map[string]any{"age_groups": ages, "total": len(ages)})
@@ -175,24 +175,24 @@ func (s *Server) handleMasterAges(w http.ResponseWriter, r *http.Request, _ auth
 	case "POST":
 		var ag federation.MasterAgeGroup
 		if err := json.NewDecoder(r.Body).Decode(&ag); err != nil {
-			badRequest(w, "invalid JSON: "+err.Error())
+			apiError(w, http.StatusBadRequest, CodeBadRequest, "invalid JSON: "+err.Error())
 			return
 		}
 		if err := s.Federation.Main.CreateMasterAge(r.Context(), ag); err != nil {
-			badRequest(w, err.Error())
+			apiError(w, http.StatusBadRequest, CodeBadRequest, err.Error())
 			return
 		}
 		success(w, http.StatusCreated, map[string]string{"status": "age_group_created"})
 
 	default:
-		methodNotAllowed(w)
+		apiMethodNotAllowed(w)
 	}
 }
 
 func (s *Server) handleMasterAgeByID(w http.ResponseWriter, r *http.Request, _ auth.Principal) {
 	id := strings.TrimPrefix(r.URL.Path, "/api/v1/federation/master/ages/")
 	if id == "" {
-		badRequest(w, "age group id required")
+		apiError(w, http.StatusBadRequest, CodeBadRequest, "age group id required")
 		return
 	}
 
@@ -200,7 +200,7 @@ func (s *Server) handleMasterAgeByID(w http.ResponseWriter, r *http.Request, _ a
 	case "GET":
 		ag, err := s.Federation.Main.GetMasterAge(r.Context(), id)
 		if err != nil {
-			notFoundError(w, "age group not found")
+			apiError(w, http.StatusNotFound, CodeNotFound, "age group not found")
 			return
 		}
 		success(w, http.StatusOK, ag)
@@ -208,25 +208,25 @@ func (s *Server) handleMasterAgeByID(w http.ResponseWriter, r *http.Request, _ a
 	case "PUT":
 		var ag federation.MasterAgeGroup
 		if err := json.NewDecoder(r.Body).Decode(&ag); err != nil {
-			badRequest(w, "invalid JSON: "+err.Error())
+			apiError(w, http.StatusBadRequest, CodeBadRequest, "invalid JSON: "+err.Error())
 			return
 		}
 		ag.ID = id
 		if err := s.Federation.Main.UpdateMasterAge(r.Context(), ag); err != nil {
-			badRequest(w, err.Error())
+			apiError(w, http.StatusBadRequest, CodeBadRequest, err.Error())
 			return
 		}
 		success(w, http.StatusOK, map[string]string{"status": "age_group_updated"})
 
 	case "DELETE":
 		if err := s.Federation.Main.DeleteMasterAge(r.Context(), id); err != nil {
-			badRequest(w, err.Error())
+			apiError(w, http.StatusBadRequest, CodeBadRequest, err.Error())
 			return
 		}
 		success(w, http.StatusOK, map[string]string{"status": "age_group_deleted"})
 
 	default:
-		methodNotAllowed(w)
+		apiMethodNotAllowed(w)
 	}
 }
 
@@ -237,7 +237,7 @@ func (s *Server) handleMasterContents(w http.ResponseWriter, r *http.Request, _ 
 	case "GET":
 		contents, err := s.Federation.Main.ListMasterContents(r.Context())
 		if err != nil {
-			internalError(w, err)
+			apiInternal(w, err)
 			return
 		}
 		success(w, http.StatusOK, map[string]any{"contents": contents, "total": len(contents)})
@@ -245,24 +245,24 @@ func (s *Server) handleMasterContents(w http.ResponseWriter, r *http.Request, _ 
 	case "POST":
 		var c federation.MasterCompetitionContent
 		if err := json.NewDecoder(r.Body).Decode(&c); err != nil {
-			badRequest(w, "invalid JSON: "+err.Error())
+			apiError(w, http.StatusBadRequest, CodeBadRequest, "invalid JSON: "+err.Error())
 			return
 		}
 		if err := s.Federation.Main.CreateMasterContent(r.Context(), c); err != nil {
-			badRequest(w, err.Error())
+			apiError(w, http.StatusBadRequest, CodeBadRequest, err.Error())
 			return
 		}
 		success(w, http.StatusCreated, map[string]string{"status": "content_created"})
 
 	default:
-		methodNotAllowed(w)
+		apiMethodNotAllowed(w)
 	}
 }
 
 func (s *Server) handleMasterContentByID(w http.ResponseWriter, r *http.Request, _ auth.Principal) {
 	id := strings.TrimPrefix(r.URL.Path, "/api/v1/federation/master/contents/")
 	if id == "" {
-		badRequest(w, "content id required")
+		apiError(w, http.StatusBadRequest, CodeBadRequest, "content id required")
 		return
 	}
 
@@ -270,7 +270,7 @@ func (s *Server) handleMasterContentByID(w http.ResponseWriter, r *http.Request,
 	case "GET":
 		c, err := s.Federation.Main.GetMasterContent(r.Context(), id)
 		if err != nil {
-			notFoundError(w, "content not found")
+			apiError(w, http.StatusNotFound, CodeNotFound, "content not found")
 			return
 		}
 		success(w, http.StatusOK, c)
@@ -278,25 +278,25 @@ func (s *Server) handleMasterContentByID(w http.ResponseWriter, r *http.Request,
 	case "PUT":
 		var c federation.MasterCompetitionContent
 		if err := json.NewDecoder(r.Body).Decode(&c); err != nil {
-			badRequest(w, "invalid JSON: "+err.Error())
+			apiError(w, http.StatusBadRequest, CodeBadRequest, "invalid JSON: "+err.Error())
 			return
 		}
 		c.ID = id
 		if err := s.Federation.Main.UpdateMasterContent(r.Context(), c); err != nil {
-			badRequest(w, err.Error())
+			apiError(w, http.StatusBadRequest, CodeBadRequest, err.Error())
 			return
 		}
 		success(w, http.StatusOK, map[string]string{"status": "content_updated"})
 
 	case "DELETE":
 		if err := s.Federation.Main.DeleteMasterContent(r.Context(), id); err != nil {
-			badRequest(w, err.Error())
+			apiError(w, http.StatusBadRequest, CodeBadRequest, err.Error())
 			return
 		}
 		success(w, http.StatusOK, map[string]string{"status": "content_deleted"})
 
 	default:
-		methodNotAllowed(w)
+		apiMethodNotAllowed(w)
 	}
 }
 
@@ -316,7 +316,7 @@ func (s *Server) handleFederationApprovals(w http.ResponseWriter, r *http.Reques
 		status := r.URL.Query().Get("status")
 		reqs, err := s.Federation.Main.GetAllApprovals(r.Context(), status)
 		if err != nil {
-			internalError(w, err)
+			apiInternal(w, err)
 			return
 		}
 		success(w, http.StatusOK, map[string]any{"approvals": reqs, "total": len(reqs)})
@@ -327,7 +327,7 @@ func (s *Server) handleFederationApprovals(w http.ResponseWriter, r *http.Reques
 		}
 		_ = json.NewDecoder(r.Body).Decode(&body)
 		if err := s.Federation.Main.ProcessApproval(r.Context(), id, "APPROVE", body.Notes); err != nil {
-			badRequest(w, err.Error())
+			apiError(w, http.StatusBadRequest, CodeBadRequest, err.Error())
 			return
 		}
 		success(w, http.StatusOK, map[string]string{"status": "approved"})
@@ -338,12 +338,12 @@ func (s *Server) handleFederationApprovals(w http.ResponseWriter, r *http.Reques
 		}
 		_ = json.NewDecoder(r.Body).Decode(&body)
 		if err := s.Federation.Main.ProcessApproval(r.Context(), id, "REJECT", body.Notes); err != nil {
-			badRequest(w, err.Error())
+			apiError(w, http.StatusBadRequest, CodeBadRequest, err.Error())
 			return
 		}
 		success(w, http.StatusOK, map[string]string{"status": "rejected"})
 
 	default:
-		methodNotAllowed(w)
+		apiMethodNotAllowed(w)
 	}
 }

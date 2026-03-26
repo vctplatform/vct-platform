@@ -2,7 +2,7 @@
 
 import React, { useState, useMemo } from 'react'
 import { motion } from 'framer-motion'
-import { VCT_Icons } from '../components/vct-icons'
+import { VCT_Icons } from '@vct/ui'
 
 // ════════════════════════════════════════
 // MOCK DATA
@@ -59,10 +59,10 @@ export function Page_tournament_media_gallery() {
 
             {/* KPI */}
             <div className="grid grid-cols-2 tablet:grid-cols-4 gap-3">
-                {[{ l: 'Tổng media', v: MEDIA.length, i: '📸', c: '#0ea5e9' },
-                { l: 'Ảnh', v: MEDIA.filter(m => m.type === 'photo').length, i: '🖼️', c: '#8b5cf6' },
-                { l: 'Tổng lượt xem', v: totalViews.toLocaleString(), i: '👁️', c: '#f59e0b' },
-                { l: 'Tổng lượt thích', v: totalLikes.toLocaleString(), i: '❤️', c: '#ef4444' },
+                {[{ l: 'Tổng media', v: MEDIA.length, i: '📸', c: 'var(--vct-accent-cyan)' },
+                { l: 'Ảnh', v: MEDIA.filter(m => m.type === 'photo').length, i: '🖼️', c: 'var(--vct-info)' },
+                { l: 'Tổng lượt xem', v: totalViews.toLocaleString(), i: '👁️', c: 'var(--vct-warning)' },
+                { l: 'Tổng lượt thích', v: totalLikes.toLocaleString(), i: '❤️', c: 'var(--vct-danger)' },
                 ].map(s => (
                     <div key={s.l} className="rounded-xl border border-vct-border bg-vct-elevated p-4 text-center">
                         <div className="text-xl mb-1">{s.i}</div><div className="text-xl font-black" style={{ color: s.c }}>{s.v}</div>

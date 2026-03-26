@@ -5,10 +5,10 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
     VCT_Badge, VCT_Button, VCT_Stack, VCT_Toast, VCT_Card,
     VCT_StatusPipeline, VCT_EmptyState, VCT_Tabs, VCT_Modal, VCT_Select, VCT_Text
-} from '../components/vct-ui';
-import { VCT_PageContainer, VCT_StatRow } from '../components/vct-ui';
-import type { StatItem } from '../components/VCT_StatRow';
-import { VCT_Icons } from '../components/vct-icons';
+} from '@vct/ui';
+import { VCT_PageContainer, VCT_StatRow } from '@vct/ui';
+import type { StatItem } from '@vct/ui';
+import { VCT_Icons } from '@vct/ui';
 import { SAN_DAUS, HANG_CANS, NOI_DUNG_QUYENS, genId } from '../data/mock-data';
 import type { LichThiDau, TrangThaiLich, PhienThi, SanDau } from '../data/types';
 import { repositories, useEntityCollection } from '../data/repository';
@@ -18,10 +18,10 @@ import { useRouteActionGuard } from '../hooks/use-route-action-guard';
 // CONSTANTS & MAPS
 // ════════════════════════════════════════
 const ST_MAP: Record<TrangThaiLich, { label: string; color: string; type: string }> = {
-    du_kien: { label: 'Dự kiến', color: '#94a3b8', type: 'info' },
-    xac_nhan: { label: 'Xác nhận', color: '#22d3ee', type: 'info' },
-    dang_dien_ra: { label: '🔴 Đang diễn ra', color: '#ef4444', type: 'warning' },
-    hoan_thanh: { label: '✓ Hoàn thành', color: '#10b981', type: 'success' },
+    du_kien: { label: 'Dự kiến', color: 'var(--vct-text-tertiary)', type: 'info' },
+    xac_nhan: { label: 'Xác nhận', color: 'var(--vct-accent-cyan)', type: 'info' },
+    dang_dien_ra: { label: '🔴 Đang diễn ra', color: 'var(--vct-danger)', type: 'warning' },
+    hoan_thanh: { label: '✓ Hoàn thành', color: 'var(--vct-success)', type: 'success' },
 };
 const PHIEN_MAP: Record<PhienThi, { label: string; icon: string; time: string }> = {
     sang: { label: 'Sáng', icon: '🌅', time: '08:00 — 11:30' },
@@ -145,10 +145,10 @@ export const Page_schedule = () => {
     const activeSans = SAN_DAUS.filter(s => s.trang_thai === 'dang_thi_dau' || s.trang_thai === 'san_sang').length;
 
     const pStages = useMemo(() => [
-        { key: 'dang_dien_ra', label: '🔴 LIVE', color: '#ef4444', count: schedule.filter(l => l.trang_thai === 'dang_dien_ra').length },
-        { key: 'xac_nhan', label: 'Xác nhận', color: '#22d3ee', count: schedule.filter(l => l.trang_thai === 'xac_nhan').length },
-        { key: 'du_kien', label: 'Dự kiến', color: '#94a3b8', count: schedule.filter(l => l.trang_thai === 'du_kien').length },
-        { key: 'hoan_thanh', label: 'Xong', color: '#10b981', count: schedule.filter(l => l.trang_thai === 'hoan_thanh').length },
+        { key: 'dang_dien_ra', label: '🔴 LIVE', color: 'var(--vct-danger)', count: schedule.filter(l => l.trang_thai === 'dang_dien_ra').length },
+        { key: 'xac_nhan', label: 'Xác nhận', color: 'var(--vct-accent-cyan)', count: schedule.filter(l => l.trang_thai === 'xac_nhan').length },
+        { key: 'du_kien', label: 'Dự kiến', color: 'var(--vct-text-tertiary)', count: schedule.filter(l => l.trang_thai === 'du_kien').length },
+        { key: 'hoan_thanh', label: 'Xong', color: 'var(--vct-success)', count: schedule.filter(l => l.trang_thai === 'hoan_thanh').length },
     ], [schedule]);
 
     // ── AUTO-SCHEDULE ──
@@ -200,7 +200,7 @@ export const Page_schedule = () => {
                                     return (
                                         <td key={phien} style={{ padding: '6px', textAlign: 'center', background: 'var(--vct-bg-elevated)' }}>
                                             {items.length === 0 ? (
-                                                <span style={{ color: '#cbd5e1', fontSize: 12 }}>—</span>
+                                                <span style={{ color: 'var(--vct-text-secondary)', fontSize: 12 }}>—</span>
                                             ) : items.map(item => {
                                                 const st = ST_MAP[item.trang_thai];
                                                 return (
@@ -235,10 +235,10 @@ export const Page_schedule = () => {
 
             {/* KPIs */}
             <VCT_StatRow items={[
-                { label: 'Tổng phiên', value: totalSessions, icon: <VCT_Icons.Calendar size={18} />, color: '#0ea5e9' },
-                { label: 'Tổng trận', value: totalMatches, icon: <VCT_Icons.Swords size={18} />, color: '#f59e0b' },
-                { label: 'Đang diễn ra', value: liveCount, icon: <VCT_Icons.Play size={18} />, color: '#ef4444', sub: '🔴 LIVE' },
-                { label: 'Sàn hoạt động', value: activeSans, icon: <VCT_Icons.Layout size={18} />, color: '#22d3ee' },
+                { label: 'Tổng phiên', value: totalSessions, icon: <VCT_Icons.Calendar size={18} />, color: 'var(--vct-accent-cyan)' },
+                { label: 'Tổng trận', value: totalMatches, icon: <VCT_Icons.Swords size={18} />, color: 'var(--vct-warning)' },
+                { label: 'Đang diễn ra', value: liveCount, icon: <VCT_Icons.Play size={18} />, color: 'var(--vct-danger)', sub: '🔴 LIVE' },
+                { label: 'Sàn hoạt động', value: activeSans, icon: <VCT_Icons.Layout size={18} />, color: 'var(--vct-accent-cyan)' },
             ] as StatItem[]} className="mb-6" />
 
             <VCT_StatusPipeline stages={pStages} activeStage={null} onStageClick={() => { }} />
@@ -352,7 +352,7 @@ export const Page_schedule = () => {
                 />
 
                 <div style={{ marginTop: 16, padding: 16, borderRadius: 12, background: 'rgba(59,130,246,0.05)', border: '1px solid rgba(59,130,246,0.1)' }}>
-                    <VCT_Text variant="small" style={{ fontWeight: 700, color: '#3b82f6' }}>📊 Tổng quan dự kiến</VCT_Text>
+                    <VCT_Text variant="small" style={{ fontWeight: 700, color: 'var(--vct-info)' }}>📊 Tổng quan dự kiến</VCT_Text>
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12, marginTop: 8 }}>
                         <div className="text-center">
                             <div style={{ fontSize: 20, fontWeight: 900, color: 'var(--vct-text-primary)' }}>{getAllContents().length}</div>

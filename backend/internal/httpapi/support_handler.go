@@ -62,14 +62,14 @@ func (s *Server) handleSupportTicketList(w http.ResponseWriter, r *http.Request,
 		}
 		result, err := s.Extended.Support.ListTickets(ctx, filter)
 		if err != nil {
-			internalError(w, err)
+			apiInternal(w, err)
 			return
 		}
 		success(w, http.StatusOK, result)
 	case http.MethodPost:
 		var t support.SupportTicket
 		if err := json.NewDecoder(r.Body).Decode(&t); err != nil {
-			badRequest(w, "invalid request body")
+			apiError(w, http.StatusBadRequest, CodeBadRequest, "invalid request body")
 			return
 		}
 		// Set creator from token
@@ -79,12 +79,12 @@ func (s *Server) handleSupportTicketList(w http.ResponseWriter, r *http.Request,
 		}
 		created, err := s.Extended.Support.CreateTicket(ctx, t)
 		if err != nil {
-			badRequest(w, err.Error())
+			apiError(w, http.StatusBadRequest, CodeBadRequest, err.Error())
 			return
 		}
 		success(w, http.StatusCreated, created)
 	default:
-		methodNotAllowed(w)
+		apiMethodNotAllowed(w)
 	}
 }
 
@@ -109,55 +109,55 @@ func (s *Server) handleSupportTicketDetail(w http.ResponseWriter, r *http.Reques
 	case http.MethodGet:
 		ticket, err := s.Extended.Support.GetTicket(ctx, ticketID)
 		if err != nil {
-			notFound(w)
+			apiError(w, http.StatusNotFound, CodeNotFound, "Không tìm thấy tài nguyên")
 			return
 		}
 		// Non-admin can only view own tickets
 		if !isSupportAdmin(p.User.Role) && ticket.NguoiTaoID != p.User.ID {
-			notFound(w)
+			apiError(w, http.StatusNotFound, CodeNotFound, "Không tìm thấy tài nguyên")
 			return
 		}
 		success(w, http.StatusOK, ticket)
 	case http.MethodPut, http.MethodPatch:
 		// Only admins can update tickets (or the ticket owner for limited fields)
 		if !isSupportAdmin(p.User.Role) {
-			badRequest(w, "Bạn không có quyền cập nhật ticket")
+			apiError(w, http.StatusBadRequest, CodeBadRequest, "Bạn không có quyền cập nhật ticket")
 			return
 		}
 		var patch map[string]interface{}
 		if err := json.NewDecoder(r.Body).Decode(&patch); err != nil {
-			badRequest(w, "invalid request body")
+			apiError(w, http.StatusBadRequest, CodeBadRequest, "invalid request body")
 			return
 		}
 		updated, err := s.Extended.Support.UpdateTicket(ctx, ticketID, patch)
 		if err != nil {
-			badRequest(w, err.Error())
+			apiError(w, http.StatusBadRequest, CodeBadRequest, err.Error())
 			return
 		}
 		success(w, http.StatusOK, updated)
 	case http.MethodDelete:
 		if !isSupportAdmin(p.User.Role) {
-			badRequest(w, "Bạn không có quyền xóa ticket")
+			apiError(w, http.StatusBadRequest, CodeBadRequest, "Bạn không có quyền xóa ticket")
 			return
 		}
 		if err := s.Extended.Support.DeleteTicket(ctx, ticketID); err != nil {
-			badRequest(w, err.Error())
+			apiError(w, http.StatusBadRequest, CodeBadRequest, err.Error())
 			return
 		}
 		success(w, http.StatusOK, map[string]string{"message": "Đã xóa ticket"})
 	default:
-		methodNotAllowed(w)
+		apiMethodNotAllowed(w)
 	}
 }
 
 func (s *Server) handleSupportTicketReply(w http.ResponseWriter, r *http.Request, ticketID string, p auth.Principal) {
 	if r.Method != http.MethodPost {
-		methodNotAllowed(w)
+		apiMethodNotAllowed(w)
 		return
 	}
 	var reply support.TicketReply
 	if err := json.NewDecoder(r.Body).Decode(&reply); err != nil {
-		badRequest(w, "invalid request body")
+		apiError(w, http.StatusBadRequest, CodeBadRequest, "invalid request body")
 		return
 	}
 	reply.TicketID = ticketID
@@ -168,7 +168,7 @@ func (s *Server) handleSupportTicketReply(w http.ResponseWriter, r *http.Request
 	reply.IsStaff = isSupportAdmin(p.User.Role)
 	created, err := s.Extended.Support.CreateReply(r.Context(), reply)
 	if err != nil {
-		badRequest(w, err.Error())
+		apiError(w, http.StatusBadRequest, CodeBadRequest, err.Error())
 		return
 	}
 	success(w, http.StatusCreated, created)
@@ -176,22 +176,22 @@ func (s *Server) handleSupportTicketReply(w http.ResponseWriter, r *http.Request
 
 func (s *Server) handleSupportTicketReplies(w http.ResponseWriter, r *http.Request, ticketID string, p auth.Principal) {
 	if r.Method != http.MethodGet {
-		methodNotAllowed(w)
+		apiMethodNotAllowed(w)
 		return
 	}
 	// Check ticket access
 	ticket, err := s.Extended.Support.GetTicket(r.Context(), ticketID)
 	if err != nil {
-		notFound(w)
+		apiError(w, http.StatusNotFound, CodeNotFound, "Không tìm thấy tài nguyên")
 		return
 	}
 	if !isSupportAdmin(p.User.Role) && ticket.NguoiTaoID != p.User.ID {
-		notFound(w)
+		apiError(w, http.StatusNotFound, CodeNotFound, "Không tìm thấy tài nguyên")
 		return
 	}
 	replies, err := s.Extended.Support.ListReplies(r.Context(), ticketID)
 	if err != nil {
-		internalError(w, err)
+		apiInternal(w, err)
 		return
 	}
 	if replies == nil {
@@ -208,7 +208,7 @@ func (s *Server) handleSupportCategoryList(w http.ResponseWriter, r *http.Reques
 	case http.MethodGet:
 		categories, err := s.Extended.Support.ListCategories(ctx)
 		if err != nil {
-			internalError(w, err)
+			apiInternal(w, err)
 			return
 		}
 		if categories == nil {
@@ -217,22 +217,22 @@ func (s *Server) handleSupportCategoryList(w http.ResponseWriter, r *http.Reques
 		success(w, http.StatusOK, categories)
 	case http.MethodPost:
 		if !isSupportAdmin(p.User.Role) {
-			badRequest(w, "Bạn không có quyền tạo danh mục")
+			apiError(w, http.StatusBadRequest, CodeBadRequest, "Bạn không có quyền tạo danh mục")
 			return
 		}
 		var c support.SupportCategory
 		if err := json.NewDecoder(r.Body).Decode(&c); err != nil {
-			badRequest(w, "invalid request body")
+			apiError(w, http.StatusBadRequest, CodeBadRequest, "invalid request body")
 			return
 		}
 		created, err := s.Extended.Support.CreateCategory(ctx, c)
 		if err != nil {
-			badRequest(w, err.Error())
+			apiError(w, http.StatusBadRequest, CodeBadRequest, err.Error())
 			return
 		}
 		success(w, http.StatusCreated, created)
 	default:
-		methodNotAllowed(w)
+		apiMethodNotAllowed(w)
 	}
 }
 
@@ -243,38 +243,38 @@ func (s *Server) handleSupportCategoryDetail(w http.ResponseWriter, r *http.Requ
 	case http.MethodGet:
 		cat, err := s.Extended.Support.GetCategory(ctx, id)
 		if err != nil {
-			notFound(w)
+			apiError(w, http.StatusNotFound, CodeNotFound, "Không tìm thấy tài nguyên")
 			return
 		}
 		success(w, http.StatusOK, cat)
 	case http.MethodPut, http.MethodPatch:
 		if !isSupportAdmin(p.User.Role) {
-			badRequest(w, "Bạn không có quyền cập nhật danh mục")
+			apiError(w, http.StatusBadRequest, CodeBadRequest, "Bạn không có quyền cập nhật danh mục")
 			return
 		}
 		var patch map[string]interface{}
 		if err := json.NewDecoder(r.Body).Decode(&patch); err != nil {
-			badRequest(w, "invalid request body")
+			apiError(w, http.StatusBadRequest, CodeBadRequest, "invalid request body")
 			return
 		}
 		updated, err := s.Extended.Support.UpdateCategory(ctx, id, patch)
 		if err != nil {
-			badRequest(w, err.Error())
+			apiError(w, http.StatusBadRequest, CodeBadRequest, err.Error())
 			return
 		}
 		success(w, http.StatusOK, updated)
 	case http.MethodDelete:
 		if !isSupportAdmin(p.User.Role) {
-			badRequest(w, "Bạn không có quyền xóa danh mục")
+			apiError(w, http.StatusBadRequest, CodeBadRequest, "Bạn không có quyền xóa danh mục")
 			return
 		}
 		if err := s.Extended.Support.DeleteCategory(ctx, id); err != nil {
-			badRequest(w, err.Error())
+			apiError(w, http.StatusBadRequest, CodeBadRequest, err.Error())
 			return
 		}
 		success(w, http.StatusOK, map[string]string{"message": "Đã xóa danh mục"})
 	default:
-		methodNotAllowed(w)
+		apiMethodNotAllowed(w)
 	}
 }
 
@@ -286,7 +286,7 @@ func (s *Server) handleSupportFAQList(w http.ResponseWriter, r *http.Request, p 
 	case http.MethodGet:
 		faqs, err := s.Extended.Support.ListFAQs(ctx)
 		if err != nil {
-			internalError(w, err)
+			apiInternal(w, err)
 			return
 		}
 		if faqs == nil {
@@ -295,22 +295,22 @@ func (s *Server) handleSupportFAQList(w http.ResponseWriter, r *http.Request, p 
 		success(w, http.StatusOK, faqs)
 	case http.MethodPost:
 		if !isSupportAdmin(p.User.Role) {
-			badRequest(w, "Bạn không có quyền tạo FAQ")
+			apiError(w, http.StatusBadRequest, CodeBadRequest, "Bạn không có quyền tạo FAQ")
 			return
 		}
 		var f support.FAQ
 		if err := json.NewDecoder(r.Body).Decode(&f); err != nil {
-			badRequest(w, "invalid request body")
+			apiError(w, http.StatusBadRequest, CodeBadRequest, "invalid request body")
 			return
 		}
 		created, err := s.Extended.Support.CreateFAQ(ctx, f)
 		if err != nil {
-			badRequest(w, err.Error())
+			apiError(w, http.StatusBadRequest, CodeBadRequest, err.Error())
 			return
 		}
 		success(w, http.StatusCreated, created)
 	default:
-		methodNotAllowed(w)
+		apiMethodNotAllowed(w)
 	}
 }
 
@@ -321,38 +321,38 @@ func (s *Server) handleSupportFAQDetail(w http.ResponseWriter, r *http.Request, 
 	case http.MethodGet:
 		faq, err := s.Extended.Support.GetFAQ(ctx, id)
 		if err != nil {
-			notFound(w)
+			apiError(w, http.StatusNotFound, CodeNotFound, "Không tìm thấy tài nguyên")
 			return
 		}
 		success(w, http.StatusOK, faq)
 	case http.MethodPut, http.MethodPatch:
 		if !isSupportAdmin(p.User.Role) {
-			badRequest(w, "Bạn không có quyền cập nhật FAQ")
+			apiError(w, http.StatusBadRequest, CodeBadRequest, "Bạn không có quyền cập nhật FAQ")
 			return
 		}
 		var patch map[string]interface{}
 		if err := json.NewDecoder(r.Body).Decode(&patch); err != nil {
-			badRequest(w, "invalid request body")
+			apiError(w, http.StatusBadRequest, CodeBadRequest, "invalid request body")
 			return
 		}
 		updated, err := s.Extended.Support.UpdateFAQ(ctx, id, patch)
 		if err != nil {
-			badRequest(w, err.Error())
+			apiError(w, http.StatusBadRequest, CodeBadRequest, err.Error())
 			return
 		}
 		success(w, http.StatusOK, updated)
 	case http.MethodDelete:
 		if !isSupportAdmin(p.User.Role) {
-			badRequest(w, "Bạn không có quyền xóa FAQ")
+			apiError(w, http.StatusBadRequest, CodeBadRequest, "Bạn không có quyền xóa FAQ")
 			return
 		}
 		if err := s.Extended.Support.DeleteFAQ(ctx, id); err != nil {
-			badRequest(w, err.Error())
+			apiError(w, http.StatusBadRequest, CodeBadRequest, err.Error())
 			return
 		}
 		success(w, http.StatusOK, map[string]string{"message": "Đã xóa FAQ"})
 	default:
-		methodNotAllowed(w)
+		apiMethodNotAllowed(w)
 	}
 }
 
@@ -360,17 +360,17 @@ func (s *Server) handleSupportFAQDetail(w http.ResponseWriter, r *http.Request, 
 
 func (s *Server) handleSupportStats(w http.ResponseWriter, r *http.Request, p auth.Principal) {
 	if r.Method != http.MethodGet {
-		methodNotAllowed(w)
+		apiMethodNotAllowed(w)
 		return
 	}
 	// Only admin roles can view global stats
 	if !isSupportAdmin(p.User.Role) {
-		badRequest(w, "Bạn không có quyền xem thống kê")
+		apiError(w, http.StatusBadRequest, CodeBadRequest, "Bạn không có quyền xem thống kê")
 		return
 	}
 	stats, err := s.Extended.Support.GetStats(r.Context())
 	if err != nil {
-		internalError(w, err)
+		apiInternal(w, err)
 		return
 	}
 	success(w, http.StatusOK, stats)

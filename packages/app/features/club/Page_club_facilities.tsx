@@ -14,10 +14,10 @@ import {
   VCT_Select,
   VCT_Table,
   VCT_Toast,
-} from '../components/vct-ui'
-import { VCT_PageContainer, VCT_StatRow } from '../components/vct-ui'
-import type { StatItem } from '../components/VCT_StatRow'
-import { VCT_Icons } from '../components/vct-icons'
+} from '@vct/ui'
+import { VCT_PageContainer, VCT_StatRow } from '@vct/ui'
+import type { StatItem } from '@vct/ui'
+import { VCT_Icons } from '@vct/ui'
 import { useRouteActionGuard } from '../hooks/use-route-action-guard'
 import {
   FACILITY_SEED,
@@ -41,7 +41,7 @@ const FacilityStatusChart = ({ items }: { items: ClubFacility[] }) => {
       key,
       label: FACILITY_STATUS_LABEL[key as FacilityStatus] || key,
       value,
-      color: FACILITY_STATUS_COLOR[key as FacilityStatus] || '#94a3b8',
+      color: FACILITY_STATUS_COLOR[key as FacilityStatus] || 'var(--vct-text-tertiary)',
     }))
   }, [items])
 
@@ -83,7 +83,7 @@ const FacilityStatusChart = ({ items }: { items: ClubFacility[] }) => {
 const FacilityAreaChart = ({ items }: { items: ClubFacility[] }) => {
   const sorted = React.useMemo(() => [...items].sort((a, b) => b.areaSqm - a.areaSqm), [items])
   const max = sorted.length > 0 ? sorted[0]!.areaSqm : 1
-  const colors = ['#0ea5e9', '#10b981', '#8b5cf6', '#f59e0b', '#ef4444', '#ec4899', '#14b8a6']
+  const colors = ['var(--vct-accent-cyan)', 'var(--vct-success)', 'var(--vct-info)', 'var(--vct-warning)', 'var(--vct-danger)', 'var(--vct-accent-pink)', '#14b8a6']
 
   return (
     <div className="rounded-2xl border border-(--vct-border-subtle) bg-(--vct-bg-glass) p-4">
@@ -290,10 +290,10 @@ export const Page_club_facilities = () => {
   }
 
   const stats: StatItem[] = [
-    { label: 'Tổng cơ sở', value: items.length, icon: <VCT_Icons.Building size={18} />, color: '#0ea5e9' },
-    { label: 'Tổng diện tích', value: `${totalArea} m²`, icon: <VCT_Icons.Layout size={18} />, color: '#10b981' },
-    { label: 'Sức chứa', value: totalCapacity, icon: <VCT_Icons.Users size={18} />, color: '#8b5cf6' },
-    { label: 'Đang bảo trì', value: maintenanceCount, icon: <VCT_Icons.Wrench size={18} />, color: '#f59e0b' },
+    { label: 'Tổng cơ sở', value: items.length, icon: <VCT_Icons.Building size={18} />, color: 'var(--vct-accent-cyan)' },
+    { label: 'Tổng diện tích', value: `${totalArea} m²`, icon: <VCT_Icons.Layout size={18} />, color: 'var(--vct-success)' },
+    { label: 'Sức chứa', value: totalCapacity, icon: <VCT_Icons.Users size={18} />, color: 'var(--vct-info)' },
+    { label: 'Đang bảo trì', value: maintenanceCount, icon: <VCT_Icons.Wrench size={18} />, color: 'var(--vct-warning)' },
   ]
 
   const columns = [

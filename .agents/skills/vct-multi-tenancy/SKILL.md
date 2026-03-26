@@ -9,6 +9,10 @@ description: Multi-tenant architecture for VCT Platform — tenant isolation, sc
 
 ---
 
+
+> [!IMPORTANT]
+> **SUPREME ARCHITECTURE DIRECTIVE**: You are strictly bound by the 19 architecture pillars documented in `docs/architecture/`. As a VCT AI Agent, your absolute highest priority is 100% compliance with these rules. You MUST NOT generate code, propose designs, or execute workflows that violate these foundational rules. They are unchangeable and strictly enforced.
+
 ## 1. Architecture Overview
 
 VCT Platform uses a **shared-database, schema-separated** multi-tenancy model with `tenant_id` foreign keys for data isolation.

@@ -437,9 +437,9 @@ func TestCanTransition(t *testing.T) {
 		{SubStatusActive, SubStatusPastDue, true},
 		{SubStatusTrial, SubStatusActive, true},
 		{SubStatusTrial, SubStatusCancelled, true},
-		{SubStatusCancelled, SubStatusActive, false},  // terminal
+		{SubStatusCancelled, SubStatusActive, false},    // terminal
 		{SubStatusCancelled, SubStatusSuspended, false}, // terminal
-		{SubStatusSuspended, SubStatusActive, true},    // reactivate
+		{SubStatusSuspended, SubStatusActive, true},     // reactivate
 		{SubStatusExpired, SubStatusActive, true},       // reactivate
 		{SubStatusPastDue, SubStatusActive, true},
 	}

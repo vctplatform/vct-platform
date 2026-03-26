@@ -4,11 +4,11 @@ import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
     VCT_Text, VCT_Card, VCT_Button, VCT_Badge,
-} from 'app/features/components/vct-ui'
+} from '@vct/ui'
 import {
     VCT_BarChart, VCT_HorizontalBarChart, VCT_DonutChart,
     VCT_StatCard, VCT_ChartProgressBar,
-} from 'app/features/components/vct-charts'
+} from '@vct/ui'
 import {
     PrintCertificate, PrintMatchReport, PrintMedalTable,
     PrintAthleteBadge, PrintWeighInReport,
@@ -29,12 +29,12 @@ const STATS_DATA = {
 }
 
 const MEDALS_BY_TEAM = [
-    { label: 'TP.HCM', value: 12, color: '#ef4444' },
-    { label: 'Hà Nội', value: 10, color: '#3b82f6' },
-    { label: 'Bình Định', value: 8, color: '#22c55e' },
-    { label: 'Đà Nẵng', value: 6, color: '#f59e0b' },
-    { label: 'Bình Dương', value: 5, color: '#8b5cf6' },
-    { label: 'Cần Thơ', value: 4, color: '#ec4899' },
+    { label: 'TP.HCM', value: 12, color: 'var(--vct-danger)' },
+    { label: 'Hà Nội', value: 10, color: 'var(--vct-info)' },
+    { label: 'Bình Định', value: 8, color: 'var(--vct-success)' },
+    { label: 'Đà Nẵng', value: 6, color: 'var(--vct-warning)' },
+    { label: 'Bình Dương', value: 5, color: 'var(--vct-info)' },
+    { label: 'Cần Thơ', value: 4, color: 'var(--vct-accent-pink)' },
 ]
 
 const ATHLETES_BY_CATEGORY = [
@@ -48,9 +48,9 @@ const ATHLETES_BY_CATEGORY = [
 ]
 
 const MATCH_STATUS_DONUT = [
-    { label: 'Hoàn tất', value: 45, color: '#22c55e' },
+    { label: 'Hoàn tất', value: 45, color: 'var(--vct-success)' },
     { label: 'Đang đấu', value: 4, color: '#00bcd4' },
-    { label: 'Chưa đấu', value: 23, color: '#94a3b8' },
+    { label: 'Chưa đấu', value: 23, color: 'var(--vct-text-tertiary)' },
 ]
 
 const MEDAL_TABLE = [
@@ -124,7 +124,7 @@ export function Page_Reports() {
             <div className="px-6 py-5 bg-gradient-to-r from-slate-900 to-slate-800 dark:from-slate-900 dark:to-slate-800">
                 <div className="flex items-center justify-between max-w-7xl mx-auto">
                     <div>
-                        <VCT_Text variant="h1" style={{ color: '#fff', margin: 0 }}>📊 Báo cáo & Xuất dữ liệu</VCT_Text>
+                        <VCT_Text variant="h1" style={{ color: 'var(--vct-bg-elevated)', margin: 0 }}>📊 Báo cáo & Xuất dữ liệu</VCT_Text>
                         <VCT_Text variant="small" style={{ color: 'rgba(255,255,255,0.6)' }}>
                             Giải Vovinam Toàn Quốc 2026 · Dashboard & Print Templates
                         </VCT_Text>
@@ -186,8 +186,8 @@ function DashboardTab() {
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                 <VCT_StatCard label="Tổng VĐV" value={STATS_DATA.totalAthletes} icon="🏋️" color="#00bcd4" trend={{ value: 12, label: 'vs 2025' }} />
                 <VCT_StatCard label="Đội tham gia" value={STATS_DATA.totalTeams} icon="👥" color="#7c3aed" />
-                <VCT_StatCard label="Trận đã đấu" value={`${STATS_DATA.matchesCompleted}/${STATS_DATA.totalMatches}`} icon="⚔️" color="#22c55e" />
-                <VCT_StatCard label="Tổng huy chương" value={STATS_DATA.medalGold + STATS_DATA.medalSilver + STATS_DATA.medalBronze} icon="🏅" color="#f59e0b" />
+                <VCT_StatCard label="Trận đã đấu" value={`${STATS_DATA.matchesCompleted}/${STATS_DATA.totalMatches}`} icon="⚔️" color="var(--vct-success)" />
+                <VCT_StatCard label="Tổng huy chương" value={STATS_DATA.medalGold + STATS_DATA.medalSilver + STATS_DATA.medalBronze} icon="🏅" color="var(--vct-warning)" />
             </div>
 
             {/* Progress */}
@@ -195,10 +195,10 @@ function DashboardTab() {
                 <div className="p-4">
                     <VCT_Text variant="h3" style={{ marginBottom: 12 }}>Tiến độ giải đấu</VCT_Text>
                     <div className="grid gap-3">
-                        <VCT_ChartProgressBar label="Trận đấu hoàn thành" value={45} max={72} color="#22c55e" />
+                        <VCT_ChartProgressBar label="Trận đấu hoàn thành" value={45} max={72} color="var(--vct-success)" />
                         <VCT_ChartProgressBar label="Đăng ký VĐV" value={248} max={300} color="#00bcd4" />
                         <VCT_ChartProgressBar label="Cân ký xong" value={180} max={248} color="#7c3aed" />
-                        <VCT_ChartProgressBar label="Phát huy chương" value={72} max={96} color="#f59e0b" />
+                        <VCT_ChartProgressBar label="Phát huy chương" value={72} max={96} color="var(--vct-warning)" />
                     </div>
                 </div>
             </VCT_Card>
@@ -271,7 +271,7 @@ function MedalTableTab() {
                                         {row.rank <= 3 ? ['🥇', '🥈', '🥉'][row.rank - 1] : row.rank}
                                     </td>
                                     <td style={{ padding: '10px 14px', fontWeight: 600, color: 'var(--vct-text-primary)' }}>{row.team}</td>
-                                    <td style={{ padding: '10px 14px', textAlign: 'center', fontWeight: 700, color: '#b45309' }}>{row.gold}</td>
+                                    <td style={{ padding: '10px 14px', textAlign: 'center', fontWeight: 700, color: 'var(--vct-warning)' }}>{row.gold}</td>
                                     <td style={{ padding: '10px 14px', textAlign: 'center', color: 'var(--vct-text-secondary)' }}>{row.silver}</td>
                                     <td style={{ padding: '10px 14px', textAlign: 'center', color: '#92400e' }}>{row.bronze}</td>
                                     <td style={{ padding: '10px 14px', textAlign: 'center', fontWeight: 700, color: 'var(--vct-text-primary)' }}>{row.total}</td>
@@ -312,7 +312,7 @@ function MatchReportTab() {
             </div>
 
             {showPreview ? (
-                <div className="overflow-auto rounded-xl" style={{ border: '1px solid var(--vct-border-subtle)', background: '#fff' }}>
+                <div className="overflow-auto rounded-xl" style={{ border: '1px solid var(--vct-border-subtle)', background: 'var(--vct-bg-elevated)' }}>
                     <PrintMatchReport data={DEMO_MATCH_REPORT} />
                 </div>
             ) : (
@@ -457,8 +457,8 @@ function WeighInTab() {
 
             <div className="grid md:grid-cols-3 gap-3">
                 <VCT_StatCard label="Tổng VĐV cân" value={DEMO_WEIGH_IN.length} icon="⚖️" color="#00bcd4" />
-                <VCT_StatCard label="Đạt" value={DEMO_WEIGH_IN.filter((w) => w.result === 'dat').length} icon="✅" color="#22c55e" />
-                <VCT_StatCard label="Không đạt" value={DEMO_WEIGH_IN.filter((w) => w.result === 'khong_dat').length} icon="❌" color="#ef4444" />
+                <VCT_StatCard label="Đạt" value={DEMO_WEIGH_IN.filter((w) => w.result === 'dat').length} icon="✅" color="var(--vct-success)" />
+                <VCT_StatCard label="Không đạt" value={DEMO_WEIGH_IN.filter((w) => w.result === 'khong_dat').length} icon="❌" color="var(--vct-danger)" />
             </div>
 
             <VCT_Card>

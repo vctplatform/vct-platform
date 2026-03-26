@@ -55,7 +55,7 @@ func (s *Server) handleProvincialDashboard(w http.ResponseWriter, r *http.Reques
 	provID := resolveProvinceID(r)
 	stats, err := s.Provincial.Main.GetDashboard(r.Context(), provID)
 	if err != nil {
-		internalError(w, err)
+		apiInternal(w, err)
 		return
 	}
 	success(w, http.StatusOK, stats)
@@ -80,7 +80,7 @@ func (s *Server) handleProvincialClubs(w http.ResponseWriter, r *http.Request, p
 		provID := resolveProvinceID(r)
 		clubs, err := s.Provincial.Main.ListClubs(r.Context(), provID)
 		if err != nil {
-			internalError(w, err)
+			apiInternal(w, err)
 			return
 		}
 		success(w, http.StatusOK, map[string]any{"clubs": clubs, "total": len(clubs)})
@@ -91,7 +91,7 @@ func (s *Server) handleProvincialClubs(w http.ResponseWriter, r *http.Request, p
 		}
 		var club provincial.ProvincialClub
 		if err := json.NewDecoder(r.Body).Decode(&club); err != nil {
-			badRequest(w, "invalid JSON: "+err.Error())
+			apiError(w, http.StatusBadRequest, CodeBadRequest, "invalid JSON: "+err.Error())
 			return
 		}
 		if club.ProvinceID == "" {
@@ -99,7 +99,7 @@ func (s *Server) handleProvincialClubs(w http.ResponseWriter, r *http.Request, p
 		}
 		created, err := s.Provincial.Main.CreateClub(r.Context(), club)
 		if err != nil {
-			badRequest(w, err.Error())
+			apiError(w, http.StatusBadRequest, CodeBadRequest, err.Error())
 			return
 		}
 		success(w, http.StatusCreated, created)
@@ -110,7 +110,7 @@ func (s *Server) handleProvincialClubs(w http.ResponseWriter, r *http.Request, p
 		}
 		club, err := s.Provincial.Main.GetClub(r.Context(), id)
 		if err != nil {
-			notFoundError(w, "club not found")
+			apiError(w, http.StatusNotFound, CodeNotFound, "club not found")
 			return
 		}
 		success(w, http.StatusOK, club)
@@ -120,7 +120,7 @@ func (s *Server) handleProvincialClubs(w http.ResponseWriter, r *http.Request, p
 			return
 		}
 		if err := s.Provincial.Main.ApproveClub(r.Context(), id); err != nil {
-			badRequest(w, err.Error())
+			apiError(w, http.StatusBadRequest, CodeBadRequest, err.Error())
 			return
 		}
 		success(w, http.StatusOK, map[string]string{"status": "approved"})
@@ -130,13 +130,13 @@ func (s *Server) handleProvincialClubs(w http.ResponseWriter, r *http.Request, p
 			return
 		}
 		if err := s.Provincial.Main.SuspendClub(r.Context(), id); err != nil {
-			badRequest(w, err.Error())
+			apiError(w, http.StatusBadRequest, CodeBadRequest, err.Error())
 			return
 		}
 		success(w, http.StatusOK, map[string]string{"status": "suspended"})
 
 	default:
-		http.Error(w, "not found", http.StatusNotFound)
+		apiError(w, http.StatusNotFound, CodeNotFound, "Không tìm thấy dữ liệu")
 	}
 }
 
@@ -160,7 +160,7 @@ func (s *Server) handleProvincialAthletes(w http.ResponseWriter, r *http.Request
 		if clubID != "" {
 			athletes, err := s.Provincial.Main.ListAthletesByClub(r.Context(), clubID)
 			if err != nil {
-				internalError(w, err)
+				apiInternal(w, err)
 				return
 			}
 			success(w, http.StatusOK, map[string]any{"athletes": athletes, "total": len(athletes)})
@@ -169,7 +169,7 @@ func (s *Server) handleProvincialAthletes(w http.ResponseWriter, r *http.Request
 		provID := resolveProvinceID(r)
 		athletes, err := s.Provincial.Main.ListAthletes(r.Context(), provID)
 		if err != nil {
-			internalError(w, err)
+			apiInternal(w, err)
 			return
 		}
 		success(w, http.StatusOK, map[string]any{"athletes": athletes, "total": len(athletes)})
@@ -180,7 +180,7 @@ func (s *Server) handleProvincialAthletes(w http.ResponseWriter, r *http.Request
 		}
 		var athlete provincial.ProvincialAthlete
 		if err := json.NewDecoder(r.Body).Decode(&athlete); err != nil {
-			badRequest(w, "invalid JSON: "+err.Error())
+			apiError(w, http.StatusBadRequest, CodeBadRequest, "invalid JSON: "+err.Error())
 			return
 		}
 		if athlete.ProvinceID == "" {
@@ -188,7 +188,7 @@ func (s *Server) handleProvincialAthletes(w http.ResponseWriter, r *http.Request
 		}
 		created, err := s.Provincial.Main.CreateAthlete(r.Context(), athlete)
 		if err != nil {
-			badRequest(w, err.Error())
+			apiError(w, http.StatusBadRequest, CodeBadRequest, err.Error())
 			return
 		}
 		success(w, http.StatusCreated, created)
@@ -199,7 +199,7 @@ func (s *Server) handleProvincialAthletes(w http.ResponseWriter, r *http.Request
 		}
 		athlete, err := s.Provincial.Main.GetAthlete(r.Context(), id)
 		if err != nil {
-			notFoundError(w, "athlete not found")
+			apiError(w, http.StatusNotFound, CodeNotFound, "athlete not found")
 			return
 		}
 		success(w, http.StatusOK, athlete)
@@ -211,11 +211,11 @@ func (s *Server) handleProvincialAthletes(w http.ResponseWriter, r *http.Request
 		}
 		var patch map[string]interface{}
 		if err := json.NewDecoder(r.Body).Decode(&patch); err != nil {
-			badRequest(w, "invalid JSON: "+err.Error())
+			apiError(w, http.StatusBadRequest, CodeBadRequest, "invalid JSON: "+err.Error())
 			return
 		}
 		if err := s.Provincial.Main.UpdateAthlete(r.Context(), id, patch); err != nil {
-			badRequest(w, err.Error())
+			apiError(w, http.StatusBadRequest, CodeBadRequest, err.Error())
 			return
 		}
 		success(w, http.StatusOK, map[string]string{"status": "updated"})
@@ -225,7 +225,7 @@ func (s *Server) handleProvincialAthletes(w http.ResponseWriter, r *http.Request
 			return
 		}
 		if err := s.Provincial.Main.ApproveAthlete(r.Context(), id); err != nil {
-			badRequest(w, err.Error())
+			apiError(w, http.StatusBadRequest, CodeBadRequest, err.Error())
 			return
 		}
 		success(w, http.StatusOK, map[string]string{"status": "approved"})
@@ -236,7 +236,7 @@ func (s *Server) handleProvincialAthletes(w http.ResponseWriter, r *http.Request
 			return
 		}
 		if err := s.Provincial.Main.DeactivateAthlete(r.Context(), id); err != nil {
-			badRequest(w, err.Error())
+			apiError(w, http.StatusBadRequest, CodeBadRequest, err.Error())
 			return
 		}
 		success(w, http.StatusOK, map[string]string{"status": "inactive"})
@@ -247,13 +247,13 @@ func (s *Server) handleProvincialAthletes(w http.ResponseWriter, r *http.Request
 			return
 		}
 		if err := s.Provincial.Main.ReactivateAthlete(r.Context(), id); err != nil {
-			badRequest(w, err.Error())
+			apiError(w, http.StatusBadRequest, CodeBadRequest, err.Error())
 			return
 		}
 		success(w, http.StatusOK, map[string]string{"status": "active"})
 
 	default:
-		http.Error(w, "not found", http.StatusNotFound)
+		apiError(w, http.StatusNotFound, CodeNotFound, "Không tìm thấy dữ liệu")
 	}
 }
 
@@ -277,7 +277,7 @@ func (s *Server) handleProvincialVoSinh(w http.ResponseWriter, r *http.Request, 
 		provID := resolveProvinceID(r)
 		stats, err := s.Provincial.Main.GetVoSinhStats(r.Context(), provID)
 		if err != nil {
-			internalError(w, err)
+			apiInternal(w, err)
 			return
 		}
 		success(w, http.StatusOK, stats)
@@ -291,7 +291,7 @@ func (s *Server) handleProvincialVoSinh(w http.ResponseWriter, r *http.Request, 
 		if clubID != "" {
 			list, err := s.Provincial.Main.ListVoSinhByClub(r.Context(), clubID)
 			if err != nil {
-				internalError(w, err)
+				apiInternal(w, err)
 				return
 			}
 			success(w, http.StatusOK, map[string]any{"vo_sinh": list, "total": len(list)})
@@ -300,7 +300,7 @@ func (s *Server) handleProvincialVoSinh(w http.ResponseWriter, r *http.Request, 
 		provID := resolveProvinceID(r)
 		list, err := s.Provincial.Main.ListVoSinh(r.Context(), provID)
 		if err != nil {
-			internalError(w, err)
+			apiInternal(w, err)
 			return
 		}
 		success(w, http.StatusOK, map[string]any{"vo_sinh": list, "total": len(list)})
@@ -312,7 +312,7 @@ func (s *Server) handleProvincialVoSinh(w http.ResponseWriter, r *http.Request, 
 		}
 		var vs provincial.VoSinh
 		if err := json.NewDecoder(r.Body).Decode(&vs); err != nil {
-			badRequest(w, "invalid JSON: "+err.Error())
+			apiError(w, http.StatusBadRequest, CodeBadRequest, "invalid JSON: "+err.Error())
 			return
 		}
 		if vs.ProvinceID == "" {
@@ -320,7 +320,7 @@ func (s *Server) handleProvincialVoSinh(w http.ResponseWriter, r *http.Request, 
 		}
 		created, err := s.Provincial.Main.CreateVoSinh(r.Context(), vs)
 		if err != nil {
-			badRequest(w, err.Error())
+			apiError(w, http.StatusBadRequest, CodeBadRequest, err.Error())
 			return
 		}
 		success(w, http.StatusCreated, created)
@@ -332,7 +332,7 @@ func (s *Server) handleProvincialVoSinh(w http.ResponseWriter, r *http.Request, 
 		}
 		vs, err := s.Provincial.Main.GetVoSinh(r.Context(), id)
 		if err != nil {
-			notFoundError(w, "võ sinh not found")
+			apiError(w, http.StatusNotFound, CodeNotFound, "võ sinh not found")
 			return
 		}
 		success(w, http.StatusOK, vs)
@@ -343,7 +343,7 @@ func (s *Server) handleProvincialVoSinh(w http.ResponseWriter, r *http.Request, 
 			return
 		}
 		if err := s.Provincial.Main.ApproveVoSinh(r.Context(), id); err != nil {
-			badRequest(w, err.Error())
+			apiError(w, http.StatusBadRequest, CodeBadRequest, err.Error())
 			return
 		}
 		success(w, http.StatusOK, map[string]string{"status": "approved"})
@@ -354,7 +354,7 @@ func (s *Server) handleProvincialVoSinh(w http.ResponseWriter, r *http.Request, 
 			return
 		}
 		if err := s.Provincial.Main.DeactivateVoSinh(r.Context(), id); err != nil {
-			badRequest(w, err.Error())
+			apiError(w, http.StatusBadRequest, CodeBadRequest, err.Error())
 			return
 		}
 		success(w, http.StatusOK, map[string]string{"status": "inactive"})
@@ -365,7 +365,7 @@ func (s *Server) handleProvincialVoSinh(w http.ResponseWriter, r *http.Request, 
 			return
 		}
 		if err := s.Provincial.Main.ReactivateVoSinh(r.Context(), id); err != nil {
-			badRequest(w, err.Error())
+			apiError(w, http.StatusBadRequest, CodeBadRequest, err.Error())
 			return
 		}
 		success(w, http.StatusOK, map[string]string{"status": "active"})
@@ -377,7 +377,7 @@ func (s *Server) handleProvincialVoSinh(w http.ResponseWriter, r *http.Request, 
 		}
 		hist, err := s.Provincial.Main.ListBeltHistory(r.Context(), id)
 		if err != nil {
-			internalError(w, err)
+			apiInternal(w, err)
 			return
 		}
 		success(w, http.StatusOK, map[string]any{"belt_history": hist, "total": len(hist)})
@@ -389,23 +389,23 @@ func (s *Server) handleProvincialVoSinh(w http.ResponseWriter, r *http.Request, 
 		}
 		var patch map[string]interface{}
 		if err := json.NewDecoder(r.Body).Decode(&patch); err != nil {
-			badRequest(w, "invalid JSON: "+err.Error())
+			apiError(w, http.StatusBadRequest, CodeBadRequest, "invalid JSON: "+err.Error())
 			return
 		}
 		if err := s.Provincial.Main.UpdateVoSinh(r.Context(), id, patch); err != nil {
-			badRequest(w, err.Error())
+			apiError(w, http.StatusBadRequest, CodeBadRequest, err.Error())
 			return
 		}
 		// Return the updated record
 		updated, err := s.Provincial.Main.GetVoSinh(r.Context(), id)
 		if err != nil {
-			internalError(w, err)
+			apiInternal(w, err)
 			return
 		}
 		success(w, http.StatusOK, updated)
 
 	default:
-		http.Error(w, "not found", http.StatusNotFound)
+		apiError(w, http.StatusNotFound, CodeNotFound, "Không tìm thấy dữ liệu")
 	}
 }
 
@@ -428,7 +428,7 @@ func (s *Server) handleProvincialCoaches(w http.ResponseWriter, r *http.Request,
 		provID := resolveProvinceID(r)
 		coaches, err := s.Provincial.Main.ListCoaches(r.Context(), provID)
 		if err != nil {
-			internalError(w, err)
+			apiInternal(w, err)
 			return
 		}
 		success(w, http.StatusOK, map[string]any{"coaches": coaches, "total": len(coaches)})
@@ -439,7 +439,7 @@ func (s *Server) handleProvincialCoaches(w http.ResponseWriter, r *http.Request,
 		}
 		var coach provincial.ProvincialCoach
 		if err := json.NewDecoder(r.Body).Decode(&coach); err != nil {
-			badRequest(w, "invalid JSON: "+err.Error())
+			apiError(w, http.StatusBadRequest, CodeBadRequest, "invalid JSON: "+err.Error())
 			return
 		}
 		if coach.ProvinceID == "" {
@@ -447,7 +447,7 @@ func (s *Server) handleProvincialCoaches(w http.ResponseWriter, r *http.Request,
 		}
 		created, err := s.Provincial.Main.CreateCoach(r.Context(), coach)
 		if err != nil {
-			badRequest(w, err.Error())
+			apiError(w, http.StatusBadRequest, CodeBadRequest, err.Error())
 			return
 		}
 		success(w, http.StatusCreated, created)
@@ -458,7 +458,7 @@ func (s *Server) handleProvincialCoaches(w http.ResponseWriter, r *http.Request,
 		}
 		coach, err := s.Provincial.Main.GetCoach(r.Context(), id)
 		if err != nil {
-			notFoundError(w, "coach not found")
+			apiError(w, http.StatusNotFound, CodeNotFound, "coach not found")
 			return
 		}
 		success(w, http.StatusOK, coach)
@@ -470,11 +470,11 @@ func (s *Server) handleProvincialCoaches(w http.ResponseWriter, r *http.Request,
 		}
 		var patch map[string]interface{}
 		if err := json.NewDecoder(r.Body).Decode(&patch); err != nil {
-			badRequest(w, "invalid JSON: "+err.Error())
+			apiError(w, http.StatusBadRequest, CodeBadRequest, "invalid JSON: "+err.Error())
 			return
 		}
 		if err := s.Provincial.Main.UpdateCoach(r.Context(), id, patch); err != nil {
-			badRequest(w, err.Error())
+			apiError(w, http.StatusBadRequest, CodeBadRequest, err.Error())
 			return
 		}
 		success(w, http.StatusOK, map[string]string{"status": "updated"})
@@ -485,7 +485,7 @@ func (s *Server) handleProvincialCoaches(w http.ResponseWriter, r *http.Request,
 			return
 		}
 		if err := s.Provincial.Main.ApproveCoach(r.Context(), id); err != nil {
-			badRequest(w, err.Error())
+			apiError(w, http.StatusBadRequest, CodeBadRequest, err.Error())
 			return
 		}
 		success(w, http.StatusOK, map[string]string{"status": "approved"})
@@ -496,13 +496,13 @@ func (s *Server) handleProvincialCoaches(w http.ResponseWriter, r *http.Request,
 			return
 		}
 		if err := s.Provincial.Main.DeactivateCoach(r.Context(), id); err != nil {
-			badRequest(w, err.Error())
+			apiError(w, http.StatusBadRequest, CodeBadRequest, err.Error())
 			return
 		}
 		success(w, http.StatusOK, map[string]string{"status": "inactive"})
 
 	default:
-		http.Error(w, "not found", http.StatusNotFound)
+		apiError(w, http.StatusNotFound, CodeNotFound, "Không tìm thấy dữ liệu")
 	}
 }
 
@@ -526,7 +526,7 @@ func (s *Server) handleProvincialReferees(w http.ResponseWriter, r *http.Request
 		provID := resolveProvinceID(r)
 		stats, err := s.Provincial.Main.GetRefereeStats(r.Context(), provID)
 		if err != nil {
-			internalError(w, err)
+			apiInternal(w, err)
 			return
 		}
 		success(w, http.StatusOK, stats)
@@ -539,7 +539,7 @@ func (s *Server) handleProvincialReferees(w http.ResponseWriter, r *http.Request
 		provID := resolveProvinceID(r)
 		referees, err := s.Provincial.Main.ListReferees(r.Context(), provID)
 		if err != nil {
-			internalError(w, err)
+			apiInternal(w, err)
 			return
 		}
 		success(w, http.StatusOK, map[string]any{"referees": referees, "total": len(referees)})
@@ -551,7 +551,7 @@ func (s *Server) handleProvincialReferees(w http.ResponseWriter, r *http.Request
 		}
 		var ref provincial.ProvincialReferee
 		if err := json.NewDecoder(r.Body).Decode(&ref); err != nil {
-			badRequest(w, "invalid JSON: "+err.Error())
+			apiError(w, http.StatusBadRequest, CodeBadRequest, "invalid JSON: "+err.Error())
 			return
 		}
 		if ref.ProvinceID == "" {
@@ -559,7 +559,7 @@ func (s *Server) handleProvincialReferees(w http.ResponseWriter, r *http.Request
 		}
 		created, err := s.Provincial.Main.CreateReferee(r.Context(), ref)
 		if err != nil {
-			badRequest(w, err.Error())
+			apiError(w, http.StatusBadRequest, CodeBadRequest, err.Error())
 			return
 		}
 		success(w, http.StatusCreated, created)
@@ -571,7 +571,7 @@ func (s *Server) handleProvincialReferees(w http.ResponseWriter, r *http.Request
 		}
 		ref, err := s.Provincial.Main.GetReferee(r.Context(), id)
 		if err != nil {
-			notFoundError(w, "referee not found")
+			apiError(w, http.StatusNotFound, CodeNotFound, "referee not found")
 			return
 		}
 		success(w, http.StatusOK, ref)
@@ -583,11 +583,11 @@ func (s *Server) handleProvincialReferees(w http.ResponseWriter, r *http.Request
 		}
 		var patch map[string]interface{}
 		if err := json.NewDecoder(r.Body).Decode(&patch); err != nil {
-			badRequest(w, "invalid JSON: "+err.Error())
+			apiError(w, http.StatusBadRequest, CodeBadRequest, "invalid JSON: "+err.Error())
 			return
 		}
 		if err := s.Provincial.Main.UpdateReferee(r.Context(), id, patch); err != nil {
-			badRequest(w, err.Error())
+			apiError(w, http.StatusBadRequest, CodeBadRequest, err.Error())
 			return
 		}
 		success(w, http.StatusOK, map[string]string{"status": "updated"})
@@ -598,7 +598,7 @@ func (s *Server) handleProvincialReferees(w http.ResponseWriter, r *http.Request
 			return
 		}
 		if err := s.Provincial.Main.DeleteReferee(r.Context(), id); err != nil {
-			badRequest(w, err.Error())
+			apiError(w, http.StatusBadRequest, CodeBadRequest, err.Error())
 			return
 		}
 		success(w, http.StatusNoContent, nil)
@@ -609,7 +609,7 @@ func (s *Server) handleProvincialReferees(w http.ResponseWriter, r *http.Request
 			return
 		}
 		if err := s.Provincial.Main.ApproveReferee(r.Context(), id); err != nil {
-			badRequest(w, err.Error())
+			apiError(w, http.StatusBadRequest, CodeBadRequest, err.Error())
 			return
 		}
 		success(w, http.StatusOK, map[string]string{"status": "approved"})
@@ -620,7 +620,7 @@ func (s *Server) handleProvincialReferees(w http.ResponseWriter, r *http.Request
 			return
 		}
 		if err := s.Provincial.Main.RejectReferee(r.Context(), id); err != nil {
-			badRequest(w, err.Error())
+			apiError(w, http.StatusBadRequest, CodeBadRequest, err.Error())
 			return
 		}
 		success(w, http.StatusOK, map[string]string{"status": "rejected"})
@@ -632,7 +632,7 @@ func (s *Server) handleProvincialReferees(w http.ResponseWriter, r *http.Request
 		}
 		certs, err := s.Provincial.Main.ListRefereeCertificates(r.Context(), id)
 		if err != nil {
-			internalError(w, err)
+			apiInternal(w, err)
 			return
 		}
 		success(w, http.StatusOK, map[string]any{"certificates": certs, "total": len(certs)})
@@ -644,19 +644,19 @@ func (s *Server) handleProvincialReferees(w http.ResponseWriter, r *http.Request
 		}
 		var cert provincial.RefereeCertificate
 		if err := json.NewDecoder(r.Body).Decode(&cert); err != nil {
-			badRequest(w, "invalid JSON: "+err.Error())
+			apiError(w, http.StatusBadRequest, CodeBadRequest, "invalid JSON: "+err.Error())
 			return
 		}
 		cert.RefereeID = id
 		created, err := s.Provincial.Main.CreateRefereeCertificate(r.Context(), cert)
 		if err != nil {
-			badRequest(w, err.Error())
+			apiError(w, http.StatusBadRequest, CodeBadRequest, err.Error())
 			return
 		}
 		success(w, http.StatusCreated, created)
 
 	default:
-		http.Error(w, "not found", http.StatusNotFound)
+		apiError(w, http.StatusNotFound, CodeNotFound, "Không tìm thấy dữ liệu")
 	}
 }
 
@@ -674,7 +674,7 @@ func (s *Server) handleProvincialCommittee(w http.ResponseWriter, r *http.Reques
 		provID := resolveProvinceID(r)
 		members, err := s.Provincial.Main.ListCommittee(r.Context(), provID)
 		if err != nil {
-			internalError(w, err)
+			apiInternal(w, err)
 			return
 		}
 		success(w, http.StatusOK, map[string]any{"committee": members, "total": len(members)})
@@ -685,7 +685,7 @@ func (s *Server) handleProvincialCommittee(w http.ResponseWriter, r *http.Reques
 		}
 		var member provincial.CommitteeMember
 		if err := json.NewDecoder(r.Body).Decode(&member); err != nil {
-			badRequest(w, "invalid JSON: "+err.Error())
+			apiError(w, http.StatusBadRequest, CodeBadRequest, "invalid JSON: "+err.Error())
 			return
 		}
 		if member.ProvinceID == "" {
@@ -693,7 +693,7 @@ func (s *Server) handleProvincialCommittee(w http.ResponseWriter, r *http.Reques
 		}
 		created, err := s.Provincial.Main.AddCommitteeMember(r.Context(), member)
 		if err != nil {
-			badRequest(w, err.Error())
+			apiError(w, http.StatusBadRequest, CodeBadRequest, err.Error())
 			return
 		}
 		success(w, http.StatusCreated, created)
@@ -704,13 +704,13 @@ func (s *Server) handleProvincialCommittee(w http.ResponseWriter, r *http.Reques
 		}
 		member, err := s.Provincial.Main.GetCommitteeMember(r.Context(), id)
 		if err != nil {
-			notFoundError(w, "member not found")
+			apiError(w, http.StatusNotFound, CodeNotFound, "member not found")
 			return
 		}
 		success(w, http.StatusOK, member)
 
 	default:
-		http.Error(w, "not found", http.StatusNotFound)
+		apiError(w, http.StatusNotFound, CodeNotFound, "Không tìm thấy dữ liệu")
 	}
 }
 
@@ -733,7 +733,7 @@ func (s *Server) handleProvincialTransfers(w http.ResponseWriter, r *http.Reques
 		provID := resolveProvinceID(r)
 		transfers, err := s.Provincial.Main.ListTransfers(r.Context(), provID)
 		if err != nil {
-			internalError(w, err)
+			apiInternal(w, err)
 			return
 		}
 		success(w, http.StatusOK, map[string]any{"transfers": transfers, "total": len(transfers)})
@@ -744,7 +744,7 @@ func (s *Server) handleProvincialTransfers(w http.ResponseWriter, r *http.Reques
 		}
 		var transfer provincial.ClubTransfer
 		if err := json.NewDecoder(r.Body).Decode(&transfer); err != nil {
-			badRequest(w, "invalid JSON: "+err.Error())
+			apiError(w, http.StatusBadRequest, CodeBadRequest, "invalid JSON: "+err.Error())
 			return
 		}
 		if transfer.ProvinceID == "" {
@@ -752,7 +752,7 @@ func (s *Server) handleProvincialTransfers(w http.ResponseWriter, r *http.Reques
 		}
 		created, err := s.Provincial.Main.RequestTransfer(r.Context(), transfer)
 		if err != nil {
-			badRequest(w, err.Error())
+			apiError(w, http.StatusBadRequest, CodeBadRequest, err.Error())
 			return
 		}
 		success(w, http.StatusCreated, created)
@@ -762,7 +762,7 @@ func (s *Server) handleProvincialTransfers(w http.ResponseWriter, r *http.Reques
 			return
 		}
 		if err := s.Provincial.Main.ApproveTransfer(r.Context(), id, p.User.ID); err != nil {
-			badRequest(w, err.Error())
+			apiError(w, http.StatusBadRequest, CodeBadRequest, err.Error())
 			return
 		}
 		success(w, http.StatusOK, map[string]string{"status": "approved"})
@@ -772,13 +772,13 @@ func (s *Server) handleProvincialTransfers(w http.ResponseWriter, r *http.Reques
 			return
 		}
 		if err := s.Provincial.Main.RejectTransfer(r.Context(), id); err != nil {
-			badRequest(w, err.Error())
+			apiError(w, http.StatusBadRequest, CodeBadRequest, err.Error())
 			return
 		}
 		success(w, http.StatusOK, map[string]string{"status": "rejected"})
 
 	default:
-		http.Error(w, "not found", http.StatusNotFound)
+		apiError(w, http.StatusNotFound, CodeNotFound, "Không tìm thấy dữ liệu")
 	}
 }
 
@@ -801,7 +801,7 @@ func (s *Server) handleProvincialAssociations(w http.ResponseWriter, r *http.Req
 		provID := resolveProvinceID(r)
 		associations, err := s.Provincial.Main.ListAssociations(r.Context(), provID)
 		if err != nil {
-			internalError(w, err)
+			apiInternal(w, err)
 			return
 		}
 		success(w, http.StatusOK, map[string]any{"associations": associations, "total": len(associations)})
@@ -812,7 +812,7 @@ func (s *Server) handleProvincialAssociations(w http.ResponseWriter, r *http.Req
 		}
 		var assoc provincial.Association
 		if err := json.NewDecoder(r.Body).Decode(&assoc); err != nil {
-			badRequest(w, "invalid JSON: "+err.Error())
+			apiError(w, http.StatusBadRequest, CodeBadRequest, "invalid JSON: "+err.Error())
 			return
 		}
 		if assoc.ProvinceID == "" {
@@ -820,7 +820,7 @@ func (s *Server) handleProvincialAssociations(w http.ResponseWriter, r *http.Req
 		}
 		created, err := s.Provincial.Main.CreateAssociation(r.Context(), assoc)
 		if err != nil {
-			badRequest(w, err.Error())
+			apiError(w, http.StatusBadRequest, CodeBadRequest, err.Error())
 			return
 		}
 		success(w, http.StatusCreated, created)
@@ -831,7 +831,7 @@ func (s *Server) handleProvincialAssociations(w http.ResponseWriter, r *http.Req
 		}
 		assoc, err := s.Provincial.Main.GetAssociation(r.Context(), id)
 		if err != nil {
-			notFoundError(w, "association not found")
+			apiError(w, http.StatusNotFound, CodeNotFound, "association not found")
 			return
 		}
 		success(w, http.StatusOK, assoc)
@@ -842,7 +842,7 @@ func (s *Server) handleProvincialAssociations(w http.ResponseWriter, r *http.Req
 		}
 		stats, err := s.Provincial.Main.GetAssociationDashboard(r.Context(), id)
 		if err != nil {
-			internalError(w, err)
+			apiInternal(w, err)
 			return
 		}
 		success(w, http.StatusOK, stats)
@@ -852,7 +852,7 @@ func (s *Server) handleProvincialAssociations(w http.ResponseWriter, r *http.Req
 			return
 		}
 		if err := s.Provincial.Main.ApproveAssociation(r.Context(), id); err != nil {
-			badRequest(w, err.Error())
+			apiError(w, http.StatusBadRequest, CodeBadRequest, err.Error())
 			return
 		}
 		success(w, http.StatusOK, map[string]string{"status": "approved"})
@@ -862,13 +862,13 @@ func (s *Server) handleProvincialAssociations(w http.ResponseWriter, r *http.Req
 			return
 		}
 		if err := s.Provincial.Main.SuspendAssociation(r.Context(), id); err != nil {
-			badRequest(w, err.Error())
+			apiError(w, http.StatusBadRequest, CodeBadRequest, err.Error())
 			return
 		}
 		success(w, http.StatusOK, map[string]string{"status": "suspended"})
 
 	default:
-		http.Error(w, "not found", http.StatusNotFound)
+		apiError(w, http.StatusNotFound, CodeNotFound, "Không tìm thấy dữ liệu")
 	}
 }
 
@@ -892,7 +892,7 @@ func (s *Server) handleProvincialSubAssociations(w http.ResponseWriter, r *http.
 		if assocID != "" {
 			subAssocs, err := s.Provincial.Main.ListSubAssociationsByAssociation(r.Context(), assocID)
 			if err != nil {
-				internalError(w, err)
+				apiInternal(w, err)
 				return
 			}
 			success(w, http.StatusOK, map[string]any{"sub_associations": subAssocs, "total": len(subAssocs)})
@@ -901,7 +901,7 @@ func (s *Server) handleProvincialSubAssociations(w http.ResponseWriter, r *http.
 		provID := resolveProvinceID(r)
 		subAssocs, err := s.Provincial.Main.ListSubAssociations(r.Context(), provID)
 		if err != nil {
-			internalError(w, err)
+			apiInternal(w, err)
 			return
 		}
 		success(w, http.StatusOK, map[string]any{"sub_associations": subAssocs, "total": len(subAssocs)})
@@ -912,7 +912,7 @@ func (s *Server) handleProvincialSubAssociations(w http.ResponseWriter, r *http.
 		}
 		var sa provincial.SubAssociation
 		if err := json.NewDecoder(r.Body).Decode(&sa); err != nil {
-			badRequest(w, "invalid JSON: "+err.Error())
+			apiError(w, http.StatusBadRequest, CodeBadRequest, "invalid JSON: "+err.Error())
 			return
 		}
 		if sa.ProvinceID == "" {
@@ -920,7 +920,7 @@ func (s *Server) handleProvincialSubAssociations(w http.ResponseWriter, r *http.
 		}
 		created, err := s.Provincial.Main.CreateSubAssociation(r.Context(), sa)
 		if err != nil {
-			badRequest(w, err.Error())
+			apiError(w, http.StatusBadRequest, CodeBadRequest, err.Error())
 			return
 		}
 		success(w, http.StatusCreated, created)
@@ -931,7 +931,7 @@ func (s *Server) handleProvincialSubAssociations(w http.ResponseWriter, r *http.
 		}
 		sa, err := s.Provincial.Main.GetSubAssociation(r.Context(), id)
 		if err != nil {
-			notFoundError(w, "sub-association not found")
+			apiError(w, http.StatusNotFound, CodeNotFound, "sub-association not found")
 			return
 		}
 		success(w, http.StatusOK, sa)
@@ -941,7 +941,7 @@ func (s *Server) handleProvincialSubAssociations(w http.ResponseWriter, r *http.
 			return
 		}
 		if err := s.Provincial.Main.ApproveSubAssociation(r.Context(), id); err != nil {
-			badRequest(w, err.Error())
+			apiError(w, http.StatusBadRequest, CodeBadRequest, err.Error())
 			return
 		}
 		success(w, http.StatusOK, map[string]string{"status": "approved"})
@@ -951,12 +951,12 @@ func (s *Server) handleProvincialSubAssociations(w http.ResponseWriter, r *http.
 			return
 		}
 		if err := s.Provincial.Main.SuspendSubAssociation(r.Context(), id); err != nil {
-			badRequest(w, err.Error())
+			apiError(w, http.StatusBadRequest, CodeBadRequest, err.Error())
 			return
 		}
 		success(w, http.StatusOK, map[string]string{"status": "suspended"})
 
 	default:
-		http.Error(w, "not found", http.StatusNotFound)
+		apiError(w, http.StatusNotFound, CodeNotFound, "Không tìm thấy dữ liệu")
 	}
 }

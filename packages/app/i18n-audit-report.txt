@@ -1,0 +1,2067 @@
+i18n Audit Report
+Generated: 2026-03-26T06:23:00.423Z
+
+Total: 1701 hardcoded strings in 179 files
+Vietnamese: 1515 | English: 186
+
+════════════════════════════════════════════════════════════
+
+📄 features\tournament\Page_giai_dau.tsx (71 items)
+  L31 [string-viet] Cấp CLB
+  L213 [prop-viet] title="Thông tin cơ bản"
+  L216 [prop-viet] label="Tên giải đấu *"
+  L222 [prop-viet] label="Cấp độ"
+  L251 [prop-viet] label="Địa điểm"
+  L254 [prop-viet] label="Địa chỉ cụ thể"
+  L254 [prop-viet] placeholder="Số nhà, đường, phường/xã..."
+  L255 [prop-viet] label="Link Điều lệ mẫu (PDF/Docx)"
+  L267 [prop-viet] label="Tối đa Đoàn tham dự"
+  L268 [prop-viet] label="Số VĐV tối đa/Đoàn"
+  L269 [prop-viet] label="Nội dung/VĐV (thường 2/3/5)"
+  L270 [prop-viet] label="Số HLV tối đa/Đoàn"
+  L277 [prop-viet] label="Hình thức tổ chức/Tính hạng"
+  L288 [prop-viet] label="Số lượng Giám định chấm"
+  L305 [prop-viet] label="Cơ cấu Huy chương Đồng"
+  L316 [prop-viet] label="Số lượng Giám định Góc"
+  L341 [prop-viet] label="Lệ phí Đoàn"
+  L342 [prop-viet] label="Lệ phí / Nội dung"
+  L343 [prop-viet] label="Lệ phí Thẻ VĐV / thẻ"
+  L350 [vietnamese] Thưởng Cá nhân
+  L352 [prop-viet] label="🥇 Vàng"
+  L353 [prop-viet] label="🥈 Bạc"
+  L354 [prop-viet] label="🥉 Đồng"
+  L356 [vietnamese] Thưởng Toàn đoàn
+  L358 [prop-viet] label="🏆 Nhất"
+  L359 [prop-viet] label="🏆 Nhì"
+  L360 [prop-en] label="🏆 Ba"
+  L368 [vietnamese] Hỗ trợ Y tế
+  L369 [prop-viet] label="Bệnh viện trực tuyến & Khoảng cách"
+  L371 [prop-viet] placeholder="Tên BV..."
+  L376 [prop-viet] label="Hotline cấp cứu"
+  L377 [prop-viet] label="Đội ngũ sơ cứu"
+  L379 [vietnamese] Pháp lý
+  L381 [prop-viet] label="Quyết định tổ chức"
+  L382 [prop-viet] label="Bảo hiểm VĐV"
+  L392 [vietnamese] Phương thức Xếp hạng Toàn đoàn
+  L441 [vietnamese] Xếp hạng theo Chỉ số Huy Chương
+  L481 [vietnamese] điểm
+  L491 [prop-viet] aria-label="Chỉnh sửa cấu hình điểm"
+  L501 [prop-viet] aria-label="Xóa cấu hình điểm"
+  L513 [vietnamese] Chưa có cấu hình điểm nào. Vui lòng thêm mốc điểm để tự tính xếp hạng đoàn.
+  L551 [prop-viet] aria-label="Chỉnh sửa thành viên BTC"
+  L561 [prop-viet] aria-label="Xóa thành viên BTC"
+  L578 [vietnamese] Checklist Tổ chức
+  L596 [vietnamese] Lịch sử hoạt động
+  L607 [vietnamese] bởi
+  L653 [vietnamese] Khai mạc sau
+  L655 [vietnamese] ngày
+  L710 [vietnamese] Tình trạng hệ thống:
+  L724 [prop-viet] title="Chuyển trạng thái hệ thống"
+  L735 [string-viet] ), action: `Chuyển hệ thống → ${GIAI_STATES[k].l}`, by: 
+  L760 [vietnamese] Hủy
+  L767 [prop-viet] label="Họ và tên *"
+  L767 [prop-viet] placeholder="Nhập họ và tên..."
+  L770 [prop-viet] label="Chức vụ *"
+  L770 [prop-viet] placeholder="Trưởng ban, Phó ban..."
+  L773 [prop-viet] label="Đơn vị / Chuyên môn"
+  L773 [prop-viet] placeholder="Cơ quan công tác..."
+  L776 [prop-viet] label="Số điện thoại"
+  L783 [prop-viet] label="Cấp bậc"
+  L795 [prop-viet] title="Xóa thành viên"
+  L796 [prop-viet] message="Bạn có chắc chắn muốn xóa thành viên này khỏi Ban tổ chức gi"
+  L797 [prop-viet] Label="Xóa thành viên"
+  L804 [prop-viet] title="Xóa mốc điểm xếp hạng"
+  L805 [prop-viet] message="Bạn có chắc chắn muốn xóa mốc điểm xếp hạng này? Nó có thể ả"
+  L806 [prop-viet] Label="Xóa điểm"
+  L812 [vietnamese] Hủy
+  L817 [prop-viet] label="Thứ hạng đạt được (Ví dụ: 1, 2, 3...) *"
+  L818 [prop-viet] placeholder="Nhập thứ hạng..."
+  L820 [prop-viet] label="Hệ số xếp hạng (Điểm số) *"
+  L821 [prop-viet] placeholder="Nhập điểm số..."
+
+📄 features\provincial\Page_provincial_vo_sinh.tsx (49 items)
+  L364 [vietnamese] Hủy
+  L373 [prop-viet] label="Họ và tên"
+  L374 [prop-viet] label="Giới tính"
+  L375 [prop-viet] label="Ngày sinh"
+  L377 [prop-viet] label="SĐT"
+  L379 [prop-viet] label="Địa chỉ"
+  L383 [prop-viet] label="CLB / Võ đường"
+  L384 [prop-viet] label="HLV phụ trách"
+  L385 [prop-viet] label="Đai / Đẳng cấp"
+  L386 [prop-viet] label="Nhóm tuổi"
+  L387 [prop-viet] label="Cân nặng"
+  L388 [prop-viet] label="Chiều cao"
+  L389 [prop-viet] label="Ngày bắt đầu"
+  L390 [prop-viet] label="Trạng thái"
+  L396 [prop-viet] label="Họ tên phụ huynh"
+  L397 [prop-viet] label="SĐT phụ huynh"
+  L399 [prop-viet] label="Ghi chú"
+  L405 [prop-viet] title="Chưa có lịch sử thi đai"
+  L405 [prop-viet] description="Lịch sử thăng cấp sẽ hiển thị tại đây"
+  L430 [vietnamese] 📊 Điểm:
+  L558 [vietnamese] Giới tính
+  L558 [vietnamese] Nữ
+  L558 [string-viet] >Giới tính</option><option value=
+  L561 [vietnamese] Tất cả đai
+  L565 [vietnamese] Nhóm tuổi
+  L566 [vietnamese] Thiếu nhi
+  L566 [vietnamese] Thiếu niên
+  L567 [vietnamese] Thanh niên
+  L567 [vietnamese] Trung niên
+  L570 [vietnamese] Trạng thái
+  L571 [vietnamese] Đang tập
+  L571 [vietnamese] Chờ duyệt
+  L571 [vietnamese] Ngưng
+  L587 [prop-viet] title="Không có võ sinh nào"
+  L587 [prop-viet] description="Thử thay đổi bộ lọc hoặc thêm võ sinh mới."
+  L653 [vietnamese] 👁️ Xem chi tiết
+  L655 [vietnamese] ✏️ Sửa thông tin
+  L658 [vietnamese] ✅ Duyệt
+  L662 [vietnamese] ⏸️ Ngưng hoạt động
+  L666 [vietnamese] ▶️ Kích hoạt lại
+  L686 [prop-viet] title="Thêm Võ Sinh Mới"
+  L712 [prop-viet] title="Sắp ra mắt"
+  L712 [prop-viet] description="Lịch sử tập luyện, điểm danh sẽ hiển thị tại đây trong phiên"
+  L715 [vietnamese] ✏️ Sửa
+  L717 [vietnamese] ✅ Duyệt
+  L720 [vietnamese] ▶️ Kích hoạt lại
+  L728 [prop-viet] title="Xác nhận thao tác"
+  L737 [vietnamese] Hủy
+  L741 [vietnamese] Xác nhận
+
+📄 features\admin\Page_admin_support.tsx (39 items)
+  L41 [prop-viet] label="Câu hỏi"
+  L41 [prop-viet] placeholder="Nhập câu hỏi..."
+  L42 [prop-viet] label="Câu trả lời"
+  L42 [prop-viet] placeholder="Nhập câu trả lời..."
+  L43 [prop-viet] label="Danh mục"
+  L51 [vietnamese] Hủy
+  L247 [prop-viet] title="Chăm sóc Khách hàng & Hỗ trợ Kỹ thuật"
+  L248 [prop-viet] subtitle="Quản lý ticket hỗ trợ, FAQ, và danh mục dịch vụ"
+  L304 [vietnamese] Tạo ticket
+  L316 [vietnamese] Xuất CSV
+  L323 [vietnamese] Nhận xử lý
+  L324 [vietnamese] Đóng
+  L332 [vietnamese] Xuất
+  L356 [prop-viet] title="Không có ticket"
+  L356 [prop-viet] description="Thử thay đổi bộ lọc hoặc tạo ticket mới"
+  L379 [vietnamese] Nhận
+  L381 [vietnamese] Đóng
+  L441 [vietnamese] Thêm FAQ
+  L470 [vietnamese] Sửa
+  L472 [vietnamese] Xóa
+  L491 [vietnamese] Thêm danh mục
+  L517 [vietnamese] Sửa
+  L518 [vietnamese] Xóa
+  L551 [prop-viet] title="Giải quyết ticket?"
+  L552 [prop-viet] message="Xác nhận đánh dấu ticket này là đã giải quyết? Khách hàng sẽ"
+  L553 [prop-viet] Label="Giải quyết"
+  L560 [prop-viet] label="Tiêu đề"
+  L561 [prop-viet] placeholder="Mô tả ngắn gọn vấn đề..."
+  L563 [prop-viet] label="Nội dung chi tiết"
+  L564 [prop-viet] placeholder="Mô tả chi tiết vấn đề cần hỗ trợ..."
+  L567 [prop-viet] label="Loại"
+  L574 [prop-viet] label="Mức ưu tiên"
+  L619 [prop-viet] label="Tên danh mục"
+  L619 [prop-viet] placeholder="VD: Hỗ trợ tài khoản..."
+  L620 [prop-viet] label="Mô tả"
+  L620 [prop-viet] placeholder="Mô tả danh mục..."
+  L621 [prop-viet] label="Màu sắc"
+  L621 [prop-en] placeholder="#hex color"
+  L623 [vietnamese] Hủy
+
+📄 features\tournament\Page_san_dau.tsx (37 items)
+  L133 [string-viet] ), action: `Chuyển → ${TRANG_THAI_SAN_MAP[newStatus].label}`, by: 
+  L227 [vietnamese] Quản lý Sàn đấu (Arenas)
+  L228 [vietnamese] Giám sát thời gian thực và điều phối trận đấu
+  L230 [vietnamese] Thêm Sàn
+  L238 [prop-viet] placeholder="Tìm kiếm sàn đấu, vị trí..."
+  L282 [prop-viet] title="Không tìm thấy sàn đấu"
+  L283 [prop-viet] description="Thử thay đổi bộ lọc hoặc thêm sàn đấu mới."
+  L284 [prop-viet] Label="Thêm sàn đấu"
+  L322 [vietnamese] Tiến độ
+  L323 [vietnamese] trận
+  L330 [vietnamese] Đợi sân
+  L331 [vietnamese] trận
+  L376 [vietnamese] Tạm dừng
+  L381 [vietnamese] Kết thúc
+  L395 [vietnamese] TIẾP THEO
+  L405 [prop-viet] title="Sửa thông tin sàn"
+  L408 [prop-viet] title="Xóa sàn"
+  L432 [vietnamese] Thông tin phụ trách
+  L434 [vietnamese] Trọng tài:
+  L448 [vietnamese] Danh sách trang bị
+  L462 [vietnamese] Lịch sử hoạt động
+  L464 [vietnamese] Chưa có hoạt động
+  L492 [vietnamese] Hủy
+  L498 [prop-viet] label="Tên sàn *"
+  L499 [prop-viet] placeholder="VD: Sàn E"
+  L501 [prop-viet] label="Vị trí *"
+  L502 [prop-viet] placeholder="Khu A — Tầng 1"
+  L506 [prop-viet] label="Loại sàn"
+  L516 [prop-viet] label="Trạng thái"
+  L522 [prop-viet] label="Kích thước"
+  L525 [prop-viet] label="Sức chứa"
+  L529 [prop-viet] label="Phụ trách"
+  L530 [prop-viet] placeholder="Họ và tên phụ trách"
+  L532 [prop-viet] label="SĐT phụ trách"
+  L536 [prop-viet] label="Tổng trận dự kiến hôm nay"
+  L546 [prop-viet] title="Xóa sàn đấu"
+  L548 [prop-viet] Label="Xóa"
+
+📄 features\admin\Page_admin_subscriptions.tsx (35 items)
+  L278 [vietnamese] Cấp gói mới
+  L287 [prop-viet] Title="Chưa có đăng ký nào"
+  L288 [prop-viet] Description="Thử thay đổi bộ lọc tìm kiếm"
+  L362 [vietnamese] Thêm gói mới
+  L370 [string-viet] Đang mở
+  L429 [string-viet] Tự gia hạn
+  L467 [vietnamese] Gia hạn
+  L468 [vietnamese] Tạm ngưng
+  L469 [vietnamese] Hủy gói
+  L474 [vietnamese] Kích hoạt lại
+  L475 [vietnamese] Hủy gói
+  L479 [vietnamese] Kích hoạt gói
+  L491 [prop-viet] title="Chưa có kỳ thanh toán"
+  L525 [vietnamese] Hủy
+  L549 [prop-viet] label="Mã gói (Code)"
+  L549 [prop-en] placeholder="VD: basic"
+  L550 [prop-viet] label="Tên gọi"
+  L550 [prop-viet] placeholder="VD: Gói Cơ Bản"
+  L552 [prop-viet] label="Đối tượng"
+  L555 [prop-viet] label="Trạng thái"
+  L556 [prop-viet] label="Giá Tháng (VNĐ)"
+  L557 [prop-viet] label="Giá Năm (VNĐ)"
+  L558 [prop-viet] label="Tối đa thành viên"
+  L559 [prop-viet] label="Tối đa giải đấu"
+  L560 [prop-viet] label="Tối đa VĐV"
+  L561 [prop-viet] label="Thứ tự hiển thị"
+  L569 [prop-viet] title="Cấp gói dịch vụ mới"
+  L573 [vietnamese] Hủy
+  L588 [vietnamese] Cấp gói
+  L593 [prop-viet] label="Loại đối tượng"
+  L596 [prop-viet] label="ID Đối tượng (UUID)"
+  L597 [prop-viet] placeholder="Nhập UUID của liên đoàn/CLB"
+  L599 [prop-viet] label="Gói dịch vụ"
+  L606 [prop-viet] label="Chu kỳ thanh toán"
+  L609 [prop-viet] label="Số ngày dùng thử"
+
+📄 features\tournament\Page_results.tsx (32 items)
+  L150 [vietnamese] Báo cáo kết quả thi đấu
+  L155 [vietnamese] Loại
+  L156 [vietnamese] Nội dung
+  L157 [vietnamese] VĐV
+  L158 [vietnamese] Đoàn
+  L159 [vietnamese] Kết quả
+  L160 [vietnamese] Điểm
+  L197 [prop-viet] title="Kết Quả Thi Đấu"
+  L198 [prop-viet] subtitle="Tổng hợp kết quả toàn bộ nội dung thi đấu."
+  L208 [prop-viet] placeholder="Tìm VĐV, nội dung, đoàn..."
+  L210 [vietnamese] Nhập kết quả
+  L211 [vietnamese] Xuất CSV
+  L212 [vietnamese] Xuất Excel
+  L267 [prop-viet] title="Không có kết quả"
+  L267 [prop-viet] description="Thử thay đổi bộ lọc hoặc nhập kết quả thủ công."
+  L270 [prop-viet] title="📋 Chi tiết Kết quả"
+  L282 [vietnamese] Nội dung
+  L286 [vietnamese] Loại
+  L290 [vietnamese] Kết quả
+  L294 [vietnamese] Điểm
+  L305 [prop-viet] title="📝 Nhập kết quả thủ công"
+  L306 [vietnamese] Hủy
+  L306 [vietnamese] Lưu kết quả
+  L309 [prop-viet] label="Loại *"
+  L312 [prop-viet] label="Nội dung *"
+  L313 [prop-en] placeholder="VD: Nam 52-56kg 16-18"
+  L315 [prop-viet] label="VĐV *"
+  L316 [prop-viet] placeholder="Họ tên VĐV"
+  L320 [prop-viet] placeholder="Tên đoàn"
+  L323 [prop-viet] placeholder="VD: Hạng 1"
+  L326 [prop-viet] label="Điểm"
+  L327 [prop-en] placeholder="VD: 8.50"
+
+📄 features\reporting\print-templates.tsx (30 items)
+  L94 [vietnamese] Chứng nhận vận động viên
+  L116 [vietnamese] Trưởng Ban Tổ Chức
+  L164 [vietnamese] LIÊN ĐOÀN VÕ THUẬT CỔ TRUYỀN VIỆT NAM
+  L165 [vietnamese] BIÊN BẢN TRẬN ĐẤU ĐỐI KHÁNG
+  L173 [vietnamese] Nội dung
+  L175 [vietnamese] Hạng cân
+  L179 [vietnamese] Vòng
+  L181 [vietnamese] Sàn đấu
+  L191 [vietnamese] 🔴 GÓC ĐỎ
+  L193 [vietnamese] 🔵 GÓC XANH
+  L204 [vietnamese] Đoàn
+  L214 [vietnamese] Hiệp
+  L215 [vietnamese] Điểm Đỏ
+  L216 [vietnamese] Điểm Xanh
+  L228 [vietnamese] Phạm lỗi
+  L233 [vietnamese] TỔNG
+  L242 [vietnamese] KẾT QUẢ
+  L249 [vietnamese] Hội đồng trọng tài:
+  L303 [vietnamese] LIÊN ĐOÀN VÕ THUẬT CỔ TRUYỀN VIỆT NAM
+  L304 [vietnamese] BẢNG TỔNG SẮP HUY CHƯƠNG
+  L311 [vietnamese] Hạng
+  L312 [vietnamese] Đoàn
+  L313 [vietnamese] 🥇 Vàng
+  L314 [vietnamese] 🥈 Bạc
+  L315 [vietnamese] 🥉 Đồng
+  L316 [vietnamese] Tổng
+  L417 [vietnamese] LIÊN ĐOÀN VÕ THUẬT CỔ TRUYỀN VIỆT NAM
+  L418 [vietnamese] BIÊN BẢN CÂN KÝ
+  L452 [vietnamese] Người cân
+  L455 [vietnamese] Giám sát
+
+📄 features\tournament\Page_reports.tsx (30 items)
+  L166 [vietnamese] Tổng quan
+  L169 [vietnamese] Đoàn
+  L169 [vietnamese] VĐV
+  L170 [vietnamese] Đăng ký
+  L170 [vietnamese] Trọng tài
+  L171 [vietnamese] Lịch thi đấu
+  L171 [vietnamese] Khiếu nại
+  L172 [vietnamese] Trận đã kết thúc
+  L172 [vietnamese] Cân đạt
+  L175 [vietnamese] Danh sách đoàn
+  L179 [vietnamese] Mã
+  L180 [vietnamese] Tên đoàn
+  L181 [vietnamese] Tỉnh
+  L182 [vietnamese] VĐV
+  L183 [vietnamese] Trạng thái
+  L184 [vietnamese] Lệ phí
+  L337 [vietnamese] Thống kê Đoàn
+  L340 [vietnamese] Tổng đoàn
+  L344 [vietnamese] Đã xác nhận
+  L348 [vietnamese] Tỷ lệ xác nhận
+  L357 [vietnamese] VĐV theo giới tính
+  L366 [vietnamese] Nữ
+  L376 [vietnamese] Tiến độ Đối kháng
+  L379 [vietnamese] Tổng trận
+  L383 [vietnamese] Đã kết thúc
+  L390 [vietnamese] Cân ký
+  L393 [vietnamese] Tổng cần cân
+  L397 [vietnamese] Đạt cân
+  L401 [vietnamese] Tỷ lệ đạt
+  L414 [vietnamese] VĐV theo Đoàn
+
+📄 features\admin\Page_admin_tournaments.tsx (29 items)
+  L159 [prop-viet] subtitle="Tạo, theo dõi và điều hành toàn bộ giải đấu VCT"
+  L163 [vietnamese] Tạo giải đấu
+  L181 [prop-viet] Title="Chưa có giải đấu"
+  L182 [prop-viet] Description="Tạo giải đấu mới để bắt đầu"
+  L245 [vietnamese] Mở ĐK
+  L246 [vietnamese] Bắt đầu
+  L247 [vietnamese] Kết thúc
+  L305 [string-viet] Đối kháng
+  L313 [vietnamese] Mở đăng ký
+  L314 [vietnamese] Bắt đầu giải
+  L315 [vietnamese] Kết thúc giải
+  L316 [vietnamese] Xóa
+  L323 [prop-viet] title="Tạo giải đấu mới"
+  L325 [prop-viet] label="Tên giải đấu"
+  L325 [prop-viet] placeholder="VD: Giải VCT Quốc gia 2024"
+  L327 [prop-viet] label="Loại giải"
+  L328 [prop-viet] label="Đơn vị tổ chức"
+  L328 [prop-viet] placeholder="VD: Liên đoàn VCT VN"
+  L331 [prop-viet] label="Ngày bắt đầu"
+  L332 [prop-viet] label="Ngày kết thúc"
+  L334 [prop-viet] label="Địa điểm"
+  L334 [prop-viet] placeholder="VD: Nhà thi đấu Phú Thọ, TP.HCM"
+  L335 [prop-viet] label="Ngân sách dự kiến"
+  L335 [prop-viet] placeholder="VD: 1.5 tỷ"
+  L337 [vietnamese] Hủy
+  L338 [vietnamese] Tạo giải đấu
+  L348 [prop-viet] title="Xóa giải đấu?"
+  L349 [prop-viet] message="Hành động này không thể hoàn tác. Toàn bộ dữ liệu giải đấu s"
+  L350 [prop-viet] Label="Xóa"
+
+📄 features\parent\Page_parent_dashboard.tsx (28 items)
+  L127 [vietnamese] Thử lại
+  L191 [prop-viet] aria-label="Điều hướng cổng phụ huynh"
+  L457 [prop-viet] title="Quan hệ"
+  L463 [vietnamese] Mẹ
+  L464 [vietnamese] Người giám hộ
+  L464 [string-viet] người giám hộ
+  L465 [vietnamese] Ông
+  L465 [string-viet] ông
+  L466 [vietnamese] Bà
+  L467 [vietnamese] Anh/Chị
+  L467 [string-viet] anh/chị
+  L477 [vietnamese] Hủy
+  L550 [vietnamese] + Ký mới
+  L585 [vietnamese] Hủy
+  L598 [vietnamese] Thu hồi
+  L608 [vietnamese] Chưa có đồng thuận nào
+  L673 [vietnamese] 📋 Ký đồng thuận mới
+  L678 [prop-viet] title="Chọn con em"
+  L691 [prop-viet] title="Loại đồng thuận"
+  L696 [vietnamese] 🏆 Giải đấu
+  L697 [vietnamese] 🥋 Thi đai
+  L698 [vietnamese] 🏥 Y tế
+  L699 [vietnamese] 📸 Hình ảnh
+  L700 [vietnamese] 🏋️ Tập luyện
+  L715 [prop-viet] placeholder="Chi tiết nội dung đồng thuận..."
+  L729 [vietnamese] Hủy
+  L800 [prop-viet] title="Chọn con em"
+  L841 [vietnamese] Tỷ lệ chuyên cần
+
+📄 features\club\Page_club_training.tsx (27 items)
+  L855 [prop-en] title="Khong co giao trinh phu hop"
+  L856 [prop-en] description="Thu doi bo loc hoac tao giao trinh moi."
+  L868 [prop-en] title="Khong co ky thi phu hop"
+  L869 [prop-en] description="Thu doi bo loc hoac tao ky thi dai moi."
+  L922 [prop-en] label="Ten giao trinh"
+  L928 [prop-en] placeholder="Can ban cong phap cap 1"
+  L932 [prop-en] label="Nhom huan luyen"
+  L946 [prop-en] label="Cap do"
+  L961 [prop-en] label="Nguoi phu trach"
+  L967 [prop-en] placeholder="Le Quang Huy"
+  L970 [prop-en] label="Trang thai"
+  L983 [prop-en] label="So tuan"
+  L993 [prop-en] label="So bai hoc"
+  L1003 [prop-en] label="Tien do (%)"
+  L1035 [prop-en] label="Ten ky thi"
+  L1041 [prop-en] placeholder="Ky thi thang dai quy 2"
+  L1045 [prop-en] label="Ngay thi"
+  L1054 [prop-en] label="Moc dai"
+  L1070 [prop-en] label="Trang thai"
+  L1083 [prop-en] label="Dia diem"
+  L1089 [prop-en] placeholder="Nha tap trung tam"
+  L1092 [prop-en] label="Thi sinh"
+  L1102 [prop-en] label="So dat"
+  L1119 [prop-en] title="Xac nhan xoa giao trinh"
+  L1120 [prop-en] message="Giao trinh se bi xoa khoi he thong huan luyen CLB."
+  L1130 [prop-en] title="Xac nhan xoa ky thi"
+  L1131 [prop-en] message="Ky thi se bi xoa khoi lich su thi thang dai."
+
+📄 features\admin\Page_admin_system.tsx (25 items)
+  L205 [string-viet] Giá trị phải là số
+  L209 [string-viet] Giá trị không được để trống
+  L284 [vietnamese] Tạo Backup
+  L285 [vietnamese] Xóa Cache
+  L293 [vietnamese] Xuất CSV
+  L323 [prop-en] title="PostgreSQL Database"
+  L324 [prop-en] title="Memory & GC"
+  L352 [prop-viet] placeholder="Tìm theo key hoặc mô tả..."
+  L373 [prop-viet] Title="Không tìm thấy tham số"
+  L374 [prop-viet] Description="Thử từ khóa khác"
+  L420 [prop-viet] title="Chỉnh sửa tham số"
+  L422 [vietnamese] Hủy
+  L423 [vietnamese] Lưu thay đổi
+  L491 [prop-viet] label="Giá trị"
+  L513 [prop-viet] title="Tạo Backup Thủ Công"
+  L514 [prop-viet] message="Bạn có chắc muốn tạo backup thủ công ngay bây giờ? Quá trình"
+  L515 [prop-viet] Label="Tạo Backup"
+  L521 [prop-viet] title="Xóa Cache"
+  L522 [prop-viet] message="Thao tác này sẽ xóa toàn bộ cache. Các request tiếp theo sẽ "
+  L523 [prop-viet] Label="Xóa Cache"
+  L527 [prop-viet] title="Chi tiết tham số"
+  L545 [vietnamese] Chỉnh sửa
+  L547 [vietnamese] Khôi phục mặc định
+  L559 [prop-viet] title="Khôi phục mặc định"
+  L561 [prop-viet] Label="Khôi phục"
+
+📄 features\club\Page_club_attendance.tsx (25 items)
+  L99 [string-viet] Tên thành viên là bắt buộc
+  L100 [string-viet] Vui lòng chọn lớp
+  L101 [string-viet] Ngày là bắt buộc
+  L102 [string-viet] Ngày không hợp lệ
+  L109 [string-viet] Thành viên,Lớp,Ngày,Trạng thái,Ghi chú,Người ghi\n
+  L345 [prop-viet] placeholder="Tìm thành viên, lớp..."
+  L380 [prop-viet] title="Không có bản ghi"
+  L380 [prop-viet] description="Thử đổi bộ lọc hoặc ghi nhận điểm danh mới."
+  L391 [prop-viet] title="Ghi nhận điểm danh"
+  L395 [vietnamese] Hủy
+  L396 [vietnamese] Lưu
+  L401 [prop-viet] label="Tên thành viên *"
+  L402 [prop-viet] placeholder="Nguyễn Văn A"
+  L404 [prop-viet] label="Lớp *"
+  L414 [prop-viet] label="Ngày *"
+  L417 [prop-viet] label="Trạng thái"
+  L430 [prop-viet] label="Ghi chú"
+  L431 [prop-viet] placeholder="Lý do vắng, trễ..."
+  L441 [prop-viet] title="Điểm danh cả lớp"
+  L445 [vietnamese] Hủy
+  L451 [prop-viet] label="Lớp"
+  L458 [prop-viet] label="Ngày"
+  L492 [prop-viet] title="Xác nhận xóa"
+  L493 [prop-viet] message="Bản ghi điểm danh sẽ bị xóa vĩnh viễn."
+  L495 [prop-viet] Label="Xóa"
+
+📄 features\federation\Page_federation_master_data.tsx (25 items)
+  L390 [prop-viet] label="Chưa có đai nào"
+  L423 [vietnamese] ĐẲNG CẤP
+  L439 [prop-viet] label="Chưa có hạng cân nào"
+  L474 [prop-viet] label="Chưa có nhóm tuổi nào"
+  L532 [prop-viet] label="Tên đai"
+  L535 [prop-viet] placeholder="Ví dụ: Đai Trắng (Cấp 8)"
+  L538 [prop-viet] label="Màu đai"
+  L547 [prop-viet] label="Thời gian tối thiểu (tháng)"
+  L552 [prop-viet] label="Mô tả"
+  L555 [prop-viet] placeholder="Ghi chú về quy chế đai này"
+  L560 [vietnamese] Đây là đẳng cấp (Đai Đen)
+  L563 [vietnamese] Hủy
+  L574 [prop-viet] label="Giới tính"
+  L578 [vietnamese] Nữ
+  L581 [prop-viet] label="Thể loại"
+  L586 [prop-viet] label="Cân nặng tối đa (kg)"
+  L593 [vietnamese] Hạng nặng (80+ kg)
+  L596 [vietnamese] Hủy
+  L606 [prop-viet] label="Tên nhóm tuổi"
+  L609 [prop-viet] placeholder="Ví dụ: Thiếu niên (U15)"
+  L612 [prop-viet] label="Tuổi tối thiểu"
+  L616 [prop-viet] label="Tuổi tối đa"
+  L622 [vietnamese] Hủy
+  L630 [prop-viet] title="Xác nhận xóa"
+  L635 [vietnamese] Hủy
+
+📄 features\tournament\Page_athletes.tsx (25 items)
+  L353 [prop-viet] placeholder="Tìm tên, mã VĐV, CCCD..."
+  L360 [vietnamese] Tất cả Đoàn/Thành phố
+  L388 [vietnamese] Duyệt nhanh
+  L389 [vietnamese] In Thẻ VĐV
+  L396 [prop-viet] title="Không tìm thấy Vận động viên"
+  L455 [vietnamese] Thông tin nhân trắc
+  L458 [vietnamese] Giới tính
+  L462 [vietnamese] Ngày sinh
+  L466 [vietnamese] Chiều cao
+  L474 [vietnamese] Nội dung đăng ký
+  L481 [vietnamese] Chưa đăng ký quyền
+  L488 [vietnamese] Chưa đăng ký đối kháng
+  L509 [vietnamese] THIẾU
+  L520 [vietnamese] Từ chối / Thiếu HS
+  L522 [vietnamese] Xác nhận Đủ Điều Kiện
+  L524 [vietnamese] Hủy Đăng Ký
+  L537 [prop-viet] title="In Thẻ Vận Động Viên"
+  L538 [vietnamese] Đóng
+  L545 [vietnamese] THẺ GIẢI ĐẤU QUỐC GIA
+  L554 [vietnamese] Mã số
+  L558 [vietnamese] Ngày sinh
+  L562 [vietnamese] Hạng cân / Tuổi
+  L568 [vietnamese] VẬN ĐỘNG VIÊN
+  L590 [prop-viet] title="Xóa Vận Động Viên"
+  L591 [prop-viet] Label="Xác nhận xóa"
+
+📄 features\club\Page_club_facilities.tsx (24 items)
+  L69 [vietnamese] cơ sở
+  L148 [string-viet] Tên cơ sở là bắt buộc
+  L150 [string-viet] Diện tích phải lớn hơn 0
+  L152 [string-viet] Sức chứa không hợp lệ
+  L161 [string-viet] Tên,Loại,Diện tích (m²),Sức chứa,Trạng thái,Thuê/tháng,Bảo trì tiếp,Địa chỉ,Ghi 
+  L397 [prop-viet] placeholder="Tìm cơ sở..."
+  L441 [prop-viet] title="Không có cơ sở"
+  L441 [prop-viet] description="Thử đổi bộ lọc hoặc thêm cơ sở mới."
+  L455 [vietnamese] Hủy
+  L461 [prop-viet] label="Tên cơ sở *"
+  L461 [prop-viet] placeholder="Phòng tập A"
+  L462 [prop-viet] label="Loại"
+  L468 [prop-viet] label="Diện tích (m²) *"
+  L469 [prop-viet] label="Sức chứa"
+  L470 [prop-viet] label="Trạng thái"
+  L475 [prop-viet] label="Tiền thuê / tháng (VND)"
+  L476 [prop-viet] label="Địa chỉ"
+  L476 [prop-viet] placeholder="Nếu khác trụ sở chính"
+  L477 [prop-viet] label="Bảo trì kế tiếp"
+  L479 [prop-viet] label="Ghi chú"
+  L479 [prop-viet] placeholder="Ghi chú thêm..."
+  L488 [prop-viet] title="Xác nhận xóa"
+  L489 [prop-viet] message="Cơ sở sẽ bị xóa khỏi danh sách."
+  L491 [prop-viet] Label="Xóa"
+
+📄 features\portals\Page_medical.tsx (24 items)
+  L75 [vietnamese] 🏥 Y Tế Giải Đấu
+  L149 [vietnamese] 🚨 Xác nhận dừng trận?
+  L162 [vietnamese] Chọn sàn đấu...
+  L163 [vietnamese] Sân A1
+  L164 [vietnamese] Sân A2
+  L165 [vietnamese] Sân B1
+  L166 [vietnamese] Sân B2
+  L169 [prop-viet] placeholder="Mô tả tình huống y tế..."
+  L180 [vietnamese] Hủy
+  L207 [vietnamese] Đang điều trị
+  L213 [vietnamese] Ca hôm nay
+  L219 [vietnamese] Chưa khám
+  L227 [vietnamese] Ca đang theo dõi
+  L270 [vietnamese] Kiểm tra y tế trước giải
+  L316 [vietnamese] Báo cáo chấn thương
+  L326 [vietnamese] Báo cáo mới
+  L328 [prop-viet] placeholder="Tên VĐV..."
+  L336 [vietnamese] Nhẹ
+  L337 [vietnamese] Trung bình
+  L338 [vietnamese] Nặng
+  L341 [prop-viet] placeholder="Mô tả chấn thương..."
+  L347 [vietnamese] Hủy
+  L348 [vietnamese] Lưu báo cáo
+  L393 [vietnamese] Nhật ký sơ cứu
+
+📄 features\reporting\Page_reports.tsx (24 items)
+  L127 [vietnamese] 📊 Báo cáo & Xuất dữ liệu
+  L187 [prop-viet] label="Tổng VĐV"
+  L188 [prop-viet] label="Đội tham gia"
+  L189 [prop-viet] label="Trận đã đấu"
+  L190 [prop-viet] label="Tổng huy chương"
+  L196 [vietnamese] Tiến độ giải đấu
+  L198 [prop-viet] label="Trận đấu hoàn thành"
+  L199 [prop-viet] label="Đăng ký VĐV"
+  L200 [prop-viet] label="Cân ký xong"
+  L201 [prop-viet] label="Phát huy chương"
+  L210 [prop-viet] title="VĐV theo nội dung"
+  L215 [prop-viet] title="Trạng thái trận đấu"
+  L223 [prop-viet] title="Top 6 tổng huy chương theo đoàn"
+  L238 [vietnamese] Bảng tổng sắp huy chương
+  L287 [string-viet] Giải Vovinam Toàn Quốc 2026
+  L303 [vietnamese] Biên bản trận đấu
+  L375 [vietnamese] Giấy chứng nhận & Thẻ VĐV
+  L406 [vietnamese] Xem trước giấy chứng nhận
+  L425 [vietnamese] Thẻ VĐV mẫu
+  L452 [vietnamese] Biên bản cân ký
+  L459 [prop-viet] label="Tổng VĐV cân"
+  L460 [prop-viet] label="Đạt"
+  L461 [prop-viet] label="Không đạt"
+  L506 [string-viet] Giải Vovinam Toàn Quốc 2026
+
+📄 features\tournament\Page_tournament_wizard.tsx (24 items)
+  L50 [vietnamese] Thông tin cơ bản
+  L51 [prop-viet] label="Tên giải đấu *"
+  L52 [prop-viet] placeholder="Giải vô địch Vovinam toàn quốc..."
+  L56 [prop-viet] placeholder="VĐQG-2026"
+  L59 [prop-viet] label="Cấp độ"
+  L73 [prop-viet] placeholder="Liên đoàn Vovinam Việt Nam"
+  L76 [prop-viet] placeholder="Sở VH-TT-DL..."
+  L85 [vietnamese] Thời gian & Địa điểm
+  L98 [prop-viet] label="Địa điểm (Nhà thi đấu) *"
+  L99 [prop-viet] placeholder="Nhà thi đấu đa năng..."
+  L102 [prop-viet] placeholder="Hà Nội"
+  L111 [vietnamese] Cấu hình Kỹ thuật
+  L113 [vietnamese] 1. Giới hạn số lượng (Quota)
+  L126 [vietnamese] 2. Đối kháng & Quyền
+  L152 [vietnamese] Xác nhận thông tin
+  L155 [vietnamese] Tên giải:
+  L155 [vietnamese] Chưa nhập
+  L156 [vietnamese] Mã giải:
+  L156 [vietnamese] Chưa nhập
+  L157 [vietnamese] Thời gian:
+  L158 [vietnamese] Địa điểm:
+  L159 [vietnamese] Giới hạn Đoàn:
+  L194 [vietnamese] Khởi tạo Giải đấu mới
+  L237 [string-viet] Tạo Giải đấu
+
+📄 features\club\Page_club_equipment.tsx (23 items)
+  L109 [vietnamese] thiết bị
+  L162 [string-viet] Tên thiết bị là bắt buộc
+  L164 [string-viet] Số lượng phải lớn hơn 0
+  L166 [string-viet] Đơn giá không hợp lệ
+  L175 [string-viet] Tên,Danh mục,Số lượng,Tình trạng,Đơn giá,Tổng giá trị,Ngày mua,NCC,Ghi chú\n
+  L368 [prop-viet] placeholder="Tìm thiết bị, NCC..."
+  L413 [prop-viet] title="Không có thiết bị"
+  L413 [prop-viet] description="Thử đổi bộ lọc hoặc thêm thiết bị mới."
+  L427 [vietnamese] Hủy
+  L433 [prop-viet] label="Tên thiết bị *"
+  L433 [prop-viet] placeholder="Giáp thân, Bao cát..."
+  L434 [prop-viet] label="Phân loại"
+  L440 [prop-viet] label="Số lượng *"
+  L441 [prop-viet] label="Tình trạng"
+  L447 [prop-viet] label="Đơn giá (VND) *"
+  L448 [prop-viet] label="Ngày mua"
+  L449 [prop-viet] label="Nhà cung cấp"
+  L449 [prop-en] placeholder="VN Sport, Thai Boxing..."
+  L450 [prop-viet] label="Ghi chú"
+  L450 [prop-viet] placeholder="Ghi chú thêm..."
+  L458 [prop-viet] title="Xác nhận xóa"
+  L459 [prop-viet] message="Thiết bị sẽ bị xóa khỏi danh sách kiểm kê."
+  L461 [prop-viet] Label="Xóa"
+
+📄 features\clubs\Page_clubs.tsx (23 items)
+  L45 [string-viet] Câu lạc bộ
+  L200 [string-viet] Không thể lưu dữ liệu
+  L217 [string-viet] Không thể xóa dữ liệu
+  L242 [string-viet] Không thể cập nhật trạng thái
+  L313 [prop-viet] title="Câu lạc bộ & Võ đường"
+  L314 [prop-viet] description="Nơi quản lý các đơn vị huấn luyện cơ sở, các phân đường và v"
+  L332 [vietnamese] Xuất file
+  L333 [vietnamese] Thêm CLB
+  L338 [prop-viet] placeholder="Tìm CLB, mã, chủ nhiệm..."
+  L341 [prop-viet] title="Lọc theo mô hình"
+  L346 [vietnamese] Tất cả mô hình
+  L353 [prop-viet] title="Không có câu lạc bộ nào"
+  L353 [prop-viet] Label="Thêm CLB"
+  L392 [vietnamese] Hủy
+  L399 [prop-viet] label="Tên CLB / Võ đường *"
+  L399 [prop-viet] placeholder="VD: Võ đường Tây Sơn"
+  L404 [prop-viet] label="Liên đoàn/Hội trực thuộc *"
+  L411 [prop-viet] label="Họ tên Chủ nhiệm / Võ sư"
+  L411 [prop-viet] placeholder="VD: Nguyễn Văn A"
+  L416 [prop-viet] label="Địa chỉ tập luyện"
+  L416 [prop-viet] placeholder="Địa chỉ chi tiết..."
+  L422 [prop-viet] title="Xác nhận xóa"
+  L423 [prop-viet] Label="Xóa vĩnh viễn"
+
+📄 features\tournament\Page_noi_dung.tsx (23 items)
+  L207 [vietnamese] Thêm bài quyền
+  L209 [prop-viet] title="Không có dữ liệu"
+  L241 [vietnamese] Thêm hạng cân
+  L243 [prop-viet] title="Không có dữ liệu"
+  L272 [vietnamese] Thêm lứa tuổi
+  L274 [prop-viet] title="Không có dữ liệu"
+  L371 [string-viet] } Bài Quyền`} width=
+  L372 [vietnamese] Hủy
+  L372 [vietnamese] Lưu
+  L375 [prop-viet] label="Tên bài quyền *"
+  L375 [prop-viet] placeholder="VD: Lão Mai Quyền"
+  L387 [prop-viet] label="Ghi chú"
+  L387 [prop-viet] placeholder="Ghi chú thêm"
+  L392 [string-viet] } Hạng Cân Đối Kháng`} width=
+  L393 [vietnamese] Hủy
+  L393 [vietnamese] Lưu
+  L404 [prop-viet] label="Trạng thái"
+  L409 [string-viet] } Nhóm Tuổi`} width=
+  L410 [vietnamese] Hủy
+  L410 [vietnamese] Lưu
+  L421 [prop-viet] label="Trạng thái"
+  L429 [prop-viet] title="Xác nhận xóa"
+  L432 [prop-viet] Label="Xóa vĩnh viễn"
+
+📄 features\admin\Page_notifications_admin.tsx (21 items)
+  L142 [vietnamese] Thêm mẫu
+  L167 [vietnamese] Xuất CSV
+  L185 [vietnamese] Xuất JSON
+  L195 [vietnamese] Mẫu thông báo
+  L199 [vietnamese] Thống kê delivery
+  L207 [prop-viet] placeholder="Tìm theo tiêu đề hoặc category..."
+  L295 [prop-viet] title="Chi tiết mẫu thông báo"
+  L412 [vietnamese] Chỉnh sửa
+  L415 [vietnamese] Gửi thử
+  L431 [string-viet] } mẫu 
+  L436 [string-viet] } mẫu 
+  L441 [prop-viet] title="Thêm mẫu thông báo mới"
+  L446 [prop-viet] label="Kênh gửi"
+  L449 [prop-viet] label="Ngôn ngữ"
+  L455 [prop-viet] label="Tiêu đề mẫu"
+  L455 [string-viet] Sử dụng {{variable}} cho phần động, VD: {{athlete_name}} lên thảm {{tatami_numbe
+  L456 [string-viet] {{athlete_name}} lên thảm {{tatami_number}}
+  L458 [string-viet] Phân cách bằng dấu phẩy, VD: athlete_name, tatami_number
+  L459 [prop-en] placeholder="athlete_name, tatami_number, match_time"
+  L471 [vietnamese] Hủy
+  L472 [vietnamese] Tạo mẫu
+
+📄 features\club\Page_club_classes.tsx (21 items)
+  L593 [prop-en] placeholder="Tim ten lop, HLV, dia diem..."
+  L629 [prop-en] title="Khong co lop hoc phu hop"
+  L630 [prop-en] description="Thu doi bo loc hoac tao lop moi."
+  L682 [prop-en] label="Ten lop hoc"
+  L688 [prop-en] placeholder="Co ban thieu nhi"
+  L691 [prop-en] label="Cap lop"
+  L704 [prop-en] label="HLV phu trach"
+  L710 [prop-en] placeholder="Le Quang Huy"
+  L713 [prop-en] label="Tro giang"
+  L719 [prop-en] placeholder="Do Thi Thao"
+  L722 [prop-en] label="Trang thai"
+  L733 [prop-en] label="Dia diem tap"
+  L739 [prop-en] placeholder="Phong tap A"
+  L742 [prop-en] label="Si so toi da"
+  L752 [prop-en] label="Si so hien tai"
+  L762 [prop-en] label="Hoc phi (VND/thang)"
+  L773 [prop-en] label="Nhom noi dung (phan tach dau phay)"
+  L779 [prop-en] placeholder="Can ban cong phap, than phap, doi khang"
+  L846 [prop-en] title="Xac nhan xoa lop hoc"
+  L847 [prop-en] message="Thao tac nay se xoa lop va huy lien ket lop trong danh sach "
+  L849 [prop-en] Label="Xoa lop"
+
+📄 features\club\Page_club_tournaments.tsx (20 items)
+  L510 [prop-en] placeholder="Tim ten giai, dia diem, HLV..."
+  L532 [prop-en] title="Khong co giai dau phu hop"
+  L533 [prop-en] description="Thu doi bo loc hoac tao giai dau moi."
+  L586 [prop-en] label="Ten giai dau"
+  L592 [prop-en] placeholder="Giai tre thanh pho 2026"
+  L596 [prop-en] label="Ngay bat dau"
+  L605 [prop-en] label="Ngay ket thuc"
+  L614 [prop-en] label="Dia diem"
+  L620 [prop-en] placeholder="Nha thi dau Phu Tho"
+  L623 [prop-en] label="Trang thai"
+  L637 [prop-en] label="HLV phu trach"
+  L643 [prop-en] placeholder="Le Quang Huy"
+  L646 [prop-en] label="VDV dang ky"
+  L656 [prop-en] label="Noi dung thi dau"
+  L666 [prop-en] label="Huy chuong vang"
+  L676 [prop-en] label="Huy chuong bac"
+  L686 [prop-en] label="Huy chuong dong"
+  L703 [prop-en] title="Xac nhan xoa giai dau"
+  L704 [prop-en] message="Thao tac nay se xoa giai dau khoi danh sach theo doi cua CLB"
+  L706 [prop-en] Label="Xoa giai"
+
+📄 features\tournament\Page_medals.tsx (20 items)
+  L114 [string-viet] )) athletes.push({ id: `v${count++}`, vdv_ten: `Nguyễn Văn ${count}`, doan_ten: 
+  L115 [string-viet] )) athletes.push({ id: `v${count++}`, vdv_ten: `Trần Thị ${count}`, doan_ten: m.
+  L116 [string-viet] )) athletes.push({ id: `v${count++}`, vdv_ten: `Lê Bá ${count}`, doan_ten: m.ten
+  L132 [prop-viet] title="Bảng Tổng Sắp Huy Chương"
+  L133 [prop-viet] subtitle="Tổng hợp thành tích huy chương toàn giải."
+  L154 [vietnamese] 📊 Tỷ trọng Huy chương theo Đoàn
+  L208 [vietnamese] Vận Động Viên Đạt Huy Chương
+  L222 [prop-viet] title="Không tìm thấy VĐV đạt huy chương"
+  L222 [prop-viet] description="Thay đổi bộ lọc hoặc kiểm tra lại."
+  L281 [prop-viet] title="In Giấy Chứng Nhận Thành Tích"
+  L283 [vietnamese] Đóng
+  L284 [vietnamese] In Giấy Khen
+  L294 [vietnamese] GIẤY CHỨNG NHẬN
+  L295 [vietnamese] THÀNH TÍCH THI ĐẤU
+  L297 [vietnamese] Chứng nhận Vận động viên:
+  L302 [vietnamese] Đã đạt thành tích:
+  L311 [vietnamese] ............, ngày ..... tháng ..... năm 20...
+  L312 [vietnamese] TRƯỞNG BAN TỔ CHỨC
+  L315 [vietnamese] ............, ngày ..... tháng ..... năm 20...
+  L316 [vietnamese] LIÊN ĐOÀN VÕ THUẬT
+
+📄 features\tournament\Page_referee_assignments.tsx (20 items)
+  L166 [vietnamese] Trọng tài
+  L167 [vietnamese] Tổng
+  L279 [prop-viet] title="Ma trận Phân công Trọng tài"
+  L298 [vietnamese] Chưa phân công trọng tài
+  L315 [prop-viet] aria-label="Hủy phân công"
+  L332 [prop-viet] title="Phân công Trọng tài"
+  L334 [vietnamese] Hủy
+  L335 [vietnamese] Phân công
+  L339 [prop-viet] label="Trọng tài *"
+  L340 [prop-viet] label="Sàn đấu *"
+  L341 [prop-viet] label="Vai trò"
+  L349 [prop-viet] title="⚡ Phân công Trọng tài Tự động"
+  L356 [vietnamese] 📊 Tổng quan dự kiến
+  L360 [vietnamese] TT sẵn sàng
+  L364 [vietnamese] Sàn khả dụng
+  L368 [vietnamese] Slot dự kiến
+  L374 [vietnamese] Hủy
+  L382 [prop-viet] title="Hủy phân công"
+  L382 [prop-viet] message="Bạn có chắc muốn hủy phân công trọng tài này?"
+  L382 [prop-viet] Label="Hủy phân công"
+
+📄 features\tournament\Page_registration.tsx (20 items)
+  L124 [vietnamese] Đóng
+  L125 [vietnamese] Lưu Hồ Sơ Đăng Ký
+  L154 [vietnamese] 🥋 NỘI DUNG QUYỀN
+  L177 [vietnamese] 🥊 HẠNG CÂN ĐỐI KHÁNG
+  L178 [vietnamese] ✕ BỎ CHỌN
+  L182 [vietnamese] Không có hạng cân Đối kháng phù hợp.
+  L332 [string-viet] ).length} Quyền - ${data.filter(r => r.loai === 
+  L342 [prop-viet] title="Đăng Ký Thi Đấu"
+  L343 [prop-viet] subtitle="Quản lý đăng ký vận động viên, nội dung thi đấu và phê duyệt"
+  L355 [vietnamese] Cổng Đăng Ký Đang Mở
+  L356 [vietnamese] Hạn chót đăng ký:
+  L356 [vietnamese] . Các Đoàn vẫn có thể thêm/rút VĐV khỏi nội dung.
+  L358 [vietnamese] Đóng cổng ĐK
+  L375 [prop-viet] placeholder="Tìm VĐV, nội dung thi..."
+  L376 [vietnamese] Duyệt loạt
+  L377 [vietnamese] Quản lý Thẻ (In-card)
+  L382 [prop-viet] title="Không có lượt đăng ký nào"
+  L418 [prop-viet] title="Danh sách VĐV ghi danh"
+  L420 [prop-viet] title="Chưa có VĐV nào trong hệ thống"
+  L443 [vietnamese] Tùy chỉnh »
+
+📄 features\training\Page_curriculum.tsx (20 items)
+  L246 [prop-viet] aria-label="Chọn tất cả giáo trình"
+  L272 [vietnamese] tháng
+  L292 [prop-viet] aria-label="Hành động"
+  L310 [prop-viet] title="Giáo trình & Bài quyền"
+  L311 [prop-viet] subtitle="Xây dựng và quản lý chương trình huấn luyện, tiêu chuẩn chuy"
+  L330 [prop-viet] placeholder="Tìm giáo trình, mã..."
+  L333 [prop-viet] aria-label="Công cụ quản lý"
+  L334 [vietnamese] Xuất file
+  L335 [vietnamese] Thêm Giáo trình
+  L354 [prop-viet] title="Không có giáo trình nào"
+  L354 [prop-viet] Label="Thêm Giáo trình"
+  L393 [vietnamese] Hủy
+  L398 [prop-viet] label="Tên Giáo trình / Modules *"
+  L399 [prop-viet] placeholder="VD: Khởi quyền (Cấp 1)"
+  L403 [prop-en] placeholder="VD: KQ-1"
+  L415 [prop-viet] placeholder="Số tháng..."
+  L422 [prop-viet] label="Các bài Quyền yêu cầu (cách nhau dấu phẩy)"
+  L426 [prop-viet] placeholder="VD: Căn bản công tay không, Thập thế bát thức..."
+  L428 [prop-viet] aria-label="Các bài quyền yêu cầu"
+  L436 [prop-viet] title="Xác nhận xóa"
+
+📄 features\organizations\Page_federations.tsx (19 items)
+  L120 [vietnamese] Tổ chức & Liên đoàn
+  L121 [vietnamese] Quản lý cấu trúc Liên đoàn → Câu lạc bộ
+  L130 [prop-viet] label="Liên đoàn"
+  L131 [prop-viet] label="Câu lạc bộ"
+  L132 [prop-viet] label="Thành viên"
+  L141 [prop-viet] placeholder="Tìm kiếm liên đoàn..."
+  L152 [vietnamese] Tất cả cấp
+  L153 [vietnamese] Quốc gia
+  L154 [vietnamese] Tỉnh/Thành
+  L155 [vietnamese] Khu vực
+  L223 [vietnamese] Chủ tịch
+  L223 [string-viet]  }}>Chủ tịch</div><div style={{ fontSize: 14, fontWeight: 500, color: 
+  L229 [vietnamese] Thành lập
+  L229 [string-viet]  }}>Thành lập</div><div style={{ fontSize: 14, fontWeight: 500, color: 
+  L235 [vietnamese] Địa chỉ
+  L235 [string-viet]  }}>Địa chỉ</div><div style={{ fontSize: 14, fontWeight: 500, color: 
+  L241 [vietnamese] Điện thoại
+  L241 [string-viet]  }}>Điện thoại</div><div style={{ fontSize: 14, fontWeight: 500, color: 
+  L266 [vietnamese] thành viên
+
+📄 features\tournament\Page_appeals.tsx (19 items)
+  L97 [vietnamese] Tiếp nhận KN
+  L101 [prop-viet] title="Không có khiếu nại"
+  L101 [prop-viet] description="Chưa có khiếu nại/kháng nghị nào."
+  L132 [vietnamese] 📝 Xử lý
+  L147 [prop-viet] title="Tiếp nhận Khiếu nại / Kháng nghị"
+  L148 [vietnamese] Hủy
+  L148 [vietnamese] Tiếp nhận
+  L155 [prop-viet] label="Nội dung liên quan"
+  L155 [prop-viet] placeholder="ĐK Nam 48-52kg"
+  L156 [prop-viet] label="Lý do *"
+  L156 [prop-viet] placeholder="Mô tả chi tiết lý do..."
+  L157 [prop-viet] label="Bằng chứng"
+  L157 [prop-viet] placeholder="Video, biên bản..."
+  L162 [prop-viet] title="Xử lý Khiếu nại"
+  L164 [vietnamese] ⏳ Đang xử lý
+  L165 [vietnamese] ✗ Bác bỏ
+  L166 [vietnamese] ✓ Chấp nhận
+  L174 [prop-viet] label="Kết luận / Quyết định"
+  L175 [prop-viet] placeholder="Nhập kết luận..."
+
+📄 features\club\Page_club_members.tsx (18 items)
+  L501 [prop-en] placeholder="Tim ten, SDT, email..."
+  L551 [prop-en] title="Khong co thanh vien phu hop"
+  L552 [prop-en] description="Thu doi bo loc hoac them thanh vien moi."
+  L604 [prop-en] label="Ho va ten"
+  L608 [prop-en] placeholder="Nguyen Van A"
+  L611 [prop-en] label="Gioi tinh"
+  L623 [prop-en] label="Ngay sinh"
+  L632 [prop-en] label="Ngay gia nhap"
+  L641 [prop-en] label="So dien thoai"
+  L655 [prop-en] label="Dai hien tai"
+  L671 [prop-en] label="Vai tro"
+  L683 [prop-en] label="Trang thai"
+  L698 [prop-en] label="Ma lop (phan tach dau phay)"
+  L704 [prop-en] placeholder="CLS-001, CLS-003"
+  L709 [prop-en] label="Ghi chu"
+  L713 [prop-en] placeholder="Thong tin bo sung..."
+  L724 [prop-en] title="Xac nhan xoa thanh vien"
+  L725 [prop-en] message="Thao tac nay se xoa thanh vien khoi danh sach CLB."
+
+📄 features\training\Page_techniques.tsx (18 items)
+  L38 [string-viet] Khí công (Breath/Energy)
+  L190 [prop-viet] title="Kho Kỹ Thuật"
+  L191 [prop-viet] subtitle="Hệ thống hóa các nhóm kỹ thuật, thế võ, binh khí với video t"
+  L200 [string-viet] , value: totalVideos, sub: `${Math.round((totalVideos / techs.length) * 100 || 0
+  L219 [prop-viet] placeholder="Tìm kiếm kỹ thuật, tags..."
+  L221 [vietnamese] Thêm mới
+  L227 [prop-viet] title="Không tìm thấy kỹ thuật"
+  L227 [prop-viet] description="Chưa có kỹ thuật nào phù hợp với bộ lọc."
+  L227 [prop-viet] Label="Thêm kỹ thuật"
+  L308 [vietnamese] Hủy
+  L313 [prop-viet] label="Tên Kỹ thuật *"
+  L313 [prop-viet] placeholder="VD: Trung bình tấn"
+  L319 [prop-viet] label="Mô tả"
+  L323 [prop-viet] placeholder="Mô tả kỹ thuật, cách thực hiện..."
+  L330 [prop-viet] placeholder="VD: cơ bản, tấn, móc"
+  L333 [prop-viet] aria-label="Có video"
+  L342 [prop-viet] title="Xác nhận xóa"
+  L343 [prop-viet] Label="Xóa"
+
+📄 features\club\Page_club_settings.tsx (17 items)
+  L245 [prop-en] label="Ten CLB"
+  L254 [prop-en] label="Ten viet tat"
+  L262 [prop-en] label="Ma CLB"
+  L270 [prop-en] label="Loai hinh"
+  L282 [prop-en] label="Dong phai"
+  L290 [prop-en] label="Ngay thanh lap"
+  L299 [prop-en] label="Trang thai hoat dong"
+  L319 [prop-en] label="Nguoi dai dien"
+  L327 [prop-en] label="So dien thoai"
+  L360 [prop-en] label="Dia chi"
+  L377 [prop-en] label="Dien tich (m2)"
+  L390 [prop-en] label="Suc chua toi da"
+  L403 [prop-en] label="Gio mo cua"
+  L412 [prop-en] label="Gio dong cua"
+  L460 [prop-en] title="Phuc hoi cau hinh mac dinh"
+  L461 [prop-en] message="Thao tac nay se ghi de toan bo cau hinh CLB bang gia tri mac"
+  L463 [prop-en] Label="Phuc hoi"
+
+📄 features\portals\Page_athlete.tsx (17 items)
+  L139 [string-viet] Sắp thi đấu
+  L163 [vietnamese] Thắng
+  L179 [vietnamese] Cân nặng
+  L187 [vietnamese] Thông tin VĐV
+  L190 [vietnamese] Họ tên
+  L194 [vietnamese] Đoàn
+  L198 [vietnamese] Giới tính
+  L202 [vietnamese] Cân nặng
+  L206 [vietnamese] Ngày sinh
+  L210 [vietnamese] Trạng thái
+  L211 [string-viet] Đã duyệt
+  L225 [vietnamese] Lịch thi đấu của tôi
+  L260 [vietnamese] Kết quả thi đấu
+  L288 [vietnamese] Tình trạng cân nặng
+  L292 [vietnamese] Kết quả cân
+  L297 [vietnamese] Cân nặng thực tế
+  L303 [vietnamese] Hạng cân
+
+📄 features\admin\Page_admin_user_detail.tsx (16 items)
+  L157 [prop-viet] title="Không tìm thấy tài khoản"
+  L263 [vietnamese] Quay lại
+  L264 [vietnamese] Đổi mật khẩu
+  L277 [prop-viet] title="Thông tin định danh"
+  L280 [prop-viet] label="SĐT"
+  L281 [prop-viet] label="Phạm vi"
+  L282 [prop-viet] label="Ngày tạo"
+  L283 [prop-viet] label="Đăng nhập cuối"
+  L284 [prop-viet] label="Vai trò"
+  L289 [prop-viet] title="Quyền và trách nhiệm"
+  L320 [prop-viet] title="Dòng hoạt động"
+  L325 [prop-viet] title="Tín hiệu bảo mật"
+  L345 [string-viet] Rà lại audit log, xác thực nguồn IP và buộc đổi mật khẩu trước khi mở khóa.
+  L347 [string-viet] Kiểm tra nhu cầu kích hoạt lại.
+  L371 [prop-viet] title="Đổi mật khẩu"
+  L373 [prop-viet] Label="Gửi email"
+
+📄 features\athletes\Page_athlete_training.tsx (16 items)
+  L140 [prop-viet] label="Tổng buổi"
+  L141 [prop-viet] label="Đã tham gia"
+  L143 [prop-viet] label="Chuỗi liên tiếp"
+  L144 [string-viet] buổi liên tục
+  L145 [prop-viet] label="Vắng mặt"
+  L151 [prop-viet] title="Khối lượng tập tuần"
+  L195 [prop-viet] title="Ghi nhận buổi tập"
+  L225 [vietnamese] Thường
+  L226 [vietnamese] Đối kháng
+  L227 [vietnamese] Thi đấu
+  L228 [vietnamese] Đặc biệt
+  L247 [prop-viet] title="Lịch tập tuần"
+  L330 [prop-viet] title="Các buổi tập sắp tới"
+  L338 [prop-viet] title="Không có buổi tập sắp tới"
+  L338 [prop-viet] description="Lịch tập mới sẽ hiển thị tại đây khi được tạo."
+  L351 [prop-viet] title="Phân loại buổi tập"
+
+📄 features\club\Page_club_finance.tsx (16 items)
+  L512 [prop-en] placeholder="Tim mo ta, danh muc, nguoi ghi..."
+  L583 [prop-en] title="Khong co giao dich phu hop"
+  L584 [prop-en] description="Thu doi bo loc hoac them giao dich moi."
+  L630 [prop-en] label="Loai giao dich"
+  L642 [prop-en] label="Trang thai"
+  L654 [prop-en] label="Danh muc"
+  L660 [prop-en] placeholder="Hoc phi / Trang thiet bi / Thue mat bang..."
+  L663 [prop-en] label="Hinh thuc"
+  L676 [prop-en] label="So tien"
+  L686 [prop-en] label="Ngay giao dich"
+  L695 [prop-en] label="Nguoi ghi nhan"
+  L701 [prop-en] placeholder="Nguyen Van Phu"
+  L705 [prop-en] label="Mo ta"
+  L711 [prop-en] placeholder="Noi dung thu/chi..."
+  L722 [prop-en] title="Xac nhan xoa giao dich"
+  L723 [prop-en] message="Thao tac nay se xoa giao dich khoi so thu chi CLB."
+
+📄 features\home\screen.tsx (16 items)
+  L123 [vietnamese] Huy chương
+  L136 [vietnamese] Giải đấu
+  L141 [vietnamese] VĐV
+  L150 [vietnamese] Truy cập nhanh
+  L154 [vietnamese] Cổng VĐV
+  L158 [vietnamese] Lịch tập
+  L162 [vietnamese] Giải đấu
+  L166 [vietnamese] Thành tích
+  L173 [vietnamese] Chuyển vai trò
+  L174 [vietnamese] Chọn vai trò để xem module tương ứng
+  L187 [vietnamese] Module nghiệp vụ
+  L197 [vietnamese] Vai trò hiện tại chưa được cấp module mobile.
+  L198 [vietnamese] Hãy đổi role khác để tiếp tục.
+  L218 [string-viet] Chào buổi sáng
+  L219 [string-viet] Chào buổi chiều
+  L220 [string-viet] Chào buổi tối
+
+📄 features\admin\Page_documents.tsx (15 items)
+  L110 [string-viet] ID,Loại,Tên mẫu,Version,Trạng thái,Đã cấp,Trường\n
+  L150 [vietnamese] Xuất CSV
+  L151 [vietnamese] Thêm mẫu
+  L175 [vietnamese] Mẫu tài liệu
+  L276 [prop-viet] title="Thêm mẫu tài liệu mới"
+  L278 [prop-viet] label="Tên mẫu"
+  L279 [prop-viet] placeholder="VD: Giấy chứng nhận Huy chương"
+  L281 [prop-viet] label="Loại tài liệu"
+  L284 [prop-viet] label="Trường dữ liệu"
+  L284 [string-viet] Phân cách bằng dấu phẩy, VD: athlete_name, tournament_name, date
+  L285 [prop-en] placeholder="athlete_name, tournament_name, medal_type"
+  L297 [vietnamese] Hủy
+  L298 [vietnamese] Tạo mẫu
+  L303 [prop-viet] title="Chi tiết mẫu tài liệu"
+  L341 [prop-viet] title="Chi tiết tài liệu đã cấp"
+
+📄 features\club\Page_club_certifications.tsx (15 items)
+  L478 [prop-en] placeholder="Tim vo sinh, ma ky thi, noi cap..."
+  L510 [prop-en] title="Khong co ho so chung nhan phu hop"
+  L511 [prop-en] description="Thu doi bo loc hoac tao ho so moi."
+  L557 [prop-en] label="Vo sinh trong CLB"
+  L570 [prop-en] label="Ten vo sinh"
+  L576 [prop-en] placeholder="Nguyen Van A"
+  L579 [prop-en] label="Tu dai"
+  L588 [prop-en] label="Len dai"
+  L595 [prop-en] label="Ngay thi"
+  L604 [prop-en] label="Ma ky thi"
+  L613 [prop-en] label="Ket qua"
+  L623 [prop-en] label="Noi cap/nguoi cap"
+  L629 [prop-en] placeholder="Hoi dong chuyen mon CLB"
+  L639 [prop-en] title="Xac nhan xoa chung nhan"
+  L640 [prop-en] message="Thao tac nay se xoa ho so chung nhan khoi lich su thang dang"
+
+📄 features\finance\Page_finance_subscriptions.tsx (15 items)
+  L176 [vietnamese] , label: 'Hết hạn', value: currentSub.current_period_end, color: daysRemaining
+  L177 [string-viet] , value: `${daysRemaining} ngày`, color: daysRemaining < 30 ? 
+  L191 [prop-viet] title="Subscription & Gói dịch vụ"
+  L192 [prop-viet] subtitle="Quản lý gói đang sử dụng, nâng cấp và xem lịch sử thanh toán"
+  L232 [string-viet] Đang hoạt động
+  L233 [string-viet] Tự gia hạn
+  L274 [vietnamese] Gia hạn ngay
+  L278 [vietnamese] Nâng cấp gói
+  L336 [vietnamese] Tối đa
+  L336 [vietnamese] thành viên
+  L340 [vietnamese] Tối đa
+  L340 [vietnamese] giải/năm
+  L344 [vietnamese] Tối đa
+  L344 [vietnamese] VĐV
+  L413 [vietnamese] Hủy
+
+📄 features\tournament\Page_teams.tsx (15 items)
+  L73 [vietnamese] Chuyển trạng thái
+  L122 [vietnamese] Chưa có lịch sử
+  L340 [prop-viet] aria-label="Chọn tất cả"
+  L370 [string-viet]  : `Thiếu ${((r.le_phi.tong - r.le_phi.da_dong) / 1000000).toFixed(1)}M`} type={
+  L418 [prop-viet] placeholder="Tìm đơn vị, mã, tỉnh..."
+  L421 [vietnamese] Thêm đơn vị
+  L426 [prop-viet] title="Không tìm thấy đơn vị"
+  L426 [prop-viet] Label="Thêm đơn vị"
+  L485 [vietnamese] Hủy
+  L490 [prop-viet] label="Tên đơn vị *"
+  L490 [prop-viet] placeholder="VD: CLB Võ cổ truyền Bình Định"
+  L507 [prop-viet] label="Ghi chú"
+  L507 [prop-viet] placeholder="Ghi chú (tùy chọn)"
+  L513 [prop-viet] title="Xác nhận xóa"
+  L515 [prop-viet] Label="Xóa vĩnh viễn"
+
+📄 features\admin\Page_admin_users.tsx (14 items)
+  L218 [vietnamese] Xuất Excel
+  L219 [vietnamese] Thêm Tài Khoản
+  L235 [prop-viet] placeholder="Tìm tên, email, mã..."
+  L247 [prop-viet] Title="Không tìm thấy tài khoản"
+  L248 [prop-viet] Description="Thử thay đổi bộ lọc hoặc từ khóa."
+  L260 [prop-viet] aria-label="Chọn người dùng"
+  L349 [vietnamese] Hủy
+  L354 [prop-viet] label="Họ tên *"
+  L354 [prop-viet] placeholder="Nguyễn Văn A"
+  L368 [prop-viet] title="Vô hiệu hóa tài khoản"
+  L369 [prop-viet] Label="Vô hiệu hóa"
+  L372 [prop-viet] title="Chi tiết tài khoản"
+  L374 [vietnamese] Chỉnh sửa
+  L375 [vietnamese] Xem trang chi tiết
+
+📄 features\organizations\Page_organizations.tsx (14 items)
+  L40 [string-viet] Hội/Liên đoàn Quận/Huyện
+  L271 [prop-viet] placeholder="Tìm tổ chức, mã, người liên hệ..."
+  L278 [vietnamese] Tất cả cấp độ
+  L283 [vietnamese] Xuất file
+  L284 [vietnamese] Thêm Tổ Chức
+  L290 [prop-viet] title="Không có tổ chức nào"
+  L290 [prop-viet] Label="Thêm Tổ Chức"
+  L329 [vietnamese] Hủy
+  L334 [prop-viet] label="Tên tổ chức / Liên đoàn *"
+  L334 [prop-viet] placeholder="VD: Liên đoàn Võ thuật cổ truyền Việt Nam"
+  L347 [prop-viet] label="Họ tên người đại diện"
+  L347 [prop-viet] placeholder="Chủ tịch / Trưởng ban"
+  L357 [prop-viet] title="Xác nhận xóa"
+  L358 [prop-viet] Label="Xóa"
+
+📄 features\tournament\Page_forms.tsx (14 items)
+  L210 [vietnamese] Bộ lọc Dữ liệu
+  L217 [vietnamese] Tất cả Lứa tuổi
+  L225 [vietnamese] Tất cả Giới tính
+  L233 [vietnamese] Tất cả Nội dung
+  L240 [vietnamese] Trạng thái thi đấu
+  L245 [vietnamese] Số lượng Giám định
+  L290 [prop-viet] title="Không có lượt thi"
+  L290 [prop-viet] description="Thử thay đổi bộ lọc."
+  L351 [prop-viet] title="✏️ Chấm điểm Quyền"
+  L352 [vietnamese] Hủy
+  L352 [vietnamese] Xác nhận điểm
+  L381 [vietnamese] BỎ THẤP
+  L382 [vietnamese] BỎ CAO
+  L390 [vietnamese] Điểm Tổng (Bỏ cao / thấp)
+
+📄 features\tournament\Page_referees.tsx (14 items)
+  L146 [prop-viet] placeholder="Tìm trọng tài, đơn vị..."
+  L148 [vietnamese] Thêm trọng tài
+  L153 [prop-viet] title="Không tìm thấy trọng tài"
+  L153 [prop-viet] description="Thử thay đổi bộ lọc."
+  L153 [prop-viet] Label="Thêm trọng tài"
+  L159 [prop-viet] aria-label="Chọn tất cả"
+  L234 [vietnamese] Hủy
+  L238 [prop-viet] label="Họ tên *"
+  L238 [prop-viet] placeholder="Nguyễn Văn A"
+  L253 [prop-viet] label="Kinh nghiệm"
+  L253 [prop-viet] placeholder="15 năm, 20 giải QG"
+  L254 [prop-viet] label="Ghi chú"
+  L260 [prop-viet] title="Xóa trọng tài"
+  L262 [prop-viet] Label="Xóa"
+
+📄 features\provincial\Page_provincial_referees.tsx (13 items)
+  L212 [prop-viet] placeholder="Tìm trọng tài, SĐT, email..."
+  L216 [vietnamese] Tất cả cấp bậc
+  L221 [vietnamese] Tất cả chuyên môn
+  L225 [vietnamese] Thêm Trọng Tài
+  L230 [prop-viet] title="Không tìm thấy trọng tài"
+  L276 [prop-viet] title="Duyệt"
+  L278 [prop-viet] title="Từ chối"
+  L282 [prop-viet] title="Chỉnh sửa"
+  L284 [prop-viet] title="Xoá"
+  L348 [vietnamese] Huỷ
+  L349 [vietnamese] Xoá
+  L389 [vietnamese] Nữ
+  L409 [vietnamese] Huỷ
+
+📄 features\admin\Page_admin_people.tsx (12 items)
+  L142 [prop-viet] subtitle="VĐV, Huấn luyện viên, và Trọng tài toàn hệ thống"
+  L163 [prop-viet] Title="Không tìm thấy"
+  L164 [prop-viet] Description="Thử thay đổi bộ lọc"
+  L226 [vietnamese] Duyệt
+  L227 [vietnamese] Ngưng
+  L228 [vietnamese] Kích hoạt
+  L270 [vietnamese] Duyệt hồ sơ
+  L271 [vietnamese] Tạm ngưng
+  L272 [vietnamese] Kích hoạt lại
+  L282 [prop-viet] title="Duyệt hồ sơ?"
+  L283 [prop-viet] message="Xác nhận duyệt hồ sơ này? Người dùng sẽ được kích hoạt trong"
+  L284 [prop-viet] Label="Duyệt"
+
+📄 features\admin\Page_admin_roles.tsx (12 items)
+  L103 [string-viet] } quyền 
+  L155 [vietnamese] Tạo Vai Trò
+  L202 [vietnamese] Hủy
+  L202 [vietnamese] Tạo
+  L202 [prop-viet] title="Tạo vai trò mới"
+  L204 [prop-viet] label="Tên *"
+  L204 [prop-viet] placeholder="VD: Giám sát KT"
+  L205 [prop-viet] label="Mã *"
+  L205 [prop-en] placeholder="VD: TECH_SUPERVISOR"
+  L206 [prop-viet] label="Mô tả"
+  L210 [prop-viet] title="Thay đổi quyền admin"
+  L210 [prop-viet] Label="Xác nhận"
+
+📄 features\admin\Page_admin_tenants.tsx (12 items)
+  L200 [vietnamese] Xuất CSV
+  L206 [prop-viet] placeholder="Tìm theo tên, email, khu vực..."
+  L221 [vietnamese] Phê duyệt tất cả
+  L224 [vietnamese] Đình chỉ tất cả
+  L238 [prop-viet] Title="Không tìm thấy tổ chức nào"
+  L239 [prop-viet] Description="Thử thay đổi bộ lọc tìm kiếm"
+  L305 [prop-viet] title="Chi tiết Tổ chức"
+  L342 [vietnamese] Phê duyệt
+  L345 [vietnamese] Đình chỉ
+  L348 [vietnamese] Kích hoạt lại
+  L351 [vietnamese] Chuyển sang Active
+  L365 [string-viet] } tổ chức 
+
+📄 features\marketplace\Page_marketplace_admin.tsx (12 items)
+  L192 [prop-en] title="VCT Marketplace"
+  L193 [prop-en] subtitle="Workspace quan tri cho seller, CLB va admin van hanh module "
+  L313 [prop-en] title="Dang san pham moi"
+  L331 [prop-en] placeholder="Ten san pham"
+  L338 [prop-en] placeholder="Mo ta ngan"
+  L372 [prop-en] label="Gia ban"
+  L378 [prop-en] label="Ton kho"
+  L384 [prop-en] placeholder="Khu vuc giao hang"
+  L389 [prop-en] placeholder="Dong mon / muc dich"
+  L397 [prop-en] placeholder="Mo ta day du cho san pham..."
+  L413 [prop-en] placeholder="Nhan thuoc tinh"
+  L425 [prop-en] placeholder="Gia tri"
+
+📄 features\admin\components\subscription\SubscriptionDrawer.tsx (10 items)
+  L66 [prop-viet] aria-label="Thông tin subscription"
+  L74 [prop-viet] aria-label="Lịch sử thanh toán"
+  L86 [string-viet] Tự gia hạn
+  L127 [vietnamese] Gia hạn
+  L128 [vietnamese] Tạm ngưng
+  L129 [vietnamese] Hủy gói
+  L134 [vietnamese] Kích hoạt lại
+  L135 [vietnamese] Hủy gói
+  L139 [vietnamese] Kích hoạt gói
+  L151 [prop-viet] title="Chưa có kỳ thanh toán"
+
+📄 features\admin\components\support\SupportTicketDrawer.tsx (10 items)
+  L130 [string-viet] Nội bộ
+  L137 [prop-viet] placeholder="Thêm ghi chú nội bộ..."
+  L144 [vietnamese] Thêm ghi chú
+  L186 [prop-viet] placeholder="Nhập phản hồi..."
+  L188 [vietnamese] Mẫu
+  L195 [vietnamese] Gửi
+  L214 [vietnamese] Nhận xử lý
+  L215 [vietnamese] Giải quyết
+  L216 [vietnamese] Đóng
+  L217 [vietnamese] Mở lại
+
+📄 features\tournament\Page_schedule.tsx (10 items)
+  L184 [vietnamese] Sàn
+  L333 [prop-viet] title="Không có lịch"
+  L333 [string-viet] Tạo lịch tự động
+  L336 [prop-viet] title="⚡ Tạo Lịch Tự Động"
+  L343 [prop-viet] label="Số ngày thi đấu"
+  L355 [vietnamese] 📊 Tổng quan dự kiến
+  L359 [vietnamese] Nội dung
+  L363 [vietnamese] Sàn khả dụng
+  L367 [vietnamese] Phiên tổng
+  L373 [vietnamese] Hủy
+
+📄 features\admin\Page_admin_reference_data.tsx (9 items)
+  L158 [prop-viet] subtitle="Quản lý bảng lookup: cấp đai, hạng cân, tiêu chí, lứa tuổi.."
+  L162 [vietnamese] Thêm mục mới
+  L210 [vietnamese] Hủy
+  L210 [string-viet]  onClick={() => { setShowModal(false); clearErrors() }}>Hủy</VCT_Button><VCT_But
+  L212 [prop-viet] label="Mã (code) *"
+  L212 [prop-en] placeholder="VD: BLACK_1"
+  L217 [prop-viet] label="Thứ tự"
+  L221 [prop-viet] title="Ẩn mục tham chiếu"
+  L221 [prop-viet] Label="Ẩn mục này"
+
+📄 features\athletes\Page_athlete_portal.tsx (9 items)
+  L239 [prop-viet] title="Chưa có hồ sơ Vận động viên"
+  L240 [prop-viet] description="Tài khoản của bạn chưa được liên kết với hồ sơ VĐV nào. Vui "
+  L326 [prop-viet] title="Chỉ số Kỹ năng"
+  L346 [prop-viet] title="Giải đấu sắp tới & Gần đây"
+  L364 [prop-viet] title="Chưa tham gia giải đấu"
+  L364 [prop-viet] description="Bạn chưa có giải đấu nào trong thời gian gần đây."
+  L412 [prop-viet] title="Mục tiêu cá nhân"
+  L440 [prop-viet] title="Hành trình Thăng đai"
+  L467 [prop-viet] title="Đơn vị trực thuộc"
+
+📄 features\federation\Page_province_clubs.tsx (9 items)
+  L60 [prop-viet] placeholder="Tìm CLB theo tên hoặc mã..."
+  L70 [vietnamese] Tất cả trạng thái
+  L71 [vietnamese] Hoạt động
+  L72 [vietnamese] Chờ duyệt
+  L73 [vietnamese] Tạm ngưng
+  L92 [vietnamese] Chủ nhiệm
+  L96 [vietnamese] Thành viên
+  L100 [vietnamese] VĐV / HLV
+  L104 [vietnamese] Thành lập
+
+📄 features\marketplace\Page_marketplace.tsx (9 items)
+  L79 [prop-en] message="Workspace quan tri cho seller nam trong Admin > Marketplace."
+  L85 [prop-en] title="VCT Marketplace"
+  L86 [prop-en] subtitle="San thuong mai dien tuyen cho thiet bi, dung cu, binh khi va"
+  L183 [prop-en] title="Chua co hang noi bat"
+  L184 [prop-en] description="Du lieu se duoc cap nhat ngay khi seller bat dau dang san ph"
+  L243 [prop-en] placeholder="Tim theo ten san pham, seller hoac tu khoa..."
+  L303 [prop-en] title="Khong tim thay san pham phu hop"
+  L304 [prop-en] description="Thu doi tu khoa tim kiem hoac bo loc danh muc de hien thi th"
+  L306 [prop-en] Label="Bo loc"
+
+📄 features\tournament\Page_combat.tsx (9 items)
+  L255 [vietnamese] 🟡 Cảnh cáo
+  L261 [vietnamese] ⏭ Hiệp tiếp
+  L264 [vietnamese] 💥 KO Đỏ
+  L266 [vietnamese] 🏁 Kết thúc
+  L286 [vietnamese] 🟡 Cảnh cáo
+  L311 [vietnamese] ▶ Bắt đầu trận
+  L357 [prop-viet] title="Không có trận đấu"
+  L357 [prop-viet] description="Thử thay đổi bộ lọc."
+  L386 [vietnamese] Đóng
+
+📄 features\tournament\Page_dashboard.tsx (9 items)
+  L152 [vietnamese] Cấu hình giải
+  L153 [vietnamese] Báo cáo
+  L182 [prop-viet] title="🔴 Sàn đấu trực tiếp"
+  L184 [vietnamese] Điều hành
+  L231 [prop-viet] title="⚖️ Tiến trình Cân ký"
+  L253 [prop-viet] title="⚠️ Khiếu nại"
+  L284 [prop-viet] title="📋 Hoạt động gần đây"
+  L291 [prop-viet] title="🏆 Top 3 Đoàn Xuất Sắc"
+  L293 [vietnamese] Bảng tổng sắp
+
+📄 features\tournament\Page_tournament_config.tsx (9 items)
+  L62 [prop-viet] title="Cấu Hình Giải Đấu"
+  L68 [vietnamese] Xem trước
+  L69 [vietnamese] Lưu cấu hình
+  L87 [prop-viet] label="Tên giải"
+  L88 [prop-viet] label="Địa điểm"
+  L89 [prop-viet] label="Ngày bắt đầu"
+  L90 [prop-viet] label="Ngày kết thúc"
+  L91 [prop-viet] label="Hạn đăng ký"
+  L92 [prop-viet] label="Số VĐV tối đa"
+
+📄 features\admin\Page_admin_cms.tsx (8 items)
+  L101 [prop-viet] aria-label="Chọn màu"
+  L171 [prop-en] placeholder="JSON data..."
+  L280 [prop-viet] title="CMS — Quản Trị Nội Dung"
+  L281 [prop-viet] subtitle="Cấu hình giao diện, thương hiệu và nội dung toàn hệ thống — "
+  L417 [prop-viet] title="Preview Cấu Hình"
+  L484 [prop-viet] title="Khôi phục mặc định"
+  L485 [prop-viet] message="Thao tác này sẽ khôi phục TOÀN BỘ cấu hình CMS về giá trị mặ"
+  L486 [prop-viet] Label="Khôi phục"
+
+📄 features\athletes\Page_athlete_management.tsx (8 items)
+  L118 [string-viet] , value: athlete.date_of_birth ? `${athlete.date_of_birth} (${calcAge(athlete.da
+  L293 [prop-viet] label="Tổng VĐV"
+  L295 [prop-viet] label="Huy chương"
+  L296 [prop-en] label="Elo TB"
+  L297 [prop-viet] label="Hoạt động"
+  L327 [prop-viet] placeholder="Tìm theo tên, email, SĐT, tỉnh…"
+  L375 [vietnamese] Tất cả
+  L405 [prop-viet] title="Không tìm thấy VĐV"
+
+📄 features\federation\Page_pending_approvals.tsx (8 items)
+  L125 [prop-viet] title="Phê duyệt"
+  L126 [prop-viet] subtitle="Quản lý và xử lý các yêu cầu phê duyệt"
+  L181 [prop-viet] title="Không có yêu cầu nào cần duyệt"
+  L182 [prop-viet] description="Tất cả các yêu cầu phê duyệt đã được xử lý. Tuyệt vời!"
+  L213 [prop-viet] title="Bạn chưa có yêu cầu nào"
+  L214 [prop-viet] description="Các yêu cầu phê duyệt bạn đã gửi sẽ hiển thị tại đây."
+  L239 [string-viet] Bạn có chắc chắn muốn phê duyệt yêu cầu này?
+  L240 [string-viet] Vui lòng nhập lý do từ chối.
+
+📄 features\people\Page_coaches.tsx (8 items)
+  L76 [string-viet] , value: `${avgExperience} năm`, icon: <VCT_Icons.Award size={18} />, color: 
+  L83 [prop-viet] title="Huấn Luyện Viên"
+  L84 [prop-viet] subtitle="Quản lý danh sách HLV, chứng chỉ, và phân công đào tạo."
+  L89 [vietnamese] Xuất danh sách
+  L90 [vietnamese] Thêm HLV
+  L106 [prop-viet] placeholder="Tìm HLV, CLB..."
+  L112 [prop-viet] title="Không tìm thấy HLV"
+  L112 [prop-viet] description="Thử thay đổi bộ lọc hoặc từ khóa."
+
+📄 features\people\Page_people.tsx (8 items)
+  L106 [prop-viet] title="Quản lý Nhân sự & Con người"
+  L107 [prop-viet] subtitle="Toàn bộ VĐV, HLV, Trọng tài và nhân sự trong hệ thống VCT."
+  L112 [vietnamese] Xuất Excel
+  L113 [vietnamese] Thêm hồ sơ
+  L135 [prop-viet] placeholder="Tìm theo tên, CLB, email..."
+  L175 [string-viet] Hoạt động
+  L176 [string-viet] Chờ duyệt
+  L177 [string-viet] Ngưng
+
+📄 features\people\Page_referees.tsx (8 items)
+  L70 [vietnamese] r.certification_level === 'Quốc tế').length, icon:
+  L79 [prop-viet] title="Trọng Tài"
+  L80 [prop-viet] subtitle="Quản lý danh sách trọng tài, cấp chứng nhận và phân công giả"
+  L85 [vietnamese] Xuất danh sách
+  L86 [vietnamese] Đăng ký TT mới
+  L100 [prop-viet] placeholder="Tìm trọng tài..."
+  L105 [prop-viet] title="Không tìm thấy trọng tài"
+  L105 [prop-viet] description="Thử thay đổi bộ lọc hoặc từ khóa."
+
+📄 features\tournament\Page_weigh_in.tsx (8 items)
+  L189 [vietnamese] In danh sách
+  L219 [vietnamese] Đơn Vị / Đoàn
+  L220 [vietnamese] Họ và Tên VĐV
+  L257 [prop-viet] title="Không tìm thấy"
+  L257 [prop-viet] description="Thử thay đổi bộ lọc."
+  L368 [prop-viet] title="⚖️ Nhập cân nặng thực tế"
+  L369 [vietnamese] Hủy
+  L369 [vietnamese] Xác nhận cân
+
+📄 features\admin\Page_audit_logs.tsx (7 items)
+  L113 [prop-viet] title="Nhật Ký Hệ Thống (Audit Logs)"
+  L114 [prop-viet] subtitle="Theo dõi và giám sát mọi hoạt động trên hệ thống VCT PLATFOR"
+  L117 [vietnamese] Xuất CSV
+  L126 [prop-viet] placeholder="Tìm theo mã log, tài khoản, thao tác, chi tiết..."
+  L161 [prop-viet] Title="Không tìm thấy nhật ký"
+  L162 [prop-viet] Description="Thử thay đổi bộ lọc tìm kiếm"
+  L235 [prop-viet] title="Chi tiết Nhật ký"
+
+📄 features\athletes\Page_athlete_profile.tsx (7 items)
+  L50 [prop-viet] title="Chưa có hồ sơ Vận động viên"
+  L51 [prop-viet] description="Bạn cần có hồ sơ VĐV để xem trang này."
+  L132 [vietnamese] Lưu thay đổi
+  L132 [vietnamese] Cập nhật hồ sơ
+  L187 [prop-viet] title="Thể chất"
+  L216 [prop-viet] title="Đẳng cấp & Thăng đai"
+  L246 [prop-viet] title="Chỉ số Kỹ năng"
+
+📄 features\athletes\Page_athlete_rankings.tsx (7 items)
+  L38 [prop-viet] title="Chưa có hồ sơ VĐV"
+  L39 [prop-viet] description="Vui lòng liên kết hồ sơ VĐV trước khi xem bảng xếp hạng."
+  L82 [prop-viet] title="Mục tiêu cá nhân"
+  L110 [prop-viet] title="Chỉ số kỹ năng"
+  L131 [prop-viet] title="Lịch sử xếp hạng"
+  L139 [prop-viet] title="Biểu đồ xếp hạng"
+  L140 [prop-viet] description="Biểu đồ lịch sử xếp hạng ELO qua các mùa giải sẽ được hiển t"
+
+📄 features\finance\Page_finance.tsx (7 items)
+  L83 [prop-viet] title="Quản Lý Tài Chính"
+  L84 [prop-viet] subtitle="Quản lý thu chi, quỹ liên đoàn, hội phí và ngân sách giải đấ"
+  L89 [vietnamese] Xuất Báo Cáo
+  L90 [vietnamese] Thêm Giao Dịch
+  L158 [prop-viet] placeholder="Tìm mã GD, mô tả, đối tác..."
+  L206 [string-viet] Hoàn tất
+  L207 [string-viet] Chờ duyệt
+
+📄 features\heritage\Page_heritage.tsx (7 items)
+  L119 [prop-viet] title="Di Sản & Gia Phả"
+  L120 [prop-viet] subtitle="Lưu trữ truyền thống, hệ phái và tôn vinh các bậc tiền nhân."
+  L125 [vietnamese] Xuất Gia Phả
+  L126 [vietnamese] Thêm Cây Gia Phả
+  L144 [vietnamese] Phóng to
+  L145 [vietnamese] Thu nhỏ
+  L148 [prop-viet] placeholder="Tìm kiếm võ sư, hệ phái..."
+
+📄 features\people\Page_athlete_profile.tsx (7 items)
+  L138 [prop-viet] title="Thông tin cá nhân"
+  L160 [prop-viet] title="Thống kê thi đấu"
+  L184 [prop-viet] title="Thành tích thi đấu"
+  L204 [prop-viet] title="Lịch sử Đai"
+  L228 [prop-viet] title="Hồ sơ Y tế"
+  L229 [prop-viet] description="Chưa có hồ sơ y tế nào được ghi nhận"
+  L234 [prop-viet] title="Dòng thời gian"
+
+📄 features\provincial\Page_club_internal.tsx (7 items)
+  L121 [vietnamese] Thêm thành viên
+  L123 [prop-viet] title="Chưa có thành viên"
+  L150 [vietnamese] Thêm lớp
+  L152 [prop-viet] title="Chưa có lớp tập"
+  L152 [prop-viet] description="Thêm lớp tập đầu tiên."
+  L187 [prop-viet] title="Chưa có giao dịch"
+  L187 [prop-viet] description="Thêm bản ghi tài chính đầu tiên."
+
+📄 features\tournament\Page_tournament_protests.tsx (7 items)
+  L65 [prop-viet] title="Khiếu Nại & Kháng Nghị"
+  L66 [prop-viet] subtitle="Quản lý khiếu nại kết quả trận đấu, xem video review, ra quy"
+  L86 [prop-viet] placeholder="Tìm theo trận, người khiếu nại..."
+  L91 [prop-viet] title="Không có khiếu nại"
+  L91 [prop-viet] description="Chưa có khiếu nại nào phù hợp."
+  L131 [vietnamese] Chấp nhận
+  L132 [vietnamese] Từ chối
+
+📄 features\training\Page_attendance.tsx (7 items)
+  L72 [prop-viet] title="Điểm danh Lớp học"
+  L78 [vietnamese] Quét QR
+  L79 [vietnamese] Tất cả Có mặt
+  L93 [prop-viet] placeholder="Tìm kiếm võ sinh theo tên, mã..."
+  L154 [prop-viet] placeholder="Thêm ghi chú..."
+  L166 [prop-viet] title="Không tìm thấy võ sinh"
+  L166 [prop-viet] description="Thử thay đổi từ khóa tìm kiếm."
+
+📄 features\training\Page_belt_exams.tsx (7 items)
+  L75 [prop-viet] title="Kỳ thi Thăng Cấp Đai"
+  L76 [prop-viet] subtitle="Tổ chức, quản lý hồ sơ đăng ký thi và chấm điểm thăng cấp."
+  L79 [vietnamese] Tạo Kỳ thi mới
+  L102 [prop-viet] placeholder="Tìm tên kỳ thi, địa điểm..."
+  L108 [prop-viet] title="Không có kỳ thi nào"
+  L108 [prop-viet] description="Thử thay đổi bộ lọc hoặc thêm kỳ thi mới."
+  L140 [vietnamese] Cấu hình Hội đồng
+
+📄 features\admin\Page_admin_feature_flags.tsx (6 items)
+  L165 [vietnamese] Xuất CSV
+  L177 [prop-viet] placeholder="Tìm theo tên, key..."
+  L186 [prop-viet] title="Không tìm thấy feature flag"
+  L186 [prop-viet] description="Thử thay đổi bộ lọc hoặc từ khóa tìm kiếm."
+  L253 [prop-viet] title="Tắt tính năng toàn hệ thống"
+  L255 [prop-viet] Label="Tắt tính năng"
+
+📄 features\admin\Page_admin_federation.tsx (6 items)
+  L159 [prop-viet] subtitle="Tổ chức, nhân sự, và cơ cấu Liên đoàn VCT các cấp"
+  L178 [prop-viet] Title="Không tìm thấy tổ chức"
+  L179 [prop-viet] Description="Thử thay đổi bộ lọc tìm kiếm"
+  L235 [vietnamese] Duyệt
+  L253 [prop-viet] Title="Không có nhân sự"
+  L316 [vietnamese] Duyệt tổ chức
+
+📄 features\admin\Page_admin_scoring.tsx (6 items)
+  L155 [prop-viet] title="Chấm điểm & Giám sát Live"
+  L156 [prop-viet] subtitle="Theo dõi real-time các trận đấu đang diễn ra"
+  L177 [prop-viet] title="Không có trận đấu"
+  L177 [prop-viet] description="Chưa có trận đấu nào đang diễn ra"
+  L239 [vietnamese] Tạm dừng
+  L240 [vietnamese] Override điểm
+
+📄 features\admin\Page_integrity.tsx (6 items)
+  L105 [string-viet] Mức độ,Trạng thái,Loại,Giải đấu,Chi tiết,Phụ trách,Thời gian
+  L111 [vietnamese] Xuất báo cáo
+  L124 [prop-viet] placeholder="Tìm theo chi tiết, giải đấu..."
+  L184 [prop-viet] title="Chi tiết cảnh báo"
+  L207 [string-viet] , description: `Nguồn: ${drawerAlert.source.replace(/_/g, 
+  L209 [string-viet] ), title: `Chuyển trạng thái: ${drawerAlert.status.replace(/_/g, 
+
+📄 features\community\Page_community.tsx (6 items)
+  L65 [prop-viet] title="Cộng Đồng Võ Thuật"
+  L66 [prop-viet] subtitle="Tin tức, sự kiện và kết nối cộng đồng võ thuật toàn quốc."
+  L69 [vietnamese] Đăng bài mới
+  L84 [prop-viet] placeholder="Tìm kiếm bài viết, sự kiện..."
+  L96 [string-viet] Thông báo
+  L97 [string-viet] Thành tích
+
+📄 features\federation\Page_federation_documents.tsx (6 items)
+  L101 [prop-viet] placeholder="Tìm văn bản, số văn bản..."
+  L104 [vietnamese] Tất cả loại
+  L108 [vietnamese] Tất cả trạng thái
+  L112 [vietnamese] Soạn văn bản
+  L116 [prop-viet] title="Không có văn bản nào"
+  L116 [prop-viet] description="Thử thay đổi bộ lọc hoặc soạn văn bản mới."
+
+📄 features\federation\Page_federation_invoices.tsx (6 items)
+  L77 [prop-viet] title="Hóa đơn Thu / Chi"
+  L77 [prop-viet] subtitle="Quản lý hóa đơn, phiếu thu, phiếu chi của Liên đoàn"
+  L94 [vietnamese] Tất cả loại
+  L100 [vietnamese] Tất cả trạng thái
+  L113 [prop-viet] title="Không có hóa đơn"
+  L113 [prop-viet] description="Thay đổi bộ lọc để xem."
+
+📄 features\federation\Page_federation_provinces.tsx (6 items)
+  L124 [prop-viet] placeholder="Tìm tỉnh/thành phố..."
+  L126 [prop-viet] title="Lọc theo vùng miền"
+  L128 [vietnamese] Tất cả vùng
+  L132 [vietnamese] Xuất file
+  L136 [prop-viet] title="Không tìm thấy tỉnh/thành"
+  L136 [prop-viet] description="Thử thay đổi bộ lọc."
+
+📄 features\marketplace\Page_marketplace_product.tsx (6 items)
+  L325 [prop-en] title="Tao don mua nhanh"
+  L352 [prop-en] placeholder="Ten nguoi mua"
+  L359 [prop-en] placeholder="So dien thoai"
+  L375 [prop-en] label="So luong"
+  L384 [prop-en] placeholder="Dia chi giao hang"
+  L393 [prop-en] placeholder="Ghi chu cho seller..."
+
+📄 features\portals\Page_referee_scoring.tsx (6 items)
+  L179 [vietnamese] ▶ Bắt đầu
+  L181 [vietnamese] ⏸ Tạm dừng
+  L249 [vietnamese] Lịch sử hiệp
+  L295 [vietnamese] Xác nhận kết thúc trận?
+  L305 [vietnamese] Hủy
+  L306 [vietnamese] Xác nhận
+
+📄 features\rankings\Page_rankings.tsx (6 items)
+  L75 [prop-viet] title="Bảng Xếp Hạng Quốc Gia"
+  L76 [prop-viet] description="Hệ thống tính điểm xếp hạng Vận động viên theo từng năm thi "
+  L84 [vietnamese] Xuất BXH
+  L158 [prop-viet] placeholder="Tìm kiếm VĐV, Đơn vị..."
+  L231 [prop-viet] title="Không tìm thấy VĐV"
+  L231 [prop-viet] description="Thử thay đổi hạng cân hoặc từ khóa tìm kiếm."
+
+📄 features\tournament\Page_technical_meeting.tsx (6 items)
+  L87 [vietnamese] Rà Soát Danh Sách Chốt (Final Entry List)
+  L89 [vietnamese] Dành cho buổi **Họp chuyên môn** trước giải. Các Trưởng đoàn kiểm tra lại thông 
+  L91 [vietnamese] In Biên Bản Chốt
+  L106 [prop-viet] placeholder="Tìm VĐV, nội dung thi đấu..."
+  L113 [vietnamese] Lọc theo Đoàn / Đơn vị
+  L160 [prop-viet] title="Không có dữ liệu trong danh sách chốt"
+
+📄 features\tournament\Page_tournament_media.tsx (6 items)
+  L69 [prop-viet] title="Quản Lý Media"
+  L70 [prop-viet] subtitle="Upload, quản lý ảnh/video giải đấu, video review (VAR)."
+  L76 [vietnamese] Upload Ảnh
+  L96 [prop-viet] placeholder="Tìm media..."
+  L102 [prop-viet] title="Không tìm thấy"
+  L102 [prop-viet] description="Thử thay đổi bộ lọc."
+
+📄 features\training\Page_training_plans.tsx (6 items)
+  L77 [prop-viet] title="Kế hoạch Giảng dạy"
+  L78 [prop-viet] subtitle="Lịch tập luyện, phân công HLV và nội dung giáo án."
+  L99 [prop-viet] placeholder="Tìm giáo án, lớp, HLV..."
+  L124 [prop-viet] title="Trống"
+  L124 [prop-viet] description="Không có lịch tập nào phù hợp"
+  L155 [vietnamese] Chỉnh sửa
+
+📄 features\admin\Page_admin_clubs.tsx (5 items)
+  L137 [prop-viet] subtitle="CLB, thành viên, cơ sở vật chất, và thiết bị"
+  L140 [vietnamese] Xuất CSV
+  L155 [prop-viet] Title="Không tìm thấy CLB"
+  L207 [vietnamese] Duyệt CLB
+  L208 [vietnamese] Tạm ngưng
+
+📄 features\admin\Page_admin_finance.tsx (5 items)
+  L188 [prop-viet] subtitle="Hóa đơn, ngân sách, và tài trợ cho toàn hệ thống VCT"
+  L208 [prop-viet] Title="Không tìm thấy hóa đơn"
+  L209 [prop-viet] Description="Thử thay đổi bộ lọc tìm kiếm"
+  L302 [prop-viet] Title="Không có nhà tài trợ"
+  L377 [vietnamese] Xác nhận thanh toán
+
+📄 features\admin\Page_admin_rankings.tsx (5 items)
+  L168 [prop-viet] Title="Không tìm thấy VĐV"
+  L169 [prop-viet] Description="Thử thay đổi bộ lọc tìm kiếm"
+  L256 [prop-viet] Title="Không có kỳ thi"
+  L295 [vietnamese] Bắt đầu
+  L334 [vietnamese] Điều chỉnh ELO
+
+📄 features\athletes\Page_athlete_elearning.tsx (5 items)
+  L255 [prop-viet] title="Không có khóa học"
+  L255 [prop-viet] description="Chưa có khóa học nào trong danh mục này."
+  L263 [prop-viet] title="Chứng chỉ đã đạt"
+  L269 [prop-viet] title="Chưa có chứng chỉ"
+  L269 [prop-viet] description="Hoàn thành khóa học để nhận chứng chỉ."
+
+📄 features\athletes\Page_athlete_tournaments.tsx (5 items)
+  L145 [prop-viet] placeholder="Tìm giải đấu..."
+  L149 [vietnamese] Sắp xếp: Ngày
+  L150 [vietnamese] Sắp xếp: Tên
+  L151 [vietnamese] Sắp xếp: Trạng thái
+  L161 [prop-viet] title="Chưa có dữ liệu giải đấu"
+
+📄 features\components\VCT_AddressSelect.tsx (5 items)
+  L129 [prop-viet] placeholder="Tìm tỉnh/TP..."
+  L144 [string-viet] Đang tải...
+  L167 [prop-viet] placeholder="Tìm xã/phường..."
+  L186 [string-viet] -- Chọn tỉnh/TP trước --
+  L188 [string-viet] Đang tải...
+
+📄 features\components\VCT_CommandPalette.tsx (5 items)
+  L239 [prop-viet] placeholder="Tìm workspace, lệnh, trang..."
+  L241 [prop-en] aria-label="Command palette search"
+  L296 [vietnamese] ↑↓ Di chuyển
+  L297 [vietnamese] ⏎ Chọn
+  L298 [vietnamese] ESC Đóng
+
+📄 features\dashboard\AnalyticsDashboard.tsx (5 items)
+  L86 [vietnamese] Đang tải...
+  L96 [vietnamese] Tổng quan hệ thống VCT Platform
+  L130 [vietnamese] 🗺️ VĐV theo tỉnh/thành
+  L146 [vietnamese] 🥋 Phân bổ cấp đai
+  L165 [vietnamese] 🕐 Hoạt động gần đây
+
+📄 features\federation\Page_executive_dashboard.tsx (5 items)
+  L116 [vietnamese] Đã chi / Tổng phân bổ
+  L132 [vietnamese] Đã chi:
+  L132 [string-viet]  }}>Đã chi: <strong style={{ color: 
+  L133 [vietnamese] Tổng:
+  L133 [string-viet]  }}>Tổng: <strong style={{ color: 
+
+📄 features\federation\Page_federation_approvals.tsx (5 items)
+  L146 [prop-viet] placeholder="Tìm yêu cầu..."
+  L154 [prop-viet] title="Không có yêu cầu nào"
+  L154 [prop-viet] description="Tất cả đã được xử lý!"
+  L188 [vietnamese] Từ chối
+  L189 [vietnamese] Ký & Phê duyệt
+
+📄 features\federation\Page_federation_certifications.tsx (5 items)
+  L88 [prop-viet] placeholder="Tìm người, số chứng chỉ, mã xác minh..."
+  L91 [vietnamese] Tất cả loại
+  L95 [vietnamese] Cấp chứng chỉ
+  L99 [prop-viet] title="Không có chứng chỉ nào"
+  L99 [prop-viet] description="Thử thay đổi bộ lọc."
+
+📄 features\federation\Page_federation_discipline.tsx (5 items)
+  L77 [prop-viet] placeholder="Tìm vụ việc, đối tượng..."
+  L80 [vietnamese] Tất cả trạng thái
+  L84 [vietnamese] Tạo vụ việc
+  L88 [prop-viet] title="Không có vụ việc nào"
+  L88 [prop-viet] description="Hệ thống chưa ghi nhận vụ vi phạm nào."
+
+📄 features\federation\Page_province_coaches.tsx (5 items)
+  L56 [prop-viet] placeholder="Tìm HLV theo tên..."
+  L62 [vietnamese] Tất cả cấp bậc
+  L63 [vietnamese] Bậc Cao
+  L64 [vietnamese] Quốc gia
+  L65 [vietnamese] Cấp tỉnh
+
+📄 features\provincial\Page_provincial_athletes.tsx (5 items)
+  L72 [vietnamese] Tất cả giới tính
+  L72 [vietnamese] Nữ
+  L72 [string-viet] >Tất cả giới tính</option><option value=
+  L75 [vietnamese] Thêm VĐV
+  L79 [prop-viet] title="Không có VĐV nào"
+
+📄 features\provincial\Page_provincial_sub_associations.tsx (5 items)
+  L134 [prop-viet] placeholder="Tìm Chi hội, phường/xã..."
+  L138 [vietnamese] Tất cả Hội
+  L143 [vietnamese] Tất cả trạng thái
+  L147 [vietnamese] Thêm Chi hội
+  L151 [prop-viet] title="Không có Chi hội nào"
+
+📄 features\admin\Page_admin_audit_log.tsx (4 items)
+  L129 [prop-viet] aria-label="Xuất audit log"
+  L137 [prop-viet] placeholder="Tìm theo tên, ID..."
+  L148 [prop-viet] Title="Chưa có log nào"
+  L149 [prop-viet] Description="Audit log sẽ hiển thị khi có hoạt động"
+
+📄 features\admin\Page_data_quality.tsx (4 items)
+  L97 [vietnamese] Chạy kiểm tra
+  L99 [string-viet] Bảng,Overall,Completeness,Accuracy,Consistency,Timeliness
+  L106 [vietnamese] Xuất báo cáo
+  L138 [prop-viet] placeholder="Tìm theo tên rule hoặc bảng..."
+
+📄 features\athletes\Page_athlete_results.tsx (4 items)
+  L75 [prop-viet] title="Chưa có hồ sơ VĐV"
+  L76 [prop-viet] description="Vui lòng liên kết hồ sơ VĐV trước khi xem kết quả thi đấu."
+  L153 [prop-viet] title="Lịch sử thi đấu"
+  L162 [prop-viet] title="Không có kết quả"
+
+📄 features\community\Page_marketplace.tsx (4 items)
+  L44 [vietnamese] Đăng sản phẩm
+  L58 [prop-viet] placeholder="Tìm kiếm sản phẩm, người bán..."
+  L75 [string-viet] Mới
+  L77 [string-viet] Đã qua sử dụng
+
+📄 features\federation\Page_federation_organizations.tsx (4 items)
+  L101 [prop-viet] title="Tổ chức thành viên Liên đoàn"
+  L139 [prop-viet] placeholder="Tìm đơn vị..."
+  L160 [prop-viet] title="Không tìm thấy đơn vị"
+  L161 [prop-viet] description="Thay đổi bộ lọc hoặc từ khóa tìm kiếm."
+
+📄 features\federation\Page_federation_personnel.tsx (4 items)
+  L106 [prop-viet] placeholder="Tìm nhân sự..."
+  L110 [vietnamese] Tất cả đơn vị
+  L121 [prop-viet] title="Không tìm thấy nhân sự"
+  L121 [prop-viet] description="Thử thay đổi bộ lọc."
+
+📄 features\federation\Page_federation_regulations.tsx (4 items)
+  L124 [vietnamese] Cấp Quốc gia
+  L125 [vietnamese] Cấp Tỉnh
+  L126 [vietnamese] Môn phái
+  L218 [vietnamese] Quy chế cấp Quốc gia — Liên đoàn Võ Cổ Truyền Việt Nam
+
+📄 features\federation\Page_international_relations.tsx (4 items)
+  L104 [string-viet] ).length} đối tác hoạt động •{
+  L142 [prop-viet] placeholder="Tìm kiếm..."
+  L178 [vietnamese] ⏳ Chưa ký MOU
+  L225 [vietnamese] Quản lý Đoàn đi/đến
+
+📄 features\federation\Page_province_athletes.tsx (4 items)
+  L67 [prop-viet] placeholder="Tìm VĐV theo tên..."
+  L73 [vietnamese] Tất cả giới tính
+  L75 [vietnamese] Nữ
+  L78 [vietnamese] Tất cả CLB
+
+📄 features\federation\Page_province_tournaments.tsx (4 items)
+  L52 [vietnamese] Tất cả trạng thái
+  L53 [vietnamese] Sắp diễn ra
+  L54 [vietnamese] Đang diễn ra
+  L55 [vietnamese] Đã kết thúc
+
+📄 features\federation\Page_submit_approval.tsx (4 items)
+  L108 [prop-viet] title="Gửi yêu cầu Phê duyệt"
+  L109 [prop-viet] subtitle="Chọn loại yêu cầu, điền thông tin và gửi để bắt đầu quy trìn"
+  L207 [prop-viet] placeholder="VD: Đăng ký thành lập CLB XYZ..."
+  L218 [prop-viet] placeholder="Mô tả nội dung yêu cầu, lý do, tài liệu đính kèm..."
+
+📄 features\portals\Page_forms_scoring.tsx (4 items)
+  L112 [vietnamese] Chấm điểm Quyền
+  L189 [vietnamese] Trừ điểm kỹ thuật
+  L249 [vietnamese] Kết quả chấm điểm
+  L250 [string-viet] Đã hoàn tất
+
+📄 features\provincial\Page_provincial_associations.tsx (4 items)
+  L106 [prop-viet] placeholder="Tìm Hội, quận/huyện, chủ tịch..."
+  L110 [vietnamese] Tất cả trạng thái
+  L114 [vietnamese] Thêm Hội
+  L118 [prop-viet] title="Không có Hội nào"
+
+📄 features\provincial\Page_provincial_clubs.tsx (4 items)
+  L98 [prop-viet] placeholder="Tìm CLB, quận/huyện, trưởng CLB..."
+  L102 [vietnamese] Tất cả trạng thái
+  L106 [vietnamese] Thêm CLB
+  L110 [prop-viet] title="Không có CLB nào"
+
+📄 features\provincial\Page_provincial_coaches.tsx (4 items)
+  L50 [vietnamese] s + (c.experience_years || 0), 0) / coaches.length)} năm` : '—', icon:
+  L50 [string-viet] , value: coaches.length > 0 ? `${Math.round(coaches.reduce((s, c) => s + (c.expe
+  L55 [vietnamese] Thêm HLV
+  L59 [prop-viet] title="Không có HLV nào"
+
+📄 features\public\Page_results.tsx (4 items)
+  L58 [prop-viet] placeholder="Tìm kiếm nội dung thi đấu..."
+  L102 [prop-viet] title="Kết Quả Giải Đấu"
+  L103 [prop-viet] subtitle="Bảng tổng sắp huy chương và kết quả chi tiết từng nội dung."
+  L106 [string-viet] Đang diễn ra
+
+📄 features\tournament\Page_boc_tham.tsx (4 items)
+  L266 [prop-viet] title="Chọn Nội dung Bốc thăm"
+  L270 [prop-viet] label="Hạng cân / Nội dung"
+  L288 [prop-viet] title="Chưa có VĐV"
+  L288 [prop-viet] description="Chưa có VĐV đăng ký nội dung này hoặc chưa được duyệt."
+
+📄 features\club\Page_club_dashboard.tsx (3 items)
+  L274 [prop-en] title="Ty le lap day lop"
+  L324 [prop-en] title="Lop hoc hom nay"
+  L358 [prop-en] title="Giai dau sap toi"
+
+📄 features\federation\Page_pr_communications.tsx (3 items)
+  L108 [vietnamese] Tất cả
+  L125 [vietnamese] Mọi trạng thái
+  L132 [prop-viet] placeholder="Tìm kiếm..."
+
+📄 features\finance\Page_finance_fees.tsx (3 items)
+  L67 [vietnamese] Xuất Excel
+  L68 [vietnamese] Tạo phiếu thu
+  L84 [prop-viet] placeholder="Tìm theo tên, loại phí..."
+
+📄 features\organizations\Page_organization_detail.tsx (3 items)
+  L76 [string-viet] Liên đoàn
+  L77 [string-viet] Hoạt động
+  L86 [vietnamese] Chỉnh sửa
+
+📄 features\portals\portal\PortalSearchBar.tsx (3 items)
+  L106 [prop-en] aria-label="Sort workspaces"
+  L157 [prop-en] title="Grid view"
+  L165 [prop-en] title="List view"
+
+📄 features\provincial\Page_provincial_finance.tsx (3 items)
+  L64 [vietnamese] Xuất Excel
+  L65 [vietnamese] Tạo Phiếu
+  L70 [prop-viet] title="Chưa có bút toán nào"
+
+📄 features\public\Page_scoreboard.tsx (3 items)
+  L57 [vietnamese] Không có trận đấu nào đang diễn ra
+  L69 [vietnamese] GIẢI VOVINAM TOÀN QUỐC 2026
+  L110 [vietnamese] Thời gian
+
+📄 features\settings\Page_settings.tsx (3 items)
+  L191 [prop-viet] label="Họ và tên"
+  L193 [prop-viet] label="Số điện thoại"
+  L194 [prop-viet] label="Vai trò"
+
+📄 features\tournament\bracket\Page_bracket_templates.tsx (3 items)
+  L122 [vietnamese] Vòng đấu
+  L127 [vietnamese] Tổng trận
+  L132 [vietnamese] Trận vòng 1
+
+📄 features\tournament\Page_tournament_statistics.tsx (3 items)
+  L59 [vietnamese] Giải VĐQG 2025
+  L59 [vietnamese] Giải Trẻ 2026
+  L59 [vietnamese] Giải Giao hữu 2025
+
+📄 features\training\Page_elearning.tsx (3 items)
+  L47 [prop-viet] title="Học trực tuyến (E-Learning)"
+  L48 [prop-viet] subtitle="Nền tảng đào tạo từ xa cho HLV, Trọng tài và Cán bộ chuyên m"
+  L51 [vietnamese] Tạo Khóa học mới
+
+📄 features\athletes\Page_athlete_clubs.tsx (2 items)
+  L63 [prop-viet] title="Chưa tham gia CLB nào"
+  L64 [prop-viet] description="Bạn hiện chưa là thành viên của bất kỳ Câu lạc bộ hay Võ đườ"
+
+📄 features\federation\Page_cert_verification.tsx (2 items)
+  L121 [prop-viet] placeholder="VD: HLV-2025-00142 hoặc TT-2024-00089"
+  L205 [vietnamese] Không tìm thấy chứng nhận
+
+📄 features\federation\Page_federation_budget.tsx (2 items)
+  L60 [prop-viet] title="Quản lý Ngân sách"
+  L60 [prop-viet] subtitle="Kế hoạch ngân sách năm 2026 — theo dõi dự toán vs thực chi"
+
+📄 features\federation\Page_federation_fees.tsx (2 items)
+  L43 [prop-viet] title="Biểu phí & Lệ phí"
+  L43 [prop-viet] subtitle="Bảng phí chính thức của Liên đoàn — hội viên, thi đai, chứng"
+
+📄 features\federation\Page_federation_finance.tsx (2 items)
+  L103 [prop-viet] title="Tài chính Tổng cục"
+  L104 [prop-viet] subtitle="Năm tài chính 2026 • Tổng quan ngân sách Liên đoàn"
+
+📄 features\federation\Page_federation_notifications.tsx (2 items)
+  L61 [prop-viet] title="Cài đặt Thông báo"
+  L61 [prop-viet] subtitle="Cấu hình kênh thông báo và quy tắc gửi thông báo tự động"
+
+📄 features\federation\Page_federation_sponsorship.tsx (2 items)
+  L56 [prop-viet] title="Nhà tài trợ & Đối tác"
+  L56 [prop-viet] subtitle="Quản lý các hợp đồng tài trợ, đối tác truyền thông của Liên "
+
+📄 features\layout\AppShell.tsx (2 items)
+  L183 [prop-en] aria-label="Toggle Privacy Mode"
+  L185 [prop-en] title="Toggle Privacy Mode"
+
+📄 features\people\Page_coach_profile.tsx (2 items)
+  L93 [vietnamese] Gọi
+  L94 [vietnamese] Chỉnh sửa
+
+📄 features\portals\Page_spectator.tsx (2 items)
+  L269 [vietnamese] Đoàn
+  L357 [prop-viet] placeholder="Nhập tên VĐV..."
+
+📄 features\provincial\Page_provincial_certifications.tsx (2 items)
+  L58 [vietnamese] Cấp Chứng Nhận
+  L62 [prop-viet] title="Chưa có chứng nhận"
+
+📄 features\provincial\Page_provincial_discipline.tsx (2 items)
+  L50 [vietnamese] Tạo Vụ Việc
+  L54 [prop-viet] title="Chưa có vụ vi phạm nào"
+
+📄 features\provincial\Page_provincial_documents.tsx (2 items)
+  L58 [vietnamese] Soạn Văn Bản
+  L62 [prop-viet] title="Chưa có văn bản"
+
+📄 features\provincial\Page_provincial_personnel.tsx (2 items)
+  L60 [vietnamese] Thêm Thành Viên
+  L64 [prop-viet] title="Chưa có dữ liệu BCH"
+
+📄 features\provincial\Page_provincial_reports.tsx (2 items)
+  L26 [vietnamese] r.status === 'Đã gửi').length, icon:
+  L27 [vietnamese] r.status === 'Đang soạn').length, icon:
+
+📄 features\provincial\Page_provincial_tournaments.tsx (2 items)
+  L68 [vietnamese] Tạo Giải Đấu
+  L72 [prop-viet] title="Chưa có giải đấu"
+
+📄 features\admin\components\AdminCommandPalette.tsx (1 items)
+  L105 [prop-viet] placeholder="Tìm trang admin..."
+
+📄 features\admin\components\AdminGuard.tsx (1 items)
+  L68 [prop-viet] description="Vui lòng đăng nhập để truy cập trang quản trị."
+
+📄 features\calendar\Page_calendar.tsx (1 items)
+  L55 [string-viet] Tháng 12
+
+📄 features\clubs\Page_club_classes.tsx (1 items)
+  L49 [vietnamese] Tạo lớp mới
+
+📄 features\clubs\Page_club_detail.tsx (1 items)
+  L81 [vietnamese] Chỉnh sửa
+
+📄 features\clubs\Page_club_members.tsx (1 items)
+  L60 [prop-viet] placeholder="Tìm võ sinh..."
+
+📄 features\community\Page_community_events.tsx (1 items)
+  L87 [prop-viet] placeholder="Tìm sự kiện..."
+
+📄 features\community\Page_community_groups.tsx (1 items)
+  L57 [prop-viet] placeholder="Tìm nhóm..."
+
+📄 features\community\Page_community_post_detail.tsx (1 items)
+  L52 [prop-viet] placeholder="Viết bình luận..."
+
+📄 features\dashboard\Page_command_center.tsx (1 items)
+  L63 [string-viet] Trung tâm điều hành VCT Platform — Nền tảng quản lý, điều hành võ thuật cổ truyề
+
+📄 features\federation\Page_approval_detail.tsx (1 items)
+  L277 [prop-viet] placeholder="Nhập nhận xét (tuỳ chọn)..."
+
+📄 features\federation\Page_federation_dashboard.tsx (1 items)
+  L163 [string-viet] Đang diễn ra
+
+📄 features\federation\Page_federation_international.tsx (1 items)
+  L101 [prop-viet] placeholder="Tìm kiếm..."
+
+📄 features\federation\Page_federation_workflow_config.tsx (1 items)
+  L113 [string-viet] Tự động
+
+📄 features\finance\Page_finance_invoices.tsx (1 items)
+  L95 [prop-viet] placeholder="Tìm mã HĐ, đối tác..."
+
+📄 features\finance\Page_finance_sponsorship.tsx (1 items)
+  L32 [string-viet]  triệu ₫
+
+📄 features\heritage\Page_heritage_techniques.tsx (1 items)
+  L59 [prop-viet] placeholder="Tìm kỹ thuật..."
+
+📄 features\hooks\useRealtimeNotifications.tsx (1 items)
+  L233 [prop-viet] aria-label="Đóng thông báo"
+
+📄 features\notifications\Page_notifications.tsx (1 items)
+  L64 [string-viet] , l: `Tất cả (${notifications.length})` }, { v: 
+
+📄 features\people\Page_referee_profile.tsx (1 items)
+  L92 [vietnamese] Chỉnh sửa
+
+📄 features\portals\portal\PortalWorkspaceCard.tsx (1 items)
+  L70 [prop-en] description="workspace card"
+
+📄 features\provincial\Page_provincial_dashboard.tsx (1 items)
+  L154 [prop-viet] title="Chưa có dữ liệu CLB"
+
+📄 features\public\Page_public_clubs.tsx (1 items)
+  L43 [prop-viet] placeholder="Tìm kiếm theo tên CLB hoặc Tỉnh/Thành..."
+
+📄 features\public\Page_public_provinces.tsx (1 items)
+  L43 [prop-viet] placeholder="Tìm kiếm theo Tỉnh/Thành hoặc Chức sắc..."
+
+📄 features\tournament\bracket\BracketMatchDetail.tsx (1 items)
+  L94 [string-viet] ⏳ Chờ thi đấu
+
+📄 features\tournament\Page_bracket.tsx (1 items)
+  L174 [string-viet] , value: `${selectedSchema} VĐV`, icon: <VCT_Icons.GitMerge size={18} />, color:
+
+📄 features\tournament\Page_tournament_media_gallery.tsx (1 items)
+  L78 [prop-viet] placeholder="Tìm media..."
+

@@ -37,14 +37,14 @@ func (s *Server) handleBTCExport(w http.ResponseWriter, r *http.Request, p auth.
 	case "protests":
 		s.exportProtests(w, r, format, giaiID)
 	default:
-		badRequest(w, fmt.Sprintf("Loại export '%s' không hỗ trợ. Hỗ trợ: team-results, finance, weigh-ins, assignments, protests", exportType))
+		apiError(w, http.StatusBadRequest, CodeBadRequest, fmt.Sprintf("Loại export '%s' không hỗ trợ. Hỗ trợ: team-results, finance, weigh-ins, assignments, protests", exportType))
 	}
 }
 
 func (s *Server) exportTeamResults(w http.ResponseWriter, r *http.Request, format, giaiID string) {
 	results, err := s.Extended.BTC.ListTeamResults(r.Context(), giaiID)
 	if err != nil {
-		internalError(w, err)
+		apiInternal(w, err)
 		return
 	}
 
@@ -75,7 +75,7 @@ func (s *Server) exportTeamResults(w http.ResponseWriter, r *http.Request, forma
 func (s *Server) exportFinance(w http.ResponseWriter, r *http.Request, format, giaiID string) {
 	entries, err := s.Extended.BTC.ListFinance(r.Context(), giaiID)
 	if err != nil {
-		internalError(w, err)
+		apiInternal(w, err)
 		return
 	}
 
@@ -106,7 +106,7 @@ func (s *Server) exportFinance(w http.ResponseWriter, r *http.Request, format, g
 func (s *Server) exportWeighIns(w http.ResponseWriter, r *http.Request, format, giaiID string) {
 	records, err := s.Extended.BTC.ListWeighIns(r.Context(), giaiID)
 	if err != nil {
-		internalError(w, err)
+		apiInternal(w, err)
 		return
 	}
 
@@ -137,7 +137,7 @@ func (s *Server) exportWeighIns(w http.ResponseWriter, r *http.Request, format, 
 func (s *Server) exportAssignments(w http.ResponseWriter, r *http.Request, format, giaiID string) {
 	assignments, err := s.Extended.BTC.ListAssignments(r.Context(), giaiID)
 	if err != nil {
-		internalError(w, err)
+		apiInternal(w, err)
 		return
 	}
 
@@ -167,7 +167,7 @@ func (s *Server) exportAssignments(w http.ResponseWriter, r *http.Request, forma
 func (s *Server) exportProtests(w http.ResponseWriter, r *http.Request, format, giaiID string) {
 	protests, err := s.Extended.BTC.ListProtests(r.Context(), giaiID)
 	if err != nil {
-		internalError(w, err)
+		apiInternal(w, err)
 		return
 	}
 

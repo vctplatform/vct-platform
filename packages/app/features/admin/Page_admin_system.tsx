@@ -6,10 +6,10 @@ import {
     VCT_Badge, VCT_Button, VCT_Stack,
     VCT_Modal, VCT_Input, VCT_Field,
     VCT_ConfirmDialog
-} from '../components/vct-ui'
-import type { StatItem } from '../components/VCT_StatRow'
-import { VCT_Icons } from '../components/vct-icons'
-import { VCT_Drawer } from '../components/VCT_Drawer'
+} from '@vct/ui'
+import type { StatItem } from '@vct/ui'
+import { VCT_Icons } from '@vct/ui'
+import { VCT_Drawer } from '@vct/ui'
 import { AdminPageShell, useShellToast } from './components/AdminPageShell'
 import { useAdminFetch } from './hooks/useAdminAPI'
 import { useAdminMutation } from './hooks/useAdminMutation'
@@ -97,7 +97,7 @@ const MetricGrid = ({ title, icon, metrics, color }: { title: string; icon: Reac
                 <div key={m.label} className="p-3 bg-(--vct-bg-base) rounded-xl border border-(--vct-border-subtle)">
                     <div className="text-[10px] uppercase tracking-wider text-(--vct-text-tertiary) font-bold mb-1">{m.label}</div>
                     <div className="flex items-center gap-2">
-                        <div className="w-2 h-2 rounded-full bg-[#10b981] shadow-[0_0_6px_#10b981]"></div>
+                        <div className="w-2 h-2 rounded-full bg-(--vct-success) shadow-[0_0_6px_#10b981]"></div>
                         <span className="font-black text-sm text-(--vct-text-primary)">{m.value}</span>
                     </div>
                 </div>
@@ -263,17 +263,17 @@ const Page_admin_system_Content = () => {
     }
 
     const sysStats: StatItem[] = [
-        { label: 'Status', value: healthData?.status ?? '—', icon: <VCT_Icons.Activity size={18} />, color: '#10b981' },
-        { label: 'Goroutines', value: healthData?.goroutines ?? '—', icon: <VCT_Icons.Laptop size={18} />, color: '#0ea5e9' },
-        { label: 'Memory', value: healthData ? `${healthData.memory.alloc_mb} MB` : '—', icon: <VCT_Icons.Layers size={18} />, color: '#f59e0b' },
-        { label: 'Storage', value: healthData?.storage.driver ?? '—', icon: <VCT_Icons.Settings size={18} />, color: '#8b5cf6' },
+        { label: 'Status', value: healthData?.status ?? '—', icon: <VCT_Icons.Activity size={18} />, color: 'var(--vct-success)' },
+        { label: 'Goroutines', value: healthData?.goroutines ?? '—', icon: <VCT_Icons.Laptop size={18} />, color: 'var(--vct-accent-cyan)' },
+        { label: 'Memory', value: healthData ? `${healthData.memory.alloc_mb} MB` : '—', icon: <VCT_Icons.Layers size={18} />, color: 'var(--vct-warning)' },
+        { label: 'Storage', value: healthData?.storage.driver ?? '—', icon: <VCT_Icons.Settings size={18} />, color: 'var(--vct-info)' },
     ]
 
     return (
         <AdminPageShell
             title={t('admin.system.title')}
             subtitle={t('admin.system.subtitle')}
-            icon={<VCT_Icons.Settings size={28} className="text-[#8b5cf6]" />}
+            icon={<VCT_Icons.Settings size={28} className="text-(--vct-info)" />}
             breadcrumbs={[
                 { label: 'Admin', href: '/admin', icon: <VCT_Icons.Home size={14} /> },
                 { label: 'Cấu hình Hệ thống' },
@@ -313,17 +313,17 @@ const Page_admin_system_Content = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
                 {isLoading ? (
                     <>
-                        <SkeletonMetricGrid title="Database" color="#0ea5e9" />
-                        <SkeletonMetricGrid title="Memory" color="#ef4444" />
-                        <SkeletonMetricGrid title="Cache" color="#10b981" />
-                        <SkeletonMetricGrid title="Runtime" color="#f59e0b" />
+                        <SkeletonMetricGrid title="Database" color="var(--vct-accent-cyan)" />
+                        <SkeletonMetricGrid title="Memory" color="var(--vct-danger)" />
+                        <SkeletonMetricGrid title="Cache" color="var(--vct-success)" />
+                        <SkeletonMetricGrid title="Runtime" color="var(--vct-warning)" />
                     </>
                 ) : healthData ? (
                     <>
-                        {dbMetrics.length > 0 && <MetricGrid title="PostgreSQL Database" icon={<VCT_Icons.Layers size={18} />} metrics={dbMetrics} color="#0ea5e9" />}
-                        {memoryMetrics.length > 0 && <MetricGrid title="Memory & GC" icon={<VCT_Icons.Activity size={18} />} metrics={memoryMetrics} color="#ef4444" />}
-                        {cacheMetrics.length > 0 && <MetricGrid title="Cache" icon={<VCT_Icons.Star size={18} />} metrics={cacheMetrics} color="#10b981" />}
-                        {runtimeMetrics.length > 0 && <MetricGrid title="Runtime" icon={<VCT_Icons.Settings size={18} />} metrics={runtimeMetrics} color="#f59e0b" />}
+                        {dbMetrics.length > 0 && <MetricGrid title="PostgreSQL Database" icon={<VCT_Icons.Layers size={18} />} metrics={dbMetrics} color="var(--vct-accent-cyan)" />}
+                        {memoryMetrics.length > 0 && <MetricGrid title="Memory & GC" icon={<VCT_Icons.Activity size={18} />} metrics={memoryMetrics} color="var(--vct-danger)" />}
+                        {cacheMetrics.length > 0 && <MetricGrid title="Cache" icon={<VCT_Icons.Star size={18} />} metrics={cacheMetrics} color="var(--vct-success)" />}
+                        {runtimeMetrics.length > 0 && <MetricGrid title="Runtime" icon={<VCT_Icons.Settings size={18} />} metrics={runtimeMetrics} color="var(--vct-warning)" />}
                     </>
                 ) : (
                     <div className="md:col-span-2 text-center text-(--vct-text-tertiary) py-12 bg-(--vct-bg-elevated) rounded-2xl border border-(--vct-border-strong)">
@@ -338,7 +338,7 @@ const Page_admin_system_Content = () => {
             <div className="bg-(--vct-bg-elevated) border border-(--vct-border-strong) rounded-2xl p-6 mb-8">
                 <div className="flex items-center justify-between mb-4">
                     <h2 className="font-bold text-lg text-(--vct-text-primary) flex items-center gap-2">
-                        <VCT_Icons.Settings size={20} className="text-[#8b5cf6]" /> Tham Số Cấu Hình
+                        <VCT_Icons.Settings size={20} className="text-(--vct-info)" /> Tham Số Cấu Hình
                     </h2>
                     {modifiedCount > 0 && (
                         <VCT_Badge type="warning" text={`${modifiedCount} đã thay đổi`} />
@@ -386,7 +386,7 @@ const Page_admin_system_Content = () => {
                                 sortable: true,
                                 render: (p) => (
                                     <div>
-                                        <span className={`font-bold text-sm ${p.value !== p.defaultValue ? 'text-[#f59e0b]' : 'text-(--vct-text-primary)'}`}>{p.value}</span>
+                                        <span className={`font-bold text-sm ${p.value !== p.defaultValue ? 'text-(--vct-warning)' : 'text-(--vct-text-primary)'}`}>{p.value}</span>
                                         {p.unit && <span className="text-[10px] text-(--vct-text-tertiary) ml-1">{p.unit}</span>}
                                         {p.value !== p.defaultValue && <span className="text-[9px] text-(--vct-text-tertiary) block mt-0.5">(mặc định: {p.defaultValue})</span>}
                                     </div>
@@ -447,14 +447,14 @@ const Page_admin_system_Content = () => {
                                     onClick={() => setEditValue(editValue === 'true' ? 'false' : 'true')}
                                     aria-label={`Chuyển đổi ${editingParam.key}`}
                                     className={`relative w-14 h-7 rounded-full transition-colors ${
-                                        editValue === 'true' ? 'bg-[#10b981]' : 'bg-(--vct-bg-base) border border-(--vct-border-strong)'
+                                        editValue === 'true' ? 'bg-(--vct-success)' : 'bg-(--vct-bg-base) border border-(--vct-border-strong)'
                                     }`}
                                 >
                                     <div className={`absolute top-0.5 w-6 h-6 rounded-full bg-white shadow-md transition-transform ${
                                         editValue === 'true' ? 'translate-x-7' : 'translate-x-0.5'
                                     }`} />
                                 </button>
-                                <span className={`text-sm font-bold ${editValue === 'true' ? 'text-[#10b981]' : 'text-(--vct-text-tertiary)'}`}>
+                                <span className={`text-sm font-bold ${editValue === 'true' ? 'text-(--vct-success)' : 'text-(--vct-text-tertiary)'}`}>
                                     {editValue === 'true' ? 'BẬT' : 'TẮT'}
                                 </span>
                             </div>
@@ -484,7 +484,7 @@ const Page_admin_system_Content = () => {
                                             className="w-full accent-(--vct-accent-cyan,#0ea5e9)"
                                         />
                                     )}
-                                    {editError && <div className="text-xs text-[#ef4444] font-semibold">{editError}</div>}
+                                    {editError && <div className="text-xs text-(--vct-danger) font-semibold">{editError}</div>}
                                 </div>
                             </VCT_Field>
                         ) : (

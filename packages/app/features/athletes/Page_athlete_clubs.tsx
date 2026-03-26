@@ -1,7 +1,7 @@
 'use client'
 import React, { useState } from 'react'
-import { VCT_Icons } from '../components/vct-icons'
-import { VCT_PageContainer, VCT_EmptyState, VCT_Badge } from '../components/vct-ui'
+import { VCT_Icons } from '@vct/ui'
+import { VCT_PageContainer, VCT_EmptyState, VCT_Badge } from '@vct/ui'
 import { useApiQuery } from '../hooks/useApiQuery'
 import { AthleteProfile, ClubMembership } from '@vct/shared-types'
 import { useRouter } from 'next/navigation'
@@ -59,7 +59,7 @@ export function Page_athlete_clubs() {
             {!clubs || clubs.length === 0 ? (
                 <div className="py-12">
                     <VCT_EmptyState
-                        icon={<VCT_Icons.Building size={64} className="text-[#8b5cf6]/50" />}
+                        icon={<VCT_Icons.Building size={64} className="text-(--vct-info)/50" />}
                         title="Chưa tham gia CLB nào"
                         description="Bạn hiện chưa là thành viên của bất kỳ Câu lạc bộ hay Võ đường nào. Gia nhập CLB để được đăng ký tham gia các giải đấu."
                         action={<button onClick={() => setShowJoinModal(true)} className="mt-4 rounded-xl bg-vct-bg border border-vct-border px-6 py-2 text-sm font-bold text-vct-text hover:bg-vct-input transition-colors">Tìm kiếm CLB</button>}
@@ -68,10 +68,10 @@ export function Page_athlete_clubs() {
             ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {clubs.map(c => (
-                        <div key={c.id} className="relative rounded-3xl border border-vct-border bg-vct-elevated overflow-hidden group hover:border-[#8b5cf6]/50 hover:shadow-lg transition-all duration-300 flex flex-col">
+                        <div key={c.id} className="relative rounded-3xl border border-vct-border bg-vct-elevated overflow-hidden group hover:border-(--vct-info)/50 hover:shadow-lg transition-all duration-300 flex flex-col">
                             {/* Card Header Background */}
-                            <div className="h-24 bg-gradient-to-br from-[#8b5cf6]/20 via-[#a855f7]/10 to-transparent relative">
-                                <div className="absolute -bottom-8 left-6 w-16 h-16 rounded-2xl bg-vct-bg border-4 border-vct-elevated shadow-sm flex items-center justify-center text-[#8b5cf6]">
+                            <div className="h-24 bg-gradient-to-br from-(--vct-info)/20 via-[#a855f7]/10 to-transparent relative">
+                                <div className="absolute -bottom-8 left-6 w-16 h-16 rounded-2xl bg-vct-bg border-4 border-vct-elevated shadow-sm flex items-center justify-center text-(--vct-info)">
                                     <VCT_Icons.Building size={28} />
                                 </div>
                                 <div className="absolute top-4 right-4">
@@ -83,7 +83,7 @@ export function Page_athlete_clubs() {
 
                             {/* Card Content */}
                             <div className="pt-10 px-6 pb-6 flex-1 flex flex-col">
-                                <h3 className="text-xl font-black text-vct-text mb-1 group-hover:text-[#8b5cf6] transition-colors line-clamp-2">{c.club_name}</h3>
+                                <h3 className="text-xl font-black text-vct-text mb-1 group-hover:text-(--vct-info) transition-colors line-clamp-2">{c.club_name}</h3>
                                 <div className="text-sm font-bold text-vct-text-muted mb-6">Trực thuộc: <span className="text-vct-text font-medium">{c.coach_name || 'Liên đoàn'}</span></div>
 
                                 <div className="space-y-3 mt-auto">
@@ -123,7 +123,7 @@ export function Page_athlete_clubs() {
                             <label className="block text-sm font-bold text-vct-text-muted mb-2">Tìm kiếm Câu lạc bộ</label>
                             <div className="relative mb-6">
                                 <VCT_Icons.Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-vct-text-muted" />
-                                <input type="text" placeholder="Nhập tên CLB..." className="w-full pl-10 pr-4 py-3 rounded-xl bg-vct-input border border-vct-border focus:border-[#8b5cf6] focus:ring-1 focus:ring-[#8b5cf6] outline-none text-vct-text transition-all" />
+                                <input type="text" placeholder="Nhập tên CLB..." className="w-full pl-10 pr-4 py-3 rounded-xl bg-vct-input border border-vct-border focus:border-(--vct-info) focus:ring-1 focus:ring-(--vct-info) outline-none text-vct-text transition-all" />
                             </div>
                             <div className="text-center text-sm text-vct-text-muted border border-dashed border-vct-border rounded-xl p-8 bg-vct-bg">
                                 <VCT_Icons.Search size={32} className="mx-auto mb-2 opacity-50" />
@@ -132,7 +132,7 @@ export function Page_athlete_clubs() {
                         </div>
                         <div className="p-4 border-t border-vct-border bg-vct-bg flex gap-3">
                             <button onClick={() => setShowJoinModal(false)} className="flex-1 py-2.5 rounded-xl font-bold text-vct-text hover:bg-vct-input transition-colors">Hủy</button>
-                            <button disabled className="flex-1 py-2.5 rounded-xl font-bold bg-[#8b5cf6] text-white opacity-50 cursor-not-allowed">Gửi Yêu Cầu</button>
+                            <button disabled className="flex-1 py-2.5 rounded-xl font-bold bg-(--vct-info) text-white opacity-50 cursor-not-allowed">Gửi Yêu Cầu</button>
                         </div>
                     </div>
                 </div>

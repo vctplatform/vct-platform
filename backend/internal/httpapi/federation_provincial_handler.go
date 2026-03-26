@@ -34,7 +34,7 @@ func (s *Server) handleProvClubRoutes(w http.ResponseWriter, r *http.Request, p 
 		provinceID := r.URL.Query().Get("province_id")
 		clubs, err := s.Federation.Main.ListProvincialClubs(r.Context(), provinceID)
 		if err != nil {
-			internalError(w, err)
+			apiInternal(w, err)
 			return
 		}
 		success(w, http.StatusOK, map[string]any{"clubs": clubs, "total": len(clubs)})
@@ -42,12 +42,12 @@ func (s *Server) handleProvClubRoutes(w http.ResponseWriter, r *http.Request, p 
 	case r.Method == "POST" && id == "":
 		var club federation.ProvincialClub
 		if err := json.NewDecoder(r.Body).Decode(&club); err != nil {
-			badRequest(w, "invalid JSON: "+err.Error())
+			apiError(w, http.StatusBadRequest, CodeBadRequest, "invalid JSON: "+err.Error())
 			return
 		}
 		created, err := s.Federation.Main.CreateProvincialClub(r.Context(), club)
 		if err != nil {
-			badRequest(w, err.Error())
+			apiError(w, http.StatusBadRequest, CodeBadRequest, err.Error())
 			return
 		}
 		success(w, http.StatusCreated, created)
@@ -55,20 +55,20 @@ func (s *Server) handleProvClubRoutes(w http.ResponseWriter, r *http.Request, p 
 	case r.Method == "GET" && id != "":
 		club, err := s.Federation.Main.GetProvincialClub(r.Context(), id)
 		if err != nil {
-			notFoundError(w, "club not found")
+			apiError(w, http.StatusNotFound, CodeNotFound, "club not found")
 			return
 		}
 		success(w, http.StatusOK, club)
 
 	case r.Method == "DELETE" && id != "":
 		if err := s.Federation.Main.DeleteProvincialClub(r.Context(), id); err != nil {
-			badRequest(w, err.Error())
+			apiError(w, http.StatusBadRequest, CodeBadRequest, err.Error())
 			return
 		}
 		success(w, http.StatusOK, map[string]string{"status": "deleted"})
 
 	default:
-		methodNotAllowed(w)
+		apiMethodNotAllowed(w)
 	}
 }
 
@@ -90,7 +90,7 @@ func (s *Server) handleProvAthleteRoutes(w http.ResponseWriter, r *http.Request,
 			athletes, err = s.Federation.Main.ListProvincialAthletes(r.Context(), provinceID)
 		}
 		if err != nil {
-			internalError(w, err)
+			apiInternal(w, err)
 			return
 		}
 		success(w, http.StatusOK, map[string]any{"athletes": athletes, "total": len(athletes)})
@@ -98,12 +98,12 @@ func (s *Server) handleProvAthleteRoutes(w http.ResponseWriter, r *http.Request,
 	case r.Method == "POST" && id == "":
 		var athlete federation.ProvincialAthlete
 		if err := json.NewDecoder(r.Body).Decode(&athlete); err != nil {
-			badRequest(w, "invalid JSON: "+err.Error())
+			apiError(w, http.StatusBadRequest, CodeBadRequest, "invalid JSON: "+err.Error())
 			return
 		}
 		created, err := s.Federation.Main.CreateProvincialAthlete(r.Context(), athlete)
 		if err != nil {
-			badRequest(w, err.Error())
+			apiError(w, http.StatusBadRequest, CodeBadRequest, err.Error())
 			return
 		}
 		success(w, http.StatusCreated, created)
@@ -111,13 +111,13 @@ func (s *Server) handleProvAthleteRoutes(w http.ResponseWriter, r *http.Request,
 	case r.Method == "GET" && id != "":
 		athlete, err := s.Federation.Main.GetProvincialAthlete(r.Context(), id)
 		if err != nil {
-			notFoundError(w, "athlete not found")
+			apiError(w, http.StatusNotFound, CodeNotFound, "athlete not found")
 			return
 		}
 		success(w, http.StatusOK, athlete)
 
 	default:
-		methodNotAllowed(w)
+		apiMethodNotAllowed(w)
 	}
 }
 
@@ -132,7 +132,7 @@ func (s *Server) handleProvCoachRoutes(w http.ResponseWriter, r *http.Request, p
 		provinceID := r.URL.Query().Get("province_id")
 		coaches, err := s.Federation.Main.ListProvincialCoaches(r.Context(), provinceID)
 		if err != nil {
-			internalError(w, err)
+			apiInternal(w, err)
 			return
 		}
 		success(w, http.StatusOK, map[string]any{"coaches": coaches, "total": len(coaches)})
@@ -140,12 +140,12 @@ func (s *Server) handleProvCoachRoutes(w http.ResponseWriter, r *http.Request, p
 	case r.Method == "POST" && id == "":
 		var coach federation.ProvincialCoach
 		if err := json.NewDecoder(r.Body).Decode(&coach); err != nil {
-			badRequest(w, "invalid JSON: "+err.Error())
+			apiError(w, http.StatusBadRequest, CodeBadRequest, "invalid JSON: "+err.Error())
 			return
 		}
 		created, err := s.Federation.Main.CreateProvincialCoach(r.Context(), coach)
 		if err != nil {
-			badRequest(w, err.Error())
+			apiError(w, http.StatusBadRequest, CodeBadRequest, err.Error())
 			return
 		}
 		success(w, http.StatusCreated, created)
@@ -153,13 +153,13 @@ func (s *Server) handleProvCoachRoutes(w http.ResponseWriter, r *http.Request, p
 	case r.Method == "GET" && id != "":
 		coach, err := s.Federation.Main.GetProvincialCoach(r.Context(), id)
 		if err != nil {
-			notFoundError(w, "coach not found")
+			apiError(w, http.StatusNotFound, CodeNotFound, "coach not found")
 			return
 		}
 		success(w, http.StatusOK, coach)
 
 	default:
-		methodNotAllowed(w)
+		apiMethodNotAllowed(w)
 	}
 }
 
@@ -174,7 +174,7 @@ func (s *Server) handleProvReportRoutes(w http.ResponseWriter, r *http.Request, 
 		provinceID := r.URL.Query().Get("province_id")
 		reports, err := s.Federation.Main.ListProvincialReports(r.Context(), provinceID)
 		if err != nil {
-			internalError(w, err)
+			apiInternal(w, err)
 			return
 		}
 		success(w, http.StatusOK, map[string]any{"reports": reports, "total": len(reports)})
@@ -182,18 +182,18 @@ func (s *Server) handleProvReportRoutes(w http.ResponseWriter, r *http.Request, 
 	case r.Method == "POST" && id == "":
 		var report federation.ProvincialReport
 		if err := json.NewDecoder(r.Body).Decode(&report); err != nil {
-			badRequest(w, "invalid JSON: "+err.Error())
+			apiError(w, http.StatusBadRequest, CodeBadRequest, "invalid JSON: "+err.Error())
 			return
 		}
 		created, err := s.Federation.Main.CreateProvincialReport(r.Context(), report)
 		if err != nil {
-			badRequest(w, err.Error())
+			apiError(w, http.StatusBadRequest, CodeBadRequest, err.Error())
 			return
 		}
 		success(w, http.StatusCreated, created)
 
 	default:
-		methodNotAllowed(w)
+		apiMethodNotAllowed(w)
 	}
 }
 
@@ -202,12 +202,12 @@ func (s *Server) handleProvReportRoutes(w http.ResponseWriter, r *http.Request, 
 func (s *Server) handleProvStats(w http.ResponseWriter, r *http.Request, p auth.Principal) {
 	provinceID := r.URL.Query().Get("province_id")
 	if provinceID == "" {
-		badRequest(w, "province_id is required")
+		apiError(w, http.StatusBadRequest, CodeBadRequest, "province_id is required")
 		return
 	}
 	stats, err := s.Federation.Main.GetProvincialStatistics(r.Context(), provinceID)
 	if err != nil {
-		internalError(w, err)
+		apiInternal(w, err)
 		return
 	}
 	success(w, http.StatusOK, stats)

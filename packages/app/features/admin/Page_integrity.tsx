@@ -5,12 +5,12 @@ import { useState, useMemo } from 'react'
 import {
     VCT_Button, VCT_SearchInput, VCT_Badge, VCT_Select,
     VCT_StatRow
-} from '../components/vct-ui'
-import type { StatItem } from '../components/VCT_StatRow'
-import { VCT_Icons } from '../components/vct-icons'
-import { VCT_Drawer } from '../components/VCT_Drawer'
-import { VCT_Timeline } from '../components/VCT_Timeline'
-import type { TimelineEvent } from '../components/VCT_Timeline'
+} from '@vct/ui'
+import type { StatItem } from '@vct/ui'
+import { VCT_Icons } from '@vct/ui'
+import { VCT_Drawer } from '@vct/ui'
+import { VCT_Timeline } from '@vct/ui'
+import type { TimelineEvent } from '@vct/ui'
 import { usePagination } from '../hooks/usePagination'
 import { AdminSkeletonRow } from './components/AdminSkeletonRow'
 import { AdminPaginationBar } from './components/AdminPaginationBar'
@@ -112,10 +112,10 @@ export const Page_integrity = () => {
             </div>
 
             <VCT_StatRow items={[
-                { label: 'Tổng cảnh báo', value: stats.total, icon: <VCT_Icons.Shield size={18} />, color: '#0ea5e9' },
-                { label: 'Critical', value: stats.critical, icon: <VCT_Icons.Alert size={18} />, color: '#ef4444' },
-                { label: 'Đang điều tra', value: stats.investigating, icon: <VCT_Icons.Activity size={18} />, color: '#f59e0b' },
-                { label: 'Mới / Chưa xử lý', value: stats.newAlerts, icon: <VCT_Icons.Clock size={18} />, color: '#3b82f6' },
+                { label: 'Tổng cảnh báo', value: stats.total, icon: <VCT_Icons.Shield size={18} />, color: 'var(--vct-accent-cyan)' },
+                { label: 'Critical', value: stats.critical, icon: <VCT_Icons.Alert size={18} />, color: 'var(--vct-danger)' },
+                { label: 'Đang điều tra', value: stats.investigating, icon: <VCT_Icons.Activity size={18} />, color: 'var(--vct-warning)' },
+                { label: 'Mới / Chưa xử lý', value: stats.newAlerts, icon: <VCT_Icons.Clock size={18} />, color: 'var(--vct-info)' },
             ] as StatItem[]} className="mb-8" />
 
             {/* ── FILTERS ── */}
@@ -204,9 +204,9 @@ export const Page_integrity = () => {
                         <div>
                             <div className="text-[10px] uppercase text-(--vct-text-tertiary) mb-2">Lịch sử xử lý</div>
                             <VCT_Timeline events={[
-                                { time: drawerAlert.reported_at, title: 'Cảnh báo được tạo', description: `Nguồn: ${drawerAlert.source.replace(/_/g, ' ')}`, icon: <VCT_Icons.Alert size={14} />, color: '#ef4444' },
-                                ...(drawerAlert.assigned_to ? [{ time: drawerAlert.reported_at.replace(/\d{2}:\d{2}$/, '12:00'), title: `Giao cho ${drawerAlert.assigned_to}`, description: 'Bởi System Admin', icon: <VCT_Icons.Users size={14} />, color: '#0ea5e9' }] : []),
-                                ...(drawerAlert.status !== 'NEW' ? [{ time: drawerAlert.reported_at.replace(/\d{2}:\d{2}$/, '14:30'), title: `Chuyển trạng thái: ${drawerAlert.status.replace(/_/g, ' ')}`, icon: <VCT_Icons.CheckCircle size={14} />, color: '#10b981' }] : []),
+                                { time: drawerAlert.reported_at, title: 'Cảnh báo được tạo', description: `Nguồn: ${drawerAlert.source.replace(/_/g, ' ')}`, icon: <VCT_Icons.Alert size={14} />, color: 'var(--vct-danger)' },
+                                ...(drawerAlert.assigned_to ? [{ time: drawerAlert.reported_at.replace(/\d{2}:\d{2}$/, '12:00'), title: `Giao cho ${drawerAlert.assigned_to}`, description: 'Bởi System Admin', icon: <VCT_Icons.Users size={14} />, color: 'var(--vct-accent-cyan)' }] : []),
+                                ...(drawerAlert.status !== 'NEW' ? [{ time: drawerAlert.reported_at.replace(/\d{2}:\d{2}$/, '14:30'), title: `Chuyển trạng thái: ${drawerAlert.status.replace(/_/g, ' ')}`, icon: <VCT_Icons.CheckCircle size={14} />, color: 'var(--vct-success)' }] : []),
                             ] as TimelineEvent[]} maxHeight={200} />
                         </div>
                     </div>

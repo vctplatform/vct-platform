@@ -2,10 +2,10 @@
 
 import * as React from 'react'
 import { useState, useMemo } from 'react'
-import { VCT_Badge, VCT_Button, VCT_Stack, VCT_SearchInput, VCT_Tabs, VCT_EmptyState } from '../components/vct-ui'
-import { VCT_PageContainer, VCT_PageHero, VCT_StatRow } from '../components/vct-ui'
-import type { StatItem } from '../components/VCT_StatRow'
-import { VCT_Icons } from '../components/vct-icons'
+import { VCT_Badge, VCT_Button, VCT_Stack, VCT_SearchInput, VCT_Tabs, VCT_EmptyState } from '@vct/ui'
+import { VCT_PageContainer, VCT_PageHero, VCT_StatRow } from '@vct/ui'
+import type { StatItem } from '@vct/ui'
+import { VCT_Icons } from '@vct/ui'
 
 // ════════════════════════════════════════
 // MOCK DATA
@@ -79,10 +79,10 @@ export const Page_tournament_media = () => {
             />
 
             <VCT_StatRow items={[
-                { label: 'Tổng file', value: MOCK_MEDIA.length, icon: <VCT_Icons.Image size={18} />, color: '#8b5cf6' },
-                { label: 'Video', value: MOCK_MEDIA.filter(m => m.type === 'video').length, icon: <VCT_Icons.Video size={18} />, color: '#0ea5e9' },
-                { label: 'Ảnh', value: MOCK_MEDIA.filter(m => m.type === 'photo').length, icon: <VCT_Icons.Camera size={18} />, color: '#10b981' },
-                { label: 'Dung lượng', value: `${totalSize.toFixed(0)} MB`, icon: <VCT_Icons.Layers size={18} />, color: '#f59e0b' },
+                { label: 'Tổng file', value: MOCK_MEDIA.length, icon: <VCT_Icons.Image size={18} />, color: 'var(--vct-info)' },
+                { label: 'Video', value: MOCK_MEDIA.filter(m => m.type === 'video').length, icon: <VCT_Icons.Video size={18} />, color: 'var(--vct-accent-cyan)' },
+                { label: 'Ảnh', value: MOCK_MEDIA.filter(m => m.type === 'photo').length, icon: <VCT_Icons.Camera size={18} />, color: 'var(--vct-success)' },
+                { label: 'Dung lượng', value: `${totalSize.toFixed(0)} MB`, icon: <VCT_Icons.Layers size={18} />, color: 'var(--vct-warning)' },
             ] as StatItem[]} className="mb-8" />
 
             <div className="mb-6 flex flex-wrap items-center justify-between gap-4 border-b border-(--vct-border-subtle) pb-4">

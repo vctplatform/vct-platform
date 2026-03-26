@@ -38,9 +38,9 @@ const ALERTS = [
 ];
 
 const ALERT_STYLES: Record<string, { bg: string; color: string; icon: string }> = {
-    critical: { bg: 'rgba(239,68,68,0.12)', color: '#ef4444', icon: '🔴' },
-    warning: { bg: 'rgba(245,158,11,0.12)', color: '#f59e0b', icon: '🟡' },
-    info: { bg: 'rgba(59,130,246,0.12)', color: '#3b82f6', icon: '🔵' },
+    critical: { bg: 'rgba(239,68,68,0.12)', color: 'var(--vct-danger)', icon: '🔴' },
+    warning: { bg: 'rgba(245,158,11,0.12)', color: 'var(--vct-warning)', icon: '🟡' },
+    info: { bg: 'rgba(59,130,246,0.12)', color: 'var(--vct-info)', icon: '🔵' },
 };
 
 // ── Component ────────────────────────────────────────────────
@@ -72,10 +72,10 @@ export function Page_executive_dashboard() {
         <div style={{ padding: '32px', maxWidth: 1100, margin: '0 auto', fontFamily: "'Inter', sans-serif" }}>
             {/* Header */}
             <div style={{ marginBottom: 24 }}>
-                <h1 style={{ fontSize: 22, fontWeight: 700, color: '#f1f5f9', margin: 0 }}>
+                <h1 style={{ fontSize: 22, fontWeight: 700, color: 'var(--vct-text-primary)', margin: 0 }}>
                     🏛️ Bảng điều khiển Chủ tịch
                 </h1>
-                <p style={{ fontSize: 14, color: '#94a3b8', marginTop: 6 }}>
+                <p style={{ fontSize: 14, color: 'var(--vct-text-tertiary)', marginTop: 6 }}>
                     Tổng quan chiến lược — Liên đoàn Võ cổ truyền Việt Nam
                 </p>
             </div>
@@ -83,20 +83,20 @@ export function Page_executive_dashboard() {
             {/* KPI Grid */}
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 14, marginBottom: 24 }}>
                 {[
-                    { label: 'Tỉnh/Thành', value: KPI.total_provinces, icon: '🏢', color: '#3b82f6' },
-                    { label: 'CLB Hoạt động', value: KPI.active_clubs.toLocaleString(), icon: '🏠', color: '#10b981' },
-                    { label: 'VĐV Đăng ký', value: (KPI.total_athletes / 1000).toFixed(1) + 'K', icon: '🥋', color: '#f59e0b' },
-                    { label: 'Giải đấu 2026', value: KPI.tournaments_year, icon: '🏆', color: '#8b5cf6' },
-                    { label: 'HLV Chứng nhận', value: KPI.certified_coaches, icon: '👨‍🏫', color: '#ec4899' },
-                    { label: 'Trọng tài QG', value: KPI.certified_referees, icon: '👨‍⚖️', color: '#06b6d4' },
+                    { label: 'Tỉnh/Thành', value: KPI.total_provinces, icon: '🏢', color: 'var(--vct-info)' },
+                    { label: 'CLB Hoạt động', value: KPI.active_clubs.toLocaleString(), icon: '🏠', color: 'var(--vct-success)' },
+                    { label: 'VĐV Đăng ký', value: (KPI.total_athletes / 1000).toFixed(1) + 'K', icon: '🥋', color: 'var(--vct-warning)' },
+                    { label: 'Giải đấu 2026', value: KPI.tournaments_year, icon: '🏆', color: 'var(--vct-info)' },
+                    { label: 'HLV Chứng nhận', value: KPI.certified_coaches, icon: '👨‍🏫', color: 'var(--vct-accent-pink)' },
+                    { label: 'Trọng tài QG', value: KPI.certified_referees, icon: '👨‍⚖️', color: 'var(--vct-accent-cyan)' },
                     { label: 'Đối tác QT', value: KPI.international_partners, icon: '🌍', color: '#14b8a6' },
-                    { label: 'Chờ phê duyệt', value: KPI.pending_approvals, icon: '⏳', color: '#ef4444' },
+                    { label: 'Chờ phê duyệt', value: KPI.pending_approvals, icon: '⏳', color: 'var(--vct-danger)' },
                 ].map(s => (
                     <div key={s.label} style={{
                         background: 'rgba(30,41,59,0.5)', border: '1px solid rgba(148,163,184,0.1)',
                         borderRadius: 12, padding: '16px 18px',
                     }}>
-                        <div style={{ fontSize: 12, color: '#64748b', marginBottom: 4 }}>{s.icon} {s.label}</div>
+                        <div style={{ fontSize: 12, color: 'var(--vct-text-tertiary)', marginBottom: 4 }}>{s.icon} {s.label}</div>
                         <div style={{ fontSize: 26, fontWeight: 700, color: s.color }}>{s.value}</div>
                     </div>
                 ))}
@@ -109,12 +109,12 @@ export function Page_executive_dashboard() {
                     background: 'rgba(30,41,59,0.5)', border: '1px solid rgba(148,163,184,0.1)',
                     borderRadius: 16, padding: 24,
                 }}>
-                    <h2 style={{ fontSize: 16, fontWeight: 600, color: '#e2e8f0', margin: '0 0 16px' }}>
+                    <h2 style={{ fontSize: 16, fontWeight: 600, color: 'var(--vct-border-subtle)', margin: '0 0 16px' }}>
                         💰 Ngân sách 2026
                     </h2>
                     <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 12 }}>
-                        <span style={{ fontSize: 13, color: '#94a3b8' }}>Đã chi / Tổng phân bổ</span>
-                        <span style={{ fontSize: 13, color: budgetPercent > 70 ? '#f59e0b' : '#10b981', fontWeight: 600 }}>
+                        <span style={{ fontSize: 13, color: 'var(--vct-text-tertiary)' }}>Đã chi / Tổng phân bổ</span>
+                        <span style={{ fontSize: 13, color: budgetPercent > 70 ? 'var(--vct-warning)' : 'var(--vct-success)', fontWeight: 600 }}>
                             {budgetPercent}%
                         </span>
                     </div>
@@ -129,11 +129,11 @@ export function Page_executive_dashboard() {
                         }} />
                     </div>
                     <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 12, fontSize: 13 }}>
-                        <span style={{ color: '#94a3b8' }}>Đã chi: <strong style={{ color: '#e2e8f0' }}>{formatVND(KPI.budget_spent)}</strong></span>
-                        <span style={{ color: '#94a3b8' }}>Tổng: <strong style={{ color: '#e2e8f0' }}>{formatVND(KPI.budget_allocated)}</strong></span>
+                        <span style={{ color: 'var(--vct-text-tertiary)' }}>Đã chi: <strong style={{ color: 'var(--vct-border-subtle)' }}>{formatVND(KPI.budget_spent)}</strong></span>
+                        <span style={{ color: 'var(--vct-text-tertiary)' }}>Tổng: <strong style={{ color: 'var(--vct-border-subtle)' }}>{formatVND(KPI.budget_allocated)}</strong></span>
                     </div>
-                    <div style={{ marginTop: 12, fontSize: 13, color: '#64748b' }}>
-                        Còn lại: <strong style={{ color: '#10b981' }}>{formatVND(KPI.budget_allocated - KPI.budget_spent)}</strong>
+                    <div style={{ marginTop: 12, fontSize: 13, color: 'var(--vct-text-tertiary)' }}>
+                        Còn lại: <strong style={{ color: 'var(--vct-success)' }}>{formatVND(KPI.budget_allocated - KPI.budget_spent)}</strong>
                     </div>
                 </div>
 
@@ -142,7 +142,7 @@ export function Page_executive_dashboard() {
                     background: 'rgba(30,41,59,0.5)', border: '1px solid rgba(148,163,184,0.1)',
                     borderRadius: 16, padding: 24,
                 }}>
-                    <h2 style={{ fontSize: 16, fontWeight: 600, color: '#e2e8f0', margin: '0 0 16px' }}>
+                    <h2 style={{ fontSize: 16, fontWeight: 600, color: 'var(--vct-border-subtle)', margin: '0 0 16px' }}>
                         🚨 Cảnh báo & Nhắc nhở
                     </h2>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
@@ -156,8 +156,8 @@ export function Page_executive_dashboard() {
                                 }}>
                                     <span>{style?.icon}</span>
                                     <div style={{ flex: 1 }}>
-                                        <div style={{ fontSize: 13, color: '#e2e8f0' }}>{a.msg}</div>
-                                        <div style={{ fontSize: 11, color: '#64748b', marginTop: 2 }}>{a.time}</div>
+                                        <div style={{ fontSize: 13, color: 'var(--vct-border-subtle)' }}>{a.msg}</div>
+                                        <div style={{ fontSize: 11, color: 'var(--vct-text-tertiary)', marginTop: 2 }}>{a.time}</div>
                                     </div>
                                 </div>
                             );
@@ -172,7 +172,7 @@ export function Page_executive_dashboard() {
                 background: 'rgba(30,41,59,0.5)', border: '1px solid rgba(148,163,184,0.1)',
                 borderRadius: 16, padding: 24,
             }}>
-                <h2 style={{ fontSize: 16, fontWeight: 600, color: '#e2e8f0', margin: '0 0 16px' }}>
+                <h2 style={{ fontSize: 16, fontWeight: 600, color: 'var(--vct-border-subtle)', margin: '0 0 16px' }}>
                     ⏳ Phê duyệt cần xử lý ({RECENT_APPROVALS.length})
                 </h2>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
@@ -186,14 +186,14 @@ export function Page_executive_dashboard() {
                                 {a.priority === 'urgent' ? '🔴' : '🟢'}
                             </span>
                             <div style={{ flex: 1 }}>
-                                <div style={{ fontSize: 14, fontWeight: 500, color: '#e2e8f0' }}>{a.title}</div>
-                                <div style={{ fontSize: 12, color: '#64748b' }}>
+                                <div style={{ fontSize: 14, fontWeight: 500, color: 'var(--vct-border-subtle)' }}>{a.title}</div>
+                                <div style={{ fontSize: 12, color: 'var(--vct-text-tertiary)' }}>
                                     {a.type.replace(/_/g, ' ')} • {a.submitted}
                                 </div>
                             </div>
                             <button style={{
                                 padding: '6px 16px', borderRadius: 8, border: 'none',
-                                background: 'rgba(59,130,246,0.15)', color: '#60a5fa',
+                                background: 'rgba(59,130,246,0.15)', color: 'var(--vct-info)',
                                 fontSize: 12, fontWeight: 600, cursor: 'pointer',
                             }}>
                                 Xem →

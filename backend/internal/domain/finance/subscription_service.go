@@ -584,4 +584,3 @@ func (s *SubscriptionService) logRenewal(ctx context.Context, subID string, acti
 	_, err := s.renewalRepo.Create(ctx, log)
 	return err
 }
-

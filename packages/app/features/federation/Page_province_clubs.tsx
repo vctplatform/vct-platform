@@ -1,9 +1,9 @@
 'use client'
 
 import * as React from 'react'
-import { VCT_PageContainer, VCT_StatRow } from '../components/vct-ui'
-import type { StatItem } from '../components/VCT_StatRow'
-import { VCT_Icons } from '../components/vct-icons'
+import { VCT_PageContainer, VCT_StatRow } from '@vct/ui'
+import type { StatItem } from '@vct/ui'
+import { VCT_Icons } from '@vct/ui'
 
 // ════════════════════════════════════════════════════════════════
 // PROVINCIAL — CLUB MANAGEMENT (Quản lý CLB cấp tỉnh)
@@ -21,9 +21,9 @@ const MOCK_CLUBS = [
 ]
 
 const STATUS_MAP: Record<string, { label: string; color: string }> = {
-    ACTIVE: { label: 'Hoạt động', color: '#10b981' },
-    PENDING: { label: 'Chờ duyệt', color: '#f59e0b' },
-    INACTIVE: { label: 'Tạm ngưng', color: '#ef4444' },
+    ACTIVE: { label: 'Hoạt động', color: 'var(--vct-success)' },
+    PENDING: { label: 'Chờ duyệt', color: 'var(--vct-warning)' },
+    INACTIVE: { label: 'Tạm ngưng', color: 'var(--vct-danger)' },
 }
 
 export const Page_province_clubs = () => {
@@ -47,10 +47,10 @@ export const Page_province_clubs = () => {
             </div>
 
             <VCT_StatRow items={[
-                { label: 'Tổng CLB', value: MOCK_CLUBS.length, icon: <VCT_Icons.Home size={18} />, color: '#10b981' },
-                { label: 'Đang hoạt động', value: MOCK_CLUBS.filter(c => c.status === 'ACTIVE').length, icon: <VCT_Icons.CheckCircle size={18} />, color: '#0ea5e9' },
-                { label: 'Tổng thành viên', value: totalMembers, icon: <VCT_Icons.Users size={18} />, color: '#f59e0b' },
-                { label: 'VĐV đăng ký', value: totalAthletes, icon: <VCT_Icons.Award size={18} />, color: '#8b5cf6' },
+                { label: 'Tổng CLB', value: MOCK_CLUBS.length, icon: <VCT_Icons.Home size={18} />, color: 'var(--vct-success)' },
+                { label: 'Đang hoạt động', value: MOCK_CLUBS.filter(c => c.status === 'ACTIVE').length, icon: <VCT_Icons.CheckCircle size={18} />, color: 'var(--vct-accent-cyan)' },
+                { label: 'Tổng thành viên', value: totalMembers, icon: <VCT_Icons.Users size={18} />, color: 'var(--vct-warning)' },
+                { label: 'VĐV đăng ký', value: totalAthletes, icon: <VCT_Icons.Award size={18} />, color: 'var(--vct-info)' },
             ] as StatItem[]} className="mb-6" />
 
             {/* Filters */}

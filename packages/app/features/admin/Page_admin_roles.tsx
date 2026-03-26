@@ -6,9 +6,9 @@ import {
     VCT_Badge, VCT_Button, VCT_Stack,
     VCT_SearchInput, VCT_Modal, VCT_Input, VCT_Field,
     VCT_ConfirmDialog
-} from '../components/vct-ui'
-import type { StatItem } from '../components/VCT_StatRow'
-import { VCT_Icons } from '../components/vct-icons'
+} from '@vct/ui'
+import type { StatItem } from '@vct/ui'
+import { VCT_Icons } from '@vct/ui'
 import { AdminPageShell, useShellToast } from './components/AdminPageShell'
 import { useAdminFetch } from './hooks/useAdminAPI'
 import { useAdminMutation } from './hooks/useAdminMutation'
@@ -133,17 +133,17 @@ const Page_admin_roles_Content = () => {
     }
 
     const stats: StatItem[] = [
-        { label: 'Vai trò', value: roles.length, icon: <VCT_Icons.Shield size={18} />, color: '#8b5cf6' },
-        { label: 'Người dùng', value: roles.reduce((s,r)=>s+r.user_count,0).toLocaleString(), icon: <VCT_Icons.Users size={18} />, color: '#0ea5e9' },
-        { label: 'Quyền HT', value: PERMISSIONS.length, icon: <VCT_Icons.ShieldCheck size={18} />, color: '#10b981' },
-        { label: 'Tùy chỉnh', value: roles.filter(r => !r.is_system).length, icon: <VCT_Icons.Settings size={18} />, color: '#f59e0b' },
+        { label: 'Vai trò', value: roles.length, icon: <VCT_Icons.Shield size={18} />, color: 'var(--vct-info)' },
+        { label: 'Người dùng', value: roles.reduce((s,r)=>s+r.user_count,0).toLocaleString(), icon: <VCT_Icons.Users size={18} />, color: 'var(--vct-accent-cyan)' },
+        { label: 'Quyền HT', value: PERMISSIONS.length, icon: <VCT_Icons.ShieldCheck size={18} />, color: 'var(--vct-success)' },
+        { label: 'Tùy chỉnh', value: roles.filter(r => !r.is_system).length, icon: <VCT_Icons.Settings size={18} />, color: 'var(--vct-warning)' },
     ]
 
     return (
         <AdminPageShell
             title={t('admin.roles.title')}
             subtitle={t('admin.roles.subtitle')}
-            icon={<VCT_Icons.Shield size={28} className="text-[#8b5cf6]" />}
+            icon={<VCT_Icons.Shield size={28} className="text-(--vct-info)" />}
             breadcrumbs={[
                 { label: 'Admin', href: '/admin', icon: <VCT_Icons.Home size={14} /> },
                 { label: 'Vai trò & Quyền' },
@@ -183,14 +183,14 @@ const Page_admin_roles_Content = () => {
                         <div className="bg-(--vct-bg-elevated) border border-(--vct-border-strong) rounded-2xl p-6">
                             <div className="flex items-center justify-between mb-6">
                                 <div><h2 className="font-bold text-lg text-(--vct-text-primary)">Ma Trận Phân Quyền</h2><p className="text-sm text-(--vct-text-secondary) mt-1">Vai trò: <span className="font-bold text-(--vct-accent-cyan)">{selectedRole.name}</span></p></div>
-                                <div className="flex items-center gap-2 text-[11px] text-(--vct-text-tertiary)"><div className="flex items-center gap-1"><div className="w-3 h-3 rounded bg-[#10b981]" /> Có</div><div className="flex items-center gap-1"><div className="w-3 h-3 rounded bg-(--vct-border-strong)" /> Không</div></div>
+                                <div className="flex items-center gap-2 text-[11px] text-(--vct-text-tertiary)"><div className="flex items-center gap-1"><div className="w-3 h-3 rounded bg-(--vct-success)" /> Có</div><div className="flex items-center gap-1"><div className="w-3 h-3 rounded bg-(--vct-border-strong)" /> Không</div></div>
                             </div>
                             <div className="space-y-6">
                                 {Object.entries(permModules).map(([mod, perms]) => (
                                     <div key={mod}><div className="text-[11px] font-bold uppercase tracking-wider text-(--vct-text-tertiary) mb-3 flex items-center gap-2"><div className="w-1.5 h-1.5 rounded-full bg-(--vct-accent-cyan)" />{mod}</div>
                                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">{perms.map(perm => {
                                             const has = (selectedRole.permissions ?? []).includes(perm.key)
-                                            return (<button key={perm.key} onClick={() => togglePerm(selectedRole.id, perm.key)} className={`flex items-center gap-3 p-3 rounded-xl border transition-all text-left ${has ? 'bg-[#10b98115] border-[#10b98140] hover:border-[#10b981]' : 'bg-(--vct-bg-base) border-(--vct-border-subtle) hover:border-(--vct-border-strong)'}`}><div className={`w-5 h-5 rounded flex items-center justify-center shrink-0 ${has ? 'bg-[#10b981] text-white' : 'bg-(--vct-border-strong)'}`}>{has && <VCT_Icons.Check size={12} />}</div><div><div className="text-sm font-semibold text-(--vct-text-primary)">{perm.label}</div><div className="text-[10px] font-mono text-(--vct-text-tertiary)">{perm.key}</div></div></button>)
+                                            return (<button key={perm.key} onClick={() => togglePerm(selectedRole.id, perm.key)} className={`flex items-center gap-3 p-3 rounded-xl border transition-all text-left ${has ? 'bg-[#10b98115] border-[#10b98140] hover:border-(--vct-success)' : 'bg-(--vct-bg-base) border-(--vct-border-subtle) hover:border-(--vct-border-strong)'}`}><div className={`w-5 h-5 rounded flex items-center justify-center shrink-0 ${has ? 'bg-(--vct-success) text-white' : 'bg-(--vct-border-strong)'}`}>{has && <VCT_Icons.Check size={12} />}</div><div><div className="text-sm font-semibold text-(--vct-text-primary)">{perm.label}</div><div className="text-[10px] font-mono text-(--vct-text-tertiary)">{perm.key}</div></div></button>)
                                         })}</div></div>
                                 ))}
                             </div>

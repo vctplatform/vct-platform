@@ -4,10 +4,10 @@ import * as React from 'react'
 import { useState, useMemo } from 'react'
 import {
     VCT_Button, VCT_Stack, VCT_SearchInput, VCT_Badge
-} from '../components/vct-ui'
-import { VCT_PageContainer, VCT_PageHero, VCT_StatRow } from '../components/vct-ui'
-import type { StatItem } from '../components/VCT_StatRow'
-import { VCT_Icons } from '../components/vct-icons'
+} from '@vct/ui'
+import { VCT_PageContainer, VCT_PageHero, VCT_StatRow } from '@vct/ui'
+import type { StatItem } from '@vct/ui'
+import { VCT_Icons } from '@vct/ui'
 import { useClubs, useCommunityEvents, useMembers } from '../hooks/useCommunityAPI'
 
 // ════════════════════════════════════════
@@ -52,10 +52,10 @@ export const Page_community = () => {
     }, [events])
 
     const kpis: StatItem[] = [
-        { label: 'Thành viên', value: members?.length || '12.5k', icon: <VCT_Icons.Users size={18} />, color: '#0ea5e9' },
-        { label: 'Bài viết hôm nay', value: posts.length, icon: <VCT_Icons.FileText size={18} />, color: '#10b981' },
-        { label: 'Sự kiện sắp tới', value: eventsDisplay.length, icon: <VCT_Icons.Calendar size={18} />, color: '#f59e0b' },
-        { label: 'CLB hoạt động', value: clubs?.length || 340, icon: <VCT_Icons.Flag size={18} />, color: '#8b5cf6' },
+        { label: 'Thành viên', value: members?.length || '12.5k', icon: <VCT_Icons.Users size={18} />, color: 'var(--vct-accent-cyan)' },
+        { label: 'Bài viết hôm nay', value: posts.length, icon: <VCT_Icons.FileText size={18} />, color: 'var(--vct-success)' },
+        { label: 'Sự kiện sắp tới', value: eventsDisplay.length, icon: <VCT_Icons.Calendar size={18} />, color: 'var(--vct-warning)' },
+        { label: 'CLB hoạt động', value: clubs?.length || 340, icon: <VCT_Icons.Flag size={18} />, color: 'var(--vct-info)' },
     ]
 
     return (
@@ -87,7 +87,7 @@ export const Page_community = () => {
                     {posts.filter(p => !search || p.content.toLowerCase().includes(search.toLowerCase()) || p.author.toLowerCase().includes(search.toLowerCase())).map(post => (
                         <div key={post.id} className="bg-(--vct-bg-elevated) border border-(--vct-border-strong) rounded-2xl p-5 hover:border-(--vct-accent-cyan) transition-all">
                             <div className="flex items-start gap-3 mb-3">
-                                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-(--vct-accent-cyan) to-[#0ea5e9] flex items-center justify-center font-bold text-white text-sm shrink-0">
+                                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-(--vct-accent-cyan) to-(--vct-accent-cyan) flex items-center justify-center font-bold text-white text-sm shrink-0">
                                     {post.avatar}
                                 </div>
                                 <div className="flex-1">
@@ -101,7 +101,7 @@ export const Page_community = () => {
                             </div>
                             <p className="text-sm text-(--vct-text-secondary) leading-relaxed mb-4">{post.content}</p>
                             <div className="flex items-center gap-6 text-(--vct-text-tertiary) text-xs">
-                                <button className="flex items-center gap-1.5 hover:text-[#ef4444] transition-colors">
+                                <button className="flex items-center gap-1.5 hover:text-(--vct-danger) transition-colors">
                                     <VCT_Icons.Heart size={14} /> {post.likes}
                                 </button>
                                 <button className="flex items-center gap-1.5 hover:text-(--vct-accent-cyan) transition-colors">
@@ -135,7 +135,7 @@ export const Page_community = () => {
                     {/* Quick Links */}
                     <div className="bg-(--vct-bg-elevated) border border-(--vct-border-strong) rounded-2xl p-5">
                         <h3 className="font-bold text-(--vct-text-primary) mb-4 flex items-center gap-2">
-                            <VCT_Icons.Flag size={18} className="text-[#f59e0b]" /> Nổi bật
+                            <VCT_Icons.Flag size={18} className="text-(--vct-warning)" /> Nổi bật
                         </h3>
                         <div className="space-y-2 text-sm">
                             <div className="p-2 rounded-lg hover:bg-white/5 cursor-pointer text-(--vct-text-secondary) transition-colors">📸 Album ảnh Giải Trẻ 2024</div>

@@ -2,7 +2,7 @@
 
 import React from 'react'
 import { motion } from 'framer-motion'
-import { VCT_Icons } from '../../components/vct-icons'
+import { VCT_Icons } from '@vct/ui'
 
 interface WelcomeHeaderProps {
     name: string
@@ -11,7 +11,9 @@ interface WelcomeHeaderProps {
 }
 
 export function PortalWelcomeHeader({ name, count, t }: WelcomeHeaderProps) {
-    const firstName = name.split(' ').pop() ?? name
+    // Use first word for Vietnamese names (family name is first), or full name if single word
+    // Avoids bug where "Quản trị hệ thống" → "thống" when using .pop()
+    const firstName = name.includes(' ') ? name.split(' ')[0] : name
 
     return (
         <motion.div 
@@ -27,12 +29,17 @@ export function PortalWelcomeHeader({ name, count, t }: WelcomeHeaderProps) {
                     transition={{ delay: 0.2, duration: 0.5 }}
                     className="mb-3 inline-flex items-center gap-2 rounded-full border border-vct-border/40 bg-vct-primary/10 px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-vct-primary backdrop-blur-md dark:bg-vct-primary/20 dark:text-vct-accent"
                 >
-                    <span className="h-1.5 w-1.5 rounded-full bg-vct-accent shadow-[0_0_8px_var(--vct-accent)]" />
+                    <span className="h-1.5 w-1.5 rounded-full bg-vct-accent shadow-[0_0_8px_var(--vct-accent)] animate-pulse" />
                     {t('portal.ecosystem')}
                 </motion.div>
-                <h1 className="bg-linear-to-br from-vct-text via-vct-text to-vct-text-muted bg-clip-text pb-1 text-3xl font-black tracking-tight text-transparent sm:text-4xl lg:text-5xl">
+                <motion.h1 
+                    className="bg-linear-to-r from-vct-text via-vct-text-muted to-vct-text bg-clip-text pb-1 text-3xl font-black tracking-tight text-transparent sm:text-4xl lg:text-5xl"
+                    animate={{ backgroundPosition: ['0% 50%', '100% 50%', '0% 50%'] }}
+                    transition={{ duration: 8, repeat: Infinity, ease: 'linear' }}
+                    style={{ backgroundSize: '200% auto' }}
+                >
                     {t('portal.welcome')}, <span className="bg-linear-to-r from-vct-accent to-blue-500 bg-clip-text text-transparent">{firstName}</span>
-                </h1>
+                </motion.h1>
                 <p className="mt-2 text-sm text-vct-text-muted/80 sm:text-base">
                     {t('portal.accessCount')} <span className="font-bold text-vct-text">{count} {t('portal.workspaces')}</span> {t('portal.available') || 'trong hệ thống'}.
                 </p>

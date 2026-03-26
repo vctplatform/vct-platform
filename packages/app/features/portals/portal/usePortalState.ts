@@ -55,7 +55,7 @@ export function usePortalState(workspaces: WorkspaceCard[]) {
             router.replace(qs ? `?${qs}` : '/', { scroll: false })
         }, 300)
         return () => clearTimeout(timer)
-    }, [searchQuery]) // eslint-disable-line react-hooks/exhaustive-deps
+    }, [searchQuery, router, searchParams])
 
     // ── Sort ──
     const [sortMode, setSortMode] = useState<SortMode>('recent')
@@ -157,12 +157,42 @@ export function usePortalState(workspaces: WorkspaceCard[]) {
     )
 
     // ── Recent workspaces ──
+    const [fetchedRecentIds, setFetchedRecentIds] = useState<string[] | null>(null)
+
+    useEffect(() => {
+        let mounted = true
+        async function fetchRecent() {
+            try {
+                const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080'
+                const res = await fetch(`${apiUrl}/api/v1/portal/recent-workspaces`)
+                if (res.ok) {
+                    const data = await res.json()
+                    // Assuming data.items is an array of { id: string, lastAccessedAt: string }
+                    if (mounted) {
+                        setFetchedRecentIds(data.items.map((item: any) => item.id))
+                    }
+                }
+            } catch (err) {
+                // Ignore fallback to local Zustand store
+            }
+        }
+        fetchRecent()
+        return () => { mounted = false }
+    }, [])
+
     const recentCards = useMemo(() => {
+        if (fetchedRecentIds) {
+            return fetchedRecentIds
+                .map(id => workspaces.find(w => w.id === id))
+                .filter((c): c is WorkspaceCard => c != null)
+                .slice(0, 5)
+        }
+        // Fallback to local tracking
         return workspaces
             .filter((c) => lastAccessedMap[c.id] != null)
             .sort((a, b) => (lastAccessedMap[b.id] ?? 0) - (lastAccessedMap[a.id] ?? 0))
             .slice(0, 5)
-    }, [workspaces, lastAccessedMap])
+    }, [workspaces, lastAccessedMap, fetchedRecentIds])
 
     return {
         // Search

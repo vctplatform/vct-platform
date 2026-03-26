@@ -5,12 +5,12 @@ import { useState, useMemo } from 'react'
 import {
     VCT_Badge, VCT_Button, VCT_Stack,
     VCT_SearchInput, VCT_Select, VCT_Tabs,
-} from '../components/vct-ui'
-import type { StatItem } from '../components/VCT_StatRow'
-import { VCT_Icons } from '../components/vct-icons'
-import { VCT_Drawer } from '../components/VCT_Drawer'
-import { VCT_Timeline } from '../components/VCT_Timeline'
-import type { TimelineEvent } from '../components/VCT_Timeline'
+} from '@vct/ui'
+import type { StatItem } from '@vct/ui'
+import { VCT_Icons } from '@vct/ui'
+import { VCT_Drawer } from '@vct/ui'
+import { VCT_Timeline } from '@vct/ui'
+import type { TimelineEvent } from '@vct/ui'
 import { AdminDataTable } from './components/AdminDataTable'
 import { AdminPageShell, useShellToast } from './components/AdminPageShell'
 import { useAdminFetch } from './hooks/useAdminAPI'
@@ -80,10 +80,10 @@ const MOCK_SPONSORS: Sponsorship[] = [
 ]
 
 const FINANCE_TIMELINE: TimelineEvent[] = [
-    { time: '11:20', title: 'Thanh toán INV-005 xác nhận', description: '250 triệu · Nhà thi đấu Phú Thọ', icon: <VCT_Icons.CheckCircle size={14} />, color: '#10b981' },
-    { time: '10:45', title: 'Tạo hóa đơn INV-006', description: '10 triệu · CLB VCT Huế', icon: <VCT_Icons.FileText size={14} />, color: '#0ea5e9' },
-    { time: '09:30', title: 'Cảnh báo quá hạn INV-004', description: '8 triệu · CLB VCT Đà Nẵng · Quá hạn 5 ngày', icon: <VCT_Icons.AlertTriangle size={14} />, color: '#ef4444' },
-    { time: 'Hôm qua', title: 'Nhà tài trợ VPBank duyệt', description: '300 triệu · Giải VCT Quốc gia 2024', icon: <VCT_Icons.DollarSign size={14} />, color: '#94a3b8' },
+    { time: '11:20', title: 'Thanh toán INV-005 xác nhận', description: '250 triệu · Nhà thi đấu Phú Thọ', icon: <VCT_Icons.CheckCircle size={14} />, color: 'var(--vct-success)' },
+    { time: '10:45', title: 'Tạo hóa đơn INV-006', description: '10 triệu · CLB VCT Huế', icon: <VCT_Icons.FileText size={14} />, color: 'var(--vct-accent-cyan)' },
+    { time: '09:30', title: 'Cảnh báo quá hạn INV-004', description: '8 triệu · CLB VCT Đà Nẵng · Quá hạn 5 ngày', icon: <VCT_Icons.AlertTriangle size={14} />, color: 'var(--vct-danger)' },
+    { time: 'Hôm qua', title: 'Nhà tài trợ VPBank duyệt', description: '300 triệu · Giải VCT Quốc gia 2024', icon: <VCT_Icons.DollarSign size={14} />, color: 'var(--vct-text-tertiary)' },
 ]
 
 
@@ -123,10 +123,10 @@ const Page_admin_finance_Content = () => {
     const totalSponsorship = MOCK_SPONSORS.reduce((a, s) => a + s.amount, 0)
 
     const stats: StatItem[] = [
-        { icon: <VCT_Icons.DollarSign size={20} />, label: 'Đã thu', value: fmt(totalRevenue), color: '#10b981' },
-        { icon: <VCT_Icons.Clock size={20} />, label: 'Chờ thanh toán', value: fmt(totalPending), color: '#f59e0b' },
-        { icon: <VCT_Icons.AlertTriangle size={20} />, label: 'Quá hạn', value: fmt(totalOverdue), color: '#ef4444' },
-        { icon: <VCT_Icons.Award size={20} />, label: 'Tài trợ', value: fmt(totalSponsorship), color: '#94a3b8' },
+        { icon: <VCT_Icons.DollarSign size={20} />, label: 'Đã thu', value: fmt(totalRevenue), color: 'var(--vct-success)' },
+        { icon: <VCT_Icons.Clock size={20} />, label: 'Chờ thanh toán', value: fmt(totalPending), color: 'var(--vct-warning)' },
+        { icon: <VCT_Icons.AlertTriangle size={20} />, label: 'Quá hạn', value: fmt(totalOverdue), color: 'var(--vct-danger)' },
+        { icon: <VCT_Icons.Award size={20} />, label: 'Tài trợ', value: fmt(totalSponsorship), color: 'var(--vct-text-tertiary)' },
     ]
 
     const filteredInvoices = useMemo(() => {
@@ -186,7 +186,7 @@ const Page_admin_finance_Content = () => {
         <AdminPageShell
             title={t('admin.finance.title')}
             subtitle="Hóa đơn, ngân sách, và tài trợ cho toàn hệ thống VCT"
-            icon={<VCT_Icons.DollarSign size={28} className="text-[#10b981]" />}
+            icon={<VCT_Icons.DollarSign size={28} className="text-(--vct-success)" />}
             stats={stats}
         >
             <VCT_Tabs tabs={tabItems} activeTab={tab} onChange={v => setTab(v as typeof tab)} className="mb-6" />
@@ -267,7 +267,7 @@ const Page_admin_finance_Content = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                     {MOCK_BUDGETS.map(b => {
                         const pct = Math.round((b.spent / b.allocated) * 100)
-                        const barColor = pct > 90 ? '#ef4444' : pct > 70 ? '#f59e0b' : '#10b981'
+                        const barColor = pct > 90 ? 'var(--vct-danger)' : pct > 70 ? 'var(--vct-warning)' : 'var(--vct-success)'
                         return (
                             <div key={b.id} className="bg-(--vct-bg-elevated) border border-(--vct-border-strong) rounded-2xl p-5">
                                 <div className="flex items-center justify-between mb-3">
@@ -308,7 +308,7 @@ const Page_admin_finance_Content = () => {
                                 render: (s) => (
                                     <div className="flex items-center gap-4">
                                         <div className="w-10 h-10 rounded-xl bg-(--vct-bg-base) border border-(--vct-border-subtle) flex items-center justify-center shrink-0">
-                                            <VCT_Icons.Award size={20} className="text-[#8b5cf6]" />
+                                            <VCT_Icons.Award size={20} className="text-(--vct-info)" />
                                         </div>
                                         <div>
                                             <div className="font-bold text-(--vct-text-primary)">{s.sponsor}</div>
@@ -345,7 +345,7 @@ const Page_admin_finance_Content = () => {
             {/* ── Hoạt động gần đây ── */}
             <div className="bg-(--vct-bg-elevated) border border-(--vct-border-strong) rounded-2xl p-5">
                 <h3 className="font-bold text-(--vct-text-primary) mb-4 flex items-center gap-2">
-                    <VCT_Icons.Activity size={18} className="text-[#10b981]" /> Hoạt động tài chính gần đây
+                    <VCT_Icons.Activity size={18} className="text-(--vct-success)" /> Hoạt động tài chính gần đây
                 </h3>
                 <VCT_Timeline events={FINANCE_TIMELINE} />
             </div>

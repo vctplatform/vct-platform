@@ -5,10 +5,10 @@ import { useState, useMemo } from 'react'
 import {
     VCT_Badge, VCT_Button, VCT_Stack, VCT_SearchInput,
     VCT_Select, VCT_EmptyState, VCT_Tabs
-} from '../components/vct-ui'
-import { VCT_PageContainer, VCT_PageHero, VCT_StatRow } from '../components/vct-ui'
-import type { StatItem } from '../components/VCT_StatRow'
-import { VCT_Icons } from '../components/vct-icons'
+} from '@vct/ui'
+import { VCT_PageContainer, VCT_PageHero, VCT_StatRow } from '@vct/ui'
+import type { StatItem } from '@vct/ui'
+import { VCT_Icons } from '@vct/ui'
 import { useTrainingPlans } from '../hooks/useTrainingAPI'
 
 // ════════════════════════════════════════
@@ -87,10 +87,10 @@ export const Page_training_plans = () => {
             />
 
             <VCT_StatRow items={[
-                { label: 'Buổi tập hôm nay', value: 2, icon: <VCT_Icons.Calendar size={18} />, color: '#0ea5e9' },
-                { label: 'Buổi tập tuần', value: 14, icon: <VCT_Icons.Activity size={18} />, color: '#f59e0b' },
-                { label: 'Võ sinh tham gia', value: 120, icon: <VCT_Icons.Users size={18} />, color: '#10b981' },
-                { label: 'HLV trực', value: 5, icon: <VCT_Icons.Award size={18} />, color: '#8b5cf6' },
+                { label: 'Buổi tập hôm nay', value: 2, icon: <VCT_Icons.Calendar size={18} />, color: 'var(--vct-accent-cyan)' },
+                { label: 'Buổi tập tuần', value: 14, icon: <VCT_Icons.Activity size={18} />, color: 'var(--vct-warning)' },
+                { label: 'Võ sinh tham gia', value: 120, icon: <VCT_Icons.Users size={18} />, color: 'var(--vct-success)' },
+                { label: 'HLV trực', value: 5, icon: <VCT_Icons.Award size={18} />, color: 'var(--vct-info)' },
             ] as StatItem[]} className="mb-6" />
 
             {/* ── TOOLBAR ── */}
@@ -140,9 +140,9 @@ export const Page_training_plans = () => {
                                     </div>
                                     <h3 className="text-lg font-bold text-(--vct-text-primary) mb-1">{session.topic}</h3>
                                     <div className="flex flex-wrap items-center gap-x-6 gap-y-2 mt-3 text-sm text-(--vct-text-secondary)">
-                                        <div className="flex items-center gap-2"><VCT_Icons.MapPin size={15} className="text-[#0ea5e9]" /> <span className="font-semibold">{session.club_name}</span></div>
-                                        <div className="flex items-center gap-2"><VCT_Icons.Users size={15} className="text-[#8b5cf6]" /> {session.class_name}</div>
-                                        <div className="flex items-center gap-2"><VCT_Icons.Award size={15} className="text-[#f59e0b]" /> HLV: {session.instructor}</div>
+                                        <div className="flex items-center gap-2"><VCT_Icons.MapPin size={15} className="text-(--vct-accent-cyan)" /> <span className="font-semibold">{session.club_name}</span></div>
+                                        <div className="flex items-center gap-2"><VCT_Icons.Users size={15} className="text-(--vct-info)" /> {session.class_name}</div>
+                                        <div className="flex items-center gap-2"><VCT_Icons.Award size={15} className="text-(--vct-warning)" /> HLV: {session.instructor}</div>
                                     </div>
                                 </div>
 

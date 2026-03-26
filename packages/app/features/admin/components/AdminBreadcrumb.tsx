@@ -1,7 +1,7 @@
 'use client'
 
 import * as React from 'react'
-import { VCT_Icons } from '../../components/vct-icons'
+import { VCT_Icons } from '@vct/ui'
 
 // ════════════════════════════════════════
 // AdminBreadcrumb — Navigation breadcrumbs for admin

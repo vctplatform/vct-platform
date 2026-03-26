@@ -3,9 +3,9 @@
 import { useState, useEffect } from 'react'
 import Image from 'next/image'
 import { motion, AnimatePresence } from 'framer-motion'
-import { VCT_Text, VCT_Badge } from 'app/features/components/vct-ui'
+import { VCT_Text, VCT_Badge } from '@vct/ui'
 import { useChannelEvents, useRealtimeStatus } from 'app/features/data/repository/realtime-client'
-import { UI_Logo } from 'app/features/components/ui-logo'
+import { UI_Logo } from '@vct/ui'
 
 /* ── Demo Data ──────────────────────────────────────────────── */
 
@@ -66,13 +66,13 @@ export function Page_Scoreboard() {
                 <div className="flex items-center gap-4">
                     <UI_Logo size={48} />
                     <div>
-                        <VCT_Text variant="h2" style={{ margin: 0, color: '#fff', letterSpacing: '0.05em' }}>GIẢI VOVINAM TOÀN QUỐC 2026</VCT_Text>
+                        <VCT_Text variant="h2" style={{ margin: 0, color: 'var(--vct-bg-elevated)', letterSpacing: '0.05em' }}>GIẢI VOVINAM TOÀN QUỐC 2026</VCT_Text>
                         <VCT_Text variant="body" style={{ color: 'var(--vct-accent-cyan)' }}>{activeMatch.category} - {activeMatch.arena}</VCT_Text>
                     </div>
                 </div>
                 <div className="flex items-center gap-4">
                     <div className="text-right">
-                        <VCT_Text variant="h3" style={{ margin: 0, color: '#fff' }}>Hiệp {activeMatch.round}</VCT_Text>
+                        <VCT_Text variant="h3" style={{ margin: 0, color: 'var(--vct-bg-elevated)' }}>Hiệp {activeMatch.round}</VCT_Text>
                         <VCT_Badge type={status === 'connected' ? 'success' : 'danger'} text={status === 'connected' ? 'LIVE' : 'OFFLINE'} />
                     </div>
                 </div>
@@ -92,11 +92,11 @@ export function Page_Scoreboard() {
                         {/* RED Corner */}
                         <div className="flex flex-col rounded-3xl overflow-hidden border-4 border-red-600 bg-red-950/30 shadow-[0_0_50px_rgba(220,38,38,0.2)]">
                             <div className="bg-red-600 p-6 text-center">
-                                <VCT_Text variant="h1" style={{ fontSize: '3rem', margin: 0, color: '#fff', fontWeight: 900 }}>{activeMatch.red}</VCT_Text>
+                                <VCT_Text variant="h1" style={{ fontSize: '3rem', margin: 0, color: 'var(--vct-bg-elevated)', fontWeight: 900 }}>{activeMatch.red}</VCT_Text>
                                 <VCT_Text variant="h3" style={{ color: 'rgba(255,255,255,0.8)' }}>{activeMatch.teamRed}</VCT_Text>
                             </div>
                             <div className="flex-1 flex items-center justify-center p-12">
-                                <span style={{ fontSize: '12rem', fontWeight: 900, lineHeight: 1, color: '#ef4444' }}>
+                                <span style={{ fontSize: '12rem', fontWeight: 900, lineHeight: 1, color: 'var(--vct-danger)' }}>
                                     {activeMatch.scoreRed}
                                 </span>
                             </div>
@@ -108,7 +108,7 @@ export function Page_Scoreboard() {
 
                             <div className="bg-gray-900 rounded-2xl p-6 border border-gray-800 text-center w-full shadow-xl">
                                 <VCT_Text variant="small" style={{ color: 'var(--vct-text-tertiary)', letterSpacing: '0.2em', textTransform: 'uppercase' }}>Thời gian</VCT_Text>
-                                <div style={{ fontSize: '5rem', fontWeight: 700, fontFamily: 'monospace', color: '#fff', lineHeight: 1 }}>
+                                <div style={{ fontSize: '5rem', fontWeight: 700, fontFamily: 'monospace', color: 'var(--vct-bg-elevated)', lineHeight: 1 }}>
                                     02:00
                                 </div>
                             </div>
@@ -129,11 +129,11 @@ export function Page_Scoreboard() {
                         {/* BLUE Corner */}
                         <div className="flex flex-col rounded-3xl overflow-hidden border-4 border-blue-600 bg-blue-950/30 shadow-[0_0_50px_rgba(37,99,235,0.2)]">
                             <div className="bg-blue-600 p-6 text-center">
-                                <VCT_Text variant="h1" style={{ fontSize: '3rem', margin: 0, color: '#fff', fontWeight: 900 }}>{activeMatch.blue}</VCT_Text>
+                                <VCT_Text variant="h1" style={{ fontSize: '3rem', margin: 0, color: 'var(--vct-bg-elevated)', fontWeight: 900 }}>{activeMatch.blue}</VCT_Text>
                                 <VCT_Text variant="h3" style={{ color: 'rgba(255,255,255,0.8)' }}>{activeMatch.teamBlue}</VCT_Text>
                             </div>
                             <div className="flex-1 flex items-center justify-center p-12">
-                                <span style={{ fontSize: '12rem', fontWeight: 900, lineHeight: 1, color: '#3b82f6' }}>
+                                <span style={{ fontSize: '12rem', fontWeight: 900, lineHeight: 1, color: 'var(--vct-info)' }}>
                                     {activeMatch.scoreBlue}
                                 </span>
                             </div>

@@ -6,9 +6,9 @@ import {
     VCT_Badge, VCT_Button, VCT_Stack,
     VCT_PageContainer, VCT_PageHero, VCT_StatRow,
     VCT_Modal, VCT_Toast
-} from '../components/vct-ui'
-import type { StatItem } from '../components/VCT_StatRow'
-import { VCT_Icons } from '../components/vct-icons'
+} from '@vct/ui'
+import type { StatItem } from '@vct/ui'
+import { VCT_Icons } from '@vct/ui'
 
 // ════════════════════════════════════════
 // TYPES
@@ -30,12 +30,12 @@ interface AvailablePlan {
 }
 
 const STATUS_MAP: Record<string, { label: string; color: string; icon: React.ReactNode }> = {
-    trial:     { label: 'Dùng thử',      color: '#8b5cf6', icon: <VCT_Icons.Clock size={14} /> },
-    active:    { label: 'Đang hoạt động', color: '#10b981', icon: <VCT_Icons.CheckCircle size={14} /> },
-    past_due:  { label: 'Quá hạn',        color: '#f59e0b', icon: <VCT_Icons.AlertTriangle size={14} /> },
-    suspended: { label: 'Tạm ngưng',      color: '#ef4444', icon: <VCT_Icons.X size={14} /> },
-    cancelled: { label: 'Đã hủy',         color: '#94a3b8', icon: <VCT_Icons.X size={14} /> },
-    expired:   { label: 'Hết hạn',        color: '#6b7280', icon: <VCT_Icons.Clock size={14} /> },
+    trial:     { label: 'Dùng thử',      color: 'var(--vct-info)', icon: <VCT_Icons.Clock size={14} /> },
+    active:    { label: 'Đang hoạt động', color: 'var(--vct-success)', icon: <VCT_Icons.CheckCircle size={14} /> },
+    past_due:  { label: 'Quá hạn',        color: 'var(--vct-warning)', icon: <VCT_Icons.AlertTriangle size={14} /> },
+    suspended: { label: 'Tạm ngưng',      color: 'var(--vct-danger)', icon: <VCT_Icons.X size={14} /> },
+    cancelled: { label: 'Đã hủy',         color: 'var(--vct-text-tertiary)', icon: <VCT_Icons.X size={14} /> },
+    expired:   { label: 'Hết hạn',        color: 'var(--vct-text-tertiary)', icon: <VCT_Icons.Clock size={14} /> },
 }
 
 const fmt = (n: number) => new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(n)
@@ -172,15 +172,15 @@ export const Page_finance_subscriptions = () => {
     , [currentSub])
 
     const stats: StatItem[] = currentSub ? [
-        { icon: <VCT_Icons.CreditCard size={20} />, label: 'Gói hiện tại', value: currentSub.plan_name, color: '#8b5cf6' },
-        { icon: <VCT_Icons.Calendar size={20} />, label: 'Hết hạn', value: currentSub.current_period_end, color: daysRemaining < 30 ? '#f59e0b' : '#10b981' },
-        { icon: <VCT_Icons.Clock size={20} />, label: 'Còn lại', value: `${daysRemaining} ngày`, color: daysRemaining < 30 ? '#ef4444' : '#0ea5e9' },
-        { icon: <VCT_Icons.DollarSign size={20} />, label: 'Số tiền kỳ này', value: fmt(currentSub.price), color: '#10b981' },
+        { icon: <VCT_Icons.CreditCard size={20} />, label: 'Gói hiện tại', value: currentSub.plan_name, color: 'var(--vct-info)' },
+        { icon: <VCT_Icons.Calendar size={20} />, label: 'Hết hạn', value: currentSub.current_period_end, color: daysRemaining < 30 ? 'var(--vct-warning)' : 'var(--vct-success)' },
+        { icon: <VCT_Icons.Clock size={20} />, label: 'Còn lại', value: `${daysRemaining} ngày`, color: daysRemaining < 30 ? 'var(--vct-danger)' : 'var(--vct-accent-cyan)' },
+        { icon: <VCT_Icons.DollarSign size={20} />, label: 'Số tiền kỳ này', value: fmt(currentSub.price), color: 'var(--vct-success)' },
     ] : [
-        { icon: <VCT_Icons.CreditCard size={20} />, label: 'Gói hiện tại', value: 'Chưa đăng ký', color: '#94a3b8' },
-        { icon: <VCT_Icons.Calendar size={20} />, label: 'Trạng thái', value: 'Chưa kích hoạt', color: '#94a3b8' },
-        { icon: <VCT_Icons.Clock size={20} />, label: 'Dùng thử', value: 'Miễn phí 30 ngày', color: '#8b5cf6' },
-        { icon: <VCT_Icons.DollarSign size={20} />, label: 'Chi phí', value: '0₫', color: '#10b981' },
+        { icon: <VCT_Icons.CreditCard size={20} />, label: 'Gói hiện tại', value: 'Chưa đăng ký', color: 'var(--vct-text-tertiary)' },
+        { icon: <VCT_Icons.Calendar size={20} />, label: 'Trạng thái', value: 'Chưa kích hoạt', color: 'var(--vct-text-tertiary)' },
+        { icon: <VCT_Icons.Clock size={20} />, label: 'Dùng thử', value: 'Miễn phí 30 ngày', color: 'var(--vct-info)' },
+        { icon: <VCT_Icons.DollarSign size={20} />, label: 'Chi phí', value: '0₫', color: 'var(--vct-success)' },
     ]
 
     return (
@@ -199,7 +199,7 @@ export const Page_finance_subscriptions = () => {
             {/* ── No Subscription — CTA ── */}
             {!currentSub && !isLoading && (
                 <div className="mb-6 p-8 bg-gradient-to-br from-[#8b5cf610] to-[#0ea5e910] border border-[#8b5cf640] rounded-2xl text-center">
-                    <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-[#8b5cf6] to-[#a855f7] flex items-center justify-center">
+                    <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-(--vct-info) to-[#a855f7] flex items-center justify-center">
                         <VCT_Icons.CreditCard size={32} className="text-white" />
                     </div>
                     <h2 className="font-black text-xl text-(--vct-text-primary) mb-2">Chưa có gói dịch vụ</h2>
@@ -220,7 +220,7 @@ export const Page_finance_subscriptions = () => {
                 <div className="bg-(--vct-bg-elevated) border border-(--vct-border-strong) rounded-2xl p-6 mb-6">
                     <div className="flex flex-wrap items-center justify-between gap-4 mb-4">
                         <div className="flex items-center gap-3">
-                            <div className="w-12 h-12 rounded-xl flex items-center justify-center" style={{ background: `linear-gradient(135deg, ${STATUS_MAP[currentSub.status]?.color || '#8b5cf6'}, ${STATUS_MAP[currentSub.status]?.color || '#a855f7'}cc)` }}>
+                            <div className="w-12 h-12 rounded-xl flex items-center justify-center" style={{ background: `linear-gradient(135deg, ${STATUS_MAP[currentSub.status]?.color || 'var(--vct-info)'}, ${STATUS_MAP[currentSub.status]?.color || '#a855f7'}cc)` }}>
                                 <VCT_Icons.CreditCard size={24} className="text-white" />
                             </div>
                             <div>
@@ -238,14 +238,14 @@ export const Page_finance_subscriptions = () => {
                     <div className="mb-4">
                         <div className="flex items-center justify-between text-xs mb-1.5">
                             <span className="text-(--vct-text-tertiary)">{currentSub.current_period_start}</span>
-                            <span className={`font-bold ${daysRemaining < 30 ? 'text-[#f59e0b]' : 'text-(--vct-text-tertiary)'}`}>
+                            <span className={`font-bold ${daysRemaining < 30 ? 'text-(--vct-warning)' : 'text-(--vct-text-tertiary)'}`}>
                                 {daysRemaining < 30 ? `⚠ ${daysRemaining} ngày còn lại` : `${daysRemaining} ngày còn lại`}
                             </span>
                             <span className="text-(--vct-text-tertiary)">{currentSub.current_period_end}</span>
                         </div>
                         <div className="w-full h-2 bg-(--vct-bg-base) rounded-full overflow-hidden">
                             <div
-                                className={`h-full rounded-full transition-all ${daysRemaining < 30 ? 'bg-gradient-to-r from-[#f59e0b] to-[#ef4444]' : 'bg-gradient-to-r from-[#10b981] to-[#0ea5e9]'}`}
+                                className={`h-full rounded-full transition-all ${daysRemaining < 30 ? 'bg-gradient-to-r from-(--vct-warning) to-(--vct-danger)' : 'bg-gradient-to-r from-(--vct-success) to-(--vct-accent-cyan)'}`}
                                 style={{ width: `${Math.min(100, Math.max(2, 100 - (daysRemaining / totalDays(currentSub.current_period_start, currentSub.current_period_end) * 100)))}%` }}
                             />
                         </div>
@@ -266,8 +266,8 @@ export const Page_finance_subscriptions = () => {
                     </div>
                     {daysRemaining < 30 && (
                         <div className="p-3 bg-[#f59e0b10] border border-[#f59e0b40] rounded-xl flex items-center gap-3 mb-4">
-                            <VCT_Icons.AlertTriangle size={18} className="text-[#f59e0b] shrink-0" />
-                            <span className="text-sm text-[#f59e0b] font-medium">Gói sẽ hết hạn trong {daysRemaining} ngày. Gia hạn ngay để tránh gián đoạn dịch vụ.</span>
+                            <VCT_Icons.AlertTriangle size={18} className="text-(--vct-warning) shrink-0" />
+                            <span className="text-sm text-(--vct-warning) font-medium">Gói sẽ hết hạn trong {daysRemaining} ngày. Gia hạn ngay để tránh gián đoạn dịch vụ.</span>
                         </div>
                     )}
                     <VCT_Stack direction="row" gap={8}>
@@ -284,14 +284,14 @@ export const Page_finance_subscriptions = () => {
             <div className="mb-6">
                 <div className="flex items-center justify-between mb-4">
                     <h3 className="font-bold text-(--vct-text-primary) text-lg flex items-center gap-2">
-                        <VCT_Icons.Layers size={20} className="text-[#8b5cf6]" /> So sánh gói dịch vụ
+                        <VCT_Icons.Layers size={20} className="text-(--vct-info)" /> So sánh gói dịch vụ
                     </h3>
                     <div className="flex rounded-xl border border-(--vct-border-strong) overflow-hidden">
                         {['monthly', 'yearly'].map(cycle => (
                             <button
                                 key={cycle}
                                 onClick={() => setBillingCycle(cycle as 'monthly' | 'yearly')}
-                                className={`px-4 py-2 text-sm font-semibold transition-colors ${billingCycle === cycle ? 'bg-[#8b5cf6] text-white' : 'bg-(--vct-bg-elevated) text-(--vct-text-secondary) hover:bg-(--vct-bg-base)'}`}
+                                className={`px-4 py-2 text-sm font-semibold transition-colors ${billingCycle === cycle ? 'bg-(--vct-info) text-white' : 'bg-(--vct-bg-elevated) text-(--vct-text-secondary) hover:bg-(--vct-bg-base)'}`}
                             >
                                 {cycle === 'monthly' ? 'Hàng tháng' : 'Hàng năm'}
                                 {cycle === 'yearly' && <span className="ml-1 text-[10px] opacity-75">-17%</span>}
@@ -309,16 +309,16 @@ export const Page_finance_subscriptions = () => {
                             <div
                                 key={plan.id}
                                 className={`bg-(--vct-bg-elevated) border rounded-2xl p-5 transition-all relative ${
-                                    isCurrent ? 'border-[#10b981] shadow-[0_0_30px_#10b98115] ring-1 ring-[#10b98140]' :
-                                    plan.is_popular ? 'border-[#8b5cf6] shadow-[0_0_30px_#8b5cf615]' :
+                                    isCurrent ? 'border-(--vct-success) shadow-[0_0_30px_#10b98115] ring-1 ring-[#10b98140]' :
+                                    plan.is_popular ? 'border-(--vct-info) shadow-[0_0_30px_#8b5cf615]' :
                                     'border-(--vct-border-strong) hover:border-[#8b5cf680]'
                                 }`}
                             >
                                 {plan.is_popular && !isCurrent && (
-                                    <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-[#8b5cf6] text-white text-[10px] font-bold uppercase tracking-wider px-3 py-1 rounded-full">Phổ biến nhất</div>
+                                    <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-(--vct-info) text-white text-[10px] font-bold uppercase tracking-wider px-3 py-1 rounded-full">Phổ biến nhất</div>
                                 )}
                                 {isCurrent && (
-                                    <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-[#10b981] text-white text-[10px] font-bold uppercase tracking-wider px-3 py-1 rounded-full flex items-center gap-1">
+                                    <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-(--vct-success) text-white text-[10px] font-bold uppercase tracking-wider px-3 py-1 rounded-full flex items-center gap-1">
                                         <VCT_Icons.CheckCircle size={10} /> Gói hiện tại
                                     </div>
                                 )}
@@ -332,20 +332,20 @@ export const Page_finance_subscriptions = () => {
                                 </div>
                                 <div className="space-y-2 mb-5 text-sm">
                                     <div className="flex items-center gap-2 text-(--vct-text-secondary)">
-                                        <VCT_Icons.Users size={14} className="text-[#8b5cf6] shrink-0" />
+                                        <VCT_Icons.Users size={14} className="text-(--vct-info) shrink-0" />
                                         <span>Tối đa <strong>{plan.max_members}</strong> thành viên</span>
                                     </div>
                                     <div className="flex items-center gap-2 text-(--vct-text-secondary)">
-                                        <VCT_Icons.Trophy size={14} className="text-[#f59e0b] shrink-0" />
+                                        <VCT_Icons.Trophy size={14} className="text-(--vct-warning) shrink-0" />
                                         <span>Tối đa <strong>{plan.max_tournaments}</strong> giải/năm</span>
                                     </div>
                                     <div className="flex items-center gap-2 text-(--vct-text-secondary)">
-                                        <VCT_Icons.Activity size={14} className="text-[#10b981] shrink-0" />
+                                        <VCT_Icons.Activity size={14} className="text-(--vct-success) shrink-0" />
                                         <span>Tối đa <strong>{plan.max_athletes}</strong> VĐV</span>
                                     </div>
                                     {(plan.features || []).map(f => (
                                         <div key={f} className="flex items-center gap-2 text-(--vct-text-secondary)">
-                                            <VCT_Icons.CheckCircle size={14} className="text-[#10b981] shrink-0" />
+                                            <VCT_Icons.CheckCircle size={14} className="text-(--vct-success) shrink-0" />
                                             <span>{f}</span>
                                         </div>
                                     ))}
@@ -369,7 +369,7 @@ export const Page_finance_subscriptions = () => {
             {currentSub && (
                 <div className="bg-(--vct-bg-elevated) border border-(--vct-border-strong) rounded-2xl p-6">
                     <h3 className="font-bold text-(--vct-text-primary) text-lg mb-4 flex items-center gap-2">
-                        <VCT_Icons.FileText size={20} className="text-[#0ea5e9]" /> Lịch sử thanh toán
+                        <VCT_Icons.FileText size={20} className="text-(--vct-accent-cyan)" /> Lịch sử thanh toán
                     </h3>
                     <div className="overflow-x-auto">
                         <table className="w-full text-sm">
@@ -420,7 +420,7 @@ export const Page_finance_subscriptions = () => {
             >
                 <div className="p-1">
                     <div className="mb-5 p-4 bg-[#0ea5e910] border border-[#0ea5e930] rounded-xl flex items-start gap-3">
-                        <VCT_Icons.CreditCard size={20} className="text-[#0ea5e9] shrink-0 mt-0.5" />
+                        <VCT_Icons.CreditCard size={20} className="text-(--vct-accent-cyan) shrink-0 mt-0.5" />
                         <div>
                             <div className="font-bold text-sm text-(--vct-text-primary) mb-1">
                                 {actionType === 'renew' ? `Gia hạn ${currentSub?.plan_name}` : `Nâng cấp lên ${selectedPlanForUpgrade?.name}`}
@@ -436,15 +436,15 @@ export const Page_finance_subscriptions = () => {
                         {[
                             { id: 'vnpay', name: 'Thanh toán qua VNPAY', desc: 'Quét mã QR bằng App Ngân hàng', icon: <VCT_Icons.Smartphone size={20} className="text-[#005BAA]" /> },
                             { id: 'momo', name: 'Ví MoMo', desc: 'Thanh toán nhanh qua ví điện tử', icon: <VCT_Icons.CreditCard size={20} className="text-[#A50064]" /> },
-                            { id: 'banking', name: 'Chuyển khoản Ngân hàng', desc: 'Chuyển khoản thủ công 24/7', icon: <VCT_Icons.Building2 size={20} className="text-[#10b981]" /> }
+                            { id: 'banking', name: 'Chuyển khoản Ngân hàng', desc: 'Chuyển khoản thủ công 24/7', icon: <VCT_Icons.Building2 size={20} className="text-(--vct-success)" /> }
                         ].map(method => (
                             <div
                                 key={method.id}
-                                className={`p-4 rounded-xl border-2 transition-all cursor-pointer flex items-center gap-3 ${selectedMethod === method.id ? 'border-[#8b5cf6] bg-[#8b5cf608]' : 'border-(--vct-border-subtle) hover:border-(--vct-border-strong)'}`}
+                                className={`p-4 rounded-xl border-2 transition-all cursor-pointer flex items-center gap-3 ${selectedMethod === method.id ? 'border-(--vct-info) bg-[#8b5cf608]' : 'border-(--vct-border-subtle) hover:border-(--vct-border-strong)'}`}
                                 onClick={() => setSelectedMethod(method.id as any)}
                             >
-                                <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 ${selectedMethod === method.id ? 'border-[#8b5cf6]' : 'border-(--vct-border-strong)'}`}>
-                                    {selectedMethod === method.id && <div className="w-2.5 h-2.5 rounded-full bg-[#8b5cf6]" />}
+                                <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 ${selectedMethod === method.id ? 'border-(--vct-info)' : 'border-(--vct-border-strong)'}`}>
+                                    {selectedMethod === method.id && <div className="w-2.5 h-2.5 rounded-full bg-(--vct-info)" />}
                                 </div>
                                 <div className="w-10 h-10 rounded-lg bg-(--vct-bg-base) border border-(--vct-border-subtle) flex items-center justify-center shrink-0 shadow-sm">
                                     {method.icon}

@@ -16,6 +16,7 @@ package httpapi
 // ═══════════════════════════════════════════════════════════════
 
 import (
+	"log/slog"
 	"net/http"
 	"strings"
 )
@@ -85,10 +86,10 @@ func apiBadRequest(w http.ResponseWriter, err error) {
 	apiError(w, http.StatusBadRequest, CodeBadRequest, err.Error())
 }
 
-// apiInternal writes a 500 and logs the error (do NOT expose internals
-// to the client in production — for now we include err.Error() for debugging).
+// apiInternal writes a 500 and logs the error securely without exposing internals.
 func apiInternal(w http.ResponseWriter, err error) {
-	apiError(w, http.StatusInternalServerError, CodeInternal, err.Error())
+	slog.Error("internal server error", "error", err)
+	apiError(w, http.StatusInternalServerError, CodeInternal, "Lỗi hệ thống nội bộ, vui lòng thử lại sau")
 }
 
 // apiForbidden writes a 403.

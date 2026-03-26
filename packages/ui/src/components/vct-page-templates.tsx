@@ -11,7 +11,7 @@ import { useState, type ReactNode, type CSSProperties } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
     VCT_Text, VCT_Card, VCT_Button, VCT_Badge,
-} from 'app/features/components/vct-ui'
+} from '..'
 
 /* ═══════════════════════════════════════════════════════════════
    LIST PAGE TEMPLATE

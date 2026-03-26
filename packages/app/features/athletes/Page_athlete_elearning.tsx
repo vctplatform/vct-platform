@@ -1,7 +1,7 @@
 'use client'
 import React, { useState } from 'react'
-import { VCT_Icons } from '../components/vct-icons'
-import { VCT_PageContainer, VCT_SectionCard, VCT_EmptyState, VCT_Badge } from '../components/vct-ui'
+import { VCT_Icons } from '@vct/ui'
+import { VCT_PageContainer, VCT_SectionCard, VCT_EmptyState, VCT_Badge } from '@vct/ui'
 import { ELearningCourse, CourseCertificate } from '@vct/shared-types'
 
 // ═══════════════════════════════════════════════════════════════
@@ -10,11 +10,11 @@ import { ELearningCourse, CourseCertificate } from '@vct/shared-types'
 // ═══════════════════════════════════════════════════════════════
 
 const CATEGORY_CONFIG: Record<string, { label: string; color: string; icon: React.ReactNode }> = {
-    quyen: { label: 'Bài quyền', color: '#ef4444', icon: <VCT_Icons.Award size={16} /> },
-    ky_thuat: { label: 'Kỹ thuật', color: '#3b82f6', icon: <VCT_Icons.Activity size={16} /> },
-    luat: { label: 'Luật thi đấu', color: '#f59e0b', icon: <VCT_Icons.Book size={16} /> },
-    the_luc: { label: 'Thể lực', color: '#22c55e', icon: <VCT_Icons.TrendingUp size={16} /> },
-    ly_thuyet: { label: 'Lý thuyết', color: '#8b5cf6', icon: <VCT_Icons.FileText size={16} /> },
+    quyen: { label: 'Bài quyền', color: 'var(--vct-danger)', icon: <VCT_Icons.Award size={16} /> },
+    ky_thuat: { label: 'Kỹ thuật', color: 'var(--vct-info)', icon: <VCT_Icons.Activity size={16} /> },
+    luat: { label: 'Luật thi đấu', color: 'var(--vct-warning)', icon: <VCT_Icons.Book size={16} /> },
+    the_luc: { label: 'Thể lực', color: 'var(--vct-success)', icon: <VCT_Icons.TrendingUp size={16} /> },
+    ly_thuyet: { label: 'Lý thuyết', color: 'var(--vct-info)', icon: <VCT_Icons.FileText size={16} /> },
 }
 
 const LEVEL_LABELS: Record<string, { label: string; variant: 'success' | 'warning' | 'danger' }> = {
@@ -94,7 +94,7 @@ const MODULE_ICON: Record<string, React.ReactNode> = {
 /* ── Course Card ──────────────────────────────────────────── */
 
 function CourseCard({ course, onSelect }: { course: ELearningCourse; onSelect: (c: ELearningCourse) => void }) {
-    const cat = CATEGORY_CONFIG[course.category] ?? { label: course.category, color: '#8b5cf6', icon: <VCT_Icons.Book size={16} /> }
+    const cat = CATEGORY_CONFIG[course.category] ?? { label: course.category, color: 'var(--vct-info)', icon: <VCT_Icons.Book size={16} /> }
     const level = LEVEL_LABELS[course.level] ?? { label: course.level, variant: 'neutral' as const }
 
     return (
@@ -123,7 +123,7 @@ function CourseCard({ course, onSelect }: { course: ELearningCourse; onSelect: (
             </div>
             <div className="h-1.5 bg-vct-border rounded-full overflow-hidden">
                 <div className="h-full rounded-full transition-all duration-700"
-                    style={{ width: `${course.progress}%`, background: course.progress >= 100 ? '#22c55e' : cat.color }} />
+                    style={{ width: `${course.progress}%`, background: course.progress >= 100 ? 'var(--vct-success)' : cat.color }} />
             </div>
 
             {/* Instructor */}
@@ -154,7 +154,7 @@ export function Page_athlete_elearning() {
             <div className="mb-8">
                 <div className="flex items-center gap-3 mb-2">
                     <div className="flex items-center justify-center w-12 h-12 rounded-2xl bg-gradient-to-br from-purple-500/20 to-indigo-500/20 border border-vct-border">
-                        <VCT_Icons.Laptop size={24} className="text-[#8b5cf6]" />
+                        <VCT_Icons.Laptop size={24} className="text-(--vct-info)" />
                     </div>
                     <div>
                         <h1 className="text-2xl font-black text-vct-text m-0">E-Learning</h1>
@@ -171,7 +171,7 @@ export function Page_athlete_elearning() {
                 </div>
                 <div className="p-4 rounded-2xl border border-vct-border bg-vct-elevated">
                     <div className="text-[10px] font-bold text-vct-text-muted uppercase tracking-wider mb-1">Tiến độ TB</div>
-                    <div className="text-2xl font-black text-[#8b5cf6]">{totalProgress}%</div>
+                    <div className="text-2xl font-black text-(--vct-info)">{totalProgress}%</div>
                 </div>
                 <div className="p-4 rounded-2xl border border-vct-border bg-vct-elevated">
                     <div className="text-[10px] font-bold text-vct-text-muted uppercase tracking-wider mb-1">Hoàn thành</div>
@@ -206,7 +206,7 @@ export function Page_athlete_elearning() {
                     <VCT_SectionCard
                         title={selectedCourse.title}
                         icon={CATEGORY_CONFIG[selectedCourse.category]?.icon || <VCT_Icons.Book size={20} />}
-                        accentColor={CATEGORY_CONFIG[selectedCourse.category]?.color || '#8b5cf6'}
+                        accentColor={CATEGORY_CONFIG[selectedCourse.category]?.color || 'var(--vct-info)'}
                         className="border border-vct-border"
                     >
                         <p className="text-sm text-vct-text-muted mb-4">{selectedCourse.description}</p>
@@ -218,7 +218,7 @@ export function Page_athlete_elearning() {
                         </div>
                         <div className="h-2 bg-vct-border rounded-full overflow-hidden mb-6">
                             <div className="h-full rounded-full transition-all duration-700"
-                                style={{ width: `${selectedCourse.progress}%`, background: CATEGORY_CONFIG[selectedCourse.category]?.color || '#8b5cf6' }} />
+                                style={{ width: `${selectedCourse.progress}%`, background: CATEGORY_CONFIG[selectedCourse.category]?.color || 'var(--vct-info)' }} />
                         </div>
 
                         {/* Module List */}
@@ -262,7 +262,7 @@ export function Page_athlete_elearning() {
             <VCT_SectionCard
                 title="Chứng chỉ đã đạt"
                 icon={<VCT_Icons.Award size={20} />}
-                accentColor="#f59e0b"
+                accentColor="var(--vct-warning)"
                 className="border border-vct-border"
             >
                 {certs.length === 0 ? (

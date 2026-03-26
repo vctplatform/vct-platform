@@ -1,6 +1,6 @@
 'use client'
 import React, { useState } from 'react'
-import { VCT_Icons } from '../components/vct-icons'
+import { VCT_Icons } from '@vct/ui'
 
 interface Post {
     id: string; author: string; avatar: string; role: string; time: string

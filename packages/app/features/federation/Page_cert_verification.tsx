@@ -46,9 +46,9 @@ const MOCK_RESULTS: Record<string, CertResult> = {
 };
 
 const STATUS_STYLE: Record<string, { label: string; color: string; bg: string; icon: string }> = {
-    valid: { label: 'Hợp lệ', color: '#10b981', bg: 'rgba(16,185,129,0.12)', icon: '✅' },
-    expired: { label: 'Hết hạn', color: '#f59e0b', bg: 'rgba(245,158,11,0.12)', icon: '⚠️' },
-    revoked: { label: 'Đã thu hồi', color: '#ef4444', bg: 'rgba(239,68,68,0.12)', icon: '❌' },
+    valid: { label: 'Hợp lệ', color: 'var(--vct-success)', bg: 'rgba(16,185,129,0.12)', icon: '✅' },
+    expired: { label: 'Hết hạn', color: 'var(--vct-warning)', bg: 'rgba(245,158,11,0.12)', icon: '⚠️' },
+    revoked: { label: 'Đã thu hồi', color: 'var(--vct-danger)', bg: 'rgba(239,68,68,0.12)', icon: '❌' },
 };
 
 // ── Component ────────────────────────────────────────────────
@@ -96,10 +96,10 @@ export function Page_cert_verification() {
             {/* Logo / Branding */}
             <div style={{ textAlign: 'center', marginBottom: 32 }}>
                 <div style={{ fontSize: 48, marginBottom: 12 }}>🏛️</div>
-                <h1 style={{ fontSize: 24, fontWeight: 700, color: '#f1f5f9', margin: 0 }}>
+                <h1 style={{ fontSize: 24, fontWeight: 700, color: 'var(--vct-text-primary)', margin: 0 }}>
                     Xác minh Chứng nhận
                 </h1>
-                <p style={{ fontSize: 14, color: '#94a3b8', marginTop: 6 }}>
+                <p style={{ fontSize: 14, color: 'var(--vct-text-tertiary)', marginTop: 6 }}>
                     Liên đoàn Võ cổ truyền Việt Nam — Hệ thống Xác minh trực tuyến
                 </p>
             </div>
@@ -110,7 +110,7 @@ export function Page_cert_verification() {
                 borderRadius: 20, padding: 32, width: '100%', maxWidth: 520,
                 backdropFilter: 'blur(12px)',
             }}>
-                <label style={{ display: 'block', fontSize: 13, color: '#94a3b8', marginBottom: 8 }}>
+                <label style={{ display: 'block', fontSize: 13, color: 'var(--vct-text-tertiary)', marginBottom: 8 }}>
                     Nhập số chứng nhận hoặc mã QR
                 </label>
                 <div style={{ display: 'flex', gap: 10 }}>
@@ -122,7 +122,7 @@ export function Page_cert_verification() {
                         style={{
                             flex: 1, padding: '12px 16px', borderRadius: 10,
                             background: 'rgba(15,23,42,0.6)', border: '1px solid rgba(148,163,184,0.2)',
-                            color: '#e2e8f0', fontSize: 14, outline: 'none',
+                            color: 'var(--vct-border-subtle)', fontSize: 14, outline: 'none',
                         }}
                     />
                     <button
@@ -131,7 +131,7 @@ export function Page_cert_verification() {
                         style={{
                             padding: '12px 24px', borderRadius: 10, border: 'none',
                             background: searching ? 'rgba(59,130,246,0.3)' : 'linear-gradient(135deg, #3b82f6, #8b5cf6)',
-                            color: '#fff', fontSize: 14, fontWeight: 600, cursor: searching ? 'wait' : 'pointer',
+                            color: 'var(--vct-bg-elevated)', fontSize: 14, fontWeight: 600, cursor: searching ? 'wait' : 'pointer',
                             whiteSpace: 'nowrap',
                         }}
                     >
@@ -140,12 +140,12 @@ export function Page_cert_verification() {
                 </div>
 
                 {/* Demo hint */}
-                <div style={{ marginTop: 12, fontSize: 12, color: '#475569' }}>
-                    Thử: <code style={{ color: '#60a5fa', cursor: 'pointer' }} onClick={() => setQuery('HLV-2025-00142')}>HLV-2025-00142</code>
+                <div style={{ marginTop: 12, fontSize: 12, color: 'var(--vct-text-secondary)' }}>
+                    Thử: <code style={{ color: 'var(--vct-info)', cursor: 'pointer' }} onClick={() => setQuery('HLV-2025-00142')}>HLV-2025-00142</code>
                     {' • '}
-                    <code style={{ color: '#60a5fa', cursor: 'pointer' }} onClick={() => setQuery('TT-2024-00089')}>TT-2024-00089</code>
+                    <code style={{ color: 'var(--vct-info)', cursor: 'pointer' }} onClick={() => setQuery('TT-2024-00089')}>TT-2024-00089</code>
                     {' • '}
-                    <code style={{ color: '#60a5fa', cursor: 'pointer' }} onClick={() => setQuery('CLB-2026-00231')}>CLB-2026-00231</code>
+                    <code style={{ color: 'var(--vct-info)', cursor: 'pointer' }} onClick={() => setQuery('CLB-2026-00231')}>CLB-2026-00231</code>
                 </div>
             </div>
 
@@ -153,7 +153,7 @@ export function Page_cert_verification() {
             {result && (
                 <div style={{
                     marginTop: 24, width: '100%', maxWidth: 520,
-                    background: 'rgba(30,41,59,0.6)', border: `1px solid ${STATUS_STYLE[result.status]?.color ?? '#94a3b8'}30`,
+                    background: 'rgba(30,41,59,0.6)', border: `1px solid ${STATUS_STYLE[result.status]?.color ?? 'var(--vct-text-tertiary)'}30`,
                     borderRadius: 20, padding: 28, backdropFilter: 'blur(12px)',
                 }}>
                     {/* Status Banner */}
@@ -166,11 +166,11 @@ export function Page_cert_verification() {
                         <div>
                             <div style={{
                                 fontSize: 16, fontWeight: 700,
-                                color: STATUS_STYLE[result.status]?.color ?? '#94a3b8',
+                                color: STATUS_STYLE[result.status]?.color ?? 'var(--vct-text-tertiary)',
                             }}>
                                 Chứng nhận {STATUS_STYLE[result.status]?.label ?? 'Không xác định'}
                             </div>
-                            <div style={{ fontSize: 12, color: '#94a3b8' }}>{result.cert_number}</div>
+                            <div style={{ fontSize: 12, color: 'var(--vct-text-tertiary)' }}>{result.cert_number}</div>
                         </div>
                     </div>
 
@@ -187,8 +187,8 @@ export function Page_cert_verification() {
                             display: 'flex', justifyContent: 'space-between', padding: '10px 0',
                             borderBottom: '1px solid rgba(148,163,184,0.08)',
                         }}>
-                            <span style={{ fontSize: 13, color: '#64748b' }}>{label}</span>
-                            <span style={{ fontSize: 13, color: '#e2e8f0', fontWeight: 500, textAlign: 'right', maxWidth: '60%' }}>{value}</span>
+                            <span style={{ fontSize: 13, color: 'var(--vct-text-tertiary)' }}>{label}</span>
+                            <span style={{ fontSize: 13, color: 'var(--vct-border-subtle)', fontWeight: 500, textAlign: 'right', maxWidth: '60%' }}>{value}</span>
                         </div>
                     ))}
                 </div>
@@ -202,15 +202,15 @@ export function Page_cert_verification() {
                     borderRadius: 16, padding: 24, textAlign: 'center',
                 }}>
                     <span style={{ fontSize: 36 }}>🔍</span>
-                    <h3 style={{ color: '#ef4444', fontSize: 16, marginTop: 8 }}>Không tìm thấy chứng nhận</h3>
-                    <p style={{ color: '#94a3b8', fontSize: 13 }}>
+                    <h3 style={{ color: 'var(--vct-danger)', fontSize: 16, marginTop: 8 }}>Không tìm thấy chứng nhận</h3>
+                    <p style={{ color: 'var(--vct-text-tertiary)', fontSize: 13 }}>
                         Mã "{query}" không tồn tại trong hệ thống. Vui lòng kiểm tra lại hoặc liên hệ Liên đoàn.
                     </p>
                 </div>
             )}
 
             {/* Footer */}
-            <div style={{ marginTop: 40, textAlign: 'center', fontSize: 12, color: '#475569' }}>
+            <div style={{ marginTop: 40, textAlign: 'center', fontSize: 12, color: 'var(--vct-text-secondary)' }}>
                 © 2026 Liên đoàn Võ cổ truyền Việt Nam • Nền tảng quản trị võ thuật toàn diện
             </div>
         </div>

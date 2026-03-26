@@ -1,9 +1,9 @@
 'use client'
 
 import * as React from 'react'
-import { VCT_PageContainer, VCT_StatRow } from '../components/vct-ui'
-import type { StatItem } from '../components/VCT_StatRow'
-import { VCT_Icons } from '../components/vct-icons'
+import { VCT_PageContainer, VCT_StatRow } from '@vct/ui'
+import type { StatItem } from '@vct/ui'
+import { VCT_Icons } from '@vct/ui'
 
 // ════════════════════════════════════════════════════════════════
 // PROVINCIAL — TOURNAMENT MANAGEMENT (Quản lý giải đấu cấp tỉnh)
@@ -18,10 +18,10 @@ const MOCK_TOURNAMENTS = [
 ]
 
 const STATUS_MAP: Record<string, { label: string; color: string; icon: string }> = {
-    UPCOMING: { label: 'Sắp diễn ra', color: '#0ea5e9', icon: '📅' },
-    ONGOING: { label: 'Đang diễn ra', color: '#10b981', icon: '🔥' },
-    COMPLETED: { label: 'Đã kết thúc', color: '#6b7280', icon: '✅' },
-    CANCELLED: { label: 'Hủy', color: '#ef4444', icon: '❌' },
+    UPCOMING: { label: 'Sắp diễn ra', color: 'var(--vct-accent-cyan)', icon: '📅' },
+    ONGOING: { label: 'Đang diễn ra', color: 'var(--vct-success)', icon: '🔥' },
+    COMPLETED: { label: 'Đã kết thúc', color: 'var(--vct-text-tertiary)', icon: '✅' },
+    CANCELLED: { label: 'Hủy', color: 'var(--vct-danger)', icon: '❌' },
 }
 
 export const Page_province_tournaments = () => {
@@ -40,10 +40,10 @@ export const Page_province_tournaments = () => {
             </div>
 
             <VCT_StatRow items={[
-                { label: 'Tổng giải', value: MOCK_TOURNAMENTS.length, icon: <VCT_Icons.Trophy size={18} />, color: '#10b981' },
-                { label: 'Sắp diễn ra', value: MOCK_TOURNAMENTS.filter(t => t.status === 'UPCOMING').length, icon: <VCT_Icons.Calendar size={18} />, color: '#0ea5e9' },
-                { label: 'Đã kết thúc', value: MOCK_TOURNAMENTS.filter(t => t.status === 'COMPLETED').length, icon: <VCT_Icons.CheckCircle size={18} />, color: '#6b7280' },
-                { label: 'Tổng VĐV tham gia', value: MOCK_TOURNAMENTS.reduce((s, t) => s + t.vdvCount, 0), icon: <VCT_Icons.Users size={18} />, color: '#f59e0b' },
+                { label: 'Tổng giải', value: MOCK_TOURNAMENTS.length, icon: <VCT_Icons.Trophy size={18} />, color: 'var(--vct-success)' },
+                { label: 'Sắp diễn ra', value: MOCK_TOURNAMENTS.filter(t => t.status === 'UPCOMING').length, icon: <VCT_Icons.Calendar size={18} />, color: 'var(--vct-accent-cyan)' },
+                { label: 'Đã kết thúc', value: MOCK_TOURNAMENTS.filter(t => t.status === 'COMPLETED').length, icon: <VCT_Icons.CheckCircle size={18} />, color: 'var(--vct-text-tertiary)' },
+                { label: 'Tổng VĐV tham gia', value: MOCK_TOURNAMENTS.reduce((s, t) => s + t.vdvCount, 0), icon: <VCT_Icons.Users size={18} />, color: 'var(--vct-warning)' },
             ] as StatItem[]} className="mb-6" />
 
             {/* Filters */}

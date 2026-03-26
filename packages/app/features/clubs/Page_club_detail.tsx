@@ -2,9 +2,9 @@
 
 import * as React from 'react'
 import { useState } from 'react'
-import { VCT_Badge, VCT_Button, VCT_Stack, VCT_AvatarLetter, VCT_Tabs } from '../components/vct-ui'
-import { VCT_PageContainer } from '../components/vct-ui'
-import { VCT_Icons } from '../components/vct-icons'
+import { VCT_Badge, VCT_Button, VCT_Stack, VCT_AvatarLetter, VCT_Tabs } from '@vct/ui'
+import { VCT_PageContainer } from '@vct/ui'
+import { VCT_Icons } from '@vct/ui'
 
 // ════════════════════════════════════════
 // MOCK DATA
@@ -68,7 +68,7 @@ export const Page_club_detail = () => {
             {/* HEADER */}
             <div className="bg-(--vct-bg-elevated) border border-(--vct-border-strong) rounded-2xl p-6 mb-6">
                 <div className="flex flex-col md:flex-row gap-6 items-start">
-                    <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#f59e0b] to-[#ef4444] flex items-center justify-center text-white text-xl font-black">SL</div>
+                    <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-(--vct-warning) to-(--vct-danger) flex items-center justify-center text-white text-xl font-black">SL</div>
                     <div className="flex-1">
                         <h1 className="text-2xl font-bold text-(--vct-text-primary)">{c.name}</h1>
                         <div className="flex items-center gap-2 mt-1"><VCT_Badge text="CLB/Võ đường" type="warning" /><VCT_Badge text="Hoạt động" type="success" /></div>
@@ -82,10 +82,10 @@ export const Page_club_detail = () => {
                 </div>
 
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-6 pt-6 border-t border-(--vct-border-subtle)">
-                    <div className="text-center p-3 bg-(--vct-bg-base) rounded-xl"><div className="text-xl font-black text-[#0ea5e9]">{KPI.members}</div><div className="text-[10px] text-(--vct-text-tertiary)">Thành viên</div></div>
-                    <div className="text-center p-3 bg-(--vct-bg-base) rounded-xl"><div className="text-xl font-black text-[#10b981]">{KPI.coaches}</div><div className="text-[10px] text-(--vct-text-tertiary)">HLV</div></div>
-                    <div className="text-center p-3 bg-(--vct-bg-base) rounded-xl"><div className="text-xl font-black text-[#f59e0b]">{KPI.classes}</div><div className="text-[10px] text-(--vct-text-tertiary)">Lớp học</div></div>
-                    <div className="text-center p-3 bg-(--vct-bg-base) rounded-xl"><div className="text-xl font-black text-[#8b5cf6]">{KPI.attendance_rate}</div><div className="text-[10px] text-(--vct-text-tertiary)">Tỉ lệ chuyên cần</div></div>
+                    <div className="text-center p-3 bg-(--vct-bg-base) rounded-xl"><div className="text-xl font-black text-(--vct-accent-cyan)">{KPI.members}</div><div className="text-[10px] text-(--vct-text-tertiary)">Thành viên</div></div>
+                    <div className="text-center p-3 bg-(--vct-bg-base) rounded-xl"><div className="text-xl font-black text-(--vct-success)">{KPI.coaches}</div><div className="text-[10px] text-(--vct-text-tertiary)">HLV</div></div>
+                    <div className="text-center p-3 bg-(--vct-bg-base) rounded-xl"><div className="text-xl font-black text-(--vct-warning)">{KPI.classes}</div><div className="text-[10px] text-(--vct-text-tertiary)">Lớp học</div></div>
+                    <div className="text-center p-3 bg-(--vct-bg-base) rounded-xl"><div className="text-xl font-black text-(--vct-info)">{KPI.attendance_rate}</div><div className="text-[10px] text-(--vct-text-tertiary)">Tỉ lệ chuyên cần</div></div>
                 </div>
             </div>
 
@@ -107,7 +107,7 @@ export const Page_club_detail = () => {
                         <div className="space-y-2">{FINANCE.slice(0, 5).map(f => (
                             <div key={f.id} className="flex items-center justify-between p-3 bg-(--vct-bg-base) rounded-xl border border-(--vct-border-subtle)">
                                 <div><div className="font-semibold text-sm text-(--vct-text-primary)">{f.desc}</div><div className="text-[11px] text-(--vct-text-tertiary)">{f.date}</div></div>
-                                <span className={`font-bold text-sm ${f.type === 'income' ? 'text-[#10b981]' : 'text-[#ef4444]'}`}>{f.amount}</span>
+                                <span className={`font-bold text-sm ${f.type === 'income' ? 'text-(--vct-success)' : 'text-(--vct-danger)'}`}>{f.amount}</span>
                             </div>
                         ))}</div>
                     </div>
@@ -158,12 +158,12 @@ export const Page_club_detail = () => {
                             <tr key={i} className="hover:bg-white/5 transition-colors">
                                 <td className="p-4 text-sm text-(--vct-text-secondary)">{a.date}</td>
                                 <td className="p-4 font-semibold text-sm text-(--vct-text-primary)">{a.class}</td>
-                                <td className="p-4 text-center font-bold text-[#10b981]">{a.present}</td>
-                                <td className="p-4 text-center font-bold text-[#ef4444]">{a.absent}</td>
+                                <td className="p-4 text-center font-bold text-(--vct-success)">{a.present}</td>
+                                <td className="p-4 text-center font-bold text-(--vct-danger)">{a.absent}</td>
                                 <td className="p-4 text-center">
                                     <div className="flex items-center justify-center gap-2">
                                         <span className="font-bold text-sm text-(--vct-text-primary)">{Math.round(a.present / a.total * 100)}%</span>
-                                        <div className="w-16 h-1.5 bg-(--vct-border-strong) rounded-full overflow-hidden"><div className="h-full bg-[#10b981] rounded-full" style={{ width: `${a.present / a.total * 100}%` }}></div></div>
+                                        <div className="w-16 h-1.5 bg-(--vct-border-strong) rounded-full overflow-hidden"><div className="h-full bg-(--vct-success) rounded-full" style={{ width: `${a.present / a.total * 100}%` }}></div></div>
                                     </div>
                                 </td>
                             </tr>
@@ -182,7 +182,7 @@ export const Page_club_detail = () => {
                             <tr key={f.id} className="hover:bg-white/5 transition-colors">
                                 <td className="p-4 text-sm text-(--vct-text-tertiary)">{f.date}</td>
                                 <td className="p-4 font-semibold text-sm text-(--vct-text-primary)">{f.desc}</td>
-                                <td className={`p-4 text-right font-bold text-sm ${f.type === 'income' ? 'text-[#10b981]' : 'text-[#ef4444]'}`}>{f.amount}</td>
+                                <td className={`p-4 text-right font-bold text-sm ${f.type === 'income' ? 'text-(--vct-success)' : 'text-(--vct-danger)'}`}>{f.amount}</td>
                             </tr>
                         ))}</tbody>
                     </table>

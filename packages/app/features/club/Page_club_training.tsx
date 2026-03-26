@@ -18,10 +18,10 @@ import {
   VCT_Table,
   VCT_Tabs,
   VCT_Toast,
-} from '../components/vct-ui'
-import { VCT_PageContainer, VCT_StatRow } from '../components/vct-ui'
-import type { StatItem } from '../components/VCT_StatRow'
-import { VCT_Icons } from '../components/vct-icons'
+} from '@vct/ui'
+import { VCT_PageContainer, VCT_StatRow } from '@vct/ui'
+import type { StatItem } from '@vct/ui'
+import { VCT_Icons } from '@vct/ui'
 import { useRouteActionGuard } from '../hooks/use-route-action-guard'
 import {
   BELT_EMOJI,
@@ -667,25 +667,25 @@ export const Page_club_training = () => {
       label: 'Tong giao trinh',
       value: modules.length,
       icon: <VCT_Icons.Book size={18} />,
-      color: '#0ea5e9',
+      color: 'var(--vct-accent-cyan)',
     },
     {
       label: 'Dang trien khai',
       value: modules.filter((item) => item.status === 'active').length,
       icon: <VCT_Icons.Activity size={18} />,
-      color: '#10b981',
+      color: 'var(--vct-success)',
     },
     {
       label: 'Tien do TB',
       value: `${avgModuleProgress}%`,
       icon: <VCT_Icons.Target size={18} />,
-      color: '#f59e0b',
+      color: 'var(--vct-warning)',
     },
     {
       label: 'Ty le dat ky thi',
       value: `${passRate}%`,
       icon: <VCT_Icons.Award size={18} />,
-      color: '#8b5cf6',
+      color: 'var(--vct-info)',
       sub: `${totalPassed}/${totalCandidates} thi sinh`,
     },
   ]
@@ -766,19 +766,19 @@ export const Page_club_training = () => {
             {
               key: 'active',
               label: 'Hoat dong',
-              color: '#10b981',
+              color: 'var(--vct-success)',
               count: modules.filter((item) => item.status === 'active').length,
             },
             {
               key: 'draft',
               label: 'Nhap',
-              color: '#f59e0b',
+              color: 'var(--vct-warning)',
               count: modules.filter((item) => item.status === 'draft').length,
             },
             {
               key: 'archived',
               label: 'Luu tru',
-              color: '#94a3b8',
+              color: 'var(--vct-text-tertiary)',
               count: modules.filter((item) => item.status === 'archived').length,
             },
           ]}

@@ -15,12 +15,12 @@ import (
 type Flag struct {
 	Key         string            `json:"key"`
 	Enabled     bool              `json:"enabled"`
-	Percentage  int               `json:"percentage"`   // 0-100 rollout %
-	Variants    map[string]string `json:"variants"`     // A/B variants
-	AllowList   []string          `json:"allow_list"`   // Always-on user IDs
-	DenyList    []string          `json:"deny_list"`    // Always-off user IDs
+	Percentage  int               `json:"percentage"` // 0-100 rollout %
+	Variants    map[string]string `json:"variants"`   // A/B variants
+	AllowList   []string          `json:"allow_list"` // Always-on user IDs
+	DenyList    []string          `json:"deny_list"`  // Always-off user IDs
 	Metadata    map[string]string `json:"metadata"`
-	Environment string            `json:"environment"`  // staging/production/*
+	Environment string            `json:"environment"` // staging/production/*
 	UpdatedAt   time.Time         `json:"updated_at"`
 }
 
@@ -303,4 +303,3 @@ func hashBucket(key, userID string) int {
 	h.Write([]byte(key + ":" + userID))
 	return int(h.Sum32() % 100)
 }
-

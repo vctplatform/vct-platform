@@ -24,12 +24,12 @@ func (s *Server) withTenantValidation(next func(http.ResponseWriter, *http.Reque
 		}
 
 		contextScope := strings.TrimSpace(r.Header.Get("X-Context-Scope"))
-		
+
 		// Validate the scope if the client explicitly declares what context they are acting in
 		if contextScope != "" {
 			// Prevent users from accessing data belonging to a scope they are not currently logged into
 			if principal.User.TenantID != "" && contextScope != principal.User.TenantID {
-				writeAuthError(w, fmt.Errorf("%w: Header X-Context-Scope (%s) bị từ chối do không khớp với Active Session (%s)", 
+				writeAuthError(w, fmt.Errorf("%w: Header X-Context-Scope (%s) bị từ chối do không khớp với Active Session (%s)",
 					auth.ErrForbidden, contextScope, principal.User.TenantID))
 				return
 			}

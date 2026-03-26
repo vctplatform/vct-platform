@@ -6,10 +6,10 @@ import Image from 'next/image'
 import {
     VCT_Badge, VCT_Button, VCT_Stack, VCT_SearchInput,
     VCT_EmptyState
-} from '../components/vct-ui'
-import { VCT_PageContainer, VCT_PageHero, VCT_StatRow } from '../components/vct-ui'
-import type { StatItem } from '../components/VCT_StatRow'
-import { VCT_Icons } from '../components/vct-icons'
+} from '@vct/ui'
+import { VCT_PageContainer, VCT_PageHero, VCT_StatRow } from '@vct/ui'
+import type { StatItem } from '@vct/ui'
+import { VCT_Icons } from '@vct/ui'
 import { useELearningCourses } from '../hooks/useTrainingAPI'
 
 // ════════════════════════════════════════
@@ -52,10 +52,10 @@ export const Page_elearning = () => {
             />
 
             <VCT_StatRow items={[
-                { label: 'Khóa học mở', value: 15, icon: <VCT_Icons.Video size={18} />, color: '#0ea5e9' },
-                { label: 'Học viên', value: 2450, icon: <VCT_Icons.Users size={18} />, color: '#f59e0b' },
-                { label: 'Chứng chỉ cấp', value: 890, icon: <VCT_Icons.Award size={18} />, color: '#10b981' },
-                { label: 'Hoàn thành', value: '68%', icon: <VCT_Icons.Activity size={18} />, color: '#8b5cf6' },
+                { label: 'Khóa học mở', value: 15, icon: <VCT_Icons.Video size={18} />, color: 'var(--vct-accent-cyan)' },
+                { label: 'Học viên', value: 2450, icon: <VCT_Icons.Users size={18} />, color: 'var(--vct-warning)' },
+                { label: 'Chứng chỉ cấp', value: 890, icon: <VCT_Icons.Award size={18} />, color: 'var(--vct-success)' },
+                { label: 'Hoàn thành', value: '68%', icon: <VCT_Icons.Activity size={18} />, color: 'var(--vct-info)' },
             ] as StatItem[]} className="mb-6" />
 
             {/* ── LIST VIEW ── */}
@@ -76,7 +76,7 @@ export const Page_elearning = () => {
                                     className="object-cover group-hover:scale-105 transition-transform duration-500"
                                 />
                                 {course.progress === 100 && (
-                                    <div className="absolute top-2 right-2 bg-[#10b981] text-white text-[10px] font-bold px-2 py-1 rounded-md uppercase z-20 flex items-center gap-1">
+                                    <div className="absolute top-2 right-2 bg-(--vct-success) text-white text-[10px] font-bold px-2 py-1 rounded-md uppercase z-20 flex items-center gap-1">
                                         <VCT_Icons.Check size={12} /> Hoàn thành
                                     </div>
                                 )}

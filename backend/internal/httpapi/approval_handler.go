@@ -36,7 +36,7 @@ func (s *Server) handleApprovalCRUD(w http.ResponseWriter, r *http.Request, p au
 	}
 
 	if len(parts) < 1 || parts[0] == "" {
-		notFound(w)
+		apiError(w, http.StatusNotFound, CodeNotFound, "Không tìm thấy tài nguyên")
 		return
 	}
 	requestID := parts[0]
@@ -66,24 +66,24 @@ func (s *Server) handleApprovalCRUD(w http.ResponseWriter, r *http.Request, p au
 		return
 	}
 
-	notFound(w)
+	apiError(w, http.StatusNotFound, CodeNotFound, "Không tìm thấy tài nguyên")
 }
 
 func (s *Server) handleApprovalSubmit(w http.ResponseWriter, r *http.Request, p auth.Principal) {
 	var input approval.SubmitInput
 	if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
-		badRequest(w, "invalid request body")
+		apiError(w, http.StatusBadRequest, CodeBadRequest, "invalid request body")
 		return
 	}
 	if input.WorkflowCode == "" || input.Title == "" {
-		badRequest(w, "workflow_code và title là bắt buộc")
+		apiError(w, http.StatusBadRequest, CodeBadRequest, "workflow_code và title là bắt buộc")
 		return
 	}
 	input.RequestedBy = p.User.ID
 
 	created, err := s.Federation.Approval.Submit(r.Context(), input)
 	if err != nil {
-		badRequest(w, err.Error())
+		apiError(w, http.StatusBadRequest, CodeBadRequest, err.Error())
 		return
 	}
 
@@ -98,7 +98,7 @@ func (s *Server) handleApprovalSubmit(w http.ResponseWriter, r *http.Request, p 
 func (s *Server) handleApprovalGet(w http.ResponseWriter, r *http.Request, requestID string) {
 	req, err := s.Federation.Approval.GetRequest(r.Context(), requestID)
 	if err != nil {
-		notFoundError(w, "approval request not found")
+		apiError(w, http.StatusNotFound, CodeNotFound, "approval request not found")
 		return
 	}
 	success(w, http.StatusOK, req)
@@ -107,7 +107,7 @@ func (s *Server) handleApprovalGet(w http.ResponseWriter, r *http.Request, reque
 func (s *Server) handleApprovalSteps(w http.ResponseWriter, r *http.Request, requestID string) {
 	steps, err := s.Federation.Approval.GetSteps(r.Context(), requestID)
 	if err != nil {
-		internalError(w, err)
+		apiInternal(w, err)
 		return
 	}
 	success(w, http.StatusOK, map[string]any{"request_id": requestID, "steps": steps})
@@ -116,7 +116,7 @@ func (s *Server) handleApprovalSteps(w http.ResponseWriter, r *http.Request, req
 func (s *Server) handleApprovalHistory(w http.ResponseWriter, r *http.Request, requestID string) {
 	history, err := s.Federation.Approval.GetHistory(r.Context(), requestID)
 	if err != nil {
-		internalError(w, err)
+		apiInternal(w, err)
 		return
 	}
 	success(w, http.StatusOK, map[string]any{"request_id": requestID, "history": history})
@@ -140,12 +140,12 @@ func (s *Server) handleApprovalAction(w http.ResponseWriter, r *http.Request, p 
 	case "cancel":
 		err = s.Federation.Approval.Cancel(r.Context(), requestID, p.User.ID)
 	default:
-		badRequest(w, "unknown action: "+action)
+		apiError(w, http.StatusBadRequest, CodeBadRequest, "unknown action: "+action)
 		return
 	}
 
 	if err != nil {
-		badRequest(w, err.Error())
+		apiError(w, http.StatusBadRequest, CodeBadRequest, err.Error())
 		return
 	}
 
@@ -167,7 +167,7 @@ func (s *Server) handleApprovalAction(w http.ResponseWriter, r *http.Request, p 
 
 func (s *Server) handleApprovalMyPending(w http.ResponseWriter, r *http.Request, p auth.Principal) {
 	if r.Method != http.MethodGet {
-		methodNotAllowed(w)
+		apiMethodNotAllowed(w)
 		return
 	}
 	role := r.URL.Query().Get("role")
@@ -177,7 +177,7 @@ func (s *Server) handleApprovalMyPending(w http.ResponseWriter, r *http.Request,
 
 	requests, err := s.Federation.Approval.ListPendingForRole(r.Context(), role)
 	if err != nil {
-		internalError(w, err)
+		apiInternal(w, err)
 		return
 	}
 	success(w, http.StatusOK, map[string]any{
@@ -189,13 +189,13 @@ func (s *Server) handleApprovalMyPending(w http.ResponseWriter, r *http.Request,
 
 func (s *Server) handleApprovalMyRequests(w http.ResponseWriter, r *http.Request, p auth.Principal) {
 	if r.Method != http.MethodGet {
-		methodNotAllowed(w)
+		apiMethodNotAllowed(w)
 		return
 	}
 
 	requests, err := s.Federation.Approval.ListMyRequests(r.Context(), p.User.ID)
 	if err != nil {
-		internalError(w, err)
+		apiInternal(w, err)
 		return
 	}
 	success(w, http.StatusOK, map[string]any{
@@ -209,7 +209,7 @@ func (s *Server) handleApprovalMyRequests(w http.ResponseWriter, r *http.Request
 
 func (s *Server) handleWorkflowDefinitions(w http.ResponseWriter, r *http.Request, _ auth.Principal) {
 	if r.Method != http.MethodGet {
-		methodNotAllowed(w)
+		apiMethodNotAllowed(w)
 		return
 	}
 	workflows := getDefaultWorkflowDefinitions()

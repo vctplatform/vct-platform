@@ -17,10 +17,10 @@ import {
   VCT_StatusPipeline,
   VCT_Table,
   VCT_Toast,
-} from '../components/vct-ui'
-import { VCT_PageContainer, VCT_StatRow } from '../components/vct-ui'
-import type { StatItem } from '../components/VCT_StatRow'
-import { VCT_Icons } from '../components/vct-icons'
+} from '@vct/ui'
+import { VCT_PageContainer, VCT_StatRow } from '@vct/ui'
+import type { StatItem } from '@vct/ui'
+import { VCT_Icons } from '@vct/ui'
 import { useRouteActionGuard } from '../hooks/use-route-action-guard'
 import {
   CLASS_LEVEL_LABEL,
@@ -514,26 +514,26 @@ export const Page_club_classes = () => {
       label: 'Tong lop hoc',
       value: classes.length,
       icon: <VCT_Icons.Book size={18} />,
-      color: '#0ea5e9',
+      color: 'var(--vct-accent-cyan)',
     },
     {
       label: 'Lop hoat dong',
       value: classes.filter((item) => item.status === 'active').length,
       icon: <VCT_Icons.Activity size={18} />,
-      color: '#10b981',
+      color: 'var(--vct-success)',
     },
     {
       label: 'Lap day trung binh',
       value: `${fillRate}%`,
       icon: <VCT_Icons.Users size={18} />,
-      color: '#f59e0b',
+      color: 'var(--vct-warning)',
       sub: `${totalStudents}/${totalCapacity} hoc vien`,
     },
     {
       label: 'Du bao hoc phi',
       value: money(projectedRevenue),
       icon: <VCT_Icons.DollarSign size={18} />,
-      color: '#8b5cf6',
+      color: 'var(--vct-info)',
     },
   ]
 
@@ -563,19 +563,19 @@ export const Page_club_classes = () => {
           {
             key: 'active',
             label: 'Hoat dong',
-            color: '#10b981',
+            color: 'var(--vct-success)',
             count: classes.filter((item) => item.status === 'active').length,
           },
           {
             key: 'paused',
             label: 'Tam nghi',
-            color: '#f59e0b',
+            color: 'var(--vct-warning)',
             count: classes.filter((item) => item.status === 'paused').length,
           },
           {
             key: 'draft',
             label: 'Nhap',
-            color: '#94a3b8',
+            color: 'var(--vct-text-tertiary)',
             count: classes.filter((item) => item.status === 'draft').length,
           },
         ]}

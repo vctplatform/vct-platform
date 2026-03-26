@@ -3,13 +3,13 @@
 import * as React from 'react'
 import { useState, useMemo, useEffect } from 'react'
 import { useApiFetch } from './useApiFetch'
-import { VCT_Badge, VCT_Button, VCT_Stack, VCT_SearchInput, VCT_EmptyState } from '../components/vct-ui'
-import { VCT_PageContainer, VCT_StatRow } from '../components/vct-ui'
-import type { StatItem } from '../components/VCT_StatRow'
-import { VCT_Icons } from '../components/vct-icons'
+import { VCT_Badge, VCT_Button, VCT_Stack, VCT_SearchInput, VCT_EmptyState } from '@vct/ui'
+import { VCT_PageContainer, VCT_StatRow } from '@vct/ui'
+import type { StatItem } from '@vct/ui'
+import { VCT_Icons } from '@vct/ui'
 import { exportToExcel } from '../../utils/exportUtils'
 import { useRealtimeNotifications } from '../hooks/useRealtimeNotifications'
-import { VCT_DigitalSignature } from '../components/VCT_DigitalSignature'
+import { VCT_DigitalSignature } from '@vct/ui'
 
 // ════════════════════════════════════════
 // FEDERATION — APPROVAL CENTER
@@ -25,11 +25,11 @@ interface ApprovalRequest {
 }
 
 const TYPE_MAP: Record<ApprovalType, { label: string; color: string; icon: string }> = {
-    club_registration: { label: 'Đăng ký CLB', color: '#10b981', icon: '🏢' },
-    tournament_hosting: { label: 'Tổ chức giải', color: '#0ea5e9', icon: '🏆' },
-    document_publish: { label: 'Văn bản', color: '#8b5cf6', icon: '📄' },
-    personnel_change: { label: 'Nhân sự', color: '#f59e0b', icon: '👥' },
-    budget_approval: { label: 'Ngân sách', color: '#ec4899', icon: '💰' },
+    club_registration: { label: 'Đăng ký CLB', color: 'var(--vct-success)', icon: '🏢' },
+    tournament_hosting: { label: 'Tổ chức giải', color: 'var(--vct-accent-cyan)', icon: '🏆' },
+    document_publish: { label: 'Văn bản', color: 'var(--vct-info)', icon: '📄' },
+    personnel_change: { label: 'Nhân sự', color: 'var(--vct-warning)', icon: '👥' },
+    budget_approval: { label: 'Ngân sách', color: 'var(--vct-accent-pink)', icon: '💰' },
 }
 
 const STATUS_MAP: Record<ApprovalStatus, { label: string; type: any }> = {
@@ -129,10 +129,10 @@ export const Page_federation_approvals = () => {
             </div>
 
             <VCT_StatRow items={[
-                { label: 'Chờ xử lý', value: approvals.filter(a => a.status === 'pending').length, icon: <VCT_Icons.Clock size={18} />, color: '#f59e0b' },
-                { label: 'Chuyển cấp', value: approvals.filter(a => a.status === 'escalated').length, icon: <VCT_Icons.Chevron size={18} />, color: '#8b5cf6' },
-                { label: 'Đã duyệt', value: approvals.filter(a => a.status === 'approved').length, icon: <VCT_Icons.Check size={18} />, color: '#10b981' },
-                { label: 'Khẩn cấp', value: approvals.filter(a => a.priority === 'urgent').length, icon: <VCT_Icons.AlertCircle size={18} />, color: '#ef4444' },
+                { label: 'Chờ xử lý', value: approvals.filter(a => a.status === 'pending').length, icon: <VCT_Icons.Clock size={18} />, color: 'var(--vct-warning)' },
+                { label: 'Chuyển cấp', value: approvals.filter(a => a.status === 'escalated').length, icon: <VCT_Icons.Chevron size={18} />, color: 'var(--vct-info)' },
+                { label: 'Đã duyệt', value: approvals.filter(a => a.status === 'approved').length, icon: <VCT_Icons.Check size={18} />, color: 'var(--vct-success)' },
+                { label: 'Khẩn cấp', value: approvals.filter(a => a.priority === 'urgent').length, icon: <VCT_Icons.AlertCircle size={18} />, color: 'var(--vct-danger)' },
             ] as StatItem[]} className="mb-6" />
 
             <VCT_Stack direction="row" gap={8} className="mb-5">
@@ -166,7 +166,7 @@ export const Page_federation_approvals = () => {
                                         <div className="flex-1 min-w-0">
                                             <div className="flex items-center gap-2 mb-1">
                                                 <span className="text-xs px-2 py-0.5 rounded" style={{ background: tp.color + '15', color: tp.color }}>{tp.label}</span>
-                                                {a.priority === 'urgent' && <span className="text-xs px-2 py-0.5 rounded bg-[#ef4444]/10 text-[#ef4444] font-bold">🔥 Khẩn</span>}
+                                                {a.priority === 'urgent' && <span className="text-xs px-2 py-0.5 rounded bg-(--vct-danger)/10 text-(--vct-danger) font-bold">🔥 Khẩn</span>}
                                             </div>
                                             <div className="font-bold text-sm text-(--vct-text-primary)">{a.title}</div>
                                             <div className="text-xs opacity-50 mt-1">Người gửi: {a.requester} • {a.submitted_at}</div>

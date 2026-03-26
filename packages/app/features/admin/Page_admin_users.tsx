@@ -17,10 +17,10 @@ import {
     VCT_SearchInput, VCT_Modal, VCT_Input, VCT_Field, VCT_Select,
     VCT_ConfirmDialog, VCT_AvatarLetter, VCT_Tabs,
     VCT_BulkActionsBar,
-} from '../components/vct-ui'
-import type { StatItem } from '../components/VCT_StatRow'
-import { VCT_Icons } from '../components/vct-icons'
-import { VCT_Drawer } from '../components/VCT_Drawer'
+} from '@vct/ui'
+import type { StatItem } from '@vct/ui'
+import { VCT_Icons } from '@vct/ui'
+import { VCT_Drawer } from '@vct/ui'
 import { AdminPaginationBar } from './components/AdminPaginationBar'
 
 import {
@@ -190,17 +190,17 @@ const Page_admin_users_Content = () => {
     ], [selectedIds, showToast])
 
     const kpiStats: StatItem[] = [
-        { label: 'Tổng TK', value: users.length, icon: <VCT_Icons.Users size={18} />, color: '#0ea5e9' },
-        { label: 'Hoạt động', value: users.filter(u => u.status === 'active').length, icon: <VCT_Icons.CheckCircle size={18} />, color: '#10b981' },
-        { label: 'Bị khóa', value: users.filter(u => u.status === 'locked').length, icon: <VCT_Icons.Shield size={18} />, color: '#ef4444' },
-        { label: 'Online', value: 128, icon: <VCT_Icons.Activity size={18} />, color: '#f59e0b' },
+        { label: 'Tổng TK', value: users.length, icon: <VCT_Icons.Users size={18} />, color: 'var(--vct-accent-cyan)' },
+        { label: 'Hoạt động', value: users.filter(u => u.status === 'active').length, icon: <VCT_Icons.CheckCircle size={18} />, color: 'var(--vct-success)' },
+        { label: 'Bị khóa', value: users.filter(u => u.status === 'locked').length, icon: <VCT_Icons.Shield size={18} />, color: 'var(--vct-danger)' },
+        { label: 'Online', value: 128, icon: <VCT_Icons.Activity size={18} />, color: 'var(--vct-warning)' },
     ]
 
     return (
         <AdminPageShell
             title={t('admin.users.title')}
             subtitle={t('admin.users.subtitle')}
-            icon={<VCT_Icons.Users size={28} className="text-[#0ea5e9]" />}
+            icon={<VCT_Icons.Users size={28} className="text-(--vct-accent-cyan)" />}
             breadcrumbs={[
                 { label: 'Admin', href: '/admin', icon: <VCT_Icons.Home size={14} /> },
                 { label: 'Tài khoản' },
@@ -260,7 +260,7 @@ const Page_admin_users_Content = () => {
                                 aria-label="Chọn người dùng" 
                                 checked={selectedIds.has(u.id)} 
                                 onChange={() => toggleSelect(u.id)} 
-                                className="w-4 h-4 accent-[#22d3ee] rounded border-(--vct-border-strong) bg-transparent"
+                                className="w-4 h-4 accent-(--vct-accent-cyan) rounded border-(--vct-border-strong) bg-transparent"
                                 onClick={e => e.stopPropagation()}
                             />
                         )
@@ -325,7 +325,7 @@ const Page_admin_users_Content = () => {
                             <VCT_Stack direction="row" gap={4} justify="flex-end">
                                 <button type="button" aria-label="Xem chi tiết" onClick={(e) => { e.stopPropagation(); openUserDetail(u) }} className="p-1.5 text-(--vct-text-tertiary) hover:text-white opacity-0 group-hover:opacity-100 transition-all rounded-md hover:bg-white/10"><VCT_Icons.Eye size={16} /></button>
                                 <button type="button" aria-label="Chỉnh sửa" onClick={(e) => { e.stopPropagation(); openEditModal(u) }} className="p-1.5 text-(--vct-text-tertiary) hover:text-white opacity-0 group-hover:opacity-100 transition-all rounded-md hover:bg-white/10"><VCT_Icons.Edit size={16} /></button>
-                                <button type="button" aria-label="Xóa" onClick={(e) => { e.stopPropagation(); setDeleteTarget(u) }} className="p-1.5 text-[#ef4444] opacity-0 group-hover:opacity-100 transition-all rounded-md hover:bg-[#ef444420]"><VCT_Icons.Trash size={16} /></button>
+                                <button type="button" aria-label="Xóa" onClick={(e) => { e.stopPropagation(); setDeleteTarget(u) }} className="p-1.5 text-(--vct-danger) opacity-0 group-hover:opacity-100 transition-all rounded-md hover:bg-[#ef444420]"><VCT_Icons.Trash size={16} /></button>
                             </VCT_Stack>
                         )
                     }

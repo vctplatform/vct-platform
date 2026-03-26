@@ -5,10 +5,10 @@ import { useState, useMemo } from 'react'
 import {
     VCT_Badge, VCT_Button, VCT_Stack,
     VCT_SearchInput, VCT_Select, VCT_Tabs,
-} from '../components/vct-ui'
-import type { StatItem } from '../components/VCT_StatRow'
-import { VCT_Icons } from '../components/vct-icons'
-import { VCT_Drawer } from '../components/VCT_Drawer'
+} from '@vct/ui'
+import type { StatItem } from '@vct/ui'
+import { VCT_Icons } from '@vct/ui'
+import { VCT_Drawer } from '@vct/ui'
 import { AdminDataTable } from './components/AdminDataTable'
 import { AdminPageShell, useShellToast } from './components/AdminPageShell'
 import { useAdminFetch } from './hooks/useAdminAPI'
@@ -131,10 +131,10 @@ const Page_admin_rankings_Content = () => {
     const topElo = MOCK_RANKINGS[0]?.elo ?? 0
 
     const stats: StatItem[] = [
-        { icon: <VCT_Icons.Trophy size={20} />, label: 'VĐV xếp hạng', value: MOCK_RANKINGS.length, color: '#f59e0b' },
-        { icon: <VCT_Icons.Activity size={20} />, label: 'ELO cao nhất', value: topElo, color: '#ef4444' },
-        { icon: <VCT_Icons.Award size={20} />, label: 'Kỳ thi thăng cấp', value: MOCK_EXAMS.length, color: '#8b5cf6' },
-        { icon: <VCT_Icons.Users size={20} />, label: 'Thí sinh kỳ thi', value: MOCK_EXAMS.reduce((a, e) => a + e.candidates, 0), color: '#0ea5e9' },
+        { icon: <VCT_Icons.Trophy size={20} />, label: 'VĐV xếp hạng', value: MOCK_RANKINGS.length, color: 'var(--vct-warning)' },
+        { icon: <VCT_Icons.Activity size={20} />, label: 'ELO cao nhất', value: topElo, color: 'var(--vct-danger)' },
+        { icon: <VCT_Icons.Award size={20} />, label: 'Kỳ thi thăng cấp', value: MOCK_EXAMS.length, color: 'var(--vct-info)' },
+        { icon: <VCT_Icons.Users size={20} />, label: 'Thí sinh kỳ thi', value: MOCK_EXAMS.reduce((a, e) => a + e.candidates, 0), color: 'var(--vct-accent-cyan)' },
     ]
 
     const tabItems = [
@@ -146,7 +146,7 @@ const Page_admin_rankings_Content = () => {
         <AdminPageShell
             title={t('admin.rankings.title')}
             subtitle={t('admin.rankings.subtitle')}
-            icon={<VCT_Icons.Trophy size={28} className="text-[#f59e0b]" />}
+            icon={<VCT_Icons.Trophy size={28} className="text-(--vct-warning)" />}
             stats={stats}
         >
             <VCT_Tabs tabs={tabItems} activeTab={tab} onChange={v => setTab(v as typeof tab)} className="mb-6" />
@@ -218,7 +218,7 @@ const Page_admin_rankings_Content = () => {
                                 sortable: true,
                                 align: 'center',
                                 render: (a) => (
-                                    <span className={`font-bold ${a.elo_change > 0 ? 'text-[#10b981]' : a.elo_change < 0 ? 'text-[#ef4444]' : 'text-(--vct-text-tertiary)'}`}>
+                                    <span className={`font-bold ${a.elo_change > 0 ? 'text-(--vct-success)' : a.elo_change < 0 ? 'text-(--vct-danger)' : 'text-(--vct-text-tertiary)'}`}>
                                         {a.elo_change > 0 ? '▲' : a.elo_change < 0 ? '▼' : '—'} {Math.abs(a.elo_change)}
                                     </span>
                                 )
@@ -279,7 +279,7 @@ const Page_admin_rankings_Content = () => {
                                 render: (ex) => (
                                     <div className="flex items-center gap-6 text-sm">
                                         <span className="text-(--vct-text-secondary)">👥 {ex.candidates} thí sinh</span>
-                                        {ex.status === 'completed' && <span className="text-[#10b981] font-bold">✅ {ex.passed} đạt ({Math.round(ex.passed / ex.candidates * 100)}%)</span>}
+                                        {ex.status === 'completed' && <span className="text-(--vct-success) font-bold">✅ {ex.passed} đạt ({Math.round(ex.passed / ex.candidates * 100)}%)</span>}
                                     </div>
                                 )
                             },

@@ -16,10 +16,10 @@ import {
   VCT_StatusPipeline,
   VCT_Table,
   VCT_Toast,
-} from '../components/vct-ui'
-import { VCT_PageContainer, VCT_StatRow } from '../components/vct-ui'
-import type { StatItem } from '../components/VCT_StatRow'
-import { VCT_Icons } from '../components/vct-icons'
+} from '@vct/ui'
+import { VCT_PageContainer, VCT_StatRow } from '@vct/ui'
+import type { StatItem } from '@vct/ui'
+import { VCT_Icons } from '@vct/ui'
 import { useRouteActionGuard } from '../hooks/use-route-action-guard'
 import {
   FINANCE_ENTRY_SEED,
@@ -408,26 +408,26 @@ export const Page_club_finance = () => {
       label: 'Tong thu',
       value: money(summary.totalIncome),
       icon: <VCT_Icons.TrendingUp size={18} />,
-      color: '#10b981',
+      color: 'var(--vct-success)',
     },
     {
       label: 'Tong chi',
       value: money(summary.totalExpense),
       icon: <VCT_Icons.TrendingDown size={18} />,
-      color: '#ef4444',
+      color: 'var(--vct-danger)',
     },
     {
       label: 'So du hien tai',
       value: money(summary.balance),
       icon: <VCT_Icons.DollarSign size={18} />,
-      color: summary.balance < 0 ? '#ef4444' : '#0ea5e9',
+      color: summary.balance < 0 ? 'var(--vct-danger)' : 'var(--vct-accent-cyan)',
       sub: `Cho doi: ${money(summary.pending)}`,
     },
     {
       label: 'So giao dich',
       value: entries.length,
       icon: <VCT_Icons.FileText size={18} />,
-      color: '#8b5cf6',
+      color: 'var(--vct-info)',
     },
   ]
 
@@ -488,13 +488,13 @@ export const Page_club_finance = () => {
           {
             key: 'posted',
             label: 'Da ghi so',
-            color: '#10b981',
+            color: 'var(--vct-success)',
             count: entries.filter((item) => item.status === 'posted').length,
           },
           {
             key: 'pending',
             label: 'Cho doi',
-            color: '#f59e0b',
+            color: 'var(--vct-warning)',
             count: entries.filter((item) => item.status === 'pending').length,
           },
         ]}

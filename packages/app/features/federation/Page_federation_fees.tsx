@@ -1,9 +1,9 @@
 'use client'
 
 import React, { useState } from 'react'
-import { VCT_PageContainer, VCT_PageHero } from '../components/VCT_PageContainer'
-import { VCT_Icons } from '../components/vct-icons'
-import { VCT_Badge, VCT_Button } from '../components/vct-ui'
+import { VCT_PageContainer, VCT_PageHero } from '@vct/ui'
+import { VCT_Icons } from '@vct/ui'
+import { VCT_Badge, VCT_Button } from '@vct/ui'
 
 // ════════════════════════════════════════
 // FEDERATION — PHÍ & LỆ PHÍ
@@ -27,8 +27,8 @@ const SEED: FeeItem[] = [
 ]
 
 const CATEGORY_COLORS: Record<string, string> = {
-    'Hội viên': '#8b5cf6', 'Đăng ký': '#3b82f6', 'Thi đai': '#f59e0b',
-    'Chứng chỉ': '#10b981', 'Giải đấu': '#ef4444',
+    'Hội viên': 'var(--vct-info)', 'Đăng ký': 'var(--vct-info)', 'Thi đai': 'var(--vct-warning)',
+    'Chứng chỉ': 'var(--vct-success)', 'Giải đấu': 'var(--vct-danger)',
 }
 
 const fmt = (n: number) => n.toLocaleString('vi-VN') + ' ₫'

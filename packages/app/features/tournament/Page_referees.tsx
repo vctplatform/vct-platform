@@ -7,25 +7,25 @@ import {
     VCT_SearchInput, VCT_Modal, VCT_Input, VCT_Field, VCT_Select,
     VCT_ConfirmDialog, VCT_StatusPipeline, VCT_FilterChips, VCT_BulkActionsBar,
     VCT_EmptyState, VCT_AvatarLetter, VCT_SegmentedControl
-} from '../components/vct-ui';
-import { VCT_PageContainer, VCT_StatRow } from '../components/vct-ui';
-import type { StatItem } from '../components/VCT_StatRow';
-import { VCT_Icons } from '../components/vct-icons';
+} from '@vct/ui';
+import { VCT_PageContainer, VCT_StatRow } from '@vct/ui';
+import type { StatItem } from '@vct/ui';
+import { VCT_Icons } from '@vct/ui';
 import { genId } from '../hooks/useTournamentAPI';
 import { TRANG_THAI_TT_MAP, CAP_BAC_TT_MAP, type TrongTai, type TrangThaiTT, type CapBacTT, type ChuyenMonTT } from '../data/types';
 import { repositories, useEntityCollection } from '../data/repository';
 import { useToast } from '../hooks/use-toast';
 
 const CM_MAP: Record<ChuyenMonTT, { label: string; color: string }> = {
-    quyen: { label: 'Quyền', color: '#22d3ee' },
-    doi_khang: { label: 'Đối kháng', color: '#f59e0b' },
-    ca_hai: { label: 'Cả hai', color: '#a78bfa' },
+    quyen: { label: 'Quyền', color: 'var(--vct-accent-cyan)' },
+    doi_khang: { label: 'Đối kháng', color: 'var(--vct-warning)' },
+    ca_hai: { label: 'Cả hai', color: 'var(--vct-info)' },
 };
 
 const PIPELINE = [
-    { key: 'xac_nhan', label: 'Xác nhận', color: '#10b981' },
-    { key: 'cho_duyet', label: 'Chờ duyệt', color: '#f59e0b' },
-    { key: 'tu_choi', label: 'Từ chối', color: '#ef4444' },
+    { key: 'xac_nhan', label: 'Xác nhận', color: 'var(--vct-success)' },
+    { key: 'cho_duyet', label: 'Chờ duyệt', color: 'var(--vct-warning)' },
+    { key: 'tu_choi', label: 'Từ chối', color: 'var(--vct-danger)' },
 ];
 
 const BLANK: Partial<TrongTai> = { ho_ten: '', gioi: 'nam', ngay_sinh: '', cap_bac: 'cap_2', chuyen_mon: 'doi_khang', don_vi: '', sdt: '', email: '', kinh_nghiem: '', ghi_chu: '' };
@@ -131,10 +131,10 @@ export const Page_referees = () => {
             )}
 
             <VCT_StatRow items={[
-                { label: 'Tổng TT', value: refs.length, icon: <VCT_Icons.Shield size={18} />, color: '#0ea5e9' },
-                { label: 'Xác nhận', value: refs.filter(r => r.trang_thai === 'xac_nhan').length, icon: <VCT_Icons.Check size={18} />, color: '#10b981' },
-                { label: 'Quốc gia', value: refs.filter(r => r.cap_bac === 'quoc_gia').length, icon: <VCT_Icons.Star size={18} />, color: '#a78bfa', sub: 'Cấp bậc cao nhất' },
-                { label: 'Đối kháng', value: refs.filter(r => r.chuyen_mon === 'doi_khang' || r.chuyen_mon === 'ca_hai').length, icon: <VCT_Icons.Swords size={18} />, color: '#f59e0b' },
+                { label: 'Tổng TT', value: refs.length, icon: <VCT_Icons.Shield size={18} />, color: 'var(--vct-accent-cyan)' },
+                { label: 'Xác nhận', value: refs.filter(r => r.trang_thai === 'xac_nhan').length, icon: <VCT_Icons.Check size={18} />, color: 'var(--vct-success)' },
+                { label: 'Quốc gia', value: refs.filter(r => r.cap_bac === 'quoc_gia').length, icon: <VCT_Icons.Star size={18} />, color: 'var(--vct-info)', sub: 'Cấp bậc cao nhất' },
+                { label: 'Đối kháng', value: refs.filter(r => r.chuyen_mon === 'doi_khang' || r.chuyen_mon === 'ca_hai').length, icon: <VCT_Icons.Swords size={18} />, color: 'var(--vct-warning)' },
             ] as StatItem[]} className="mb-6" />
 
             {/* Pipeline */}
@@ -156,7 +156,7 @@ export const Page_referees = () => {
                     <table className="w-full border-collapse">
                         <thead>
                             <tr className="border-b border-vct-border-strong bg-vct-bg-card">
-                                <th {...{ style: { padding: '12px 16px', width: 40 } }}><input type="checkbox" aria-label="Chọn tất cả" onChange={() => setSelectedIds(p => p.size === filtered.length ? new Set() : new Set(filtered.map(r => r.id)))} checked={selectedIds.size === filtered.length && filtered.length > 0} {...{ style: { accentColor: '#22d3ee' } }} /></th>
+                                <th {...{ style: { padding: '12px 16px', width: 40 } }}><input type="checkbox" aria-label="Chọn tất cả" onChange={() => setSelectedIds(p => p.size === filtered.length ? new Set() : new Set(filtered.map(r => r.id)))} checked={selectedIds.size === filtered.length && filtered.length > 0} {...{ style: { accentColor: 'var(--vct-accent-cyan)' } }} /></th>
                                 {['Trọng tài', 'Đơn vị', 'Cấp bậc', 'Chuyên môn', 'Kinh nghiệm', 'Trạng thái', ''].map((h, i) => (
                                     <th key={i} className="px-4 py-3 text-left text-[11px] font-bold uppercase opacity-50">{h}</th>
                                 ))}
@@ -170,7 +170,7 @@ export const Page_referees = () => {
                                 return (
                                     <React.Fragment key={r.id}>
                                         <tr onClick={() => setExpandedId(expandedId === r.id ? null : r.id)} {...{ style: { borderBottom: '1px solid var(--vct-border-subtle)', cursor: 'pointer', background: selectedIds.has(r.id) ? 'rgba(34, 211, 238, 0.05)' : idx % 2 === 0 ? 'transparent' : 'rgba(128,128,128,0.02)', borderLeft: `3px solid ${st.color}`, transition: 'background 0.15s' } }}>
-                                            <td className="px-4 py-3"><input type="checkbox" aria-label={`Chọn ${r.ho_ten}`} checked={selectedIds.has(r.id)} onChange={() => toggleSelect(r.id)} onClick={(e: any) => e.stopPropagation()} {...{ style: { accentColor: '#22d3ee' } }} /></td>
+                                            <td className="px-4 py-3"><input type="checkbox" aria-label={`Chọn ${r.ho_ten}`} checked={selectedIds.has(r.id)} onChange={() => toggleSelect(r.id)} onClick={(e: any) => e.stopPropagation()} {...{ style: { accentColor: 'var(--vct-accent-cyan)' } }} /></td>
                                             <td className="px-4 py-3">
                                                 <VCT_Stack direction="row" gap={10} align="center">
                                                     <VCT_AvatarLetter name={r.ho_ten} size={32} />
@@ -185,7 +185,7 @@ export const Page_referees = () => {
                                             <td className="px-4 py-3">
                                                 <VCT_Stack direction="row" gap={4}>
                                                     <button onClick={(e: any) => { e.stopPropagation(); openEdit(r); }} {...{ style: { background: 'none', border: 'none', cursor: 'pointer', color: 'var(--vct-text-tertiary)', padding: 4 } }} aria-label={`Sửa ${r.ho_ten}`}><VCT_Icons.Edit size={14} /></button>
-                                                    <button onClick={(e: any) => { e.stopPropagation(); setDeleteTarget(r); }} {...{ style: { background: 'none', border: 'none', cursor: 'pointer', color: '#ef4444', padding: 4 } }} aria-label={`Xóa ${r.ho_ten}`}><VCT_Icons.Trash size={14} /></button>
+                                                    <button onClick={(e: any) => { e.stopPropagation(); setDeleteTarget(r); }} {...{ style: { background: 'none', border: 'none', cursor: 'pointer', color: 'var(--vct-danger)', padding: 4 } }} aria-label={`Xóa ${r.ho_ten}`}><VCT_Icons.Trash size={14} /></button>
                                                 </VCT_Stack>
                                             </td>
                                         </tr>
@@ -198,7 +198,7 @@ export const Page_referees = () => {
                                                             <div><span className="text-[11px] opacity-50">Email</span><div {...{ style: { fontWeight: 700, fontSize: 13 } }}>{r.email}</div></div>
                                                             <div><span className="text-[11px] opacity-50">Ngày sinh</span><div {...{ style: { fontWeight: 700, fontSize: 13 } }}>{r.ngay_sinh}</div></div>
                                                             <div><span className="text-[11px] opacity-50">Kinh nghiệm</span><div {...{ style: { fontWeight: 700, fontSize: 13 } }}>{r.kinh_nghiem || '—'}</div></div>
-                                                            {r.ghi_chu && <div {...{ style: { gridColumn: '1 / -1' } }}><span className="text-[11px] opacity-50">Ghi chú</span><div {...{ style: { fontWeight: 600, fontSize: 13, color: '#f59e0b' } }}>{r.ghi_chu}</div></div>}
+                                                            {r.ghi_chu && <div {...{ style: { gridColumn: '1 / -1' } }}><span className="text-[11px] opacity-50">Ghi chú</span><div {...{ style: { fontWeight: 600, fontSize: 13, color: 'var(--vct-warning)' } }}>{r.ghi_chu}</div></div>}
                                                             <div {...{ style: { gridColumn: '1 / -1', display: 'flex', gap: 6 } }}>
                                                                 {PIPELINE.filter(s => s.key !== r.trang_thai).map(s => (
                                                                     <button key={s.key} onClick={() => { setRefs(p => p.map(x => x.id === r.id ? { ...x, trang_thai: s.key as TrangThaiTT } : x)); showToast(`→ ${s.label}`); }}

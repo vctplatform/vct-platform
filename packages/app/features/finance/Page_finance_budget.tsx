@@ -1,6 +1,6 @@
 'use client'
 import React, { useState, useMemo } from 'react'
-import { VCT_Icons } from '../components/vct-icons'
+import { VCT_Icons } from '@vct/ui'
 
 interface BudgetItem {
     id: string; category: string; planned: number; actual: number; type: 'income' | 'expense'

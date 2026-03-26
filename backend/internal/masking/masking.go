@@ -87,7 +87,7 @@ func onlyDigits(s string) string {
 
 // Rule maps a field name pattern to a masking strategy.
 type Rule struct {
-	Field    string   // Exact field name or regex pattern
+	Field    string // Exact field name or regex pattern
 	Strategy Strategy
 	IsRegex  bool
 	compiled *regexp.Regexp

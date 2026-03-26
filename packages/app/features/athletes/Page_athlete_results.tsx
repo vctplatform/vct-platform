@@ -1,7 +1,7 @@
 'use client'
 import React, { useMemo, useState } from 'react'
-import { VCT_Icons } from '../components/vct-icons'
-import { VCT_PageContainer, VCT_SectionCard, VCT_EmptyState, VCT_Badge } from '../components/vct-ui'
+import { VCT_Icons } from '@vct/ui'
+import { VCT_PageContainer, VCT_SectionCard, VCT_EmptyState, VCT_Badge } from '@vct/ui'
 import { useApiQuery } from '../hooks/useApiQuery'
 import { AthleteProfile, TournamentEntry } from '@vct/shared-types'
 
@@ -152,7 +152,7 @@ export function Page_athlete_results() {
             <VCT_SectionCard
                 title="Lịch sử thi đấu"
                 icon={<VCT_Icons.Trophy size={20} />}
-                accentColor="#f59e0b"
+                accentColor="var(--vct-warning)"
                 className="border border-vct-border"
             >
                 {filteredEntries.length === 0 ? (

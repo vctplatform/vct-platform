@@ -4,9 +4,9 @@ import * as React from 'react'
 import { useState } from 'react'
 import {
     VCT_Badge, VCT_Button, VCT_Stack, VCT_AvatarLetter, VCT_Tabs
-} from '../components/vct-ui'
-import { VCT_PageContainer } from '../components/vct-ui'
-import { VCT_Icons } from '../components/vct-icons'
+} from '@vct/ui'
+import { VCT_PageContainer } from '@vct/ui'
+import { VCT_Icons } from '@vct/ui'
 
 // ════════════════════════════════════════
 // MOCK DATA
@@ -74,12 +74,12 @@ export const Page_coach_profile = () => {
                     <div className="flex items-center gap-5">
                         <div className="relative">
                             <VCT_AvatarLetter name={c.name} size={80} />
-                            <div className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-[#10b981] border-3 border-(--vct-bg-elevated)"></div>
+                            <div className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-(--vct-success) border-3 border-(--vct-bg-elevated)"></div>
                         </div>
                         <div>
                             <h1 className="text-2xl font-bold text-(--vct-text-primary)">{c.name}</h1>
                             <div className="flex items-center gap-2 mt-1">
-                                <span className="text-xs font-bold px-2 py-1 rounded-lg bg-[#ec489915] text-[#ec4899] border border-[#ec489930]">{c.belt_rank}</span>
+                                <span className="text-xs font-bold px-2 py-1 rounded-lg bg-[#ec489915] text-(--vct-accent-pink) border border-[#ec489930]">{c.belt_rank}</span>
                                 <span className="text-xs text-(--vct-text-secondary)">{c.certification}</span>
                             </div>
                             <div className="flex items-center gap-3 mt-2 text-[12px] text-(--vct-text-tertiary)">
@@ -98,19 +98,19 @@ export const Page_coach_profile = () => {
                 {/* Stats row */}
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-6 pt-6 border-t border-(--vct-border-subtle)">
                     <div className="text-center p-3 bg-(--vct-bg-base) rounded-xl">
-                        <div className="text-2xl font-black text-[#0ea5e9]">{c.students}</div>
+                        <div className="text-2xl font-black text-(--vct-accent-cyan)">{c.students}</div>
                         <div className="text-[10px] text-(--vct-text-tertiary) mt-1">Học trò</div>
                     </div>
                     <div className="text-center p-3 bg-(--vct-bg-base) rounded-xl">
-                        <div className="text-2xl font-black text-[#10b981]">{c.experience_years}</div>
+                        <div className="text-2xl font-black text-(--vct-success)">{c.experience_years}</div>
                         <div className="text-[10px] text-(--vct-text-tertiary) mt-1">Năm kinh nghiệm</div>
                     </div>
                     <div className="text-center p-3 bg-(--vct-bg-base) rounded-xl">
-                        <div className="text-2xl font-black text-[#f59e0b]">{c.specialties.length}</div>
+                        <div className="text-2xl font-black text-(--vct-warning)">{c.specialties.length}</div>
                         <div className="text-[10px] text-(--vct-text-tertiary) mt-1">Chuyên môn</div>
                     </div>
                     <div className="text-center p-3 bg-(--vct-bg-base) rounded-xl">
-                        <div className="text-2xl font-black text-[#8b5cf6]">{CERTIFICATIONS.filter(cr => cr.status === 'valid').length}</div>
+                        <div className="text-2xl font-black text-(--vct-info)">{CERTIFICATIONS.filter(cr => cr.status === 'valid').length}</div>
                         <div className="text-[10px] text-(--vct-text-tertiary) mt-1">Chứng chỉ còn hạn</div>
                     </div>
                 </div>

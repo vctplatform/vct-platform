@@ -2,10 +2,10 @@
 
 import * as React from 'react'
 import { useState, useEffect, useCallback } from 'react'
-import { VCT_Badge, VCT_Button, VCT_Stack, VCT_Toast, VCT_EmptyState } from '../components/vct-ui'
-import { VCT_PageContainer, VCT_StatRow } from '../components/vct-ui'
-import type { StatItem } from '../components/VCT_StatRow'
-import { VCT_Icons } from '../components/vct-icons'
+import { VCT_Badge, VCT_Button, VCT_Stack, VCT_Toast, VCT_EmptyState } from '@vct/ui'
+import { VCT_PageContainer, VCT_StatRow } from '@vct/ui'
+import type { StatItem } from '@vct/ui'
+import { VCT_Icons } from '@vct/ui'
 
 const API = '/api/v1/provincial'
 
@@ -38,14 +38,14 @@ export const Page_provincial_finance = () => {
     }, [])
 
     const kpi: StatItem[] = summary ? [
-        { label: 'Tổng thu', value: formatVND(summary.total_income), icon: <VCT_Icons.TrendingUp size={18} />, color: '#10b981' },
-        { label: 'Tổng chi', value: formatVND(summary.total_expense), icon: <VCT_Icons.TrendingDown size={18} />, color: '#ef4444' },
-        { label: 'Số dư', value: formatVND(summary.balance), icon: <VCT_Icons.DollarSign size={18} />, color: summary.balance >= 0 ? '#22d3ee' : '#ef4444' },
-        { label: 'Số bút toán', value: summary.entry_count, icon: <VCT_Icons.FileText size={18} />, color: '#8b5cf6' },
+        { label: 'Tổng thu', value: formatVND(summary.total_income), icon: <VCT_Icons.TrendingUp size={18} />, color: 'var(--vct-success)' },
+        { label: 'Tổng chi', value: formatVND(summary.total_expense), icon: <VCT_Icons.TrendingDown size={18} />, color: 'var(--vct-danger)' },
+        { label: 'Số dư', value: formatVND(summary.balance), icon: <VCT_Icons.DollarSign size={18} />, color: summary.balance >= 0 ? 'var(--vct-accent-cyan)' : 'var(--vct-danger)' },
+        { label: 'Số bút toán', value: summary.entry_count, icon: <VCT_Icons.FileText size={18} />, color: 'var(--vct-info)' },
     ] : [
-        { label: 'Tổng thu', value: '—', icon: <VCT_Icons.TrendingUp size={18} />, color: '#10b981' },
-        { label: 'Tổng chi', value: '—', icon: <VCT_Icons.TrendingDown size={18} />, color: '#ef4444' },
-        { label: 'Số dư', value: '—', icon: <VCT_Icons.DollarSign size={18} />, color: '#22d3ee' },
+        { label: 'Tổng thu', value: '—', icon: <VCT_Icons.TrendingUp size={18} />, color: 'var(--vct-success)' },
+        { label: 'Tổng chi', value: '—', icon: <VCT_Icons.TrendingDown size={18} />, color: 'var(--vct-danger)' },
+        { label: 'Số dư', value: '—', icon: <VCT_Icons.DollarSign size={18} />, color: 'var(--vct-accent-cyan)' },
     ]
 
     return (
@@ -83,7 +83,7 @@ export const Page_provincial_finance = () => {
                                     </td>
                                     <td className="px-4 py-3 text-sm font-semibold">{e.category}</td>
                                     <td className="px-4 py-3 text-sm">{e.description}</td>
-                                    <td className="px-4 py-3 text-sm font-bold text-right" style={{ color: e.type === 'income' ? '#10b981' : '#ef4444' }}>
+                                    <td className="px-4 py-3 text-sm font-bold text-right" style={{ color: e.type === 'income' ? 'var(--vct-success)' : 'var(--vct-danger)' }}>
                                         {e.type === 'income' ? '+' : '-'}{formatVND(e.amount)}
                                     </td>
                                     <td className="px-4 py-3 text-xs font-mono opacity-50">{e.ref || '—'}</td>

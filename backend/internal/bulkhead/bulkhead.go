@@ -17,10 +17,10 @@ import (
 
 // Bulkhead limits concurrent access to a resource.
 type Bulkhead struct {
-	name      string
-	sem       chan struct{}
-	maxConc   int
-	timeout   time.Duration
+	name    string
+	sem     chan struct{}
+	maxConc int
+	timeout time.Duration
 
 	// Stats
 	active    atomic.Int64

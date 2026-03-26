@@ -361,15 +361,15 @@ func TestStateTransitions(t *testing.T) {
 	}{
 		{StatusOpen, StatusInProgress, true},
 		{StatusOpen, StatusClosed, true},
-		{StatusOpen, StatusResolved, false},    // must go through in_progress
+		{StatusOpen, StatusResolved, false}, // must go through in_progress
 		{StatusInProgress, StatusResolved, true},
 		{StatusInProgress, StatusWaiting, true},
 		{StatusInProgress, StatusClosed, true},
 		{StatusWaiting, StatusInProgress, true},
 		{StatusWaiting, StatusResolved, true},
-		{StatusResolved, StatusOpen, true},     // reopen
+		{StatusResolved, StatusOpen, true}, // reopen
 		{StatusResolved, StatusClosed, true},
-		{StatusClosed, StatusOpen, true},       // reopen
+		{StatusClosed, StatusOpen, true}, // reopen
 		{StatusClosed, StatusInProgress, false},
 	}
 	for _, tc := range tests {

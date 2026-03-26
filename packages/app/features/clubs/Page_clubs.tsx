@@ -9,9 +9,9 @@ import {
     VCT_ConfirmDialog, VCT_AvatarLetter, VCT_EmptyState, VCT_FilterChips,
     VCT_BulkActionsBar, VCT_PageContainer, VCT_PageHeader, VCT_PageToolbar,
     VCT_StatRow
-} from '../components/vct-ui'
-import type { StatItem } from '../components/VCT_StatRow'
-import { VCT_Icons } from '../components/vct-icons'
+} from '@vct/ui'
+import type { StatItem } from '@vct/ui'
+import { VCT_Icons } from '@vct/ui'
 import {
     useClubs,
     useCreateClub,
@@ -46,9 +46,9 @@ const TYPE_MAP: Record<ClubType, string> = {
 }
 
 const STATUS_MAP: Record<string, { label: string; type: any; borderClass: string }> = {
-    active: { label: 'Đang hoạt động', type: 'success', borderClass: 'border-[#10b981]' },
-    suspended: { label: 'Tạm đình chỉ', type: 'warning', borderClass: 'border-[#f59e0b]' },
-    closed: { label: 'Đã đóng cửa', type: 'error', borderClass: 'border-[#ef4444]' }
+    active: { label: 'Đang hoạt động', type: 'success', borderClass: 'border-(--vct-success)' },
+    suspended: { label: 'Tạm đình chỉ', type: 'warning', borderClass: 'border-(--vct-warning)' },
+    closed: { label: 'Đã đóng cửa', type: 'error', borderClass: 'border-(--vct-danger)' }
 }
 
 const MOCK_ORGS = [
@@ -287,7 +287,7 @@ export const Page_clubs = () => {
         },
         {
             key: 'status', label: 'Trạng thái', align: 'center' as const, render: (r: Club) => {
-                const st = STATUS_MAP[r.status] || { label: 'Không rõ', type: 'info', color: '#94a3b8' }
+                const st = STATUS_MAP[r.status] || { label: 'Không rõ', type: 'info', color: 'var(--vct-text-tertiary)' }
                 return <VCT_Badge text={st.label} type={st.type} />
             }
         },
@@ -316,10 +316,10 @@ export const Page_clubs = () => {
 
             {/* ── KPI ROW ── */}
             <VCT_StatRow items={[
-                { label: 'CLB/Võ đường', value: clubs.length, icon: <VCT_Icons.Building2 size={18} />, color: '#0ea5e9' },
-                { label: 'Lớp đang mở', value: totalClasses, icon: <VCT_Icons.Users size={18} />, color: '#f59e0b' },
-                { label: 'Võ sinh', value: totalMembers.toLocaleString('vi-VN'), icon: <VCT_Icons.User size={18} />, color: '#10b981' },
-                { label: 'Đình chỉ/Đóng', value: clubs.filter(c => c.status !== 'active').length, icon: <VCT_Icons.Alert size={18} />, color: '#ef4444' },
+                { label: 'CLB/Võ đường', value: clubs.length, icon: <VCT_Icons.Building2 size={18} />, color: 'var(--vct-accent-cyan)' },
+                { label: 'Lớp đang mở', value: totalClasses, icon: <VCT_Icons.Users size={18} />, color: 'var(--vct-warning)' },
+                { label: 'Võ sinh', value: totalMembers.toLocaleString('vi-VN'), icon: <VCT_Icons.User size={18} />, color: 'var(--vct-success)' },
+                { label: 'Đình chỉ/Đóng', value: clubs.filter(c => c.status !== 'active').length, icon: <VCT_Icons.Alert size={18} />, color: 'var(--vct-danger)' },
             ] as StatItem[]} className="mb-6" />
 
             {/* ── FILTER CHIPS ── */}
@@ -365,7 +365,7 @@ export const Page_clubs = () => {
                         </thead>
                         <tbody>
                             {filtered.map((club, idx) => {
-                                const borderClass = STATUS_MAP[club.status]?.borderClass || 'border-[#94a3b8]'
+                                const borderClass = STATUS_MAP[club.status]?.borderClass || 'border-(--vct-text-tertiary)'
                                 return (
                                     <tr key={club.id} className={`border-b border-(--vct-border-subtle) border-l-[3px] ${borderClass} ${selectedIds.has(club.id) ? 'bg-[rgba(34,211,238,0.05)]' : idx % 2 === 0 ? 'bg-transparent' : 'bg-[rgba(128,128,128,0.02)]'}`}>
                                         {columns.map((col, ci) => (

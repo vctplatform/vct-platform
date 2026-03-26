@@ -65,7 +65,7 @@ func TestHub_PubSub(t *testing.T) {
 	defer server.Close()
 
 	wsURL := "ws" + strings.TrimPrefix(server.URL, "http")
-	
+
 	// Client 1
 	conn1, _, err := websocket.DefaultDialer.Dial(wsURL, nil)
 	if err != nil {
@@ -138,7 +138,7 @@ func TestHub_BroadcastFullBuffer(t *testing.T) {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 	go hub.Run(ctx)
-	
+
 	// Create a dummy client manually to test buffer overflow
 	client := &Client{
 		hub:      hub,
@@ -147,19 +147,19 @@ func TestHub_BroadcastFullBuffer(t *testing.T) {
 		channels: make(map[string]bool),
 		logger:   testLogger(),
 	}
-	
+
 	hub.register <- client
 	time.Sleep(50 * time.Millisecond)
-	
+
 	hub.Subscribe(client, "test")
-	
+
 	// Fill the buffer
 	client.send <- []byte("full")
-	
+
 	// This should not block, but will drop the client because the buffer is full
 	hub.Broadcast(Message{Channel: "test", Event: "ping"})
 	time.Sleep(50 * time.Millisecond)
-	
+
 	if hub.ActiveConnections() != 0 {
 		t.Errorf("Expected client to be disconnected after buffer full")
 	}

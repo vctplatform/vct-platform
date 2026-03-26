@@ -2,7 +2,7 @@ import { describe, it, expect, vi } from 'vitest'
 import * as React from 'react'
 import { render } from '@testing-library/react'
 import { screen, fireEvent } from '@testing-library/dom'
-import { AdminEmptyState } from '../components/AdminEmptyState'
+import { AdminEmptyState } from '@vct/ui'
 
 // Mock VCT_Icons
 vi.mock('../../components/vct-icons', () => ({

@@ -5,10 +5,10 @@ import { useState, useMemo, useEffect } from 'react'
 import {
     VCT_Badge, VCT_Button, VCT_Stack, VCT_SearchInput,
     VCT_Select, VCT_EmptyState
-} from '../components/vct-ui'
-import { VCT_PageContainer, VCT_PageHero, VCT_StatRow } from '../components/vct-ui'
-import type { StatItem } from '../components/VCT_StatRow'
-import { VCT_Icons } from '../components/vct-icons'
+} from '@vct/ui'
+import { VCT_PageContainer, VCT_PageHero, VCT_StatRow } from '@vct/ui'
+import type { StatItem } from '@vct/ui'
+import { VCT_Icons } from '@vct/ui'
 import { useAttendance } from '../hooks/useTrainingAPI'
 
 // ════════════════════════════════════════
@@ -82,10 +82,10 @@ export const Page_attendance = () => {
             />
 
             <VCT_StatRow items={[
-                { label: 'Tổng Võ sinh', value: stats.total, icon: <VCT_Icons.Users size={18} />, color: '#3b82f6' },
-                { label: 'Có mặt', value: stats.present, icon: <VCT_Icons.Check size={18} />, color: '#10b981' },
-                { label: 'Đi trễ', value: stats.late, icon: <VCT_Icons.Clock size={18} />, color: '#f59e0b' },
-                { label: 'Vắng mặt', value: stats.absent, icon: <VCT_Icons.X size={18} />, color: '#ef4444' },
+                { label: 'Tổng Võ sinh', value: stats.total, icon: <VCT_Icons.Users size={18} />, color: 'var(--vct-info)' },
+                { label: 'Có mặt', value: stats.present, icon: <VCT_Icons.Check size={18} />, color: 'var(--vct-success)' },
+                { label: 'Đi trễ', value: stats.late, icon: <VCT_Icons.Clock size={18} />, color: 'var(--vct-warning)' },
+                { label: 'Vắng mặt', value: stats.absent, icon: <VCT_Icons.X size={18} />, color: 'var(--vct-danger)' },
             ] as StatItem[]} className="mb-6" />
 
             {/* ── TOOLBAR ── */}
@@ -127,21 +127,21 @@ export const Page_attendance = () => {
                                     <div className="flex items-center justify-center gap-2">
                                         <button
                                             onClick={() => setStatus(s.id, 'present')}
-                                            className={`p-2 rounded-lg flex flex-col items-center justify-center gap-1 w-20 transition-all ${s.status === 'present' ? 'bg-[#10b981] text-white shadow-[0_0_15px_rgba(16,185,129,0.3)]' : 'bg-(--vct-bg-elevated) text-(--vct-text-secondary) border border-(--vct-border-subtle) hover:bg-[#10b98120] hover:text-[#10b981] hover:border-[#10b98150]'}`}
+                                            className={`p-2 rounded-lg flex flex-col items-center justify-center gap-1 w-20 transition-all ${s.status === 'present' ? 'bg-(--vct-success) text-white shadow-[0_0_15px_rgba(16,185,129,0.3)]' : 'bg-(--vct-bg-elevated) text-(--vct-text-secondary) border border-(--vct-border-subtle) hover:bg-[#10b98120] hover:text-(--vct-success) hover:border-[#10b98150]'}`}
                                         >
                                             <VCT_Icons.Check size={20} />
                                             <span className="text-[10px] font-bold">Có mặt</span>
                                         </button>
                                         <button
                                             onClick={() => setStatus(s.id, 'late')}
-                                            className={`p-2 rounded-lg flex flex-col items-center justify-center gap-1 w-20 transition-all ${s.status === 'late' ? 'bg-[#f59e0b] text-white shadow-[0_0_15px_rgba(245,158,11,0.3)]' : 'bg-(--vct-bg-elevated) text-(--vct-text-secondary) border border-(--vct-border-subtle) hover:bg-[#f59e0b20] hover:text-[#f59e0b] hover:border-[#f59e0b50]'}`}
+                                            className={`p-2 rounded-lg flex flex-col items-center justify-center gap-1 w-20 transition-all ${s.status === 'late' ? 'bg-(--vct-warning) text-white shadow-[0_0_15px_rgba(245,158,11,0.3)]' : 'bg-(--vct-bg-elevated) text-(--vct-text-secondary) border border-(--vct-border-subtle) hover:bg-[#f59e0b20] hover:text-(--vct-warning) hover:border-[#f59e0b50]'}`}
                                         >
                                             <VCT_Icons.Clock size={20} />
                                             <span className="text-[10px] font-bold">Đi trễ</span>
                                         </button>
                                         <button
                                             onClick={() => setStatus(s.id, 'absent')}
-                                            className={`p-2 rounded-lg flex flex-col items-center justify-center gap-1 w-20 transition-all ${s.status === 'absent' ? 'bg-[#ef4444] text-white shadow-[0_0_15px_rgba(239,68,68,0.3)]' : 'bg-(--vct-bg-elevated) text-(--vct-text-secondary) border border-(--vct-border-subtle) hover:bg-[#ef444420] hover:text-[#ef4444] hover:border-[#ef444450]'}`}
+                                            className={`p-2 rounded-lg flex flex-col items-center justify-center gap-1 w-20 transition-all ${s.status === 'absent' ? 'bg-(--vct-danger) text-white shadow-[0_0_15px_rgba(239,68,68,0.3)]' : 'bg-(--vct-bg-elevated) text-(--vct-text-secondary) border border-(--vct-border-subtle) hover:bg-[#ef444420] hover:text-(--vct-danger) hover:border-[#ef444450]'}`}
                                         >
                                             <VCT_Icons.X size={20} />
                                             <span className="text-[10px] font-bold">Vắng</span>

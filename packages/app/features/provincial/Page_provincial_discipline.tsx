@@ -2,10 +2,10 @@
 
 import * as React from 'react'
 import { useState, useEffect, useMemo, useCallback } from 'react'
-import { VCT_Badge, VCT_Button, VCT_Stack, VCT_Toast, VCT_SearchInput, VCT_EmptyState } from '../components/vct-ui'
-import { VCT_PageContainer, VCT_StatRow } from '../components/vct-ui'
-import type { StatItem } from '../components/VCT_StatRow'
-import { VCT_Icons } from '../components/vct-icons'
+import { VCT_Badge, VCT_Button, VCT_Stack, VCT_Toast, VCT_SearchInput, VCT_EmptyState } from '@vct/ui'
+import { VCT_PageContainer, VCT_StatRow } from '@vct/ui'
+import type { StatItem } from '@vct/ui'
+import { VCT_Icons } from '@vct/ui'
 
 const API = '/api/v1/provincial'
 
@@ -41,9 +41,9 @@ export const Page_provincial_discipline = () => {
             </div>
 
             <VCT_StatRow items={[
-                { label: 'Tổng vụ việc', value: cases.length, icon: <VCT_Icons.Shield size={18} />, color: '#ef4444' },
-                { label: 'Đang mở', value: cases.filter(c => c.status === 'open').length, icon: <VCT_Icons.Clock size={18} />, color: '#f59e0b' },
-                { label: 'Đã xử lý', value: cases.filter(c => c.status === 'resolved').length, icon: <VCT_Icons.Check size={18} />, color: '#10b981' },
+                { label: 'Tổng vụ việc', value: cases.length, icon: <VCT_Icons.Shield size={18} />, color: 'var(--vct-danger)' },
+                { label: 'Đang mở', value: cases.filter(c => c.status === 'open').length, icon: <VCT_Icons.Clock size={18} />, color: 'var(--vct-warning)' },
+                { label: 'Đã xử lý', value: cases.filter(c => c.status === 'resolved').length, icon: <VCT_Icons.Check size={18} />, color: 'var(--vct-success)' },
             ] as StatItem[]} className="mb-6" />
 
             <div className="mb-5 flex justify-end">

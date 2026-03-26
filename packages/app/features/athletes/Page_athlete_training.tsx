@@ -1,7 +1,7 @@
 'use client'
 import React, { useMemo, useState } from 'react'
-import { VCT_Icons } from '../components/vct-icons'
-import { VCT_PageContainer, VCT_SectionCard, VCT_EmptyState, VCT_Badge } from '../components/vct-ui'
+import { VCT_Icons } from '@vct/ui'
+import { VCT_PageContainer, VCT_SectionCard, VCT_EmptyState, VCT_Badge } from '@vct/ui'
 import { useApiQuery } from '../hooks/useApiQuery'
 import { TrainingSession, AttendanceStats } from '@vct/shared-types'
 
@@ -11,10 +11,10 @@ import { TrainingSession, AttendanceStats } from '@vct/shared-types'
 // ═══════════════════════════════════════════════════════════════
 
 const SESSION_TYPE_LABELS: Record<string, { label: string; color: string; icon: string }> = {
-    regular: { label: 'Thường', color: '#3b82f6', icon: '🥋' },
-    sparring: { label: 'Đối kháng', color: '#ef4444', icon: '⚔️' },
-    exam: { label: 'Thi đấu', color: '#f59e0b', icon: '🏆' },
-    special: { label: 'Đặc biệt', color: '#8b5cf6', icon: '⭐' },
+    regular: { label: 'Thường', color: 'var(--vct-info)', icon: '🥋' },
+    sparring: { label: 'Đối kháng', color: 'var(--vct-danger)', icon: '⚔️' },
+    exam: { label: 'Thi đấu', color: 'var(--vct-warning)', icon: '🏆' },
+    special: { label: 'Đặc biệt', color: 'var(--vct-info)', icon: '⭐' },
 }
 
 const STATUS_CONFIG: Record<string, { label: string; variant: 'success' | 'warning' | 'danger' | 'neutral' }> = {
@@ -137,12 +137,12 @@ export function Page_athlete_training() {
 
             {/* ══ ATTENDANCE STATS ══ */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
-                <StatCard icon={<VCT_Icons.Calendar size={18} />} label="Tổng buổi" value={stats?.total_sessions ?? '—'} color="#3b82f6" />
-                <StatCard icon={<VCT_Icons.CheckCircle size={18} />} label="Đã tham gia" value={stats?.attended ?? '—'} color="#22c55e"
+                <StatCard icon={<VCT_Icons.Calendar size={18} />} label="Tổng buổi" value={stats?.total_sessions ?? '—'} color="var(--vct-info)" />
+                <StatCard icon={<VCT_Icons.CheckCircle size={18} />} label="Đã tham gia" value={stats?.attended ?? '—'} color="var(--vct-success)"
                     sub={stats ? `Tỷ lệ: ${Math.round(stats.attendance_rate)}%` : undefined} />
-                <StatCard icon={<VCT_Icons.Activity size={18} />} label="Chuỗi liên tiếp" value={stats?.current_streak ?? '—'} color="#8b5cf6"
+                <StatCard icon={<VCT_Icons.Activity size={18} />} label="Chuỗi liên tiếp" value={stats?.current_streak ?? '—'} color="var(--vct-info)"
                     sub="buổi liên tục" />
-                <StatCard icon={<VCT_Icons.AlertCircle size={18} />} label="Vắng mặt" value={stats?.absent ?? '—'} color="#ef4444"
+                <StatCard icon={<VCT_Icons.AlertCircle size={18} />} label="Vắng mặt" value={stats?.absent ?? '—'} color="var(--vct-danger)"
                     sub={stats?.cancelled ? `${stats.cancelled} hủy` : undefined} />
             </div>
 
@@ -150,7 +150,7 @@ export function Page_athlete_training() {
             <VCT_SectionCard
                 title="Khối lượng tập tuần"
                 icon={<VCT_Icons.BarChart2 size={20} />}
-                accentColor="#06b6d4"
+                accentColor="var(--vct-accent-cyan)"
                 className="border border-vct-border mb-6"
             >
                 <div className="flex items-end justify-between gap-2" style={{ height: 100 }}>
@@ -167,7 +167,7 @@ export function Page_athlete_training() {
                                     className="w-full rounded-lg transition-all duration-700 hover:opacity-80"
                                     style={{
                                         height: h,
-                                        background: today ? '#06b6d4' : count > 0 ? '#8b5cf6' : 'var(--vct-border)',
+                                        background: today ? 'var(--vct-accent-cyan)' : count > 0 ? 'var(--vct-info)' : 'var(--vct-border)',
                                         opacity: today ? 1 : 0.7,
                                     }}
                                 />
@@ -194,7 +194,7 @@ export function Page_athlete_training() {
             <VCT_SectionCard
                 title="Ghi nhận buổi tập"
                 icon={<VCT_Icons.Plus size={20} />}
-                accentColor="#22c55e"
+                accentColor="var(--vct-success)"
                 className="border border-vct-border mb-6"
             >
                 <form
@@ -246,7 +246,7 @@ export function Page_athlete_training() {
             <VCT_SectionCard
                 title="Lịch tập tuần"
                 icon={<VCT_Icons.Calendar size={20} />}
-                accentColor="#22c55e"
+                accentColor="var(--vct-success)"
                 className="border border-vct-border mb-6"
             >
                 {/* Week navigation */}
@@ -329,7 +329,7 @@ export function Page_athlete_training() {
             <VCT_SectionCard
                 title="Các buổi tập sắp tới"
                 icon={<VCT_Icons.Clock size={20} />}
-                accentColor="#3b82f6"
+                accentColor="var(--vct-info)"
                 className="border border-vct-border mb-6"
             >
                 {(() => {
@@ -350,7 +350,7 @@ export function Page_athlete_training() {
                 <VCT_SectionCard
                     title="Phân loại buổi tập"
                     icon={<VCT_Icons.BarChart2 size={20} />}
-                    accentColor="#8b5cf6"
+                    accentColor="var(--vct-info)"
                     className="border border-vct-border"
                 >
                     <div className="space-y-3">

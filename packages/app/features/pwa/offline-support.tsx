@@ -10,7 +10,7 @@
 
 import { useEffect, useState, useCallback, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { VCT_Text } from 'app/features/components/vct-ui'
+import { VCT_Text } from '@vct/ui'
 
 const __DEV__ = process.env.NODE_ENV !== 'production'
 const devLog = (...args: unknown[]) => { if (__DEV__) console.log(...args) }
@@ -102,8 +102,8 @@ export function VCT_OfflineIndicator() {
                     <div
                         className="flex items-center gap-2 px-4 py-2 rounded-full"
                         style={{
-                            background: isOnline ? '#22c55e' : '#ef4444',
-                            color: '#fff',
+                            background: isOnline ? 'var(--vct-success)' : 'var(--vct-danger)',
+                            color: 'var(--vct-bg-elevated)',
                             boxShadow: '0 4px 20px rgba(0,0,0,0.3)',
                             fontSize: 14,
                             fontWeight: 600,

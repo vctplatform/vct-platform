@@ -2,41 +2,18 @@
 
 export default function OfflinePage() {
     return (
-        <div
-            style={{
-                minHeight: '100vh',
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'center',
-                background: '#0a0f1a',
-                color: '#fff',
-                fontFamily: "'Inter', sans-serif",
-                textAlign: 'center',
-                padding: '2rem',
-            }}
-        >
-            <div style={{ fontSize: '4rem', marginBottom: '1rem' }}>📡</div>
-            <h1 style={{ fontSize: '1.5rem', fontWeight: 700, margin: '0 0 0.5rem' }}>
+        <div className="min-h-screen flex flex-col items-center justify-center bg-(--vct-bg-base) text-(--vct-text-primary) font-sans text-center p-8">
+            <div className="text-6xl mb-4">📡</div>
+            <h1 className="text-2xl font-bold m-0 mb-2">
                 Mất kết nối mạng
             </h1>
-            <p style={{ color: '#94a3b8', maxWidth: 400, lineHeight: 1.6 }}>
+            <p className="text-(--vct-text-tertiary) max-w-[400px] leading-relaxed">
                 Bạn đang ở chế độ offline. Một số tính năng có thể bị hạn chế.
                 Dữ liệu chấm điểm sẽ được tự động đồng bộ khi có mạng trở lại.
             </p>
             <button
                 onClick={() => window.location.reload()}
-                style={{
-                    marginTop: '1.5rem',
-                    padding: '12px 32px',
-                    borderRadius: '12px',
-                    border: 'none',
-                    background: '#00bcd4',
-                    color: '#fff',
-                    fontWeight: 600,
-                    fontSize: '1rem',
-                    cursor: 'pointer',
-                }}
+                className="mt-6 px-8 py-3 rounded-xl border-none bg-(--vct-accent-cyan) text-(--vct-text-on-accent) font-semibold text-base cursor-pointer hover:opacity-90 transition-opacity"
             >
                 🔄 Thử lại
             </button>

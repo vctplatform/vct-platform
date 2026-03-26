@@ -5,7 +5,7 @@ import { motion } from 'framer-motion';
 import {
     VCT_Card, VCT_Button, VCT_Text, VCT_Field, VCT_Input,
     VCT_Select, VCT_Stack, VCT_Toast, VCT_Wizard
-} from '../components/vct-ui';
+} from '@vct/ui';
 import { TOURNAMENT_CONFIG } from '../data/tournament-config';
 import type { TournamentConfig } from '../data/types';
 import { useRouter } from 'next/navigation';
@@ -152,8 +152,8 @@ export const Page_tournament_wizard = () => {
             <VCT_Text variant="h2" style={{ borderBottom: '1px solid var(--vct-border-subtle)', paddingBottom: 12 }}>Xác nhận thông tin</VCT_Text>
             <div style={{ background: 'var(--vct-bg-input)', padding: 20, borderRadius: 12, border: '1px dashed var(--vct-border-strong)' }}>
                 <VCT_Stack gap={12}>
-                    <VCT_Text><strong>Tên giải:</strong> {config.ten_giai || <span style={{ color: '#ef4444' }}>Chưa nhập</span>}</VCT_Text>
-                    <VCT_Text><strong>Mã giải:</strong> {config.ma_giai || <span style={{ color: '#ef4444' }}>Chưa nhập</span>}</VCT_Text>
+                    <VCT_Text><strong>Tên giải:</strong> {config.ten_giai || <span style={{ color: 'var(--vct-danger)' }}>Chưa nhập</span>}</VCT_Text>
+                    <VCT_Text><strong>Mã giải:</strong> {config.ma_giai || <span style={{ color: 'var(--vct-danger)' }}>Chưa nhập</span>}</VCT_Text>
                     <VCT_Text><strong>Thời gian:</strong> {config.ngay_bat_dau} → {config.ngay_ket_thuc}</VCT_Text>
                     <VCT_Text><strong>Địa điểm:</strong> {config.dia_diem}, {config.tinh}</VCT_Text>
                     <VCT_Text><strong>Giới hạn Đoàn:</strong> {config.quota.max_doan} (Tối đa {config.quota.max_vdv_per_doan} VĐV/Đoàn)</VCT_Text>

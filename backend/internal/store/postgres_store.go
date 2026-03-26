@@ -544,7 +544,7 @@ func (s *PostgresStore) Update(entity, id string, patch []byte) ([]byte, error) 
 		id,
 		patch,
 	).Scan(&next)
-	
+
 	if errors.Is(err, pgx.ErrNoRows) {
 		return nil, apierror.ErrNotFound
 	}

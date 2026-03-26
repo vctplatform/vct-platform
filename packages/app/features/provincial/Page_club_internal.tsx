@@ -2,10 +2,10 @@
 
 import * as React from 'react'
 import { useState, useEffect, useMemo, useCallback } from 'react'
-import { VCT_Badge, VCT_Button, VCT_Stack, VCT_Toast, VCT_SearchInput, VCT_EmptyState } from '../components/vct-ui'
-import { VCT_PageContainer, VCT_StatRow } from '../components/vct-ui'
-import type { StatItem } from '../components/VCT_StatRow'
-import { VCT_Icons } from '../components/vct-icons'
+import { VCT_Badge, VCT_Button, VCT_Stack, VCT_Toast, VCT_SearchInput, VCT_EmptyState } from '@vct/ui'
+import { VCT_PageContainer, VCT_StatRow } from '@vct/ui'
+import type { StatItem } from '@vct/ui'
+import { VCT_Icons } from '@vct/ui'
 
 const API = '/api/v1/club'
 
@@ -89,15 +89,15 @@ export const Page_club_internal = () => {
             {tab === 'overview' && (
                 <>
                     <VCT_StatRow items={[
-                        { label: 'Thành viên', value: dashboard?.total_members ?? 0, icon: <VCT_Icons.Users size={18} />, color: '#0ea5e9' },
-                        { label: 'Đang tập', value: dashboard?.active_members ?? 0, icon: <VCT_Icons.Activity size={18} />, color: '#10b981' },
-                        { label: 'Chờ duyệt', value: dashboard?.pending_members ?? 0, icon: <VCT_Icons.Clock size={18} />, color: '#f59e0b' },
-                        { label: 'Lớp tập', value: dashboard?.total_classes ?? 0, icon: <VCT_Icons.LayoutGrid size={18} />, color: '#8b5cf6' },
+                        { label: 'Thành viên', value: dashboard?.total_members ?? 0, icon: <VCT_Icons.Users size={18} />, color: 'var(--vct-accent-cyan)' },
+                        { label: 'Đang tập', value: dashboard?.active_members ?? 0, icon: <VCT_Icons.Activity size={18} />, color: 'var(--vct-success)' },
+                        { label: 'Chờ duyệt', value: dashboard?.pending_members ?? 0, icon: <VCT_Icons.Clock size={18} />, color: 'var(--vct-warning)' },
+                        { label: 'Lớp tập', value: dashboard?.total_classes ?? 0, icon: <VCT_Icons.LayoutGrid size={18} />, color: 'var(--vct-info)' },
                     ] as StatItem[]} className="mb-4" />
                     <VCT_StatRow items={[
-                        { label: 'Thu nhập', value: fmtVND(dashboard?.total_income ?? 0), icon: <VCT_Icons.TrendingUp size={18} />, color: '#10b981' },
-                        { label: 'Chi phí', value: fmtVND(dashboard?.total_expense ?? 0), icon: <VCT_Icons.TrendingDown size={18} />, color: '#ef4444' },
-                        { label: 'Số dư', value: fmtVND(dashboard?.balance ?? 0), icon: <VCT_Icons.Activity size={18} />, color: '#0ea5e9' },
+                        { label: 'Thu nhập', value: fmtVND(dashboard?.total_income ?? 0), icon: <VCT_Icons.TrendingUp size={18} />, color: 'var(--vct-success)' },
+                        { label: 'Chi phí', value: fmtVND(dashboard?.total_expense ?? 0), icon: <VCT_Icons.TrendingDown size={18} />, color: 'var(--vct-danger)' },
+                        { label: 'Số dư', value: fmtVND(dashboard?.balance ?? 0), icon: <VCT_Icons.Activity size={18} />, color: 'var(--vct-accent-cyan)' },
                     ] as StatItem[]} className="mb-6" />
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -176,9 +176,9 @@ export const Page_club_internal = () => {
             {tab === 'finance' && (
                 <>
                     <VCT_StatRow items={[
-                        { label: 'Tổng thu', value: fmtVND(totalIncome), icon: <VCT_Icons.TrendingUp size={18} />, color: '#10b981' },
-                        { label: 'Tổng chi', value: fmtVND(totalExpense), icon: <VCT_Icons.TrendingDown size={18} />, color: '#ef4444' },
-                        { label: 'Số dư', value: fmtVND(totalIncome - totalExpense), icon: <VCT_Icons.Activity size={18} />, color: '#0ea5e9' },
+                        { label: 'Tổng thu', value: fmtVND(totalIncome), icon: <VCT_Icons.TrendingUp size={18} />, color: 'var(--vct-success)' },
+                        { label: 'Tổng chi', value: fmtVND(totalExpense), icon: <VCT_Icons.TrendingDown size={18} />, color: 'var(--vct-danger)' },
+                        { label: 'Số dư', value: fmtVND(totalIncome - totalExpense), icon: <VCT_Icons.Activity size={18} />, color: 'var(--vct-accent-cyan)' },
                     ] as StatItem[]} className="mb-5" />
                     <VCT_Stack direction="row" gap={16} align="center" justify="space-between" className="mb-5">
                         <div className="w-full max-w-[300px]"><VCT_SearchInput value={search} onChange={setSearch} onClear={() => setSearch('')} placeholder="Tìm giao dịch..." /></div>
@@ -196,7 +196,7 @@ export const Page_club_internal = () => {
                                             <td className="px-4 py-3 text-sm">{CATEGORY_MAP[f.category] || f.category}</td>
                                             <td className="px-4 py-3 text-sm">{f.description}</td>
                                             <td className="px-4 py-3 text-sm">{f.member_name || '—'}</td>
-                                            <td className="px-4 py-3 text-sm font-bold" style={{ color: f.type === 'income' ? '#10b981' : '#ef4444' }}>{f.type === 'income' ? '+' : '-'}{fmtVND(f.amount)}</td>
+                                            <td className="px-4 py-3 text-sm font-bold" style={{ color: f.type === 'income' ? 'var(--vct-success)' : 'var(--vct-danger)' }}>{f.type === 'income' ? '+' : '-'}{fmtVND(f.amount)}</td>
                                         </tr>
                                     ))}
                                 </tbody></table>

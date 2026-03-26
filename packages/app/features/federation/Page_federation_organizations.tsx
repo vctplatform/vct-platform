@@ -6,9 +6,9 @@
 'use client';
 import React, { useState, useMemo } from 'react';
 import { useApiQuery } from '../hooks/useApiQuery';
-import { VCT_PageContainer, VCT_PageHero } from '../components/VCT_PageContainer';
-import { VCT_Icons } from '../components/vct-icons';
-import { VCT_EmptyState, VCT_Button } from '../components/vct-ui';
+import { VCT_PageContainer, VCT_PageHero } from '@vct/ui';
+import { VCT_Icons } from '@vct/ui';
+import { VCT_EmptyState, VCT_Button } from '@vct/ui';
 import { exportToExcel } from '../../utils/exportUtils';
 
 // ── Types ────────────────────────────────────────────────────
@@ -41,13 +41,13 @@ const SEED: Organization[] = [
 // ── Status helpers ───────────────────────────────────────────
 
 const STATUS_META: Record<string, { color: string; label: string }> = {
-    active: { color: '#10b981', label: 'Hoạt động' },
-    suspended: { color: '#f59e0b', label: 'Tạm dừng' },
-    inactive: { color: '#ef4444', label: 'Ngưng' },
+    active: { color: 'var(--vct-success)', label: 'Hoạt động' },
+    suspended: { color: 'var(--vct-warning)', label: 'Tạm dừng' },
+    inactive: { color: 'var(--vct-danger)', label: 'Ngưng' },
 };
 
 const REGION_COLORS: Record<string, string> = {
-    'Miền Bắc': '#3b82f6', 'Miền Trung': '#f59e0b', 'Miền Nam': '#10b981',
+    'Miền Bắc': 'var(--vct-info)', 'Miền Trung': 'var(--vct-warning)', 'Miền Nam': 'var(--vct-success)',
 };
 
 const ALL_REGIONS = ['all', 'Miền Bắc', 'Miền Trung', 'Miền Nam'] as const;
@@ -89,10 +89,10 @@ export function Page_federation_organizations() {
     };
 
     const kpis = [
-        { label: 'Tổng đơn vị', value: orgs.length, icon: <VCT_Icons.Building size={16} />, color: '#3b82f6' },
-        { label: 'Hoạt động', value: orgs.filter(o => o.status === 'active').length, icon: <VCT_Icons.CheckCircle size={16} />, color: '#10b981' },
-        { label: 'Tổng CLB', value: totalClubs, icon: <VCT_Icons.Home size={16} />, color: '#f59e0b' },
-        { label: 'Tổng thành viên', value: totalMembers.toLocaleString(), icon: <VCT_Icons.Users size={16} />, color: '#8b5cf6' },
+        { label: 'Tổng đơn vị', value: orgs.length, icon: <VCT_Icons.Building size={16} />, color: 'var(--vct-info)' },
+        { label: 'Hoạt động', value: orgs.filter(o => o.status === 'active').length, icon: <VCT_Icons.CheckCircle size={16} />, color: 'var(--vct-success)' },
+        { label: 'Tổng CLB', value: totalClubs, icon: <VCT_Icons.Home size={16} />, color: 'var(--vct-warning)' },
+        { label: 'Tổng thành viên', value: totalMembers.toLocaleString(), icon: <VCT_Icons.Users size={16} />, color: 'var(--vct-info)' },
     ];
 
     return (
@@ -172,8 +172,8 @@ export function Page_federation_organizations() {
                         </thead>
                         <tbody>
                             {filtered.map(org => {
-                                const st = STATUS_META[org.status] ?? { color: '#64748b', label: org.status };
-                                const rc = REGION_COLORS[org.region] ?? '#64748b';
+                                const st = STATUS_META[org.status] ?? { color: 'var(--vct-text-tertiary)', label: org.status };
+                                const rc = REGION_COLORS[org.region] ?? 'var(--vct-text-tertiary)';
                                 return (
                                     <tr key={org.id} className="border-b border-vct-border/50 hover:bg-vct-bg/50 transition-colors">
                                         <td className="px-4 py-3">

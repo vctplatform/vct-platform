@@ -5,8 +5,8 @@
 // ════════════════════════════════════════════════════════════════
 
 import * as React from 'react'
-import { motion } from 'framer-motion'
-import { VCT_Icons } from '../../components/vct-icons'
+import { motion, AnimatePresence, useMotionTemplate, useMotionValue } from 'framer-motion'
+import { VCT_Icons } from '@vct/ui'
 import { useI18n } from '../../i18n'
 import { useWorkspaceStore } from '../../layout/workspace-store'
 import type { WorkspaceCard } from '../../layout/workspace-types'
@@ -33,6 +33,18 @@ function getRelativeTime(timestamp: number, t: (key: string) => string): string 
 export const PortalWorkspaceCard = ({ card, onClick }: Props) => {
     const { t } = useI18n()
     const { togglePin, isPinned, lastAccessedMap, isPrivacyMode } = useWorkspaceStore()
+    const [isContextMenuOpen, setIsContextMenuOpen] = React.useState(false)
+    
+    // Spotlight Effect Tracker
+    const mouseX = useMotionValue(0)
+    const mouseY = useMotionValue(0)
+
+    function handleMouseMove({ currentTarget, clientX, clientY }: React.MouseEvent) {
+        const { left, top } = currentTarget.getBoundingClientRect()
+        mouseX.set(clientX - left)
+        mouseY.set(clientY - top)
+    }
+    
     const meta = WORKSPACE_META[card.type]
     const pinned = isPinned(card.id)
     const lastAccess = lastAccessedMap[card.id]
@@ -47,17 +59,49 @@ export const PortalWorkspaceCard = ({ card, onClick }: Props) => {
         : t(card.label)
     const typeName = t(meta?.label ?? card.label)
 
+    // Handlers for context menu
+    const handleContextMenu = (e: React.MouseEvent) => {
+        e.preventDefault()
+        e.stopPropagation()
+        setIsContextMenuOpen(true)
+    }
+
+    const closeContextMenu = (e: React.MouseEvent) => {
+        e.stopPropagation()
+        setIsContextMenuOpen(false)
+    }
+
     return (
-        <motion.button
-            aria-label={`${displayName} - ${typeName}`}
-            whileHover={{ y: -4, scale: 1.01 }}
-            whileTap={{ scale: 0.98 }}
-            type="button"
-            onClick={() => onClick(card)}
-            className="group relative flex min-h-[180px] flex-col gap-3 rounded-2xl border border-slate-200 bg-white/90 p-5 shadow-md transition-all duration-300 hover:border-vct-primary/50 hover:shadow-xl hover:shadow-vct-primary/10 focus:outline-none focus:ring-2 focus:ring-vct-accent/30 dark:border-white/10 dark:bg-white/5 dark:shadow-none dark:backdrop-blur-xl dark:hover:shadow-[0_8px_30px_rgba(255,255,255,0.05)]"
-        >
+        <div className="relative">
+            <motion.div
+                role="button"
+                tabIndex={0}
+                aria-label={`${displayName} - ${typeName}`}
+                aria-roledescription="workspace card"
+                whileHover={{ y: -4, scale: 1.01 }}
+                whileTap={{ scale: 0.98 }}
+                onClick={() => onClick(card)}
+                onContextMenu={handleContextMenu}
+                onMouseMove={handleMouseMove}
+                onKeyDown={(e: React.KeyboardEvent) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onClick(card) } }}
+                className="group relative flex min-h-[180px] cursor-pointer flex-col gap-3 rounded-2xl border border-white/40 bg-white/40 p-5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] ring-1 ring-inset ring-white/20 backdrop-blur-2xl transition-all duration-300 hover:border-white/50 hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] focus:outline-none focus:ring-2 focus:ring-vct-accent/30 dark:border-white/10 dark:bg-white/5 dark:hover:border-white/20"
+            >
+            {/* Spotlight Overlay */}
+            <motion.div
+                className="pointer-events-none absolute -inset-px rounded-2xl opacity-0 transition duration-300 group-hover:opacity-100"
+                style={{
+                    background: useMotionTemplate`
+                        radial-gradient(
+                            350px circle at ${mouseX}px ${mouseY}px,
+                            rgba(99, 102, 241, 0.12),
+                            transparent 80%
+                        )
+                    `,
+                }}
+            />
+
             {/* Ambient Background Glow Effect inside the card (visible on hover) */}
-            <div className="absolute inset-x-0 bottom-0 h-1/2 bg-linear-to-t from-vct-accent/10 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+            <div className="absolute inset-x-0 bottom-0 h-1/2 bg-linear-to-t from-vct-accent/10 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100 rounded-b-2xl pointer-events-none" />
 
             {/* Top row: icon + pin + badges */}
             <div className="relative flex w-full items-start justify-between">
@@ -67,11 +111,11 @@ export const PortalWorkspaceCard = ({ card, onClick }: Props) => {
                         <img
                             src={card.logoUrl}
                             alt={displayName}
-                            className="h-10 w-10 rounded-xl object-cover"
+                            className="h-10 w-10 rounded-xl object-cover transition-transform duration-300 group-hover:scale-110 group-hover:rotate-3 shadow-sm"
                         />
                     ) : (
                         <div
-                            className="flex h-10 w-10 items-center justify-center rounded-xl backdrop-blur-md bg-(--card-icon-bg)"
+                            className="flex h-10 w-10 items-center justify-center rounded-xl backdrop-blur-md bg-(--card-icon-bg) transition-transform duration-300 group-hover:scale-110 group-hover:-rotate-3 shadow-sm ring-1 ring-white/20"
                             style={{ 
                                 '--card-icon-bg': `${card.color}18` 
                             } as React.CSSProperties}
@@ -85,15 +129,27 @@ export const PortalWorkspaceCard = ({ card, onClick }: Props) => {
                     </div>
                 </div>
 
-                {/* Pin button */}
-                <button
-                    type="button"
-                    onClick={(e) => { e.stopPropagation(); togglePin(card.id) }}
-                    title={pinned ? t('portal.unpin') : t('portal.pin')}
-                    className={`shrink-0 rounded-lg p-1.5 transition-colors ${pinned ? 'text-amber-500' : 'text-vct-text-muted/40 opacity-0 group-hover:opacity-100'} hover:text-amber-500`}
-                >
-                    <VCT_Icons.Star size={14} />
-                </button>
+                {/* Top right actions */}
+                <div className="flex items-center gap-1 shrink-0 relative z-10">
+                    <button
+                        type="button"
+                        onClick={(e) => { e.stopPropagation(); togglePin(card.id) }}
+                        title={pinned ? t('portal.unpin') : t('portal.pin')}
+                        className={`shrink-0 rounded-lg p-1.5 transition-colors ${pinned ? 'text-amber-500' : 'text-vct-text-muted/40 opacity-0 group-hover:opacity-100'} hover:text-amber-500`}
+                    >
+                        <VCT_Icons.Star size={14} />
+                    </button>
+                    
+                    <button
+                        type="button"
+                        onClick={handleContextMenu}
+                        className="flex h-7 w-7 items-center justify-center rounded-lg text-vct-text-muted/60 opacity-0 transition-colors hover:bg-slate-100 hover:text-vct-text group-hover:opacity-100 dark:hover:bg-slate-700"
+                        title={t('common.actions') || 'Thao tác'}
+                        aria-label="Menu"
+                    >
+                        <VCT_Icons.MoreVertical size={14} />
+                    </button>
+                </div>
             </div>
 
             {/* Description */}
@@ -140,36 +196,73 @@ export const PortalWorkspaceCard = ({ card, onClick }: Props) => {
                 {/* Spacer */}
                 <span className="flex-1" />
 
-                {/* Last access */}
-                {lastAccess && (
+                {/* Last access or New Badge */}
+                {lastAccess ? (
                     <span className="text-vct-text-muted">
                         {getRelativeTime(lastAccess, t)}
                     </span>
+                ) : (
+                    <span className="flex items-center gap-1.5 rounded-full bg-vct-primary/10 px-2.5 py-0.5 text-vct-primary ring-1 ring-vct-primary/20">
+                        <span className="relative flex h-1.5 w-1.5">
+                            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-vct-primary opacity-75"></span>
+                            <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-vct-primary"></span>
+                        </span>
+                        {t('portal.newWorkspace') || 'Mới'}
+                    </span>
                 )}
             </div>
+            </motion.div>
 
-            {/* Sparkline for administrative workspaces */}
-            {['system_admin', 'federation_admin', 'federation_provincial', 'club_management', 'tournament_ops'].includes(card.type) && (
-                <div className="pointer-events-none absolute right-0 bottom-0 h-12 w-24 translate-y-2 overflow-hidden opacity-30 group-hover:opacity-60 transition-opacity">
-                    <svg viewBox="0 0 100 40" className="h-full w-full overflow-visible">
-                        <motion.path
-                            d={`M 0,${20 + Math.sin(card.id.length) * 10} 
-                               L 20,${25 + Math.cos(card.id.length) * 10} 
-                               L 40,${15 - Math.sin(card.id.length) * 5} 
-                               L 60,${30 + Math.cos(card.id.length) * 8} 
-                               L 80,${10 + Math.sin(card.id.length) * 12} 
-                               L 100,${20}`}
-                            fill="none"
-                            style={{ stroke: card.color || 'currentColor' }}
-                            strokeWidth="2"
-                            strokeLinecap="round"
-                            initial={{ pathLength: 0 }}
-                            animate={{ pathLength: 1 }}
-                            transition={{ duration: 1.5, delay: 0.5 }}
+            {/* Context Menu Overlay */}
+            <AnimatePresence>
+                {isContextMenuOpen && (
+                    <>
+                        <div 
+                            className="fixed inset-0 z-40" 
+                            onClick={closeContextMenu}
+                            onContextMenu={(e) => { e.preventDefault(); closeContextMenu(e) }}
                         />
-                    </svg>
-                </div>
-            )}
-        </motion.button>
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.95, y: -5 }}
+                            animate={{ opacity: 1, scale: 1, y: 0 }}
+                            exit={{ opacity: 0, scale: 0.95, y: -5 }}
+                            transition={{ duration: 0.15 }}
+                            className="absolute right-4 top-16 z-50 flex w-52 flex-col rounded-xl border border-slate-200 bg-white/95 p-1 shadow-xl backdrop-blur-xl dark:border-slate-700 dark:bg-slate-800/95"
+                        >
+                            <button
+                                className="flex items-center gap-2 rounded-lg px-3 py-2 text-xs text-vct-text hover:bg-slate-100 dark:hover:bg-slate-700/50"
+                                onClick={(e) => {
+                                    e.stopPropagation()
+                                    setIsContextMenuOpen(false)
+                                    alert(t('portal.featureComingSoon') || 'Tính năng liên kết cấu hình đang được cập nhật')
+                                }}
+                            >
+                                <VCT_Icons.Settings size={14} />
+                                {t('portal.workspaceSettings') || 'Cấu hình không gian'}
+                            </button>
+                            <button
+                                className="flex items-center gap-2 rounded-lg px-3 py-2 text-xs text-vct-text hover:bg-slate-100 dark:hover:bg-slate-700/50"
+                                onClick={(e) => {
+                                    e.stopPropagation()
+                                    setIsContextMenuOpen(false)
+                                    alert(t('portal.featureComingSoon') || 'Tính năng xuất dữ liệu đang được cập nhật')
+                                }}
+                            >
+                                <VCT_Icons.FileText size={14} />
+                                {t('portal.exportData') || 'Truy xuất báo cáo nhanh'}
+                            </button>
+                            <div className="my-1 h-px w-full bg-slate-200 dark:bg-slate-700" />
+                            <button
+                                className="flex items-center gap-2 rounded-lg px-3 py-2 text-xs text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-950/30"
+                                onClick={closeContextMenu}
+                            >
+                                <VCT_Icons.LogOut size={14} />
+                                {t('common.close') || 'Đóng menu'}
+                            </button>
+                        </motion.div>
+                    </>
+                )}
+            </AnimatePresence>
+        </div>
     )
 }

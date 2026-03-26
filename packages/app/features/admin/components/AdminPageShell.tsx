@@ -1,8 +1,8 @@
 'use client'
 
 import * as React from 'react'
-import { VCT_PageContainer, VCT_StatRow, VCT_Toast } from '../../components/vct-ui'
-import type { StatItem } from '../../components/VCT_StatRow'
+import { VCT_PageContainer, VCT_StatRow, VCT_Toast } from '@vct/ui'
+import type { StatItem } from '@vct/ui'
 import { useAdminToast } from '../hooks/useAdminToast'
 import { AdminBreadcrumb } from './AdminBreadcrumb'
 import type { BreadcrumbItem } from './AdminBreadcrumb'

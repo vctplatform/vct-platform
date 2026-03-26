@@ -250,7 +250,7 @@ func (s *Server) handleWebSocket(w http.ResponseWriter, r *http.Request) {
 	// WebSocket authentication is handled via first-message auth
 	// (client sends {"action":"auth","token":"xxx"} after connection opens)
 	if err := s.realtimeHub.ServeWS(w, r); err != nil {
-		internalError(w, err)
+		apiInternal(w, err)
 	}
 }
 

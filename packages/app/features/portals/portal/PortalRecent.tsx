@@ -4,28 +4,15 @@
 // Last 5 accessed workspaces with relative timestamps.
 // ════════════════════════════════════════════════════════════════
 
-import { VCT_Icons } from '../../components/vct-icons'
+import { VCT_Icons } from '@vct/ui'
 import { useI18n } from '../../i18n'
 import type { WorkspaceCard } from '../../layout/workspace-types'
 import { useWorkspaceStore } from '../../layout/workspace-store'
-import { PortalWorkspaceCard } from './PortalWorkspaceCard'
+import { PortalRecentCard } from './PortalRecentCard'
 
 interface Props {
     cards: WorkspaceCard[]
     onClick: (card: WorkspaceCard) => void
-}
-
-function getRelativeTime(timestamp: number): string {
-    const diff = Date.now() - timestamp
-    const mins = Math.floor(diff / 60000)
-    if (mins < 1) return 'Vừa xong'
-    if (mins < 60) return `${mins} phút trước`
-    const hours = Math.floor(mins / 60)
-    if (hours < 24) return `${hours} giờ trước`
-    const days = Math.floor(hours / 24)
-    if (days === 1) return 'Hôm qua'
-    if (days < 7) return `${days} ngày trước`
-    return `${Math.floor(days / 7)} tuần trước`
 }
 
 export const PortalRecent = ({ cards, onClick }: Props) => {
@@ -40,10 +27,10 @@ export const PortalRecent = ({ cards, onClick }: Props) => {
                 <VCT_Icons.Clock size={14} />
                 {t('portal.recent')}
             </h2>
-            <div className="flex gap-4 overflow-x-auto pb-4 snap-x snap-mandatory scrollbar-hide">
+            <div className="flex gap-4 overflow-x-auto pb-4 snap-x snap-mandatory custom-scrollbar">
                 {cards.map((card) => (
                     <div key={card.id} className="w-[280px] shrink-0 snap-start sm:w-[320px]">
-                        <PortalWorkspaceCard card={card} onClick={onClick} />
+                        <PortalRecentCard card={card} onClick={onClick} />
                     </div>
                 ))}
             </div>

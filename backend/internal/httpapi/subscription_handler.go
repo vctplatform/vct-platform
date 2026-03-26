@@ -21,15 +21,15 @@ import (
 func subscriptionError(w http.ResponseWriter, err error) {
 	switch {
 	case errors.Is(err, finance.ErrNotFound):
-		notFoundError(w, err.Error())
+		apiError(w, http.StatusNotFound, CodeNotFound, err.Error())
 	case errors.Is(err, finance.ErrConflict):
-		conflict(w, err.Error())
+		apiConflict(w, err.Error())
 	case errors.Is(err, finance.ErrForbidden):
-		forbidden(w, err.Error())
+		apiError(w, http.StatusForbidden, CodeForbidden, err.Error())
 	case errors.Is(err, finance.ErrValidation):
-		badRequest(w, err.Error())
+		apiError(w, http.StatusBadRequest, CodeBadRequest, err.Error())
 	default:
-		internalError(w, err)
+		apiInternal(w, err)
 	}
 }
 
@@ -53,13 +53,13 @@ func (s *Server) handlePlanList(w http.ResponseWriter, r *http.Request, p auth.P
 func (s *Server) handlePlanCreate(w http.ResponseWriter, r *http.Request, p auth.Principal) {
 	// RBAC: only admin can create plans
 	if p.User.Role != "admin" && p.User.Role != "super_admin" {
-		forbidden(w, "Chỉ admin mới có quyền tạo gói dịch vụ")
+		apiError(w, http.StatusForbidden, CodeForbidden, "Chỉ admin mới có quyền tạo gói dịch vụ")
 		return
 	}
 
 	var plan finance.SubscriptionPlan
 	if err := json.NewDecoder(r.Body).Decode(&plan); err != nil {
-		badRequest(w, "Request body không hợp lệ")
+		apiError(w, http.StatusBadRequest, CodeBadRequest, "Request body không hợp lệ")
 		return
 	}
 	created, err := s.Extended.Subscription.CreatePlan(r.Context(), plan)
@@ -74,13 +74,13 @@ func (s *Server) handlePlanCreate(w http.ResponseWriter, r *http.Request, p auth
 func (s *Server) handlePlanUpdate(w http.ResponseWriter, r *http.Request, p auth.Principal, id string) {
 	// RBAC: only admin can update plans
 	if p.User.Role != "admin" && p.User.Role != "super_admin" {
-		forbidden(w, "Chỉ admin mới có quyền cập nhật gói dịch vụ")
+		apiError(w, http.StatusForbidden, CodeForbidden, "Chỉ admin mới có quyền cập nhật gói dịch vụ")
 		return
 	}
 
 	var patch map[string]interface{}
 	if err := json.NewDecoder(r.Body).Decode(&patch); err != nil {
-		badRequest(w, "Request body không hợp lệ")
+		apiError(w, http.StatusBadRequest, CodeBadRequest, "Request body không hợp lệ")
 		return
 	}
 	updated, err := s.Extended.Subscription.UpdatePlan(r.Context(), id, patch)
@@ -95,7 +95,7 @@ func (s *Server) handlePlanUpdate(w http.ResponseWriter, r *http.Request, p auth
 func (s *Server) handlePlanDeactivate(w http.ResponseWriter, r *http.Request, p auth.Principal, id string) {
 	// RBAC: only admin
 	if p.User.Role != "admin" && p.User.Role != "super_admin" {
-		forbidden(w, "Chỉ admin mới có quyền hủy gói dịch vụ")
+		apiError(w, http.StatusForbidden, CodeForbidden, "Chỉ admin mới có quyền hủy gói dịch vụ")
 		return
 	}
 
@@ -128,7 +128,7 @@ func (s *Server) handlePlanRoutes(w http.ResponseWriter, r *http.Request, p auth
 			}
 			success(w, http.StatusOK, plan)
 		default:
-			methodNotAllowed(w)
+			apiMethodNotAllowed(w)
 		}
 		return
 	}
@@ -139,7 +139,7 @@ func (s *Server) handlePlanRoutes(w http.ResponseWriter, r *http.Request, p auth
 	case http.MethodPost:
 		s.handlePlanCreate(w, r, p)
 	default:
-		methodNotAllowed(w)
+		apiMethodNotAllowed(w)
 	}
 }
 
@@ -170,7 +170,7 @@ func (s *Server) handleSubscriptionList(w http.ResponseWriter, r *http.Request, 
 func (s *Server) handleSubscriptionCreate(w http.ResponseWriter, r *http.Request, p auth.Principal) {
 	var input finance.SubscribeInput
 	if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
-		badRequest(w, "Request body không hợp lệ")
+		apiError(w, http.StatusBadRequest, CodeBadRequest, "Request body không hợp lệ")
 		return
 	}
 	input.CreatedBy = p.User.ID
@@ -194,7 +194,7 @@ func (s *Server) handleSubscriptionRoutes(w http.ResponseWriter, r *http.Request
 	case http.MethodPost:
 		s.handleSubscriptionCreate(w, r, p)
 	default:
-		methodNotAllowed(w)
+		apiMethodNotAllowed(w)
 	}
 }
 
@@ -206,7 +206,7 @@ func (s *Server) handleSubscriptionDetail(w http.ResponseWriter, r *http.Request
 	id := parts[0]
 
 	if id == "" {
-		badRequest(w, "subscription ID is required")
+		apiError(w, http.StatusBadRequest, CodeBadRequest, "subscription ID is required")
 		return
 	}
 
@@ -238,7 +238,7 @@ func (s *Server) handleSubscriptionDetail(w http.ResponseWriter, r *http.Request
 
 	// GET /api/v1/finance/subscriptions/{id}
 	if r.Method != http.MethodGet {
-		methodNotAllowed(w)
+		apiMethodNotAllowed(w)
 		return
 	}
 
@@ -253,7 +253,7 @@ func (s *Server) handleSubscriptionDetail(w http.ResponseWriter, r *http.Request
 // handleSubscriptionRenew handles POST /api/v1/finance/subscriptions/{id}/renew
 func (s *Server) handleSubscriptionRenew(w http.ResponseWriter, r *http.Request, p auth.Principal, id string) {
 	if r.Method != http.MethodPost {
-		methodNotAllowed(w)
+		apiMethodNotAllowed(w)
 		return
 	}
 	bc, err := s.Extended.Subscription.RenewSubscription(r.Context(), id, p.User.ID)
@@ -267,7 +267,7 @@ func (s *Server) handleSubscriptionRenew(w http.ResponseWriter, r *http.Request,
 // handleSubscriptionCancel handles POST /api/v1/finance/subscriptions/{id}/cancel
 func (s *Server) handleSubscriptionCancel(w http.ResponseWriter, r *http.Request, p auth.Principal, id string) {
 	if r.Method != http.MethodPost {
-		methodNotAllowed(w)
+		apiMethodNotAllowed(w)
 		return
 	}
 	var body struct {
@@ -286,14 +286,14 @@ func (s *Server) handleSubscriptionCancel(w http.ResponseWriter, r *http.Request
 // handleSubscriptionUpgrade handles POST /api/v1/finance/subscriptions/{id}/upgrade
 func (s *Server) handleSubscriptionUpgrade(w http.ResponseWriter, r *http.Request, p auth.Principal, id string) {
 	if r.Method != http.MethodPost {
-		methodNotAllowed(w)
+		apiMethodNotAllowed(w)
 		return
 	}
 	var body struct {
 		NewPlanID string `json:"new_plan_id"`
 	}
 	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
-		badRequest(w, "Request body không hợp lệ")
+		apiError(w, http.StatusBadRequest, CodeBadRequest, "Request body không hợp lệ")
 		return
 	}
 
@@ -312,12 +312,12 @@ func (s *Server) handleSubscriptionUpgrade(w http.ResponseWriter, r *http.Reques
 // handleSubscriptionReactivate handles POST /api/v1/finance/subscriptions/{id}/reactivate
 func (s *Server) handleSubscriptionReactivate(w http.ResponseWriter, r *http.Request, p auth.Principal, id string) {
 	if r.Method != http.MethodPost {
-		methodNotAllowed(w)
+		apiMethodNotAllowed(w)
 		return
 	}
 	// RBAC: only admin can reactivate
 	if p.User.Role != "admin" && p.User.Role != "super_admin" {
-		forbidden(w, "Chỉ admin mới có quyền kích hoạt lại subscription")
+		apiError(w, http.StatusForbidden, CodeForbidden, "Chỉ admin mới có quyền kích hoạt lại subscription")
 		return
 	}
 
@@ -332,12 +332,12 @@ func (s *Server) handleSubscriptionReactivate(w http.ResponseWriter, r *http.Req
 // handleSubscriptionSuspend handles POST /api/v1/finance/subscriptions/{id}/suspend
 func (s *Server) handleSubscriptionSuspend(w http.ResponseWriter, r *http.Request, p auth.Principal, id string) {
 	if r.Method != http.MethodPost {
-		methodNotAllowed(w)
+		apiMethodNotAllowed(w)
 		return
 	}
 	// RBAC: only admin can suspend
 	if p.User.Role != "admin" && p.User.Role != "super_admin" {
-		forbidden(w, "Chỉ admin mới có quyền tạm ngưng subscription")
+		apiError(w, http.StatusForbidden, CodeForbidden, "Chỉ admin mới có quyền tạm ngưng subscription")
 		return
 	}
 
@@ -357,14 +357,14 @@ func (s *Server) handleSubscriptionSuspend(w http.ResponseWriter, r *http.Reques
 // handleSubscriptionAutoRenew handles PUT /api/v1/finance/subscriptions/{id}/auto-renew
 func (s *Server) handleSubscriptionAutoRenew(w http.ResponseWriter, r *http.Request, p auth.Principal, id string) {
 	if r.Method != http.MethodPut {
-		methodNotAllowed(w)
+		apiMethodNotAllowed(w)
 		return
 	}
 	var body struct {
 		AutoRenew bool `json:"auto_renew"`
 	}
 	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
-		badRequest(w, "Request body không hợp lệ")
+		apiError(w, http.StatusBadRequest, CodeBadRequest, "Request body không hợp lệ")
 		return
 	}
 
@@ -379,7 +379,7 @@ func (s *Server) handleSubscriptionAutoRenew(w http.ResponseWriter, r *http.Requ
 // handleSubscriptionBillingCycles handles GET /api/v1/finance/subscriptions/{id}/billing-cycles
 func (s *Server) handleSubscriptionBillingCycles(w http.ResponseWriter, r *http.Request, _ auth.Principal, id string) {
 	if r.Method != http.MethodGet {
-		methodNotAllowed(w)
+		apiMethodNotAllowed(w)
 		return
 	}
 	cycles, err := s.Extended.Subscription.ListBillingCycles(r.Context(), id)
@@ -396,7 +396,7 @@ func (s *Server) handleSubscriptionBillingCycles(w http.ResponseWriter, r *http.
 // handleSubscriptionRenewalLogs handles GET /api/v1/finance/subscriptions/{id}/renewal-logs
 func (s *Server) handleSubscriptionRenewalLogs(w http.ResponseWriter, r *http.Request, _ auth.Principal, id string) {
 	if r.Method != http.MethodGet {
-		methodNotAllowed(w)
+		apiMethodNotAllowed(w)
 		return
 	}
 	logs, err := s.Extended.Subscription.ListRenewalLogs(r.Context(), id)
@@ -415,7 +415,7 @@ func (s *Server) handleSubscriptionRenewalLogs(w http.ResponseWriter, r *http.Re
 // handleExpiringSubscriptions handles GET /api/v1/finance/subscriptions/expiring
 func (s *Server) handleExpiringSubscriptions(w http.ResponseWriter, r *http.Request, _ auth.Principal) {
 	if r.Method != http.MethodGet {
-		methodNotAllowed(w)
+		apiMethodNotAllowed(w)
 		return
 	}
 	subs, err := s.Extended.Subscription.ListExpiringSubscriptions(r.Context(), 30) // within 30 days
@@ -434,7 +434,7 @@ func (s *Server) handleExpiringSubscriptions(w http.ResponseWriter, r *http.Requ
 // handleBillingCycleList handles GET /api/v1/finance/billing-cycles
 func (s *Server) handleBillingCycleList(w http.ResponseWriter, r *http.Request, _ auth.Principal) {
 	if r.Method != http.MethodGet {
-		methodNotAllowed(w)
+		apiMethodNotAllowed(w)
 		return
 	}
 	filter := finance.BillingCycleFilter{
@@ -457,7 +457,7 @@ func (s *Server) handleBillingCycleList(w http.ResponseWriter, r *http.Request, 
 // handleBillingCycleMarkPaid handles POST /api/v1/finance/billing-cycles/{id}/pay
 func (s *Server) handleBillingCycleMarkPaid(w http.ResponseWriter, r *http.Request, p auth.Principal) {
 	if r.Method != http.MethodPost {
-		methodNotAllowed(w)
+		apiMethodNotAllowed(w)
 		return
 	}
 	id := strings.TrimPrefix(r.URL.Path, "/api/v1/finance/billing-cycles/")

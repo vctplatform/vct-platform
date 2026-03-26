@@ -4,7 +4,7 @@
 // Shown when no workspaces, no search results, etc.
 // ════════════════════════════════════════════════════════════════
 
-import { VCT_Icons } from '../../components/vct-icons'
+import { VCT_Icons } from '@vct/ui'
 import { useI18n } from '../../i18n'
 
 interface Props {
@@ -24,7 +24,7 @@ export const PortalEmptyState = ({ variant, searchQuery }: Props) => {
                 <div>
                     <h3 className="text-lg font-bold text-vct-text">{t('portal.empty')}</h3>
                     <p className="mt-1 max-w-md text-sm text-vct-text-muted">
-                        Tài khoản chưa được gán vào workspace nào. Liên hệ quản trị viên để được phân quyền.
+                        {t('portal.emptyDesc')}
                     </p>
                 </div>
             </div>
@@ -38,8 +38,8 @@ export const PortalEmptyState = ({ variant, searchQuery }: Props) => {
                 <div>
                     <h3 className="text-sm font-bold text-vct-text">{t('portal.noResults')}</h3>
                     {searchQuery && (
-                        <p className="mt-1 text-xs text-vct-text-muted">
-                            Không tìm thấy workspace phù hợp với &ldquo;{searchQuery}&rdquo;
+                         <p className="mt-1 text-xs text-vct-text-muted">
+                            {t('portal.noResultsDesc')} &ldquo;{searchQuery}&rdquo;
                         </p>
                     )}
                 </div>

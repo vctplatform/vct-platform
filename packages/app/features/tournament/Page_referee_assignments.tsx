@@ -6,10 +6,10 @@ import {
     VCT_Badge, VCT_Button, VCT_Stack, VCT_Toast,
     VCT_Modal, VCT_Select, VCT_Field, VCT_EmptyState, VCT_AvatarLetter,
     VCT_ConfirmDialog, VCT_Card, VCT_ProgressBar, VCT_Text
-} from '../components/vct-ui';
-import { VCT_PageContainer, VCT_StatRow } from '../components/vct-ui';
-import type { StatItem } from '../components/VCT_StatRow';
-import { VCT_Icons } from '../components/vct-icons';
+} from '@vct/ui';
+import { VCT_PageContainer, VCT_StatRow } from '@vct/ui';
+import type { StatItem } from '@vct/ui';
+import { VCT_Icons } from '@vct/ui';
 import { genId, useTrongTais, useSanDaus } from '../hooks/useTournamentAPI';
 import { CAP_BAC_TT_MAP, type TrongTai, type SanDau } from '../data/types';
 import { repositories, useEntityCollection, type RefereeAssignmentRecord } from '../data/repository';
@@ -188,11 +188,11 @@ export const Page_referee_assignments = () => {
                                     </VCT_Stack>
                                 </td>
                                 <td {...{ style: { textAlign: 'center', padding: '10px' } }}>
-                                    <div {...{ style: { display: 'inline-flex', alignItems: 'center', gap: 4, padding: '2px 8px', borderRadius: 8, background: count > 0 ? 'rgba(16,185,129,0.1)' : 'rgba(245,158,11,0.1)', fontWeight: 800, fontSize: 13, color: count > 0 ? '#10b981' : '#f59e0b' } }}>
+                                    <div {...{ style: { display: 'inline-flex', alignItems: 'center', gap: 4, padding: '2px 8px', borderRadius: 8, background: count > 0 ? 'rgba(16,185,129,0.1)' : 'rgba(245,158,11,0.1)', fontWeight: 800, fontSize: 13, color: count > 0 ? 'var(--vct-success)' : 'var(--vct-warning)' } }}>
                                         {count}
                                     </div>
-                                    <div {...{ style: { width: '60%', margin: '4px auto 0', height: 3, borderRadius: 2, background: '#e2e8f0' } }}>
-                                        <div {...{ style: { width: `${(count / maxCount) * 100}%`, height: '100%', borderRadius: 2, background: count > 0 ? '#10b981' : '#e2e8f0', transition: 'width 0.3s' } }} />
+                                    <div {...{ style: { width: '60%', margin: '4px auto 0', height: 3, borderRadius: 2, background: 'var(--vct-border-subtle)' } }}>
+                                        <div {...{ style: { width: `${(count / maxCount) * 100}%`, height: '100%', borderRadius: 2, background: count > 0 ? 'var(--vct-success)' : 'var(--vct-border-subtle)', transition: 'width 0.3s' } }} />
                                     </div>
                                 </td>
                                 {PHIENS.map(phien => {
@@ -200,7 +200,7 @@ export const Page_referee_assignments = () => {
                                     return (
                                         <td key={phien} {...{ style: { textAlign: 'center', padding: '6px', borderRadius: phien === 'toi' ? '0 8px 8px 0' : 0 } }}>
                                             {phienAssigns.length === 0 ? (
-                                                <span {...{ style: { color: '#cbd5e1', fontSize: 16 } }}>○</span>
+                                                <span {...{ style: { color: 'var(--vct-text-secondary)', fontSize: 16 } }}>○</span>
                                             ) : phienAssigns.map(a => {
                                                 const san = getSan(a.san_id);
                                                 const vtr = VAI_TRO_OPTIONS.find(v => v.value === a.vai_tro);
@@ -210,7 +210,7 @@ export const Page_referee_assignments = () => {
                                                         background: a.vai_tro === 'chinh' ? 'rgba(59,130,246,0.1)' : 'rgba(148,163,184,0.1)',
                                                         fontSize: 11, fontWeight: 600,
                                                     } }}>
-                                                        <div {...{ style: { color: a.vai_tro === 'chinh' ? '#3b82f6' : '#64748b' } }}>{san?.ten}</div>
+                                                        <div {...{ style: { color: a.vai_tro === 'chinh' ? 'var(--vct-info)' : 'var(--vct-text-tertiary)' } }}>{san?.ten}</div>
                                                         <div {...{ style: { fontSize: 9, opacity: 0.5 } }}>{vtr?.label}</div>
                                                     </div>
                                                 );
@@ -231,10 +231,10 @@ export const Page_referee_assignments = () => {
             <VCT_Toast isVisible={toast.show} message={toast.msg} type={toast.type} onClose={() => setToast(p => ({ ...p, show: false }))} />
 
             <VCT_StatRow items={[
-                { label: 'Phân công', value: assignments.length, icon: <VCT_Icons.Users size={18} />, color: '#0ea5e9' },
-                { label: 'TT tham gia', value: new Set(assignments.map(a => a.tt_id)).size, icon: <VCT_Icons.Shield size={18} />, color: '#10b981', sub: `/${ttsActive.length} TT` },
-                { label: 'Sàn có TT', value: bySan.size, icon: <VCT_Icons.Layout size={18} />, color: '#22d3ee', sub: `/${sanActive.length} sàn` },
-                { label: 'Chưa phân', value: ttsActive.length - new Set(assignments.map(a => a.tt_id)).size, icon: <VCT_Icons.Clock size={18} />, color: '#f59e0b' },
+                { label: 'Phân công', value: assignments.length, icon: <VCT_Icons.Users size={18} />, color: 'var(--vct-accent-cyan)' },
+                { label: 'TT tham gia', value: new Set(assignments.map(a => a.tt_id)).size, icon: <VCT_Icons.Shield size={18} />, color: 'var(--vct-success)', sub: `/${ttsActive.length} TT` },
+                { label: 'Sàn có TT', value: bySan.size, icon: <VCT_Icons.Layout size={18} />, color: 'var(--vct-accent-cyan)', sub: `/${sanActive.length} sàn` },
+                { label: 'Chưa phân', value: ttsActive.length - new Set(assignments.map(a => a.tt_id)).size, icon: <VCT_Icons.Clock size={18} />, color: 'var(--vct-warning)' },
             ] as StatItem[]} className="mb-6" />
 
             {/* Toolbar */}
@@ -286,7 +286,7 @@ export const Page_referee_assignments = () => {
                         return (
                             <VCT_Card key={san.id}>
                                 <VCT_Stack direction="row" gap={12} align="center" className="mb-4">
-                                    <div {...{ style: { width: 12, height: 12, borderRadius: '50%', background: san.trang_thai === 'dang_thi_dau' ? '#ef4444' : san.trang_thai === 'san_sang' ? '#10b981' : '#f59e0b' } }} />
+                                    <div {...{ style: { width: 12, height: 12, borderRadius: '50%', background: san.trang_thai === 'dang_thi_dau' ? 'var(--vct-danger)' : san.trang_thai === 'san_sang' ? 'var(--vct-success)' : 'var(--vct-warning)' } }} />
                                     <div className="flex-1">
                                         <div {...{ style: { fontWeight: 800, fontSize: 15 } }}>{san.ten}</div>
                                         <div className="text-[11px] opacity-50">{san.vi_tri} • {san.loai}</div>
@@ -311,7 +311,7 @@ export const Page_referee_assignments = () => {
                                                     <VCT_Badge text={PHIEN_LABELS[a.phien] || a.phien} type="info" />
                                                     <button
                                                         onClick={() => permissions.canDelete ? setDeleteTarget(a) : requireAction('delete', 'hủy phân công')}
-                                                        {...{ style: { background: 'none', border: 'none', cursor: permissions.canDelete ? 'pointer' : 'not-allowed', color: '#ef4444', padding: 4, opacity: permissions.canDelete ? 1 : 0.5 } }}
+                                                        {...{ style: { background: 'none', border: 'none', cursor: permissions.canDelete ? 'pointer' : 'not-allowed', color: 'var(--vct-danger)', padding: 4, opacity: permissions.canDelete ? 1 : 0.5 } }}
                                                         aria-label="Hủy phân công"
                                                         disabled={!permissions.canDelete}
                                                     >
@@ -353,7 +353,7 @@ export const Page_referee_assignments = () => {
                 </VCT_Text>
 
                 <div {...{ style: { padding: 16, borderRadius: 12, background: 'rgba(16,185,129,0.05)', border: '1px solid rgba(16,185,129,0.1)', marginBottom: 16 } }}>
-                    <VCT_Text variant="small" {...{ style: { fontWeight: 700, color: '#10b981' } }}>📊 Tổng quan dự kiến</VCT_Text>
+                    <VCT_Text variant="small" {...{ style: { fontWeight: 700, color: 'var(--vct-success)' } }}>📊 Tổng quan dự kiến</VCT_Text>
                     <div {...{ style: { display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12, marginTop: 8 } }}>
                         <div className="text-center">
                             <div {...{ style: { fontSize: 20, fontWeight: 900 } }}>{ttsActive.length}</div>

@@ -29,7 +29,7 @@ func (s *Server) handleBeltRoutes(w http.ResponseWriter, r *http.Request) {
 			}
 			list, fetchErr := s.Core.Heritage.ListBelts(r.Context())
 			if fetchErr != nil {
-				internalError(w, fetchErr)
+				apiInternal(w, fetchErr)
 				return
 			}
 			success(w, http.StatusOK, list)
@@ -40,19 +40,19 @@ func (s *Server) handleBeltRoutes(w http.ResponseWriter, r *http.Request) {
 			}
 			var payload heritage.BeltRank
 			if err := decodeJSON(r, &payload); err != nil {
-				badRequest(w, err.Error())
+				apiError(w, http.StatusBadRequest, CodeBadRequest, err.Error())
 				return
 			}
 			created, err := s.Core.Heritage.CreateBelt(r.Context(), payload)
 			if err != nil {
-				badRequest(w, err.Error())
+				apiError(w, http.StatusBadRequest, CodeBadRequest, err.Error())
 				return
 			}
 			raw, _ := toMap(created)
 			s.broadcastEntityChange("belts", "created", created.ID, raw, nil)
 			success(w, http.StatusCreated, created)
 		default:
-			methodNotAllowed(w)
+			apiMethodNotAllowed(w)
 		}
 		return
 	}
@@ -64,7 +64,7 @@ func (s *Server) handleBeltRoutes(w http.ResponseWriter, r *http.Request) {
 	}
 	belt, err := s.Core.Heritage.GetBelt(r.Context(), id)
 	if err != nil {
-		notFound(w)
+		apiError(w, http.StatusNotFound, CodeNotFound, "Không tìm thấy tài nguyên")
 		return
 	}
 	success(w, http.StatusOK, belt)
@@ -92,7 +92,7 @@ func (s *Server) handleTechniqueRoutes(w http.ResponseWriter, r *http.Request) {
 			if category != "" {
 				list, fetchErr := s.Core.Heritage.ListTechniquesByCategory(r.Context(), category)
 				if fetchErr != nil {
-					internalError(w, fetchErr)
+					apiInternal(w, fetchErr)
 					return
 				}
 				success(w, http.StatusOK, list)
@@ -100,7 +100,7 @@ func (s *Server) handleTechniqueRoutes(w http.ResponseWriter, r *http.Request) {
 			}
 			list, fetchErr := s.Core.Heritage.ListTechniques(r.Context())
 			if fetchErr != nil {
-				internalError(w, fetchErr)
+				apiInternal(w, fetchErr)
 				return
 			}
 			success(w, http.StatusOK, list)
@@ -111,19 +111,19 @@ func (s *Server) handleTechniqueRoutes(w http.ResponseWriter, r *http.Request) {
 			}
 			var payload heritage.Technique
 			if err := decodeJSON(r, &payload); err != nil {
-				badRequest(w, err.Error())
+				apiError(w, http.StatusBadRequest, CodeBadRequest, err.Error())
 				return
 			}
 			created, err := s.Core.Heritage.CreateTechnique(r.Context(), payload)
 			if err != nil {
-				badRequest(w, err.Error())
+				apiError(w, http.StatusBadRequest, CodeBadRequest, err.Error())
 				return
 			}
 			raw, _ := toMap(created)
 			s.broadcastEntityChange("techniques", "created", created.ID, raw, nil)
 			success(w, http.StatusCreated, created)
 		default:
-			methodNotAllowed(w)
+			apiMethodNotAllowed(w)
 		}
 		return
 	}
@@ -135,7 +135,7 @@ func (s *Server) handleTechniqueRoutes(w http.ResponseWriter, r *http.Request) {
 	}
 	tech, err := s.Core.Heritage.GetTechnique(r.Context(), id)
 	if err != nil {
-		notFound(w)
+		apiError(w, http.StatusNotFound, CodeNotFound, "Không tìm thấy tài nguyên")
 		return
 	}
 	success(w, http.StatusOK, tech)

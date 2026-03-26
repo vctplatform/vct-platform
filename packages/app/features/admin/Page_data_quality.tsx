@@ -4,8 +4,8 @@ import * as React from 'react'
 import { useState, useMemo, useCallback } from 'react'
 import {
     VCT_Button, VCT_Stack, VCT_SearchInput, VCT_Badge, VCT_Select, VCT_Toast
-} from '../components/vct-ui'
-import { VCT_Icons } from '../components/vct-icons'
+} from '@vct/ui'
+import { VCT_Icons } from '@vct/ui'
 import { usePagination } from '../hooks/usePagination'
 import { AdminSkeletonRow } from './components/AdminSkeletonRow'
 import { AdminPaginationBar } from './components/AdminPaginationBar'

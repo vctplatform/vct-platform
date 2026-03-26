@@ -46,7 +46,7 @@ func (s *Server) handleProvincialTournaments(w http.ResponseWriter, r *http.Requ
 	case http.MethodGet:
 		list, err := s.Provincial.TournamentStore.ListTournaments(ctx, provID)
 		if err != nil {
-			internalError(w, err)
+			apiInternal(w, err)
 			return
 		}
 		success(w, http.StatusOK, map[string]any{"tournaments": list, "total": len(list)})
@@ -54,7 +54,7 @@ func (s *Server) handleProvincialTournaments(w http.ResponseWriter, r *http.Requ
 	case http.MethodPost:
 		var t provincial.ProvincialTournament
 		if err := json.NewDecoder(r.Body).Decode(&t); err != nil {
-			badRequest(w, "invalid JSON: "+err.Error())
+			apiError(w, http.StatusBadRequest, CodeBadRequest, "invalid JSON: "+err.Error())
 			return
 		}
 		t.ID = "TOURN-" + newUUID()[:8]
@@ -64,13 +64,13 @@ func (s *Server) handleProvincialTournaments(w http.ResponseWriter, r *http.Requ
 		t.UpdatedAt = t.CreatedAt
 		created, err := s.Provincial.TournamentStore.CreateTournament(ctx, t)
 		if err != nil {
-			internalError(w, err)
+			apiInternal(w, err)
 			return
 		}
 		success(w, http.StatusCreated, created)
 
 	default:
-		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+		apiMethodNotAllowed(w)
 	}
 }
 
@@ -99,14 +99,14 @@ func (s *Server) handleProvincialTournamentDetail(w http.ResponseWriter, r *http
 			if r.Method == http.MethodGet {
 				list, err := s.Provincial.TournamentStore.ListRegistrations(r.Context(), tournamentID)
 				if err != nil {
-					internalError(w, err)
+					apiInternal(w, err)
 					return
 				}
 				success(w, http.StatusOK, map[string]any{"registrations": list})
 			} else {
 				var reg provincial.TournamentRegistration
 				if err := json.NewDecoder(r.Body).Decode(&reg); err != nil {
-					badRequest(w, "invalid JSON")
+					apiError(w, http.StatusBadRequest, CodeBadRequest, "invalid JSON")
 					return
 				}
 				reg.ID = "REG-" + newUUID()[:8]
@@ -120,14 +120,14 @@ func (s *Server) handleProvincialTournamentDetail(w http.ResponseWriter, r *http
 			if r.Method == http.MethodGet {
 				list, err := s.Provincial.TournamentStore.ListResults(r.Context(), tournamentID)
 				if err != nil {
-					internalError(w, err)
+					apiInternal(w, err)
 					return
 				}
 				success(w, http.StatusOK, map[string]any{"results": list})
 			} else {
 				var res provincial.TournamentResult
 				if err := json.NewDecoder(r.Body).Decode(&res); err != nil {
-					badRequest(w, "invalid JSON")
+					apiError(w, http.StatusBadRequest, CodeBadRequest, "invalid JSON")
 					return
 				}
 				res.ID = "RES-" + newUUID()[:8]
@@ -136,7 +136,7 @@ func (s *Server) handleProvincialTournamentDetail(w http.ResponseWriter, r *http
 				success(w, http.StatusCreated, created)
 			}
 		default:
-			badRequest(w, "unknown action: "+action)
+			apiError(w, http.StatusBadRequest, CodeBadRequest, "unknown action: "+action)
 		}
 		return
 	}
@@ -144,7 +144,7 @@ func (s *Server) handleProvincialTournamentDetail(w http.ResponseWriter, r *http
 	// GET single tournament
 	t, err := s.Provincial.TournamentStore.GetTournament(r.Context(), tournamentID)
 	if err != nil {
-		notFoundError(w, "tournament not found")
+		apiError(w, http.StatusNotFound, CodeNotFound, "tournament not found")
 		return
 	}
 	success(w, http.StatusOK, t)
@@ -160,7 +160,7 @@ func (s *Server) handleProvincialFinance(w http.ResponseWriter, r *http.Request,
 	case http.MethodGet:
 		list, err := s.Provincial.FinanceStore.List(ctx, provID)
 		if err != nil {
-			internalError(w, err)
+			apiInternal(w, err)
 			return
 		}
 		success(w, http.StatusOK, map[string]any{"entries": list, "total": len(list)})
@@ -168,7 +168,7 @@ func (s *Server) handleProvincialFinance(w http.ResponseWriter, r *http.Request,
 	case http.MethodPost:
 		var e provincial.FinanceEntry
 		if err := json.NewDecoder(r.Body).Decode(&e); err != nil {
-			badRequest(w, "invalid JSON: "+err.Error())
+			apiError(w, http.StatusBadRequest, CodeBadRequest, "invalid JSON: "+err.Error())
 			return
 		}
 		e.ID = "FIN-" + newUUID()[:8]
@@ -176,13 +176,13 @@ func (s *Server) handleProvincialFinance(w http.ResponseWriter, r *http.Request,
 		e.CreatedAt = time.Now().UTC()
 		created, err := s.Provincial.FinanceStore.Create(ctx, e)
 		if err != nil {
-			internalError(w, err)
+			apiInternal(w, err)
 			return
 		}
 		success(w, http.StatusCreated, created)
 
 	default:
-		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+		apiMethodNotAllowed(w)
 	}
 }
 
@@ -190,7 +190,7 @@ func (s *Server) handleProvincialFinanceSummary(w http.ResponseWriter, r *http.R
 	provID := resolveProvinceID(r)
 	sum, err := s.Provincial.FinanceStore.Summary(r.Context(), provID)
 	if err != nil {
-		internalError(w, err)
+		apiInternal(w, err)
 		return
 	}
 	success(w, http.StatusOK, sum)
@@ -206,7 +206,7 @@ func (s *Server) handleProvincialCertifications(w http.ResponseWriter, r *http.R
 	case http.MethodGet:
 		list, err := s.Provincial.CertStore.List(ctx, provID)
 		if err != nil {
-			internalError(w, err)
+			apiInternal(w, err)
 			return
 		}
 		success(w, http.StatusOK, map[string]any{"certifications": list, "total": len(list)})
@@ -214,7 +214,7 @@ func (s *Server) handleProvincialCertifications(w http.ResponseWriter, r *http.R
 	case http.MethodPost:
 		var c provincial.ProvincialCert
 		if err := json.NewDecoder(r.Body).Decode(&c); err != nil {
-			badRequest(w, "invalid JSON: "+err.Error())
+			apiError(w, http.StatusBadRequest, CodeBadRequest, "invalid JSON: "+err.Error())
 			return
 		}
 		c.ID = "CERT-" + newUUID()[:8]
@@ -222,13 +222,13 @@ func (s *Server) handleProvincialCertifications(w http.ResponseWriter, r *http.R
 		c.CreatedAt = time.Now().UTC()
 		created, err := s.Provincial.CertStore.Create(ctx, c)
 		if err != nil {
-			internalError(w, err)
+			apiInternal(w, err)
 			return
 		}
 		success(w, http.StatusCreated, created)
 
 	default:
-		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+		apiMethodNotAllowed(w)
 	}
 }
 
@@ -242,7 +242,7 @@ func (s *Server) handleProvincialDiscipline(w http.ResponseWriter, r *http.Reque
 	case http.MethodGet:
 		list, err := s.Provincial.DisciplineStore.List(ctx, provID)
 		if err != nil {
-			internalError(w, err)
+			apiInternal(w, err)
 			return
 		}
 		success(w, http.StatusOK, map[string]any{"cases": list, "total": len(list)})
@@ -250,7 +250,7 @@ func (s *Server) handleProvincialDiscipline(w http.ResponseWriter, r *http.Reque
 	case http.MethodPost:
 		var c provincial.DisciplineCase
 		if err := json.NewDecoder(r.Body).Decode(&c); err != nil {
-			badRequest(w, "invalid JSON: "+err.Error())
+			apiError(w, http.StatusBadRequest, CodeBadRequest, "invalid JSON: "+err.Error())
 			return
 		}
 		c.ID = "DISC-" + newUUID()[:8]
@@ -260,13 +260,13 @@ func (s *Server) handleProvincialDiscipline(w http.ResponseWriter, r *http.Reque
 		c.CreatedAt = c.ReportedAt
 		created, err := s.Provincial.DisciplineStore.Create(ctx, c)
 		if err != nil {
-			internalError(w, err)
+			apiInternal(w, err)
 			return
 		}
 		success(w, http.StatusCreated, created)
 
 	default:
-		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+		apiMethodNotAllowed(w)
 	}
 }
 
@@ -275,7 +275,7 @@ func (s *Server) handleProvincialDisciplineAction(w http.ResponseWriter, r *http
 	parts := strings.SplitN(path, "/", 2)
 	caseID := parts[0]
 	if r.Method != http.MethodPost || len(parts) < 2 {
-		badRequest(w, "invalid request")
+		apiError(w, http.StatusBadRequest, CodeBadRequest, "invalid request")
 		return
 	}
 	action := parts[1]
@@ -291,7 +291,7 @@ func (s *Server) handleProvincialDisciplineAction(w http.ResponseWriter, r *http
 		s.Provincial.DisciplineStore.Update(r.Context(), caseID, map[string]interface{}{"status": "closed"})
 		success(w, http.StatusOK, map[string]string{"status": "closed"})
 	default:
-		badRequest(w, "unknown action: "+action)
+		apiError(w, http.StatusBadRequest, CodeBadRequest, "unknown action: "+action)
 	}
 }
 
@@ -305,7 +305,7 @@ func (s *Server) handleProvincialDocuments(w http.ResponseWriter, r *http.Reques
 	case http.MethodGet:
 		list, err := s.Provincial.DocStore.List(ctx, provID)
 		if err != nil {
-			internalError(w, err)
+			apiInternal(w, err)
 			return
 		}
 		success(w, http.StatusOK, map[string]any{"documents": list, "total": len(list)})
@@ -313,7 +313,7 @@ func (s *Server) handleProvincialDocuments(w http.ResponseWriter, r *http.Reques
 	case http.MethodPost:
 		var d provincial.ProvincialDoc
 		if err := json.NewDecoder(r.Body).Decode(&d); err != nil {
-			badRequest(w, "invalid JSON: "+err.Error())
+			apiError(w, http.StatusBadRequest, CodeBadRequest, "invalid JSON: "+err.Error())
 			return
 		}
 		d.ID = "DOC-" + newUUID()[:8]
@@ -323,13 +323,13 @@ func (s *Server) handleProvincialDocuments(w http.ResponseWriter, r *http.Reques
 		d.UpdatedAt = d.CreatedAt
 		created, err := s.Provincial.DocStore.Create(ctx, d)
 		if err != nil {
-			internalError(w, err)
+			apiInternal(w, err)
 			return
 		}
 		success(w, http.StatusCreated, created)
 
 	default:
-		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+		apiMethodNotAllowed(w)
 	}
 }
 
@@ -338,7 +338,7 @@ func (s *Server) handleProvincialDocumentAction(w http.ResponseWriter, r *http.R
 	parts := strings.SplitN(path, "/", 2)
 	docID := parts[0]
 	if r.Method != http.MethodPost || len(parts) < 2 {
-		badRequest(w, "invalid request")
+		apiError(w, http.StatusBadRequest, CodeBadRequest, "invalid request")
 		return
 	}
 	action := parts[1]
@@ -350,6 +350,6 @@ func (s *Server) handleProvincialDocumentAction(w http.ResponseWriter, r *http.R
 		s.Provincial.DocStore.Update(r.Context(), docID, map[string]interface{}{"status": "archived"})
 		success(w, http.StatusOK, map[string]string{"status": "archived"})
 	default:
-		badRequest(w, "unknown action: "+action)
+		apiError(w, http.StatusBadRequest, CodeBadRequest, "unknown action: "+action)
 	}
 }

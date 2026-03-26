@@ -6,10 +6,10 @@ import {
     VCT_Button, VCT_Stack, VCT_SearchInput, VCT_Badge, VCT_Select,
     VCT_Modal, VCT_Input, VCT_Field, VCT_Toast, VCT_ConfirmDialog,
     VCT_PageContainer, VCT_StatRow
-} from '../components/vct-ui'
-import type { StatItem } from '../components/VCT_StatRow'
-import { VCT_Icons } from '../components/vct-icons'
-import { VCT_Drawer } from '../components/VCT_Drawer'
+} from '@vct/ui'
+import type { StatItem } from '@vct/ui'
+import { VCT_Icons } from '@vct/ui'
+import { VCT_Drawer } from '@vct/ui'
 import { usePagination } from '../hooks/usePagination'
 import { AdminPaginationBar } from './components/AdminPaginationBar'
 import { AdminSkeletonRow } from './components/AdminSkeletonRow'
@@ -144,10 +144,10 @@ export const Page_notifications_admin = () => {
 
             {/* ── KPI ── */}
             <VCT_StatRow items={[
-                { label: 'Mẫu TB', value: notifStats.totalTemplates, icon: <VCT_Icons.Mail size={18} />, color: '#8b5cf6' },
-                { label: 'Active', value: notifStats.activeTemplates, icon: <VCT_Icons.CheckCircle size={18} />, color: '#10b981' },
-                { label: 'Tổng gửi', value: notifStats.totalSent.toLocaleString(), icon: <VCT_Icons.TrendingUp size={18} />, color: '#0ea5e9' },
-                { label: 'Delivery', value: `${notifStats.avgDelivery}%`, icon: <VCT_Icons.Activity size={18} />, color: '#f59e0b' },
+                { label: 'Mẫu TB', value: notifStats.totalTemplates, icon: <VCT_Icons.Mail size={18} />, color: 'var(--vct-info)' },
+                { label: 'Active', value: notifStats.activeTemplates, icon: <VCT_Icons.CheckCircle size={18} />, color: 'var(--vct-success)' },
+                { label: 'Tổng gửi', value: notifStats.totalSent.toLocaleString(), icon: <VCT_Icons.TrendingUp size={18} />, color: 'var(--vct-accent-cyan)' },
+                { label: 'Delivery', value: `${notifStats.avgDelivery}%`, icon: <VCT_Icons.Activity size={18} />, color: 'var(--vct-warning)' },
             ] as StatItem[]} className="mb-8" />
 
             {/* ── BULK EXPORT (Stats) ── */}
@@ -312,7 +312,7 @@ export const Page_notifications_admin = () => {
                             {drawerTpl.channel === 'push' ? (
                                 <div className="p-4 bg-(--vct-bg-base) rounded-xl border border-(--vct-border-subtle)">
                                     <div className="flex items-center gap-2 mb-2">
-                                        <div className="w-6 h-6 rounded-full bg-[#0ea5e9] flex items-center justify-center text-white text-[10px] font-bold">V</div>
+                                        <div className="w-6 h-6 rounded-full bg-(--vct-accent-cyan) flex items-center justify-center text-white text-[10px] font-bold">V</div>
                                         <span className="text-[10px] text-(--vct-text-tertiary) font-semibold uppercase">VCT Platform · Bây giờ</span>
                                     </div>
                                     <div className="font-semibold text-sm text-(--vct-text-primary)">
@@ -330,7 +330,7 @@ export const Page_notifications_admin = () => {
                             ) : drawerTpl.channel === 'email' ? (
                                 <div className="bg-(--vct-bg-base) rounded-xl border border-(--vct-border-subtle) overflow-hidden">
                                     <div className="px-4 py-2 bg-[#0ea5e910] border-b border-(--vct-border-subtle) flex items-center gap-2">
-                                        <VCT_Icons.Mail size={14} className="text-[#0ea5e9]" />
+                                        <VCT_Icons.Mail size={14} className="text-(--vct-accent-cyan)" />
                                         <span className="text-[10px] text-(--vct-text-tertiary) font-semibold">noreply@vct.vn</span>
                                     </div>
                                     <div className="p-4">
@@ -348,7 +348,7 @@ export const Page_notifications_admin = () => {
                                 </div>
                             ) : (
                                 <div className="p-4 bg-(--vct-bg-base) rounded-xl border border-(--vct-border-subtle)">
-                                    <div className="inline-block bg-[#0ea5e9] text-white text-sm px-3 py-2 rounded-xl rounded-bl-none max-w-[80%]">
+                                    <div className="inline-block bg-(--vct-accent-cyan) text-white text-sm px-3 py-2 rounded-xl rounded-bl-none max-w-[80%]">
                                         {drawerTpl.title.replace(/\{\{(\w+)\}\}/g, (_, v: string) => {
                                             const samples: Record<string, string> = {
                                                 athlete_name: 'Nguyễn Văn A', tatami_number: '3',
@@ -397,11 +397,11 @@ export const Page_notifications_admin = () => {
                                             <div className="text-[9px] text-(--vct-text-tertiary) uppercase">Tổng gửi</div>
                                         </div>
                                         <div className="text-center p-3 bg-(--vct-bg-base) rounded-xl border border-(--vct-border-subtle)">
-                                            <div className="text-xl font-bold text-[#10b981]">{stat.rate}%</div>
+                                            <div className="text-xl font-bold text-(--vct-success)">{stat.rate}%</div>
                                             <div className="text-[9px] text-(--vct-text-tertiary) uppercase">Tỷ lệ giao</div>
                                         </div>
                                         <div className="text-center p-3 bg-(--vct-bg-base) rounded-xl border border-(--vct-border-subtle)">
-                                            <div className={`text-xl font-bold ${stat.failed > 0 ? 'text-[#ef4444]' : 'text-[#10b981]'}`}>{stat.failed}</div>
+                                            <div className={`text-xl font-bold ${stat.failed > 0 ? 'text-(--vct-danger)' : 'text-(--vct-success)'}`}>{stat.failed}</div>
                                             <div className="text-[9px] text-(--vct-text-tertiary) uppercase">Thất bại</div>
                                         </div>
                                     </div>

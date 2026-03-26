@@ -5,9 +5,9 @@ import { useState, useMemo, useCallback } from 'react'
 import {
     VCT_Button, VCT_Stack, VCT_SearchInput, VCT_Badge, VCT_Select,
     VCT_Modal, VCT_Input, VCT_Field, VCT_Toast
-} from '../components/vct-ui'
-import { VCT_Icons } from '../components/vct-icons'
-import { VCT_Drawer } from '../components/VCT_Drawer'
+} from '@vct/ui'
+import { VCT_Icons } from '@vct/ui'
+import { VCT_Drawer } from '@vct/ui'
 import { usePagination } from '../hooks/usePagination'
 import { AdminSkeletonRow } from './components/AdminSkeletonRow'
 import { AdminPaginationBar } from './components/AdminPaginationBar'

@@ -2,8 +2,8 @@
 import * as React from 'react'
 import { useEffect, useState } from 'react'
 import Image from 'next/image'
-import { VCT_Toast } from '../components/vct-ui'
-import { VCT_Icons } from '../components/vct-icons'
+import { VCT_Toast } from '@vct/ui'
+import { VCT_Icons } from '@vct/ui'
 import { useI18n } from '../i18n'
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL?.replace(/\/$/, '') ?? ''
@@ -504,7 +504,7 @@ const CSS = `
 /* ══════ STEPS ══════ */
 .rg-steps { display: flex; align-items: center; justify-content: center; gap: 8px; padding: 18px 28px 4px; }
 .rg-steps__dot { display: flex; align-items: center; justify-content: center; width: 28px; height: 28px; border-radius: 50%; background: var(--glass); border: 1px solid var(--brd); color: var(--tx-m); transition: all 0.3s; flex-shrink: 0; }
-.rg-steps__dot--on { background: rgba(16,185,129,0.12); border-color: rgba(16,185,129,0.3); color: #10b981; }
+.rg-steps__dot--on { background: rgba(16,185,129,0.12); border-color: rgba(16,185,129,0.3); color: var(--vct-success); }
 .rg-steps__dot--cur { box-shadow: 0 0 0 3px rgba(16,185,129,0.1); }
 .rg-steps__line { flex: 1; max-width: 40px; height: 2px; background: var(--brd); border-radius: 1px; transition: background 0.3s; }
 .rg-steps__line--on { background: rgba(16,185,129,0.35); }
@@ -519,30 +519,30 @@ const CSS = `
 /* Inputs */
 .v-inp { display: flex; flex-direction: column; gap: 4px; transition: all 0.3s; }
 .v-inp label { font-size: 11px; font-weight: 650; color: var(--tx); transition: color 0.3s; }
-.v-inp--focus label { color: #10b981; }
-.v-inp--err label { color: #ef4444; }
+.v-inp--focus label { color: var(--vct-success); }
+.v-inp--err label { color: var(--vct-danger); }
 .v-inp__w { position: relative; display: flex; align-items: center; }
 .v-inp__ic { position: absolute; left: 12px; color: var(--tx-m); pointer-events: none; z-index: 2; transition: color 0.3s; }
-.v-inp--focus .v-inp__ic { color: #10b981; }
+.v-inp--focus .v-inp__ic { color: var(--vct-success); }
 .v-inp__w input { width: 100%; padding: 10px 14px 10px 36px; border-radius: 12px; border: 1px solid var(--inp-brd); background: var(--inp-bg); color: var(--inp-tx); font-family: inherit; font-size: 13px; font-weight: 500; outline: none; transition: all 0.3s ease; }
 .v-inp__w input::placeholder { color: var(--ph); }
 .v-inp__w input:focus { border-color: var(--inp-f); box-shadow: 0 0 0 3px var(--inp-ring), 0 4px 16px -4px rgba(16,185,129,0.1); background: var(--glass-h); }
 .v-inp--err .v-inp__w input { border-color: rgba(239,68,68,0.5); }
 .v-inp__eye { position: absolute; right: 8px; z-index: 2; display: flex; background: none; border: none; color: var(--tx-m); cursor: pointer; padding: 5px; border-radius: 8px; transition: all 0.2s; }
 .v-inp__eye:hover { color: var(--tx-s); background: var(--glass-h); }
-.v-req { color: #ef4444; }
-.v-err { font-size: 10.5px; color: #ef4444; font-weight: 500; }
-.v-link { font-weight: 600; color: #10b981; text-decoration: none; }
-.v-link:hover { color: #34d399; text-decoration: underline; }
+.v-req { color: var(--vct-danger); }
+.v-err { font-size: 10.5px; color: var(--vct-danger); font-weight: 500; }
+.v-link { font-weight: 600; color: var(--vct-success); text-decoration: none; }
+.v-link:hover { color: var(--vct-success); text-decoration: underline; }
 
 /* Checkbox */
 .v-ck { display: flex; align-items: flex-start; gap: 8px; cursor: pointer; user-select: none; font-size: 11.5px; color: var(--tx); line-height: 1.5; }
 .v-ck input { position: absolute; opacity: 0; width: 0; height: 0; }
 .v-ck__box { display: flex; align-items: center; justify-content: center; width: 16px; height: 16px; min-width: 16px; border-radius: 5px; border: 1.5px solid var(--inp-brd); background: var(--inp-bg); color: transparent; transition: all 0.25s; margin-top: 1px; }
-.v-ck input:checked + .v-ck__box { background: linear-gradient(135deg, #10b981, #0d9488); border-color: #10b981; color: #fff; }
+.v-ck input:checked + .v-ck__box { background: linear-gradient(135deg, #10b981, #0d9488); border-color: var(--vct-success); color: var(--vct-bg-elevated); }
 
 /* Button */
-.v-btn { position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center; width: 100%; padding: 11px 20px; border-radius: 14px; border: none; background: linear-gradient(135deg, #059669 0%, #0d9488 40%, #0284c7 80%, #6366f1 100%); background-size: 200% auto; color: #fff; font-family: inherit; font-size: 13.5px; font-weight: 700; cursor: pointer; transition: all 0.4s ease; box-shadow: 0 4px 24px -4px rgba(5,150,105,0.35), inset 0 1px 0 rgba(255,255,255,0.15); }
+.v-btn { position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center; width: 100%; padding: 11px 20px; border-radius: 14px; border: none; background: linear-gradient(135deg, #059669 0%, #0d9488 40%, #0284c7 80%, #6366f1 100%); background-size: 200% auto; color: var(--vct-bg-elevated); font-family: inherit; font-size: 13.5px; font-weight: 700; cursor: pointer; transition: all 0.4s ease; box-shadow: 0 4px 24px -4px rgba(5,150,105,0.35), inset 0 1px 0 rgba(255,255,255,0.15); }
 .v-btn__shimmer { position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent); animation: shim 3s ease-in-out infinite; }
 @keyframes shim { 0% { left: -100%; } 50%,100% { left: 100%; } }
 .v-btn__content { position: relative; z-index: 1; display: flex; align-items: center; gap: 8px; }
@@ -550,13 +550,13 @@ const CSS = `
 .v-btn:active { transform: translateY(0); }
 
 .v-foot { margin: 0; text-align: center; font-size: 12px; color: var(--tx); }
-.v-foot a { font-weight: 700; color: #10b981; text-decoration: none; }
-.v-foot a:hover { color: #34d399; text-decoration: underline; }
+.v-foot a { font-weight: 700; color: var(--vct-success); text-decoration: none; }
+.v-foot a:hover { color: var(--vct-success); text-decoration: underline; }
 
 /* ══════ OTP ══════ */
 .rg-mid { padding: 24px 28px 28px; display: flex; align-items: center; justify-content: center; }
 .rg-otp, .rg-ok { display: flex; flex-direction: column; align-items: center; gap: 14px; text-align: center; max-width: 380px; width: 100%; }
-.rg-otp__icon { width: 56px; height: 56px; border-radius: 16px; background: rgba(16,185,129,0.1); display: flex; align-items: center; justify-content: center; color: #10b981; }
+.rg-otp__icon { width: 56px; height: 56px; border-radius: 16px; background: rgba(16,185,129,0.1); display: flex; align-items: center; justify-content: center; color: var(--vct-success); }
 .rg-otp__title { margin: 0; font-size: 20px; font-weight: 800; color: var(--tx-s); }
 .rg-otp__sub { margin: 0; font-size: 12.5px; color: var(--tx); }
 .rg-otp__sub strong { color: var(--tx-s); }
@@ -564,15 +564,15 @@ const CSS = `
 .rg-otp__inp { width: 44px; height: 52px; border-radius: 12px; border: 1px solid var(--inp-brd); background: var(--inp-bg); color: var(--inp-tx); font-family: inherit; font-size: 22px; font-weight: 800; text-align: center; outline: none; transition: all 0.25s; }
 .rg-otp__inp:focus { border-color: var(--inp-f); box-shadow: 0 0 0 3px var(--inp-ring); }
 .rg-back { background: none; border: none; font-family: inherit; font-size: 12px; font-weight: 600; color: var(--tx); cursor: pointer; }
-.rg-back:hover { color: #10b981; }
+.rg-back:hover { color: var(--vct-success); }
 .rg-otp__actions { display: flex; gap: 12px; align-items: center; justify-content: center; }
 .v-btn--link { text-decoration: none; display: inline-flex; }
 .v-st--link { text-decoration: none; }
 
 /* ══════ SUCCESS ══════ */
-.rg-ok__ic { width: 72px; height: 72px; border-radius: 50%; background: rgba(16,185,129,0.1); display: flex; align-items: center; justify-content: center; color: #10b981; animation: scIn 0.5s ease-out; }
+.rg-ok__ic { width: 72px; height: 72px; border-radius: 50%; background: rgba(16,185,129,0.1); display: flex; align-items: center; justify-content: center; color: var(--vct-success); animation: scIn 0.5s ease-out; }
 @keyframes scIn { from { transform: scale(0); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-.rg-ok__t { margin: 0; font-size: 22px; font-weight: 800; color: #10b981; }
+.rg-ok__t { margin: 0; font-size: 22px; font-weight: 800; color: var(--vct-success); }
 .rg-ok__s { margin: 0; font-size: 13px; color: var(--tx); }
 
 /* ══════ STATS ══════ */

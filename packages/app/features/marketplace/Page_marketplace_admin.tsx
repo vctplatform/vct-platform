@@ -17,8 +17,8 @@ import {
   VCT_Tabs,
   VCT_Textarea,
   VCT_Toast,
-} from '../components/vct-ui'
-import { VCT_Icons } from '../components/vct-icons'
+} from '@vct/ui'
+import { VCT_Icons } from '@vct/ui'
 import { useAuth } from '../auth/AuthProvider'
 import { apiClient } from '../data/api-client'
 import { AdminGuard } from '../admin/components/AdminGuard'
@@ -107,25 +107,25 @@ const Page_marketplace_admin_content = () => {
           label: 'San pham dang ban',
           value: dashboard.summary.active_products,
           icon: <VCT_Icons.ShoppingBag size={18} />,
-          color: '#0ea5e9',
+          color: 'var(--vct-accent-cyan)',
         },
         {
           label: 'Don can xu ly',
           value: dashboard.summary.pending_orders,
           icon: <VCT_Icons.ClipboardList size={18} />,
-          color: '#f97316',
+          color: 'var(--vct-warning)',
         },
         {
           label: 'Don hoan tat',
           value: dashboard.summary.completed_orders,
           icon: <VCT_Icons.CheckCircle size={18} />,
-          color: '#10b981',
+          color: 'var(--vct-success)',
         },
         {
           label: 'Doanh thu gross',
           value: formatCurrencyVND(dashboard.summary.gross_revenue_vnd),
           icon: <VCT_Icons.DollarSign size={18} />,
-          color: '#eab308',
+          color: 'var(--vct-gold)',
         },
       ]
     : []
@@ -191,7 +191,7 @@ const Page_marketplace_admin_content = () => {
       <AdminPageShell
         title="VCT Marketplace"
         subtitle="Workspace quan tri cho seller, CLB va admin van hanh module thuong mai dien tu."
-        icon={<VCT_Icons.ShoppingBag size={28} className="text-[#f97316]" />}
+        icon={<VCT_Icons.ShoppingBag size={28} className="text-(--vct-warning)" />}
         stats={stats}
         actions={
           <div className="flex flex-wrap gap-3">

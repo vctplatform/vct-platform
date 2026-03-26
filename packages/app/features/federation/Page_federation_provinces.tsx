@@ -6,9 +6,9 @@ import {
     VCT_Badge, VCT_Button, VCT_Stack,
     VCT_SearchInput, VCT_EmptyState,
     VCT_PageContainer, VCT_StatRow
-} from '../components/vct-ui'
-import type { StatItem } from '../components/VCT_StatRow'
-import { VCT_Icons } from '../components/vct-icons'
+} from '@vct/ui'
+import type { StatItem } from '@vct/ui'
+import { VCT_Icons } from '@vct/ui'
 import { useFederationProvinces, type Province } from '../hooks/useFederationAPI'
 
 // ════════════════════════════════════════
@@ -112,10 +112,10 @@ export const Page_federation_provinces = () => {
             </div>
 
             <VCT_StatRow items={[
-                { label: 'Tỉnh/TP', value: allProvinces.length, icon: <VCT_Icons.MapPin size={18} />, color: '#8b5cf6' },
-                { label: 'Có Liên đoàn', value: activeProvinces, icon: <VCT_Icons.Building2 size={18} />, color: '#10b981' },
-                { label: 'Tổng CLB', value: totalClubs, icon: <VCT_Icons.Home size={18} />, color: '#f59e0b' },
-                { label: 'Tổng VĐV', value: totalVDV.toLocaleString('vi-VN'), icon: <VCT_Icons.Users size={18} />, color: '#0ea5e9' },
+                { label: 'Tỉnh/TP', value: allProvinces.length, icon: <VCT_Icons.MapPin size={18} />, color: 'var(--vct-info)' },
+                { label: 'Có Liên đoàn', value: activeProvinces, icon: <VCT_Icons.Building2 size={18} />, color: 'var(--vct-success)' },
+                { label: 'Tổng CLB', value: totalClubs, icon: <VCT_Icons.Home size={18} />, color: 'var(--vct-warning)' },
+                { label: 'Tổng VĐV', value: totalVDV.toLocaleString('vi-VN'), icon: <VCT_Icons.Users size={18} />, color: 'var(--vct-accent-cyan)' },
             ] as StatItem[]} className="mb-6" />
 
             <VCT_Stack direction="row" gap={16} align="center" justify="space-between" className="mb-5 flex-wrap">
@@ -141,7 +141,7 @@ export const Page_federation_provinces = () => {
                             <div key={p.id} className="rounded-2xl border border-(--vct-border-subtle) bg-(--vct-bg-glass) p-5 hover:border-(--vct-accent-cyan) transition-colors cursor-pointer">
                                 <VCT_Stack direction="row" justify="space-between" align="center" className="mb-3">
                                     <VCT_Stack direction="row" gap={10} align="center">
-                                        <div className="w-10 h-10 rounded-xl bg-linear-to-br from-[#8b5cf6] to-[#6d28d9] flex items-center justify-center text-white font-bold text-sm">{p.code}</div>
+                                        <div className="w-10 h-10 rounded-xl bg-linear-to-br from-(--vct-info) to-[#6d28d9] flex items-center justify-center text-white font-bold text-sm">{p.code}</div>
                                         <div>
                                             <div className="font-bold text-sm text-(--vct-text-primary)">{p.name}</div>
                                             <div className="text-xs opacity-60">{REGION_MAP[p.region] || p.region}</div>
@@ -155,16 +155,16 @@ export const Page_federation_provinces = () => {
                                         <div className="text-[10px] opacity-50 uppercase font-bold">CLB</div>
                                     </div>
                                     <div className="text-center">
-                                        <div className="text-lg font-bold text-[#f59e0b]">{p.vdv_count}</div>
+                                        <div className="text-lg font-bold text-(--vct-warning)">{p.vdv_count}</div>
                                         <div className="text-[10px] opacity-50 uppercase font-bold">VĐV</div>
                                     </div>
                                     <div className="text-center">
-                                        <div className="text-lg font-bold text-[#10b981]">{p.coach_count}</div>
+                                        <div className="text-lg font-bold text-(--vct-success)">{p.coach_count}</div>
                                         <div className="text-[10px] opacity-50 uppercase font-bold">HLV</div>
                                     </div>
                                 </div>
                                 {p.has_fed && (
-                                    <div className="mt-3 flex items-center gap-2 text-xs text-[#10b981]">
+                                    <div className="mt-3 flex items-center gap-2 text-xs text-(--vct-success)">
                                         <VCT_Icons.Check size={14} /> Có Liên đoàn cấp tỉnh
                                     </div>
                                 )}

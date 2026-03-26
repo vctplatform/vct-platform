@@ -28,7 +28,7 @@ func (s *Server) handleTeamRoutes(w http.ResponseWriter, r *http.Request) {
 			}
 			list, fetchErr := s.Core.Organization.ListTeams(r.Context())
 			if fetchErr != nil {
-				internalError(w, fetchErr)
+				apiInternal(w, fetchErr)
 				return
 			}
 			success(w, http.StatusOK, list)
@@ -41,12 +41,12 @@ func (s *Server) handleTeamRoutes(w http.ResponseWriter, r *http.Request) {
 			}
 			var payload domain.Team
 			if err := decodeJSON(r, &payload); err != nil {
-				badRequest(w, err.Error())
+				apiError(w, http.StatusBadRequest, CodeBadRequest, err.Error())
 				return
 			}
 			created, err := s.Core.Organization.CreateTeam(r.Context(), payload)
 			if err != nil {
-				badRequest(w, err.Error())
+				apiError(w, http.StatusBadRequest, CodeBadRequest, err.Error())
 				return
 			}
 			raw, _ := toMap(created)
@@ -54,7 +54,7 @@ func (s *Server) handleTeamRoutes(w http.ResponseWriter, r *http.Request) {
 			success(w, http.StatusCreated, created)
 			return
 		default:
-			methodNotAllowed(w)
+			apiMethodNotAllowed(w)
 			return
 		}
 	}
@@ -72,7 +72,7 @@ func (s *Server) handleTeamRoutes(w http.ResponseWriter, r *http.Request) {
 			}
 			team, err := s.Core.Organization.GetTeam(r.Context(), id)
 			if err != nil {
-				notFound(w)
+				apiError(w, http.StatusNotFound, CodeNotFound, "Không tìm thấy tài nguyên")
 				return
 			}
 			success(w, http.StatusOK, team)
@@ -84,17 +84,17 @@ func (s *Server) handleTeamRoutes(w http.ResponseWriter, r *http.Request) {
 			}
 			var patch map[string]interface{}
 			if err := json.NewDecoder(r.Body).Decode(&patch); err != nil {
-				badRequest(w, "invalid json")
+				apiError(w, http.StatusBadRequest, CodeBadRequest, "invalid json")
 				return
 			}
 			b, err := json.Marshal(patch)
 			if err != nil {
-				badRequest(w, err.Error())
+				apiError(w, http.StatusBadRequest, CodeBadRequest, err.Error())
 				return
 			}
 			updatedStore, err := s.store.Update("teams", id, b)
 			if err != nil {
-				badRequest(w, err.Error())
+				apiError(w, http.StatusBadRequest, CodeBadRequest, err.Error())
 				return
 			}
 			var updatedMap map[string]any
@@ -113,11 +113,11 @@ func (s *Server) handleTeamRoutes(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusNoContent)
 			return
 		default:
-			methodNotAllowed(w)
+			apiMethodNotAllowed(w)
 			return
 		}
 	default:
-		notFound(w)
+		apiError(w, http.StatusNotFound, CodeNotFound, "Không tìm thấy tài nguyên")
 		return
 	}
 }

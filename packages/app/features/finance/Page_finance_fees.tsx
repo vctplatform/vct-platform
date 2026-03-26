@@ -5,10 +5,10 @@
 // ════════════════════════════════════════════════════════════════
 
 import React, { useState, useMemo } from 'react'
-import { VCT_Text, VCT_Card, VCT_Badge, VCT_Button } from '../components/vct-ui'
-import { VCT_PageContainer, VCT_StatRow } from '../components/vct-ui'
-import type { StatItem } from '../components/VCT_StatRow'
-import { VCT_Icons } from '../components/vct-icons'
+import { VCT_Text, VCT_Card, VCT_Badge, VCT_Button } from '@vct/ui'
+import { VCT_PageContainer, VCT_StatRow } from '@vct/ui'
+import type { StatItem } from '@vct/ui'
+import { VCT_Icons } from '@vct/ui'
 
 interface FeeRecord {
     id: string; hoTen: string; email: string; loaiPhi: string; soTien: number; kyHan: string
@@ -30,10 +30,10 @@ const STATUS_MAP: Record<
     FeeRecord['trangThai'],
     { label: string; color: string; variant: 'success' | 'warning' | 'danger' | 'info' }
 > = {
-    da_dong: { label: '✅ Đã đóng', color: '#10b981', variant: 'success' },
-    chua_dong: { label: '⏳ Chưa đóng', color: '#f59e0b', variant: 'warning' },
-    qua_han: { label: '⚠️ Quá hạn', color: '#ef4444', variant: 'danger' },
-    mien_giam: { label: '🎓 Miễn giảm', color: '#8b5cf6', variant: 'info' },
+    da_dong: { label: '✅ Đã đóng', color: 'var(--vct-success)', variant: 'success' },
+    chua_dong: { label: '⏳ Chưa đóng', color: 'var(--vct-warning)', variant: 'warning' },
+    qua_han: { label: '⚠️ Quá hạn', color: 'var(--vct-danger)', variant: 'danger' },
+    mien_giam: { label: '🎓 Miễn giảm', color: 'var(--vct-info)', variant: 'info' },
 }
 
 const formatVND = (n: number) => n.toLocaleString('vi-VN') + ' ₫'
@@ -71,10 +71,10 @@ export function Page_finance_fees() {
 
             {/* KPIs */}
             <VCT_StatRow items={[
-                { label: 'Tổng phải thu', value: formatVND(stats.total), icon: <VCT_Icons.DollarSign size={18} />, color: '#3b82f6' },
-                { label: 'Đã thu', value: formatVND(stats.collected), icon: <VCT_Icons.CheckCircle size={18} />, color: '#10b981', sub: `${Math.round(stats.collected / stats.total * 100)}%` },
-                { label: 'Chưa đóng', value: stats.pending.toString(), icon: <VCT_Icons.Clock size={18} />, color: '#f59e0b' },
-                { label: 'Quá hạn', value: stats.overdue.toString(), icon: <VCT_Icons.AlertCircle size={18} />, color: '#ef4444' },
+                { label: 'Tổng phải thu', value: formatVND(stats.total), icon: <VCT_Icons.DollarSign size={18} />, color: 'var(--vct-info)' },
+                { label: 'Đã thu', value: formatVND(stats.collected), icon: <VCT_Icons.CheckCircle size={18} />, color: 'var(--vct-success)', sub: `${Math.round(stats.collected / stats.total * 100)}%` },
+                { label: 'Chưa đóng', value: stats.pending.toString(), icon: <VCT_Icons.Clock size={18} />, color: 'var(--vct-warning)' },
+                { label: 'Quá hạn', value: stats.overdue.toString(), icon: <VCT_Icons.AlertCircle size={18} />, color: 'var(--vct-danger)' },
             ] as StatItem[]} className="mb-0" />
 
             {/* Filters */}

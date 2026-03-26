@@ -72,7 +72,7 @@ func generateType(sb *strings.Builder, t reflect.Type) {
 
 	for i := 0; i < t.NumField(); i++ {
 		field := t.Field(i)
-		
+
 		// Skip unexported fields
 		if field.PkgPath != "" {
 			continue
@@ -136,7 +136,7 @@ func mapGoTypeToTS(t reflect.Type) string {
 		return fmt.Sprintf("Record<%s, %s>", keyType, valType)
 	case reflect.Struct:
 		if t.Name() == "Time" || t.Name() == "NullTime" {
-			return "string" 
+			return "string"
 		}
 		if t.Name() == "" {
 			return "any"

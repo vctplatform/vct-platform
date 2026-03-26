@@ -15,10 +15,10 @@ import {
   VCT_StatusPipeline,
   VCT_Table,
   VCT_Toast,
-} from '../components/vct-ui'
-import { VCT_PageContainer, VCT_StatRow } from '../components/vct-ui'
-import type { StatItem } from '../components/VCT_StatRow'
-import { VCT_Icons } from '../components/vct-icons'
+} from '@vct/ui'
+import { VCT_PageContainer, VCT_StatRow } from '@vct/ui'
+import type { StatItem } from '@vct/ui'
+import { VCT_Icons } from '@vct/ui'
 import { useRouteActionGuard } from '../hooks/use-route-action-guard'
 import {
   ATTENDANCE_SEED,
@@ -42,10 +42,10 @@ const AttendanceChart = ({ records }: { records: ClubAttendance[] }) => {
 
   const max = Math.max(...Object.values(counts), 1)
   const bars: { key: string; label: string; value: number; color: string }[] = [
-    { key: 'present', label: 'Có mặt', value: counts.present ?? 0, color: '#10b981' },
-    { key: 'late', label: 'Trễ', value: counts.late ?? 0, color: '#f59e0b' },
-    { key: 'excused', label: 'Có phép', value: counts.excused ?? 0, color: '#6366f1' },
-    { key: 'absent', label: 'Vắng', value: counts.absent ?? 0, color: '#ef4444' },
+    { key: 'present', label: 'Có mặt', value: counts.present ?? 0, color: 'var(--vct-success)' },
+    { key: 'late', label: 'Trễ', value: counts.late ?? 0, color: 'var(--vct-warning)' },
+    { key: 'excused', label: 'Có phép', value: counts.excused ?? 0, color: 'var(--vct-info)' },
+    { key: 'absent', label: 'Vắng', value: counts.absent ?? 0, color: 'var(--vct-danger)' },
   ]
 
   return (
@@ -267,10 +267,10 @@ export const Page_club_attendance = () => {
   }
 
   const stats: StatItem[] = [
-    { label: 'Tổng bản ghi', value: records.length, icon: <VCT_Icons.List size={18} />, color: '#0ea5e9' },
-    { label: 'Tỷ lệ điểm danh', value: `${attendanceRate}%`, icon: <VCT_Icons.Activity size={18} />, color: '#10b981' },
-    { label: 'Có mặt', value: records.filter((r) => r.status === 'present').length, icon: <VCT_Icons.Check size={18} />, color: '#10b981' },
-    { label: 'Vắng mặt', value: records.filter((r) => r.status === 'absent').length, icon: <VCT_Icons.X size={18} />, color: '#ef4444' },
+    { label: 'Tổng bản ghi', value: records.length, icon: <VCT_Icons.List size={18} />, color: 'var(--vct-accent-cyan)' },
+    { label: 'Tỷ lệ điểm danh', value: `${attendanceRate}%`, icon: <VCT_Icons.Activity size={18} />, color: 'var(--vct-success)' },
+    { label: 'Có mặt', value: records.filter((r) => r.status === 'present').length, icon: <VCT_Icons.Check size={18} />, color: 'var(--vct-success)' },
+    { label: 'Vắng mặt', value: records.filter((r) => r.status === 'absent').length, icon: <VCT_Icons.X size={18} />, color: 'var(--vct-danger)' },
   ]
 
   const columns = [

@@ -8,10 +8,10 @@ import {
     VCT_SearchInput, VCT_Modal, VCT_Input, VCT_Field, VCT_Select,
     VCT_ConfirmDialog, VCT_AvatarLetter, VCT_EmptyState, VCT_FilterChips,
     VCT_BulkActionsBar
-} from '../components/vct-ui'
-import { VCT_PageContainer, VCT_StatRow } from '../components/vct-ui'
-import type { StatItem } from '../components/VCT_StatRow'
-import { VCT_Icons } from '../components/vct-icons'
+} from '@vct/ui'
+import { VCT_PageContainer, VCT_StatRow } from '@vct/ui'
+import type { StatItem } from '@vct/ui'
+import { VCT_Icons } from '@vct/ui'
 
 // ════════════════════════════════════════
 // TYPES & MOCK DATA
@@ -41,9 +41,9 @@ const TYPE_MAP: Record<OrganizationType, string> = {
 }
 
 const STATUS_MAP: Record<string, { label: string; type: any; color: string }> = {
-    active: { label: 'Đang hoạt động', type: 'success', color: '#10b981' },
-    inactive: { label: 'Tạm ngưng', type: 'neutral', color: '#94a3b8' },
-    pending: { label: 'Chờ duyệt', type: 'warning', color: '#f59e0b' }
+    active: { label: 'Đang hoạt động', type: 'success', color: 'var(--vct-success)' },
+    inactive: { label: 'Tạm ngưng', type: 'neutral', color: 'var(--vct-text-tertiary)' },
+    pending: { label: 'Chờ duyệt', type: 'warning', color: 'var(--vct-warning)' }
 }
 
 const MOCK_ORGANIZATIONS: Organization[] = [
@@ -193,8 +193,8 @@ export const Page_organizations = () => {
 
     const columns = [
         {
-            key: 'checkbox', label: <input type="checkbox" checked={selectedIds.size === filtered.length && filtered.length > 0} onChange={toggleSelectAll} style={{ width: 16, height: 16, accentColor: '#22d3ee' }} />, align: 'center' as const,
-            render: (r: Organization) => <input type="checkbox" checked={selectedIds.has(r.id)} onChange={() => toggleSelect(r.id)} onClick={(e: any) => e.stopPropagation()} style={{ width: 16, height: 16, accentColor: '#22d3ee' }} />
+            key: 'checkbox', label: <input type="checkbox" checked={selectedIds.size === filtered.length && filtered.length > 0} onChange={toggleSelectAll} style={{ width: 16, height: 16, accentColor: 'var(--vct-accent-cyan)' }} />, align: 'center' as const,
+            render: (r: Organization) => <input type="checkbox" checked={selectedIds.has(r.id)} onChange={() => toggleSelect(r.id)} onClick={(e: any) => e.stopPropagation()} style={{ width: 16, height: 16, accentColor: 'var(--vct-accent-cyan)' }} />
         },
         {
             key: 'name', label: 'Tổ chức', render: (r: Organization) => (
@@ -236,7 +236,7 @@ export const Page_organizations = () => {
                     <button onClick={(e) => { e.stopPropagation(); openEditModal(r); }} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--vct-text-tertiary)', padding: 4 }} aria-label={`Edit ${r.name}`}>
                         <VCT_Icons.Edit size={16} />
                     </button>
-                    <button onClick={(e) => { e.stopPropagation(); setDeleteTarget(r); }} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#ef4444', padding: 4 }} aria-label={`Delete ${r.name}`}>
+                    <button onClick={(e) => { e.stopPropagation(); setDeleteTarget(r); }} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--vct-danger)', padding: 4 }} aria-label={`Delete ${r.name}`}>
                         <VCT_Icons.Trash size={16} />
                     </button>
                 </VCT_Stack>
@@ -255,10 +255,10 @@ export const Page_organizations = () => {
 
             {/* ── KPI ROW ── */}
             <VCT_StatRow items={[
-                { label: 'Tổng tổ chức', value: orgs.length, icon: <VCT_Icons.Building2 size={18} />, color: '#0ea5e9' },
-                { label: 'CLB trực thuộc', value: totalClubs, icon: <VCT_Icons.Building2 size={18} />, color: '#f59e0b' },
-                { label: 'Hội viên', value: totalMembers.toLocaleString('vi-VN'), icon: <VCT_Icons.Users size={18} />, color: '#10b981' },
-                { label: 'Đang hoạt động', value: orgs.filter(o => o.status === 'active').length, icon: <VCT_Icons.Activity size={18} />, color: '#8b5cf6' },
+                { label: 'Tổng tổ chức', value: orgs.length, icon: <VCT_Icons.Building2 size={18} />, color: 'var(--vct-accent-cyan)' },
+                { label: 'CLB trực thuộc', value: totalClubs, icon: <VCT_Icons.Building2 size={18} />, color: 'var(--vct-warning)' },
+                { label: 'Hội viên', value: totalMembers.toLocaleString('vi-VN'), icon: <VCT_Icons.Users size={18} />, color: 'var(--vct-success)' },
+                { label: 'Đang hoạt động', value: orgs.filter(o => o.status === 'active').length, icon: <VCT_Icons.Activity size={18} />, color: 'var(--vct-info)' },
             ] as StatItem[]} className="mb-6" />
 
             {/* ── FILTER CHIPS ── */}
@@ -302,7 +302,7 @@ export const Page_organizations = () => {
                         </thead>
                         <tbody>
                             {filtered.map((org, idx) => {
-                                const stColor = STATUS_MAP[org.status]?.color || '#94a3b8'
+                                const stColor = STATUS_MAP[org.status]?.color || 'var(--vct-text-tertiary)'
                                 return (
                                     <tr key={org.id} style={{ borderBottom: '1px solid var(--vct-border-subtle)', background: selectedIds.has(org.id) ? 'rgba(34, 211, 238, 0.05)' : idx % 2 === 0 ? 'transparent' : 'rgba(128,128,128,0.02)', borderLeft: `3px solid ${stColor}` }}>
                                         {columns.map((col, ci) => (

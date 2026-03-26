@@ -42,7 +42,7 @@ func (s *Server) handleArticles(w http.ResponseWriter, r *http.Request, p auth.P
 		}
 		articles, err := s.Federation.Main.ListArticles(r.Context())
 		if err != nil {
-			internalError(w, err)
+			apiInternal(w, err)
 			return
 		}
 		params := parsePagination(r)
@@ -66,7 +66,7 @@ func (s *Server) handleArticles(w http.ResponseWriter, r *http.Request, p auth.P
 		}
 		var article federation.NewsArticle
 		if err := json.NewDecoder(r.Body).Decode(&article); err != nil {
-			badRequest(w, "invalid JSON: "+err.Error())
+			apiError(w, http.StatusBadRequest, CodeBadRequest, "invalid JSON: "+err.Error())
 			return
 		}
 		article.AuthorID = p.User.ID
@@ -80,7 +80,7 @@ func (s *Server) handleArticles(w http.ResponseWriter, r *http.Request, p auth.P
 		success(w, http.StatusCreated, map[string]string{"status": "article_created"})
 
 	default:
-		methodNotAllowed(w)
+		apiMethodNotAllowed(w)
 	}
 }
 
@@ -102,7 +102,7 @@ func (s *Server) handleArticleByID(w http.ResponseWriter, r *http.Request, p aut
 		}
 		var article federation.NewsArticle
 		if err := json.NewDecoder(r.Body).Decode(&article); err != nil {
-			badRequest(w, "invalid JSON: "+err.Error())
+			apiError(w, http.StatusBadRequest, CodeBadRequest, "invalid JSON: "+err.Error())
 			return
 		}
 		article.ID = id
@@ -117,13 +117,13 @@ func (s *Server) handleArticleByID(w http.ResponseWriter, r *http.Request, p aut
 			return
 		}
 		if err := s.Federation.Main.DeleteArticle(r.Context(), id); err != nil {
-			internalError(w, err)
+			apiInternal(w, err)
 			return
 		}
 		success(w, http.StatusOK, map[string]string{"status": "article_deleted"})
 
 	default:
-		methodNotAllowed(w)
+		apiMethodNotAllowed(w)
 	}
 }
 
@@ -139,7 +139,7 @@ func (s *Server) handlePartners(w http.ResponseWriter, r *http.Request, p auth.P
 		}
 		partners, err := s.Federation.Main.ListPartners(r.Context())
 		if err != nil {
-			internalError(w, err)
+			apiInternal(w, err)
 			return
 		}
 		params := parsePagination(r)
@@ -152,7 +152,7 @@ func (s *Server) handlePartners(w http.ResponseWriter, r *http.Request, p auth.P
 		}
 		var partner federation.InternationalPartner
 		if err := json.NewDecoder(r.Body).Decode(&partner); err != nil {
-			badRequest(w, "invalid JSON: "+err.Error())
+			apiError(w, http.StatusBadRequest, CodeBadRequest, "invalid JSON: "+err.Error())
 			return
 		}
 		if err := s.Federation.Main.CreatePartner(r.Context(), partner); err != nil {
@@ -162,7 +162,7 @@ func (s *Server) handlePartners(w http.ResponseWriter, r *http.Request, p auth.P
 		success(w, http.StatusCreated, map[string]string{"status": "partner_created"})
 
 	default:
-		methodNotAllowed(w)
+		apiMethodNotAllowed(w)
 	}
 }
 
@@ -182,7 +182,7 @@ func (s *Server) handlePartnerByID(w http.ResponseWriter, r *http.Request, p aut
 		}
 		var partner federation.InternationalPartner
 		if err := json.NewDecoder(r.Body).Decode(&partner); err != nil {
-			badRequest(w, "invalid JSON")
+			apiError(w, http.StatusBadRequest, CodeBadRequest, "invalid JSON")
 			return
 		}
 		partner.ID = id
@@ -198,7 +198,7 @@ func (s *Server) handlePartnerByID(w http.ResponseWriter, r *http.Request, p aut
 		s.Federation.Main.DeletePartner(r.Context(), id)
 		success(w, http.StatusOK, map[string]string{"status": "partner_deleted"})
 	default:
-		methodNotAllowed(w)
+		apiMethodNotAllowed(w)
 	}
 }
 
@@ -210,7 +210,7 @@ func (s *Server) handleIntlEvents(w http.ResponseWriter, r *http.Request, p auth
 		}
 		events, err := s.Federation.Main.ListIntlEvents(r.Context())
 		if err != nil {
-			internalError(w, err)
+			apiInternal(w, err)
 			return
 		}
 		params := parsePagination(r)
@@ -223,7 +223,7 @@ func (s *Server) handleIntlEvents(w http.ResponseWriter, r *http.Request, p auth
 		}
 		var event federation.InternationalEvent
 		if err := json.NewDecoder(r.Body).Decode(&event); err != nil {
-			badRequest(w, "invalid JSON: "+err.Error())
+			apiError(w, http.StatusBadRequest, CodeBadRequest, "invalid JSON: "+err.Error())
 			return
 		}
 		if err := s.Federation.Main.CreateIntlEvent(r.Context(), event); err != nil {
@@ -233,7 +233,7 @@ func (s *Server) handleIntlEvents(w http.ResponseWriter, r *http.Request, p auth
 		success(w, http.StatusCreated, map[string]string{"status": "event_created"})
 
 	default:
-		methodNotAllowed(w)
+		apiMethodNotAllowed(w)
 	}
 }
 
@@ -253,7 +253,7 @@ func (s *Server) handleIntlEventByID(w http.ResponseWriter, r *http.Request, p a
 		}
 		var event federation.InternationalEvent
 		if err := json.NewDecoder(r.Body).Decode(&event); err != nil {
-			badRequest(w, "invalid JSON")
+			apiError(w, http.StatusBadRequest, CodeBadRequest, "invalid JSON")
 			return
 		}
 		event.ID = id
@@ -269,7 +269,7 @@ func (s *Server) handleIntlEventByID(w http.ResponseWriter, r *http.Request, p a
 		s.Federation.Main.DeleteIntlEvent(r.Context(), id)
 		success(w, http.StatusOK, map[string]string{"status": "event_deleted"})
 	default:
-		methodNotAllowed(w)
+		apiMethodNotAllowed(w)
 	}
 }
 
@@ -285,7 +285,7 @@ func (s *Server) handleWorkflows(w http.ResponseWriter, r *http.Request, p auth.
 		}
 		workflows, err := s.Federation.Main.ListWorkflows(r.Context())
 		if err != nil {
-			internalError(w, err)
+			apiInternal(w, err)
 			return
 		}
 		params := parsePagination(r)
@@ -298,7 +298,7 @@ func (s *Server) handleWorkflows(w http.ResponseWriter, r *http.Request, p auth.
 		}
 		var wf federation.WorkflowDefinition
 		if err := json.NewDecoder(r.Body).Decode(&wf); err != nil {
-			badRequest(w, "invalid JSON: "+err.Error())
+			apiError(w, http.StatusBadRequest, CodeBadRequest, "invalid JSON: "+err.Error())
 			return
 		}
 		if err := s.Federation.Main.CreateWorkflow(r.Context(), wf); err != nil {
@@ -308,7 +308,7 @@ func (s *Server) handleWorkflows(w http.ResponseWriter, r *http.Request, p auth.
 		success(w, http.StatusCreated, map[string]string{"status": "workflow_created"})
 
 	default:
-		methodNotAllowed(w)
+		apiMethodNotAllowed(w)
 	}
 }
 
@@ -328,7 +328,7 @@ func (s *Server) handleWorkflowByID(w http.ResponseWriter, r *http.Request, p au
 		}
 		var wf federation.WorkflowDefinition
 		if err := json.NewDecoder(r.Body).Decode(&wf); err != nil {
-			badRequest(w, "invalid JSON")
+			apiError(w, http.StatusBadRequest, CodeBadRequest, "invalid JSON")
 			return
 		}
 		wf.ID = id
@@ -344,6 +344,6 @@ func (s *Server) handleWorkflowByID(w http.ResponseWriter, r *http.Request, p au
 		s.Federation.Main.DeleteWorkflow(r.Context(), id)
 		success(w, http.StatusOK, map[string]string{"status": "workflow_deleted"})
 	default:
-		methodNotAllowed(w)
+		apiMethodNotAllowed(w)
 	}
 }

@@ -6,10 +6,10 @@ import {
     VCT_Badge, VCT_Button, VCT_Stack, VCT_SearchInput,
     VCT_Select, VCT_EmptyState, VCT_Tabs,
     VCT_PageContainer, VCT_PageHeader
-} from '../components/vct-ui'
-import { VCT_StatRow } from '../components/vct-ui'
-import type { StatItem } from '../components/VCT_StatRow'
-import { VCT_Icons } from '../components/vct-icons'
+} from '@vct/ui'
+import { VCT_StatRow } from '@vct/ui'
+import type { StatItem } from '@vct/ui'
+import { VCT_Icons } from '@vct/ui'
 import { useAthleteRankings } from '../hooks/useRankingsAPI'
 
 // ════════════════════════════════════════
@@ -88,10 +88,10 @@ export const Page_rankings = () => {
 
             {/* ── KPI ── */}
             <VCT_StatRow items={[
-                { label: 'Hạng mục', value: CATEGORIES.length - 1, icon: <VCT_Icons.Layers size={18} />, color: '#0ea5e9' },
-                { label: 'VĐV có Rank', value: rankings.length, icon: <VCT_Icons.Users size={18} />, color: '#f59e0b' },
-                { label: 'Giải đã tính', value: 12, icon: <VCT_Icons.Trophy size={18} />, color: '#10b981' },
-                { label: 'Tổng trận', value: 8500, icon: <VCT_Icons.Swords size={18} />, color: '#ef4444' },
+                { label: 'Hạng mục', value: CATEGORIES.length - 1, icon: <VCT_Icons.Layers size={18} />, color: 'var(--vct-accent-cyan)' },
+                { label: 'VĐV có Rank', value: rankings.length, icon: <VCT_Icons.Users size={18} />, color: 'var(--vct-warning)' },
+                { label: 'Giải đã tính', value: 12, icon: <VCT_Icons.Trophy size={18} />, color: 'var(--vct-success)' },
+                { label: 'Tổng trận', value: 8500, icon: <VCT_Icons.Swords size={18} />, color: 'var(--vct-danger)' },
             ] as StatItem[]} className="mb-6" />
 
             {isLoading && (
@@ -112,7 +112,7 @@ export const Page_rankings = () => {
                             <div className="absolute -top-3 bg-gray-400 text-white text-[10px] font-black px-2 py-0.5 rounded shadow-lg">#2</div>
                             <div className="font-bold text-(--vct-text-primary) text-sm line-clamp-1">{filtered[1]?.name}</div>
                             <div className="text-[11px] text-(--vct-text-secondary) mt-1">{filtered[1]?.club}</div>
-                            <div className="text-[#22d3ee] font-black mt-1 text-lg">{filtered[1]?.points.toLocaleString()} PTS</div>
+                            <div className="text-(--vct-accent-cyan) font-black mt-1 text-lg">{filtered[1]?.points.toLocaleString()} PTS</div>
                         </div>
                     </div>
 
@@ -139,7 +139,7 @@ export const Page_rankings = () => {
                             <div className="absolute -top-3 bg-orange-600 text-white text-[10px] font-black px-2 py-0.5 rounded shadow-lg">#3</div>
                             <div className="font-bold text-(--vct-text-primary) text-sm line-clamp-1">{filtered[2]?.name}</div>
                             <div className="text-[11px] text-(--vct-text-secondary) mt-1">{filtered[2]?.club}</div>
-                            <div className="text-[#22d3ee] font-black mt-1 text-base">{filtered[2]?.points.toLocaleString()} PTS</div>
+                            <div className="text-(--vct-accent-cyan) font-black mt-1 text-base">{filtered[2]?.points.toLocaleString()} PTS</div>
                         </div>
                     </div>
                 </div>
@@ -180,11 +180,11 @@ export const Page_rankings = () => {
                                 </td>
                                 <td className="p-4 text-center">
                                     {athlete.change > 0 ? (
-                                        <div className="flex items-center justify-center gap-1 text-[#10b981] font-bold text-xs bg-[#10b98120] px-2 py-1 rounded">
+                                        <div className="flex items-center justify-center gap-1 text-(--vct-success) font-bold text-xs bg-[#10b98120] px-2 py-1 rounded">
                                             <VCT_Icons.TrendingUp size={12} /> {athlete.change}
                                         </div>
                                     ) : athlete.change < 0 ? (
-                                        <div className="flex items-center justify-center gap-1 text-[#ef4444] font-bold text-xs bg-[#ef444420] px-2 py-1 rounded">
+                                        <div className="flex items-center justify-center gap-1 text-(--vct-danger) font-bold text-xs bg-[#ef444420] px-2 py-1 rounded">
                                             <VCT_Icons.TrendingDown size={12} /> {Math.abs(athlete.change)}
                                         </div>
                                     ) : (

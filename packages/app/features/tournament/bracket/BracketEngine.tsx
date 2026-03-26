@@ -60,7 +60,7 @@ export const BracketEngine = ({
                     x={(xRounds[i] ?? 0) + CW / 2}
                     y={30}
                     textAnchor="middle"
-                    fill={i === numRounds - 1 ? '#dc2626' : '#64748b'}
+                    fill={i === numRounds - 1 ? 'var(--vct-danger)' : 'var(--vct-text-tertiary)'}
                     fontWeight={800}
                     fontSize={preview ? 10 : 14}
                 >
@@ -71,7 +71,7 @@ export const BracketEngine = ({
                 x={xChamp + CW / 2}
                 y={30}
                 textAnchor="middle"
-                fill="#f59e0b"
+                fill="var(--vct-warning)"
                 fontWeight={800}
                 fontSize={preview ? 10 : 14}
             >

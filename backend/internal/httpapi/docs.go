@@ -1,7 +1,6 @@
 package httpapi
 
 import (
-	"fmt"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -40,11 +39,11 @@ func (s *Server) handleAPISpec(w http.ResponseWriter, r *http.Request) {
 	path := filepath.Join("docs", "openapi.yaml")
 	data, err := os.ReadFile(path)
 	if err != nil {
-		
+
 		path = filepath.Join("..", "docs", "openapi.yaml")
 		data, err = os.ReadFile(path)
 		if err != nil {
-			http.Error(w, fmt.Sprintf("OpenAPI spec not found: %v", err), http.StatusNotFound)
+			apiError(w, http.StatusNotFound, CodeNotFound, "Không tìm thấy tài liệu OpenAPI")
 			return
 		}
 	}

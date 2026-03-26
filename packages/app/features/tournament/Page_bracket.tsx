@@ -3,10 +3,10 @@ import * as React from 'react';
 import { useState, useMemo, useRef, useCallback, useEffect } from 'react';
 import {
     VCT_Button, VCT_Text, VCT_Stack, VCT_Badge, VCT_Toast,
-} from '../components/vct-ui';
-import { VCT_PageContainer, VCT_StatRow } from '../components/vct-ui';
-import type { StatItem } from '../components/VCT_StatRow';
-import { VCT_Icons } from '../components/vct-icons';
+} from '@vct/ui';
+import { VCT_PageContainer, VCT_StatRow } from '@vct/ui';
+import type { StatItem } from '@vct/ui';
+import { VCT_Icons } from '@vct/ui';
 import { useHangCans, useNoiDungQuyens } from '../hooks/useTournamentAPI';
 import { repositories, useEntityCollection } from '../data/repository';
 import { useRouteActionGuard } from '../hooks/use-route-action-guard';
@@ -171,10 +171,10 @@ export const Page_bracket = () => {
 
             {/* KPI */}
             <VCT_StatRow items={[
-                { label: 'Schema', value: `${selectedSchema} VĐV`, icon: <VCT_Icons.GitMerge size={18} />, color: '#8b5cf6' },
-                { label: 'Số vòng', value: numRounds, icon: <VCT_Icons.LayoutGrid size={18} />, color: '#0ea5e9' },
-                { label: 'Tổng trận', value: totalMatches, icon: <VCT_Icons.Swords size={18} />, color: '#f59e0b' },
-                { label: 'Zoom', value: `${Math.round(zoom * 100)}%`, icon: <VCT_Icons.Search size={18} />, color: '#10b981' },
+                { label: 'Schema', value: `${selectedSchema} VĐV`, icon: <VCT_Icons.GitMerge size={18} />, color: 'var(--vct-info)' },
+                { label: 'Số vòng', value: numRounds, icon: <VCT_Icons.LayoutGrid size={18} />, color: 'var(--vct-accent-cyan)' },
+                { label: 'Tổng trận', value: totalMatches, icon: <VCT_Icons.Swords size={18} />, color: 'var(--vct-warning)' },
+                { label: 'Zoom', value: `${Math.round(zoom * 100)}%`, icon: <VCT_Icons.Search size={18} />, color: 'var(--vct-success)' },
             ] as StatItem[]} className="mb-6" />
 
             {/* Toolbar */}

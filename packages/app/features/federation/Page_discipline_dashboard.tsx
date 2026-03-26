@@ -1,20 +1,20 @@
 'use client'
 
 import * as React from 'react'
-import { VCT_Badge, VCT_Stack } from '../components/vct-ui'
-import { VCT_PageContainer, VCT_StatRow } from '../components/vct-ui'
-import type { StatItem } from '../components/VCT_StatRow'
-import { VCT_Icons } from '../components/vct-icons'
+import { VCT_Badge, VCT_Stack } from '@vct/ui'
+import { VCT_PageContainer, VCT_StatRow } from '@vct/ui'
+import type { StatItem } from '@vct/ui'
+import { VCT_Icons } from '@vct/ui'
 
 // ════════════════════════════════════════
 // DISCIPLINE BOARD — DASHBOARD
 // ════════════════════════════════════════
 
 const CASE_SUMMARY = [
-    { status: 'Đang điều tra', count: 3, color: '#0ea5e9' },
-    { status: 'Chờ xét xử', count: 2, color: '#8b5cf6' },
-    { status: 'Kháng cáo', count: 1, color: '#ef4444' },
-    { status: 'Đã kết thúc (tháng này)', count: 5, color: '#10b981' },
+    { status: 'Đang điều tra', count: 3, color: 'var(--vct-accent-cyan)' },
+    { status: 'Chờ xét xử', count: 2, color: 'var(--vct-info)' },
+    { status: 'Kháng cáo', count: 1, color: 'var(--vct-danger)' },
+    { status: 'Đã kết thúc (tháng này)', count: 5, color: 'var(--vct-success)' },
 ]
 
 const UPCOMING_HEARINGS = [
@@ -36,10 +36,10 @@ export const Page_discipline_dashboard = () => {
             </div>
 
             <VCT_StatRow items={[
-                { label: 'Đang xử lý', value: 6, icon: <VCT_Icons.AlertCircle size={18} />, color: '#ef4444' },
-                { label: 'Xét xử tuần này', value: 2, icon: <VCT_Icons.Calendar size={18} />, color: '#8b5cf6' },
-                { label: 'Chế tài hiệu lực', value: 8, icon: <VCT_Icons.Shield size={18} />, color: '#f59e0b' },
-                { label: 'KL tháng này', value: 5, icon: <VCT_Icons.Check size={18} />, color: '#10b981' },
+                { label: 'Đang xử lý', value: 6, icon: <VCT_Icons.AlertCircle size={18} />, color: 'var(--vct-danger)' },
+                { label: 'Xét xử tuần này', value: 2, icon: <VCT_Icons.Calendar size={18} />, color: 'var(--vct-info)' },
+                { label: 'Chế tài hiệu lực', value: 8, icon: <VCT_Icons.Shield size={18} />, color: 'var(--vct-warning)' },
+                { label: 'KL tháng này', value: 5, icon: <VCT_Icons.Check size={18} />, color: 'var(--vct-success)' },
             ] as StatItem[]} className="mb-6" />
 
             <div className="grid gap-6 grid-cols-1 lg:grid-cols-3">
@@ -75,7 +75,7 @@ export const Page_discipline_dashboard = () => {
                                         <div className="text-xs opacity-50 mt-1">{h.venue}</div>
                                     </div>
                                     <div className="text-right">
-                                        <div className="text-sm font-bold text-[#8b5cf6]">{h.date}</div>
+                                        <div className="text-sm font-bold text-(--vct-info)">{h.date}</div>
                                         <div className="text-xs opacity-60">{h.time}</div>
                                     </div>
                                 </VCT_Stack>

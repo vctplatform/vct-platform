@@ -1,9 +1,9 @@
 'use client'
 
 import React, { useState } from 'react'
-import { VCT_PageContainer, VCT_PageHero } from '../components/VCT_PageContainer'
-import { VCT_Icons } from '../components/vct-icons'
-import { VCT_Badge } from '../components/vct-ui'
+import { VCT_PageContainer, VCT_PageHero } from '@vct/ui'
+import { VCT_Icons } from '@vct/ui'
+import { VCT_Badge } from '@vct/ui'
 
 // ════════════════════════════════════════
 // FEDERATION — NGÂN SÁCH
@@ -21,9 +21,9 @@ const fmt = (n: number) => {
 }
 
 const CATEGORY_COLORS: Record<string, string> = {
-    'Nhân sự': '#8b5cf6', 'Giải đấu': '#ef4444', 'Đào tạo': '#f59e0b',
-    'Đối ngoại': '#10b981', 'Văn phòng': '#0ea5e9', 'Truyền thông': '#ec4899',
-    'Dự phòng': '#64748b',
+    'Nhân sự': 'var(--vct-info)', 'Giải đấu': 'var(--vct-danger)', 'Đào tạo': 'var(--vct-warning)',
+    'Đối ngoại': 'var(--vct-success)', 'Văn phòng': 'var(--vct-accent-cyan)', 'Truyền thông': 'var(--vct-accent-pink)',
+    'Dự phòng': 'var(--vct-text-tertiary)',
 }
 
 const SEED: BudgetItem[] = [
@@ -49,10 +49,10 @@ export function Page_federation_budget() {
     const pctUsed = Math.round((totalActual / totalPlanned) * 100)
 
     const kpis = [
-        { label: 'Tổng ngân sách', value: fmt(totalPlanned), color: '#3b82f6' },
-        { label: 'Đã sử dụng', value: fmt(totalActual), color: '#f59e0b' },
-        { label: 'Còn lại', value: fmt(totalPlanned - totalActual), color: '#10b981' },
-        { label: '% Thực hiện', value: `${pctUsed}%`, color: pctUsed > 90 ? '#ef4444' : '#8b5cf6' },
+        { label: 'Tổng ngân sách', value: fmt(totalPlanned), color: 'var(--vct-info)' },
+        { label: 'Đã sử dụng', value: fmt(totalActual), color: 'var(--vct-warning)' },
+        { label: 'Còn lại', value: fmt(totalPlanned - totalActual), color: 'var(--vct-success)' },
+        { label: '% Thực hiện', value: `${pctUsed}%`, color: pctUsed > 90 ? 'var(--vct-danger)' : 'var(--vct-info)' },
     ]
 
     return (
@@ -74,7 +74,7 @@ export function Page_federation_budget() {
             <div className="rounded-2xl border border-vct-border bg-vct-elevated p-5 mb-6">
                 <div className="flex justify-between items-center mb-2">
                     <span className="text-sm font-bold text-vct-text">Tiến độ ngân sách tổng thể</span>
-                    <span className="text-sm font-bold" style={{ color: pctUsed > 90 ? '#ef4444' : '#3b82f6' }}>{pctUsed}%</span>
+                    <span className="text-sm font-bold" style={{ color: pctUsed > 90 ? 'var(--vct-danger)' : 'var(--vct-info)' }}>{pctUsed}%</span>
                 </div>
                 <div className="h-4 rounded-full bg-vct-bg overflow-hidden">
                     <div className="h-full rounded-full transition-all" style={{ width: `${pctUsed}%`, background: pctUsed > 90 ? 'linear-gradient(90deg, #ef4444, #dc2626)' : 'linear-gradient(90deg, #3b82f6, #8b5cf6)' }} />
@@ -112,7 +112,7 @@ export function Page_federation_budget() {
                     <tbody>
                         {filtered.map(item => {
                             const pct = item.planned > 0 ? Math.round((item.actual / item.planned) * 100) : 0
-                            const catColor = CATEGORY_COLORS[item.category] || '#64748b'
+                            const catColor = CATEGORY_COLORS[item.category] || 'var(--vct-text-tertiary)'
                             return (
                                 <tr key={item.id} className="border-b border-vct-border/50 hover:bg-vct-bg/50 transition-colors">
                                     <td className="px-4 py-3 text-sm font-semibold text-vct-text">{item.name}</td>
@@ -120,11 +120,11 @@ export function Page_federation_budget() {
                                         <span className="px-2 py-1 rounded-lg text-[11px] font-bold" style={{ background: catColor + '15', color: catColor }}>{item.category}</span>
                                     </td>
                                     <td className="px-4 py-3 text-sm text-vct-text">{fmt(item.planned)}</td>
-                                    <td className="px-4 py-3 text-sm font-bold" style={{ color: item.status === 'over' ? '#ef4444' : '#3b82f6' }}>{fmt(item.actual)}</td>
+                                    <td className="px-4 py-3 text-sm font-bold" style={{ color: item.status === 'over' ? 'var(--vct-danger)' : 'var(--vct-info)' }}>{fmt(item.actual)}</td>
                                     <td className="px-4 py-3">
                                         <div className="flex items-center gap-2">
                                             <div className="flex-1 h-2 rounded-full bg-vct-bg overflow-hidden">
-                                                <div className="h-full rounded-full" style={{ width: `${Math.min(pct, 100)}%`, background: item.status === 'over' ? '#ef4444' : catColor }} />
+                                                <div className="h-full rounded-full" style={{ width: `${Math.min(pct, 100)}%`, background: item.status === 'over' ? 'var(--vct-danger)' : catColor }} />
                                             </div>
                                             <span className="text-xs font-bold text-vct-text-muted w-8">{pct}%</span>
                                         </div>

@@ -8,10 +8,10 @@ import {
     VCT_Table, VCT_SearchInput, VCT_Modal, VCT_Input, VCT_Field, VCT_Select,
     VCT_ConfirmDialog, VCT_StatusPipeline, VCT_FilterChips, VCT_BulkActionsBar,
     VCT_ProgressBar, VCT_Tabs, VCT_AvatarLetter, VCT_EmptyState
-} from '../components/vct-ui';
-import { VCT_PageContainer, VCT_StatRow } from '../components/vct-ui';
-import type { StatItem } from '../components/VCT_StatRow';
-import { VCT_Icons } from '../components/vct-icons';
+} from '@vct/ui';
+import { VCT_PageContainer, VCT_StatRow } from '@vct/ui';
+import type { StatItem } from '@vct/ui';
+import { VCT_Icons } from '@vct/ui';
 import { genId } from '../hooks/useTournamentAPI';
 import { TOURNAMENT_CONFIG } from '../data/tournament-config';
 import { TRANG_THAI_DOAN_MAP, DOC_CHECKLIST, type DonVi, type TrangThaiDoan } from '../data/types';
@@ -23,12 +23,12 @@ import { canPerformRouteAction } from '../layout/route-registry';
 // STATUS PIPELINE CONFIG
 // ════════════════════════════════════════
 const PIPELINE_STAGES = [
-    { key: 'nhap', label: 'Nháp', color: '#94a3b8' },
-    { key: 'cho_duyet', label: 'Chờ duyệt', color: '#f59e0b' },
-    { key: 'yeu_cau_bo_sung', label: 'Bổ sung', color: '#ef4444' },
-    { key: 'da_xac_nhan', label: 'Đã xác nhận', color: '#10b981' },
-    { key: 'da_checkin', label: 'Đã check-in', color: '#22d3ee' },
-    { key: 'tu_choi', label: 'Từ chối', color: '#ef4444' },
+    { key: 'nhap', label: 'Nháp', color: 'var(--vct-text-tertiary)' },
+    { key: 'cho_duyet', label: 'Chờ duyệt', color: 'var(--vct-warning)' },
+    { key: 'yeu_cau_bo_sung', label: 'Bổ sung', color: 'var(--vct-danger)' },
+    { key: 'da_xac_nhan', label: 'Đã xác nhận', color: 'var(--vct-success)' },
+    { key: 'da_checkin', label: 'Đã check-in', color: 'var(--vct-accent-cyan)' },
+    { key: 'tu_choi', label: 'Từ chối', color: 'var(--vct-danger)' },
 ];
 
 const BLANK_FORM: Partial<DonVi> = {
@@ -68,7 +68,7 @@ const ExpandPanel = ({ team, onDocToggle, onStatusChange }: { team: DonVi; onDoc
                     <div><span className="text-[11px] opacity-50">VĐV</span><div {...{ style: { fontWeight: 700, fontSize: 13 } }}>{team.so_vdv} <span {...{ style: { opacity: 0.5 } }}>({team.nam}♂ {team.nu}♀)</span></div></div>
                     <div><span className="text-[11px] opacity-50">HLV</span><div {...{ style: { fontWeight: 700, fontSize: 13 } }}>{team.hlv}</div></div>
                     <div><span className="text-[11px] opacity-50">Thành tích</span><div {...{ style: { fontWeight: 700, fontSize: 13 } }}>{team.thanh_tich || '—'}</div></div>
-                    {team.ghi_chu && <div {...{ style: { gridColumn: '1 / -1' } }}><span className="text-[11px] opacity-50">Ghi chú</span><div {...{ style: { fontWeight: 600, fontSize: 13, color: '#f59e0b' } }}>{team.ghi_chu}</div></div>}
+                    {team.ghi_chu && <div {...{ style: { gridColumn: '1 / -1' } }}><span className="text-[11px] opacity-50">Ghi chú</span><div {...{ style: { fontWeight: 600, fontSize: 13, color: 'var(--vct-warning)' } }}>{team.ghi_chu}</div></div>}
                     <div {...{ style: { gridColumn: '1 / -1' } }}>
                         <span {...{ style: { fontSize: 11, opacity: 0.5, marginBottom: 4, display: 'block' } }}>Chuyển trạng thái</span>
                         <div {...{ style: { display: 'flex', gap: 6, flexWrap: 'wrap' } }}>
@@ -88,9 +88,9 @@ const ExpandPanel = ({ team, onDocToggle, onStatusChange }: { team: DonVi; onDoc
                     <div {...{ style: { display: 'grid', gap: 8, marginTop: 12 } }}>
                         {DOC_CHECKLIST.map((doc, i) => (
                             <label key={i} {...{ style: { display: 'flex', alignItems: 'center', gap: 10, padding: '8px 12px', borderRadius: 10, background: 'var(--vct-bg-elevated)', cursor: 'pointer', border: '1px solid var(--vct-border-subtle)' } }}>
-                                <input type="checkbox" checked={!!team.docs[i]} onChange={() => onDocToggle(i)} {...{ style: { width: 18, height: 18, accentColor: '#22d3ee' } }} />
+                                <input type="checkbox" checked={!!team.docs[i]} onChange={() => onDocToggle(i)} {...{ style: { width: 18, height: 18, accentColor: 'var(--vct-accent-cyan)' } }} />
                                 <span {...{ style: { fontSize: 13, fontWeight: team.docs[i] ? 700 : 500, textDecoration: team.docs[i] ? 'line-through' : 'none', opacity: team.docs[i] ? 0.6 : 1 } }}>{doc}</span>
-                                {team.docs[i] ? <VCT_Icons.Check size={14} color="#10b981" /> : <VCT_Icons.Clock size={14} color="#f59e0b" />}
+                                {team.docs[i] ? <VCT_Icons.Check size={14} color="var(--vct-success)" /> : <VCT_Icons.Clock size={14} color="var(--vct-warning)" />}
                             </label>
                         ))}
                     </div>
@@ -106,11 +106,11 @@ const ExpandPanel = ({ team, onDocToggle, onStatusChange }: { team: DonVi; onDoc
                         </div>
                         <div {...{ style: { padding: 16, borderRadius: 12, background: 'var(--vct-bg-elevated)', textAlign: 'center' } }}>
                             <div className="text-[11px] opacity-50">Đã đóng</div>
-                            <div {...{ style: { fontSize: 20, fontWeight: 900, color: '#10b981' } }}>{(team.le_phi.da_dong / 1000000).toFixed(1)}M</div>
+                            <div {...{ style: { fontSize: 20, fontWeight: 900, color: 'var(--vct-success)' } }}>{(team.le_phi.da_dong / 1000000).toFixed(1)}M</div>
                         </div>
                         <div {...{ style: { padding: 16, borderRadius: 12, background: 'var(--vct-bg-elevated)', textAlign: 'center' } }}>
                             <div className="text-[11px] opacity-50">Còn thiếu</div>
-                            <div {...{ style: { fontSize: 20, fontWeight: 900, color: feeRemain > 0 ? '#ef4444' : '#10b981' } }}>{feeRemain > 0 ? `${(feeRemain / 1000000).toFixed(1)}M` : '✓'}</div>
+                            <div {...{ style: { fontSize: 20, fontWeight: 900, color: feeRemain > 0 ? 'var(--vct-danger)' : 'var(--vct-success)' } }}>{feeRemain > 0 ? `${(feeRemain / 1000000).toFixed(1)}M` : '✓'}</div>
                         </div>
                     </div>
                     <VCT_ProgressBar value={team.le_phi.da_dong} max={team.le_phi.tong} showLabel />
@@ -337,8 +337,8 @@ export const Page_teams = () => {
     // ── Table columns ──
     const columns = [
         {
-            key: 'checkbox', label: <input type="checkbox" aria-label="Chọn tất cả" checked={selectedIds.size === filtered.length && filtered.length > 0} onChange={toggleSelectAll} {...{ style: { width: 16, height: 16, accentColor: '#22d3ee' } }} />, align: 'center' as const,
-            render: (r: DonVi) => <input type="checkbox" aria-label={`Chọn ${r.ten}`} checked={selectedIds.has(r.id)} onChange={() => toggleSelect(r.id)} onClick={(e: any) => e.stopPropagation()} {...{ style: { width: 16, height: 16, accentColor: '#22d3ee' } }} />
+            key: 'checkbox', label: <input type="checkbox" aria-label="Chọn tất cả" checked={selectedIds.size === filtered.length && filtered.length > 0} onChange={toggleSelectAll} {...{ style: { width: 16, height: 16, accentColor: 'var(--vct-accent-cyan)' } }} />, align: 'center' as const,
+            render: (r: DonVi) => <input type="checkbox" aria-label={`Chọn ${r.ten}`} checked={selectedIds.has(r.id)} onChange={() => toggleSelect(r.id)} onClick={(e: any) => e.stopPropagation()} {...{ style: { width: 16, height: 16, accentColor: 'var(--vct-accent-cyan)' } }} />
         },
         {
             key: 'ten', label: 'Đơn vị', render: (r: DonVi) => (
@@ -361,7 +361,7 @@ export const Page_teams = () => {
         {
             key: 'docs', label: 'Hồ sơ', align: 'center' as const, render: (r: DonVi) => {
                 const done = Object.values(r.docs).filter(Boolean).length;
-                return <div className="text-center"><span {...{ style: { fontWeight: 700, color: done === 6 ? '#10b981' : '#f59e0b' } }}>{done}/6</span></div>;
+                return <div className="text-center"><span {...{ style: { fontWeight: 700, color: done === 6 ? 'var(--vct-success)' : 'var(--vct-warning)' } }}>{done}/6</span></div>;
             }
         },
         {
@@ -385,7 +385,7 @@ export const Page_teams = () => {
                         </button>
                     )}
                     {permissions.canDelete && (
-                        <button onClick={(e: any) => { e.stopPropagation(); setDeleteTarget(r); }} {...{ style: { background: 'none', border: 'none', cursor: 'pointer', color: '#ef4444', padding: 4 } }} aria-label={`Xóa ${r.ten}`}>
+                        <button onClick={(e: any) => { e.stopPropagation(); setDeleteTarget(r); }} {...{ style: { background: 'none', border: 'none', cursor: 'pointer', color: 'var(--vct-danger)', padding: 4 } }} aria-label={`Xóa ${r.ten}`}>
                             <VCT_Icons.Trash size={14} />
                         </button>
                     )}
@@ -400,10 +400,10 @@ export const Page_teams = () => {
 
             {/* ── KPI ROW ── */}
             <VCT_StatRow items={[
-                { label: 'Tổng đơn vị', value: teams.length, icon: <VCT_Icons.Building2 size={18} />, color: '#0ea5e9', sub: `Quota: ${teams.length}/${TOURNAMENT_CONFIG.quota.max_doan}` },
-                { label: 'Tổng VĐV', value: totalVdv, icon: <VCT_Icons.Users size={18} />, color: '#f59e0b', sub: `${totalNam} Nam — ${totalNu} Nữ` },
-                { label: 'Xác nhận', value: teams.filter(t => t.trang_thai === 'da_xac_nhan' || t.trang_thai === 'da_checkin').length, icon: <VCT_Icons.Check size={18} />, color: '#10b981' },
-                { label: 'Chờ duyệt', value: teams.filter(t => t.trang_thai === 'cho_duyet').length, icon: <VCT_Icons.Clock size={18} />, color: '#f59e0b' },
+                { label: 'Tổng đơn vị', value: teams.length, icon: <VCT_Icons.Building2 size={18} />, color: 'var(--vct-accent-cyan)', sub: `Quota: ${teams.length}/${TOURNAMENT_CONFIG.quota.max_doan}` },
+                { label: 'Tổng VĐV', value: totalVdv, icon: <VCT_Icons.Users size={18} />, color: 'var(--vct-warning)', sub: `${totalNam} Nam — ${totalNu} Nữ` },
+                { label: 'Xác nhận', value: teams.filter(t => t.trang_thai === 'da_xac_nhan' || t.trang_thai === 'da_checkin').length, icon: <VCT_Icons.Check size={18} />, color: 'var(--vct-success)' },
+                { label: 'Chờ duyệt', value: teams.filter(t => t.trang_thai === 'cho_duyet').length, icon: <VCT_Icons.Clock size={18} />, color: 'var(--vct-warning)' },
             ] as StatItem[]} className="mb-6" />
 
             {/* ── STATUS PIPELINE ── */}
@@ -438,7 +438,7 @@ export const Page_teams = () => {
                         </thead>
                         <tbody>
                             {filtered.map((team, idx) => {
-                                const stColor = TRANG_THAI_DOAN_MAP[team.trang_thai]?.color || '#94a3b8';
+                                const stColor = TRANG_THAI_DOAN_MAP[team.trang_thai]?.color || 'var(--vct-text-tertiary)';
                                 return (
                                     <React.Fragment key={team.id}>
                                         <tr onClick={() => setExpandedId(expandedId === team.id ? null : team.id)}

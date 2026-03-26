@@ -1,7 +1,7 @@
 'use client'
 import React, { useState, useMemo } from 'react'
 import { motion } from 'framer-motion'
-import { VCT_Icons } from '../components/vct-icons'
+import { VCT_Icons } from '@vct/ui'
 
 interface CommunityGroup {
     id: string; name: string; type: string; desc: string
@@ -17,7 +17,7 @@ const GROUPS: CommunityGroup[] = [
     { id: 'g6', name: 'Phụ Huynh VĐV Nhí', type: 'interest', desc: 'Hỗ trợ phụ huynh theo dõi con em tập luyện.', members: 560, posts: 145, avatar: '👨‍👩‍👧‍👦', joined: true, lastActive: '30 phút', tags: ['Phụ huynh', 'Thiếu nhi'] },
 ]
 
-const COLORS: Record<string, string> = { club: '#f59e0b', school: '#8b5cf6', region: '#3b82f6', interest: '#10b981' }
+const COLORS: Record<string, string> = { club: 'var(--vct-warning)', school: 'var(--vct-info)', region: 'var(--vct-info)', interest: 'var(--vct-success)' }
 const LABELS: Record<string, string> = { club: 'CLB', school: 'Dòng phái', region: 'Khu vực', interest: 'Chủ đề' }
 
 export function Page_community_groups() {
@@ -69,7 +69,7 @@ export function Page_community_groups() {
                 {filtered.map(g => (
                     <motion.div key={g.id} layout initial={{ opacity: 0 }} animate={{ opacity: 1 }}
                         className="rounded-xl border border-vct-border bg-vct-elevated overflow-hidden hover:shadow-lg hover:border-vct-accent/50 transition cursor-pointer">
-                        <div className="h-1.5" style={{ background: COLORS[g.type] || '#64748b' }} />
+                        <div className="h-1.5" style={{ background: COLORS[g.type] || 'var(--vct-text-tertiary)' }} />
                         <div className="p-4">
                             <div className="flex items-start gap-3 mb-3">
                                 <div className="h-12 w-12 rounded-xl bg-vct-input flex items-center justify-center text-2xl shrink-0">{g.avatar}</div>

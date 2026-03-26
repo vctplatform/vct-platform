@@ -116,8 +116,11 @@ type startTracker struct {
 	order *[]string
 }
 
-func (s *startTracker) Name() string                  { return s.name }
-func (s *startTracker) Start(_ context.Context) error { *s.order = append(*s.order, s.name); return nil }
+func (s *startTracker) Name() string { return s.name }
+func (s *startTracker) Start(_ context.Context) error {
+	*s.order = append(*s.order, s.name)
+	return nil
+}
 
 func TestStopAll_ReverseOrder(t *testing.T) {
 	reg := New()

@@ -40,7 +40,7 @@ func (s *Server) handlePartnerList(w http.ResponseWriter, r *http.Request, _ aut
 		partners, err = s.Federation.International.ListPartners(r.Context())
 	}
 	if err != nil {
-		internalError(w, err)
+		apiInternal(w, err)
 		return
 	}
 	success(w, http.StatusOK, map[string]any{"partners": partners, "total": len(partners)})
@@ -49,12 +49,12 @@ func (s *Server) handlePartnerList(w http.ResponseWriter, r *http.Request, _ aut
 func (s *Server) handlePartnerCreate(w http.ResponseWriter, r *http.Request) {
 	var partner international.PartnerOrganization
 	if err := json.NewDecoder(r.Body).Decode(&partner); err != nil {
-		badRequest(w, "invalid JSON: "+err.Error())
+		apiError(w, http.StatusBadRequest, CodeBadRequest, "invalid JSON: "+err.Error())
 		return
 	}
 	created, err := s.Federation.International.CreatePartner(r.Context(), partner)
 	if err != nil {
-		badRequest(w, err.Error())
+		apiError(w, http.StatusBadRequest, CodeBadRequest, err.Error())
 		return
 	}
 	success(w, http.StatusCreated, created)
@@ -63,26 +63,26 @@ func (s *Server) handlePartnerCreate(w http.ResponseWriter, r *http.Request) {
 func (s *Server) handlePartnerCRUD(w http.ResponseWriter, r *http.Request, _ auth.Principal) {
 	id := strings.TrimPrefix(r.URL.Path, "/api/v1/international/partners/")
 	if id == "" {
-		badRequest(w, "partner ID required")
+		apiError(w, http.StatusBadRequest, CodeBadRequest, "partner ID required")
 		return
 	}
 	switch r.Method {
 	case http.MethodGet:
 		partner, err := s.Federation.International.GetPartner(r.Context(), id)
 		if err != nil {
-			notFoundError(w, "partner not found")
+			apiError(w, http.StatusNotFound, CodeNotFound, "partner not found")
 			return
 		}
 		success(w, http.StatusOK, partner)
 	case http.MethodPut:
 		var partner international.PartnerOrganization
 		if err := json.NewDecoder(r.Body).Decode(&partner); err != nil {
-			badRequest(w, "invalid JSON: "+err.Error())
+			apiError(w, http.StatusBadRequest, CodeBadRequest, "invalid JSON: "+err.Error())
 			return
 		}
 		updated, err := s.Federation.International.UpdatePartner(r.Context(), id, partner)
 		if err != nil {
-			badRequest(w, err.Error())
+			apiError(w, http.StatusBadRequest, CodeBadRequest, err.Error())
 			return
 		}
 		success(w, http.StatusOK, updated)
@@ -100,7 +100,7 @@ func (s *Server) handleIntlEventList(w http.ResponseWriter, r *http.Request, _ a
 	}
 	events, err := s.Federation.International.ListEvents(r.Context())
 	if err != nil {
-		internalError(w, err)
+		apiInternal(w, err)
 		return
 	}
 	success(w, http.StatusOK, map[string]any{"events": events, "total": len(events)})
@@ -109,12 +109,12 @@ func (s *Server) handleIntlEventList(w http.ResponseWriter, r *http.Request, _ a
 func (s *Server) handleIntlEventCreate(w http.ResponseWriter, r *http.Request) {
 	var event international.InternationalEvent
 	if err := json.NewDecoder(r.Body).Decode(&event); err != nil {
-		badRequest(w, "invalid JSON: "+err.Error())
+		apiError(w, http.StatusBadRequest, CodeBadRequest, "invalid JSON: "+err.Error())
 		return
 	}
 	created, err := s.Federation.International.CreateEvent(r.Context(), event)
 	if err != nil {
-		badRequest(w, err.Error())
+		apiError(w, http.StatusBadRequest, CodeBadRequest, err.Error())
 		return
 	}
 	success(w, http.StatusCreated, created)
@@ -123,12 +123,12 @@ func (s *Server) handleIntlEventCreate(w http.ResponseWriter, r *http.Request) {
 func (s *Server) handleIntlEventCRUD(w http.ResponseWriter, r *http.Request, _ auth.Principal) {
 	id := strings.TrimPrefix(r.URL.Path, "/api/v1/international/events/")
 	if id == "" {
-		badRequest(w, "event ID required")
+		apiError(w, http.StatusBadRequest, CodeBadRequest, "event ID required")
 		return
 	}
 	event, err := s.Federation.International.GetEvent(r.Context(), id)
 	if err != nil {
-		notFoundError(w, "event not found")
+		apiError(w, http.StatusNotFound, CodeNotFound, "event not found")
 		return
 	}
 	success(w, http.StatusOK, event)
@@ -151,7 +151,7 @@ func (s *Server) handleDelegationList(w http.ResponseWriter, r *http.Request, _ 
 		delegations, err = s.Federation.International.ListDelegationsByEvent(r.Context(), "")
 	}
 	if err != nil {
-		internalError(w, err)
+		apiInternal(w, err)
 		return
 	}
 	success(w, http.StatusOK, map[string]any{"delegations": delegations, "total": len(delegations)})
@@ -160,12 +160,12 @@ func (s *Server) handleDelegationList(w http.ResponseWriter, r *http.Request, _ 
 func (s *Server) handleDelegationCreate(w http.ResponseWriter, r *http.Request) {
 	var deleg international.Delegation
 	if err := json.NewDecoder(r.Body).Decode(&deleg); err != nil {
-		badRequest(w, "invalid JSON: "+err.Error())
+		apiError(w, http.StatusBadRequest, CodeBadRequest, "invalid JSON: "+err.Error())
 		return
 	}
 	created, err := s.Federation.International.CreateDelegation(r.Context(), deleg)
 	if err != nil {
-		badRequest(w, err.Error())
+		apiError(w, http.StatusBadRequest, CodeBadRequest, err.Error())
 		return
 	}
 	success(w, http.StatusCreated, created)
@@ -174,26 +174,26 @@ func (s *Server) handleDelegationCreate(w http.ResponseWriter, r *http.Request) 
 func (s *Server) handleDelegationCRUD(w http.ResponseWriter, r *http.Request, _ auth.Principal) {
 	id := strings.TrimPrefix(r.URL.Path, "/api/v1/international/delegations/")
 	if id == "" {
-		badRequest(w, "delegation ID required")
+		apiError(w, http.StatusBadRequest, CodeBadRequest, "delegation ID required")
 		return
 	}
 	switch r.Method {
 	case http.MethodGet:
 		deleg, err := s.Federation.International.GetDelegation(r.Context(), id)
 		if err != nil {
-			notFoundError(w, "delegation not found")
+			apiError(w, http.StatusNotFound, CodeNotFound, "delegation not found")
 			return
 		}
 		success(w, http.StatusOK, deleg)
 	case http.MethodPut:
 		var deleg international.Delegation
 		if err := json.NewDecoder(r.Body).Decode(&deleg); err != nil {
-			badRequest(w, "invalid JSON: "+err.Error())
+			apiError(w, http.StatusBadRequest, CodeBadRequest, "invalid JSON: "+err.Error())
 			return
 		}
 		updated, err := s.Federation.International.UpdateDelegation(r.Context(), id, deleg)
 		if err != nil {
-			badRequest(w, err.Error())
+			apiError(w, http.StatusBadRequest, CodeBadRequest, err.Error())
 			return
 		}
 		success(w, http.StatusOK, updated)

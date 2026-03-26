@@ -6,8 +6,8 @@
 'use client';
 import React, { useState } from 'react';
 import { useApiQuery, useApiMutation } from '../hooks/useApiQuery';
-import { VCT_PageContainer } from '../components/VCT_PageContainer';
-import { VCT_Icons } from '../components/vct-icons';
+import { VCT_PageContainer } from '@vct/ui';
+import { VCT_Icons } from '@vct/ui';
 
 // ── Types ────────────────────────────────────────────────────
 
@@ -51,18 +51,18 @@ interface ApprovalRequest {
 // ── Status Helpers ───────────────────────────────────────────
 
 const STATUS_MAP: Record<string, { label: string; color: string; bg: string; icon: string }> = {
-    pending: { label: 'Chờ xử lý', color: '#f59e0b', bg: 'rgba(245,158,11,0.15)', icon: '⏳' },
-    in_review: { label: 'Đang xem xét', color: '#3b82f6', bg: 'rgba(59,130,246,0.15)', icon: '🔍' },
-    approved: { label: 'Đã phê duyệt', color: '#10b981', bg: 'rgba(16,185,129,0.15)', icon: '✅' },
-    rejected: { label: 'Từ chối', color: '#ef4444', bg: 'rgba(239,68,68,0.15)', icon: '❌' },
-    returned: { label: 'Trả lại', color: '#f97316', bg: 'rgba(249,115,22,0.15)', icon: '↩️' },
-    cancelled: { label: 'Đã hủy', color: '#6b7280', bg: 'rgba(107,114,128,0.15)', icon: '🚫' },
+    pending: { label: 'Chờ xử lý', color: 'var(--vct-warning)', bg: 'rgba(245,158,11,0.15)', icon: '⏳' },
+    in_review: { label: 'Đang xem xét', color: 'var(--vct-info)', bg: 'rgba(59,130,246,0.15)', icon: '🔍' },
+    approved: { label: 'Đã phê duyệt', color: 'var(--vct-success)', bg: 'rgba(16,185,129,0.15)', icon: '✅' },
+    rejected: { label: 'Từ chối', color: 'var(--vct-danger)', bg: 'rgba(239,68,68,0.15)', icon: '❌' },
+    returned: { label: 'Trả lại', color: 'var(--vct-warning)', bg: 'rgba(249,115,22,0.15)', icon: '↩️' },
+    cancelled: { label: 'Đã hủy', color: 'var(--vct-text-tertiary)', bg: 'rgba(107,114,128,0.15)', icon: '🚫' },
 };
 
 const DECISION_MAP: Record<string, { label: string; color: string }> = {
-    approved: { label: 'Đồng ý', color: '#10b981' },
-    rejected: { label: 'Từ chối', color: '#ef4444' },
-    returned: { label: 'Trả lại', color: '#f97316' },
+    approved: { label: 'Đồng ý', color: 'var(--vct-success)' },
+    rejected: { label: 'Từ chối', color: 'var(--vct-danger)' },
+    returned: { label: 'Trả lại', color: 'var(--vct-warning)' },
 };
 
 const ROLE_LABELS: Record<string, string> = {
@@ -146,7 +146,7 @@ export function Page_approval_detail({ requestId }: Props) {
         );
     }
 
-    const statusFallback = { label: 'Chờ xử lý', color: '#f59e0b', bg: 'rgba(245,158,11,0.15)', icon: '⏳' };
+    const statusFallback = { label: 'Chờ xử lý', color: 'var(--vct-warning)', bg: 'rgba(245,158,11,0.15)', icon: '⏳' };
     const statusInfo = STATUS_MAP[request.status] ?? statusFallback;
     const isActionable = request.status === 'pending' || request.status === 'in_review';
     const deadlineDays = request.deadline ? daysRemaining(request.deadline) : null;
@@ -208,13 +208,13 @@ export function Page_approval_detail({ requestId }: Props) {
                             <div key={step.id} className="flex gap-4 relative" style={{ marginBottom: i < steps.length - 1 ? 20 : 0 }}>
                                 {i < steps.length - 1 && (
                                     <div className="absolute left-[18px] top-10 bottom-[-20px] w-0.5"
-                                        style={{ background: isDone ? '#10b981' : 'rgba(148,163,184,0.15)' }} />
+                                        style={{ background: isDone ? 'var(--vct-success)' : 'rgba(148,163,184,0.15)' }} />
                                 )}
                                 <div className="w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold z-10 shrink-0 border-2"
                                     style={{
                                         background: isDone ? 'rgba(16,185,129,0.15)' : isRejected ? 'rgba(239,68,68,0.15)' : isActive ? 'rgba(59,130,246,0.15)' : 'rgba(148,163,184,0.05)',
-                                        borderColor: isDone ? '#10b981' : isRejected ? '#ef4444' : isActive ? '#3b82f6' : 'rgba(148,163,184,0.15)',
-                                        color: isDone ? '#10b981' : isRejected ? '#ef4444' : isActive ? '#3b82f6' : '#64748b',
+                                        borderColor: isDone ? 'var(--vct-success)' : isRejected ? 'var(--vct-danger)' : isActive ? 'var(--vct-info)' : 'rgba(148,163,184,0.15)',
+                                        color: isDone ? 'var(--vct-success)' : isRejected ? 'var(--vct-danger)' : isActive ? 'var(--vct-info)' : 'var(--vct-text-tertiary)',
                                         boxShadow: isActive ? '0 0 12px rgba(59,130,246,0.2)' : 'none',
                                     }}>
                                     {isDone ? '✓' : isRejected ? '✗' : step.step_number}
@@ -315,8 +315,8 @@ export function Page_approval_detail({ requestId }: Props) {
                                     style={{
                                         background: h.action === 'approved' ? 'rgba(16,185,129,0.15)' :
                                             h.action === 'rejected' ? 'rgba(239,68,68,0.15)' : 'rgba(59,130,246,0.15)',
-                                        color: h.action === 'approved' ? '#10b981' :
-                                            h.action === 'rejected' ? '#ef4444' : '#3b82f6',
+                                        color: h.action === 'approved' ? 'var(--vct-success)' :
+                                            h.action === 'rejected' ? 'var(--vct-danger)' : 'var(--vct-info)',
                                     }}>
                                     {h.action === 'submitted' ? '📝' : h.action === 'approved' ? '✓' : h.action === 'rejected' ? '✗' : '↩'}
                                 </div>

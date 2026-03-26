@@ -9,10 +9,10 @@ import {
     VCT_SearchInput, VCT_Modal, VCT_Input, VCT_Field, VCT_Select,
     VCT_ConfirmDialog, VCT_EmptyState, VCT_FilterChips,
     VCT_BulkActionsBar, VCT_Tabs
-} from '../components/vct-ui'
-import { VCT_PageContainer, VCT_PageHero, VCT_StatRow } from '../components/vct-ui'
-import type { StatItem } from '../components/VCT_StatRow'
-import { VCT_Icons } from '../components/vct-icons'
+} from '@vct/ui'
+import { VCT_PageContainer, VCT_PageHero, VCT_StatRow } from '@vct/ui'
+import type { StatItem } from '@vct/ui'
+import { VCT_Icons } from '@vct/ui'
 import { 
     useCurriculums, 
     useCreateCurriculum, 
@@ -29,20 +29,20 @@ import { useAnalytics } from '../mobile/useAnalytics'
 type BeltLevel = 'trang' | 'xanh' | 'vang' | 'do' | 'nau' | 'den' | 'den_1' | 'den_2'
 
 const BELT_MAP: Record<BeltLevel, { label: string; color: string; bg: string }> = {
-    trang: { label: 'Đai Trắng (Nhập môn)', color: '#1e293b', bg: '#f1f5f9' },
-    xanh: { label: 'Đai Xanh', color: '#fff', bg: '#3b82f6' },
-    vang: { label: 'Đai Vàng', color: '#1e293b', bg: '#eab308' },
-    do: { label: 'Đai Đỏ', color: '#fff', bg: '#ef4444' },
-    nau: { label: 'Đai Nâu', color: '#fff', bg: '#78350f' },
-    den: { label: 'Đai Đen', color: '#fff', bg: '#000000' },
-    den_1: { label: 'Đai Đen 1 Đẳng', color: '#fff', bg: '#000000' },
-    den_2: { label: 'Đai Đen 2 Đẳng', color: '#fff', bg: '#000000' },
+    trang: { label: 'Đai Trắng (Nhập môn)', color: 'var(--vct-bg-input)', bg: '#f1f5f9' },
+    xanh: { label: 'Đai Xanh', color: 'var(--vct-bg-elevated)', bg: '#3b82f6' },
+    vang: { label: 'Đai Vàng', color: 'var(--vct-bg-input)', bg: '#eab308' },
+    do: { label: 'Đai Đỏ', color: 'var(--vct-bg-elevated)', bg: '#ef4444' },
+    nau: { label: 'Đai Nâu', color: 'var(--vct-bg-elevated)', bg: '#78350f' },
+    den: { label: 'Đai Đen', color: 'var(--vct-bg-elevated)', bg: '#000000' },
+    den_1: { label: 'Đai Đen 1 Đẳng', color: 'var(--vct-bg-elevated)', bg: '#000000' },
+    den_2: { label: 'Đai Đen 2 Đẳng', color: 'var(--vct-bg-elevated)', bg: '#000000' },
 }
 
 const STATUS_MAP: Record<string, { label: string; type: 'success' | 'warning' | 'neutral'; color: string }> = {
-    published: { label: 'Ban hành', type: 'success', color: '#10b981' },
-    draft: { label: 'Bản nháp', type: 'warning', color: '#f59e0b' },
-    archived: { label: 'Lưu trữ', type: 'neutral', color: '#94a3b8' }
+    published: { label: 'Ban hành', type: 'success', color: 'var(--vct-success)' },
+    draft: { label: 'Bản nháp', type: 'warning', color: 'var(--vct-warning)' },
+    archived: { label: 'Lưu trữ', type: 'neutral', color: 'var(--vct-text-tertiary)' }
 }
 
 const BLANK_FORM: Partial<Curriculum> = {
@@ -243,8 +243,8 @@ export const Page_curriculum = () => {
 
     const columns = [
         {
-            key: 'checkbox', label: <input type="checkbox" aria-label="Chọn tất cả giáo trình" checked={selectedIds.size === filtered.length && filtered.length > 0} onChange={toggleSelectAll} {...{ style: { width: 16, height: 16, accentColor: '#22d3ee' } }} />, align: 'center' as const,
-            render: (r: Curriculum) => <input type="checkbox" aria-label={`Chọn giáo trình ${r.title}`} checked={selectedIds.has(r.id)} onChange={() => toggleSelect(r.id)} onClick={(e: React.MouseEvent) => e.stopPropagation()} {...{ style: { width: 16, height: 16, accentColor: '#22d3ee' } }} />
+            key: 'checkbox', label: <input type="checkbox" aria-label="Chọn tất cả giáo trình" checked={selectedIds.size === filtered.length && filtered.length > 0} onChange={toggleSelectAll} {...{ style: { width: 16, height: 16, accentColor: 'var(--vct-accent-cyan)' } }} />, align: 'center' as const,
+            render: (r: Curriculum) => <input type="checkbox" aria-label={`Chọn giáo trình ${r.title}`} checked={selectedIds.has(r.id)} onChange={() => toggleSelect(r.id)} onClick={(e: React.MouseEvent) => e.stopPropagation()} {...{ style: { width: 16, height: 16, accentColor: 'var(--vct-accent-cyan)' } }} />
         },
         {
             key: 'title', label: 'Tên Giáo Trình', render: (r: Curriculum) => (
@@ -293,7 +293,7 @@ export const Page_curriculum = () => {
                     <button onClick={(e) => { e.stopPropagation(); openEditModal(r); }} {...{ style: { background: 'none', border: 'none', cursor: 'pointer', color: 'var(--vct-text-tertiary)', padding: 4 } }} aria-label={`Sửa giáo trình ${r.title}`}>
                         <VCT_Icons.Edit size={16} />
                     </button>
-                    <button onClick={(e) => { e.stopPropagation(); handleDeleteTarget(r); }} {...{ style: { background: 'none', border: 'none', cursor: 'pointer', color: '#ef4444', padding: 4 } }} aria-label={`Xóa giáo trình ${r.title}`}>
+                    <button onClick={(e) => { e.stopPropagation(); handleDeleteTarget(r); }} {...{ style: { background: 'none', border: 'none', cursor: 'pointer', color: 'var(--vct-danger)', padding: 4 } }} aria-label={`Xóa giáo trình ${r.title}`}>
                         <VCT_Icons.Trash size={16} />
                     </button>
                 </VCT_Stack>
@@ -314,10 +314,10 @@ export const Page_curriculum = () => {
             />
 
             <VCT_StatRow items={[
-                { label: 'Hiện hành', value: civs.filter(c => c.status === 'published').length, icon: <VCT_Icons.Book size={18} />, color: '#0ea5e9' },
-                { label: 'Bài quyền', value: totalForms, icon: <VCT_Icons.Video size={18} />, color: '#f59e0b' },
-                { label: 'Kỹ thuật', value: totalTechniques, icon: <VCT_Icons.Activity size={18} />, color: '#10b981' },
-                { label: 'Cấp đai', value: Object.keys(BELT_MAP).length, icon: <VCT_Icons.Award size={18} />, color: '#8b5cf6' },
+                { label: 'Hiện hành', value: civs.filter(c => c.status === 'published').length, icon: <VCT_Icons.Book size={18} />, color: 'var(--vct-accent-cyan)' },
+                { label: 'Bài quyền', value: totalForms, icon: <VCT_Icons.Video size={18} />, color: 'var(--vct-warning)' },
+                { label: 'Kỹ thuật', value: totalTechniques, icon: <VCT_Icons.Activity size={18} />, color: 'var(--vct-success)' },
+                { label: 'Cấp đai', value: Object.keys(BELT_MAP).length, icon: <VCT_Icons.Award size={18} />, color: 'var(--vct-info)' },
             ] as StatItem[]} className="mb-6" />
 
             {/* ── FILTER CHIPS ── */}
@@ -366,7 +366,7 @@ export const Page_curriculum = () => {
                         </thead>
                         <tbody>
                             {filtered.map((civ, idx) => {
-                                const stColor = STATUS_MAP[civ.status]?.color || '#94a3b8'
+                                const stColor = STATUS_MAP[civ.status]?.color || 'var(--vct-text-tertiary)'
                                 return (
                                     <tr key={civ.id} {...{ style: { borderBottom: '1px solid var(--vct-border-subtle)', background: selectedIds.has(civ.id) ? 'rgba(34, 211, 238, 0.05)' : idx % 2 === 0 ? 'transparent' : 'rgba(128,128,128,0.02)', borderLeft: `3px solid ${stColor}` } }}>
                                         {columns.map((col, ci) => (

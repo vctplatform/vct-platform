@@ -5,10 +5,10 @@ import { useState, useMemo } from 'react'
 import {
     VCT_Button, VCT_Stack, VCT_SearchInput,
     VCT_Badge, VCT_Tabs
-} from '../components/vct-ui'
-import { VCT_PageContainer, VCT_PageHero, VCT_SectionCard, VCT_StatRow } from '../components/vct-ui'
-import type { StatItem } from '../components/VCT_StatRow'
-import { VCT_Icons } from '../components/vct-icons'
+} from '@vct/ui'
+import { VCT_PageContainer, VCT_PageHero, VCT_SectionCard, VCT_StatRow } from '@vct/ui'
+import type { StatItem } from '@vct/ui'
+import { VCT_Icons } from '@vct/ui'
 import { useTransactions } from '../hooks/useFinanceAPI'
 
 // ════════════════════════════════════════
@@ -70,10 +70,10 @@ export const Page_finance = () => {
     const balance = totalIncome - totalExpense
 
     const kpis: StatItem[] = [
-        { label: 'Tổng Quỹ Hiện Tại', value: `${(balance / 1000000).toFixed(1)}M`, icon: <VCT_Icons.DollarSign size={18} />, color: '#0ea5e9' },
-        { label: 'Tổng Thu (Tháng)', value: `${(totalIncome / 1000000).toFixed(1)}M`, icon: <VCT_Icons.TrendingUp size={18} />, color: '#10b981' },
-        { label: 'Tổng Chi (Tháng)', value: `${(totalExpense / 1000000).toFixed(1)}M`, icon: <VCT_Icons.TrendingDown size={18} />, color: '#ef4444' },
-        { label: 'Chờ Thanh Toán', value: `${(transactions.filter(t => t.status === 'pending').reduce((a, c) => a + c.amount, 0) / 1000000).toFixed(1)}M`, icon: <VCT_Icons.Clock size={18} />, color: '#f59e0b' },
+        { label: 'Tổng Quỹ Hiện Tại', value: `${(balance / 1000000).toFixed(1)}M`, icon: <VCT_Icons.DollarSign size={18} />, color: 'var(--vct-accent-cyan)' },
+        { label: 'Tổng Thu (Tháng)', value: `${(totalIncome / 1000000).toFixed(1)}M`, icon: <VCT_Icons.TrendingUp size={18} />, color: 'var(--vct-success)' },
+        { label: 'Tổng Chi (Tháng)', value: `${(totalExpense / 1000000).toFixed(1)}M`, icon: <VCT_Icons.TrendingDown size={18} />, color: 'var(--vct-danger)' },
+        { label: 'Chờ Thanh Toán', value: `${(transactions.filter(t => t.status === 'pending').reduce((a, c) => a + c.amount, 0) / 1000000).toFixed(1)}M`, icon: <VCT_Icons.Clock size={18} />, color: 'var(--vct-warning)' },
     ]
 
     return (
@@ -102,8 +102,8 @@ export const Page_finance = () => {
 
             {/* ── QUICK ACTIONS ── */}
             <div className="mb-8 grid grid-cols-1 md:grid-cols-4 gap-4">
-                <div className="bg-linear-to-br from-[#10b98120] to-transparent border border-[#10b98140] rounded-xl p-6 flex items-center gap-4 cursor-pointer hover:border-[#10b981] transition-colors">
-                    <div className="w-12 h-12 rounded-full bg-[#10b981] flex items-center justify-center text-white shrink-0 shadow-lg shadow-[#10b98140]">
+                <div className="bg-linear-to-br from-[#10b98120] to-transparent border border-[#10b98140] rounded-xl p-6 flex items-center gap-4 cursor-pointer hover:border-(--vct-success) transition-colors">
+                    <div className="w-12 h-12 rounded-full bg-(--vct-success) flex items-center justify-center text-white shrink-0 shadow-lg shadow-[#10b98140]">
                         <VCT_Icons.ArrowDownLeft size={24} />
                     </div>
                     <div>
@@ -112,8 +112,8 @@ export const Page_finance = () => {
                     </div>
                 </div>
 
-                <div className="bg-linear-to-br from-[#ef444420] to-transparent border border-[#ef444440] rounded-xl p-6 flex items-center gap-4 cursor-pointer hover:border-[#ef4444] transition-colors">
-                    <div className="w-12 h-12 rounded-full bg-[#ef4444] flex items-center justify-center text-white shrink-0 shadow-lg shadow-[#ef444440]">
+                <div className="bg-linear-to-br from-[#ef444420] to-transparent border border-[#ef444440] rounded-xl p-6 flex items-center gap-4 cursor-pointer hover:border-(--vct-danger) transition-colors">
+                    <div className="w-12 h-12 rounded-full bg-(--vct-danger) flex items-center justify-center text-white shrink-0 shadow-lg shadow-[#ef444440]">
                         <VCT_Icons.ArrowUpRight size={24} />
                     </div>
                     <div>
@@ -122,8 +122,8 @@ export const Page_finance = () => {
                     </div>
                 </div>
 
-                <div className="bg-linear-to-br from-[#8b5cf620] to-transparent border border-[#8b5cf640] rounded-xl p-6 flex items-center gap-4 cursor-pointer hover:border-[#8b5cf6] transition-colors">
-                    <div className="w-12 h-12 rounded-full bg-[#8b5cf6] flex items-center justify-center text-white shrink-0 shadow-lg shadow-[#8b5cf640]">
+                <div className="bg-linear-to-br from-[#8b5cf620] to-transparent border border-[#8b5cf640] rounded-xl p-6 flex items-center gap-4 cursor-pointer hover:border-(--vct-info) transition-colors">
+                    <div className="w-12 h-12 rounded-full bg-(--vct-info) flex items-center justify-center text-white shrink-0 shadow-lg shadow-[#8b5cf640]">
                         <VCT_Icons.FileText size={24} />
                     </div>
                     <div>
@@ -160,7 +160,7 @@ export const Page_finance = () => {
             </div>
 
             {/* ── LIST ── */}
-            <VCT_SectionCard flush accentColor="#0ea5e9">
+            <VCT_SectionCard flush accentColor="var(--vct-accent-cyan)">
                 <table className="w-full text-left border-collapse">
                     <thead>
                         <tr className="border-b border-vct-border bg-vct-elevated text-[11px] uppercase tracking-wider text-vct-text-tertiary font-bold">
@@ -193,11 +193,11 @@ export const Page_finance = () => {
                                 </td>
                                 <td className="p-4 text-right">
                                     {trx.type === 'income' ? (
-                                        <div className="font-bold text-[#10b981] bg-[#10b98110] px-2 py-1 rounded inline-block">
+                                        <div className="font-bold text-(--vct-success) bg-[#10b98110] px-2 py-1 rounded inline-block">
                                             + {trx.amount.toLocaleString()}
                                         </div>
                                     ) : (
-                                        <div className="font-bold text-[#ef4444] bg-[#ef444410] px-2 py-1 rounded inline-block">
+                                        <div className="font-bold text-(--vct-danger) bg-[#ef444410] px-2 py-1 rounded inline-block">
                                             - {trx.amount.toLocaleString()}
                                         </div>
                                     )}

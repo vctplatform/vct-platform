@@ -2,11 +2,11 @@ import Link from 'next/link'
 
 export default function NotFound() {
   return (
-    <div style={{ display: 'grid', placeItems: 'center', minHeight: '50vh', padding: 24 }}>
-      <div style={{ textAlign: 'center' }}>
-        <h2 style={{ marginBottom: 8 }}>Không tìm thấy trang</h2>
-        <p style={{ opacity: 0.7, marginBottom: 16 }}>Liên kết có thể đã thay đổi hoặc không tồn tại.</p>
-        <Link href="/" style={{ color: '#0ea5e9', fontWeight: 700 }}>
+    <div className="grid place-items-center min-h-[50vh] p-6">
+      <div className="text-center">
+        <h2 className="mb-2 text-2xl font-bold">Không tìm thấy trang</h2>
+        <p className="opacity-70 mb-4 text-(--vct-text-primary)">Liên kết có thể đã thay đổi hoặc không tồn tại.</p>
+        <Link href="/" className="text-(--vct-accent-cyan) font-bold hover:opacity-80 transition">
           Về trang tổng quan
         </Link>
       </div>

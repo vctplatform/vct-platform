@@ -1,9 +1,9 @@
 'use client'
 
 import * as React from 'react'
-import { VCT_PageContainer, VCT_StatRow } from '../components/vct-ui'
-import type { StatItem } from '../components/VCT_StatRow'
-import { VCT_Icons } from '../components/vct-icons'
+import { VCT_PageContainer, VCT_StatRow } from '@vct/ui'
+import type { StatItem } from '@vct/ui'
+import { VCT_Icons } from '@vct/ui'
 
 // ════════════════════════════════════════════════════════════════
 // PROVINCIAL — COACH MANAGEMENT (Quản lý HLV cấp tỉnh)
@@ -20,9 +20,9 @@ const MOCK_COACHES = [
 ]
 
 const LEVEL_MAP: Record<string, { label: string; color: string }> = {
-    MASTER: { label: 'Bậc Cao', color: '#ef4444' },
-    NATIONAL: { label: 'Quốc gia', color: '#f59e0b' },
-    PROVINCIAL: { label: 'Cấp tỉnh', color: '#0ea5e9' },
+    MASTER: { label: 'Bậc Cao', color: 'var(--vct-danger)' },
+    NATIONAL: { label: 'Quốc gia', color: 'var(--vct-warning)' },
+    PROVINCIAL: { label: 'Cấp tỉnh', color: 'var(--vct-accent-cyan)' },
 }
 
 export const Page_province_coaches = () => {
@@ -43,10 +43,10 @@ export const Page_province_coaches = () => {
             </div>
 
             <VCT_StatRow items={[
-                { label: 'Tổng HLV', value: MOCK_COACHES.length, icon: <VCT_Icons.Award size={18} />, color: '#10b981' },
-                { label: 'Bậc Cao', value: MOCK_COACHES.filter(c => c.level === 'MASTER').length, icon: <VCT_Icons.Star size={18} />, color: '#ef4444' },
-                { label: 'Quốc gia', value: MOCK_COACHES.filter(c => c.level === 'NATIONAL').length, icon: <VCT_Icons.Shield size={18} />, color: '#f59e0b' },
-                { label: 'Cấp tỉnh', value: MOCK_COACHES.filter(c => c.level === 'PROVINCIAL').length, icon: <VCT_Icons.User size={18} />, color: '#0ea5e9' },
+                { label: 'Tổng HLV', value: MOCK_COACHES.length, icon: <VCT_Icons.Award size={18} />, color: 'var(--vct-success)' },
+                { label: 'Bậc Cao', value: MOCK_COACHES.filter(c => c.level === 'MASTER').length, icon: <VCT_Icons.Star size={18} />, color: 'var(--vct-danger)' },
+                { label: 'Quốc gia', value: MOCK_COACHES.filter(c => c.level === 'NATIONAL').length, icon: <VCT_Icons.Shield size={18} />, color: 'var(--vct-warning)' },
+                { label: 'Cấp tỉnh', value: MOCK_COACHES.filter(c => c.level === 'PROVINCIAL').length, icon: <VCT_Icons.User size={18} />, color: 'var(--vct-accent-cyan)' },
             ] as StatItem[]} className="mb-6" />
 
             {/* Filters */}

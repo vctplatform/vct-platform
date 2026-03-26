@@ -4,9 +4,9 @@ import * as React from 'react'
 import { useMemo } from 'react'
 import {
     VCT_Badge, VCT_Stack, VCT_PageContainer, VCT_StatRow
-} from '../components/vct-ui'
-import type { StatItem } from '../components/VCT_StatRow'
-import { VCT_Icons } from '../components/vct-icons'
+} from '@vct/ui'
+import type { StatItem } from '@vct/ui'
+import { VCT_Icons } from '@vct/ui'
 import { usePRArticles, type NewsArticle } from '../hooks/useFederationAPI'
 
 // ════════════════════════════════════════
@@ -28,8 +28,8 @@ const MEDIA_STATS = {
 }
 
 const CATEGORY_COLORS: Record<string, string> = {
-    'Giải đấu': '#10b981', 'Quốc tế': '#0ea5e9', 'Đào tạo': '#8b5cf6',
-    'Quy chế': '#f59e0b', 'Thành tích': '#ef4444', 'Chiến lược': '#6366f1',
+    'Giải đấu': 'var(--vct-success)', 'Quốc tế': 'var(--vct-accent-cyan)', 'Đào tạo': 'var(--vct-info)',
+    'Quy chế': 'var(--vct-warning)', 'Thành tích': 'var(--vct-danger)', 'Chiến lược': 'var(--vct-info)',
 }
 
 const CATEGORY_ICONS: Record<string, string> = {
@@ -62,10 +62,10 @@ export function Page_federation_pr() {
             </div>
 
             <VCT_StatRow items={[
-                { label: 'Tổng bài viết', value: articles.length, icon: <VCT_Icons.FileText size={18} />, color: '#8b5cf6' },
-                { label: 'Đã xuất bản', value: publishedCount, icon: <VCT_Icons.Check size={18} />, color: '#10b981' },
-                { label: 'Lượt xem', value: totalViews.toLocaleString('vi-VN'), icon: <VCT_Icons.Eye size={18} />, color: '#0ea5e9' },
-                { label: 'Theo dõi MXH', value: '28.400', icon: <VCT_Icons.Users size={18} />, color: '#f59e0b' },
+                { label: 'Tổng bài viết', value: articles.length, icon: <VCT_Icons.FileText size={18} />, color: 'var(--vct-info)' },
+                { label: 'Đã xuất bản', value: publishedCount, icon: <VCT_Icons.Check size={18} />, color: 'var(--vct-success)' },
+                { label: 'Lượt xem', value: totalViews.toLocaleString('vi-VN'), icon: <VCT_Icons.Eye size={18} />, color: 'var(--vct-accent-cyan)' },
+                { label: 'Theo dõi MXH', value: '28.400', icon: <VCT_Icons.Users size={18} />, color: 'var(--vct-warning)' },
             ] as StatItem[]} className="mb-6" />
 
             {/* ── News List ── */}

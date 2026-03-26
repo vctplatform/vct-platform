@@ -17,12 +17,12 @@ import (
 type Priority int
 
 const (
-	PriorityHTTP     Priority = 10  // Stop accepting new HTTP requests
-	PriorityWebSocket Priority = 20 // Disconnect WS clients
-	PriorityWorkers  Priority = 30  // Drain background workers / job queues
-	PriorityCache    Priority = 40  // Flush caches
-	PriorityDatabase Priority = 50  // Close DB connection pools
-	PriorityCleanup  Priority = 100 // Final cleanup (temp files, locks)
+	PriorityHTTP      Priority = 10  // Stop accepting new HTTP requests
+	PriorityWebSocket Priority = 20  // Disconnect WS clients
+	PriorityWorkers   Priority = 30  // Drain background workers / job queues
+	PriorityCache     Priority = 40  // Flush caches
+	PriorityDatabase  Priority = 50  // Close DB connection pools
+	PriorityCleanup   Priority = 100 // Final cleanup (temp files, locks)
 )
 
 // Hook is a named shutdown callback.

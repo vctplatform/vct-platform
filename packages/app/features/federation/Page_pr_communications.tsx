@@ -36,17 +36,17 @@ const MOCK_CONTENT: ContentItem[] = [
 ];
 
 const TYPE_META: Record<ContentType, { label: string; icon: string; color: string }> = {
-    news: { label: 'Tin tức', icon: '📰', color: '#3b82f6' },
-    press_release: { label: 'Thông cáo', icon: '📢', color: '#8b5cf6' },
-    announcement: { label: 'Thông báo', icon: '📋', color: '#f59e0b' },
-    social_campaign: { label: 'Chiến dịch MXH', icon: '📱', color: '#ec4899' },
+    news: { label: 'Tin tức', icon: '📰', color: 'var(--vct-info)' },
+    press_release: { label: 'Thông cáo', icon: '📢', color: 'var(--vct-info)' },
+    announcement: { label: 'Thông báo', icon: '📋', color: 'var(--vct-warning)' },
+    social_campaign: { label: 'Chiến dịch MXH', icon: '📱', color: 'var(--vct-accent-pink)' },
 };
 
 const STATUS_META: Record<ContentStatus, { label: string; color: string; bg: string }> = {
-    draft: { label: 'Bản nháp', color: '#94a3b8', bg: 'rgba(148,163,184,0.15)' },
-    pending_review: { label: 'Chờ duyệt', color: '#f59e0b', bg: 'rgba(245,158,11,0.15)' },
-    published: { label: 'Đã đăng', color: '#10b981', bg: 'rgba(16,185,129,0.15)' },
-    archived: { label: 'Lưu trữ', color: '#6b7280', bg: 'rgba(107,114,128,0.15)' },
+    draft: { label: 'Bản nháp', color: 'var(--vct-text-tertiary)', bg: 'rgba(148,163,184,0.15)' },
+    pending_review: { label: 'Chờ duyệt', color: 'var(--vct-warning)', bg: 'rgba(245,158,11,0.15)' },
+    published: { label: 'Đã đăng', color: 'var(--vct-success)', bg: 'rgba(16,185,129,0.15)' },
+    archived: { label: 'Lưu trữ', color: 'var(--vct-text-tertiary)', bg: 'rgba(107,114,128,0.15)' },
 };
 
 // ── Component ────────────────────────────────────────────────
@@ -73,10 +73,10 @@ export function Page_pr_communications() {
         <div style={{ padding: '32px', maxWidth: 1100, margin: '0 auto', fontFamily: "'Inter', sans-serif" }}>
             {/* Header */}
             <div style={{ marginBottom: 24 }}>
-                <h1 style={{ fontSize: 22, fontWeight: 700, color: '#f1f5f9', margin: 0 }}>
+                <h1 style={{ fontSize: 22, fontWeight: 700, color: 'var(--vct-text-primary)', margin: 0 }}>
                     📢 Truyền thông & Quan hệ Công chúng
                 </h1>
-                <p style={{ fontSize: 14, color: '#94a3b8', marginTop: 6 }}>
+                <p style={{ fontSize: 14, color: 'var(--vct-text-tertiary)', marginTop: 6 }}>
                     {MOCK_CONTENT.length} nội dung • {publishedCount} đã đăng • {pendingCount} chờ duyệt
                 </p>
             </div>
@@ -84,16 +84,16 @@ export function Page_pr_communications() {
             {/* Stats */}
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 14, marginBottom: 24 }}>
                 {[
-                    { label: 'Tổng nội dung', value: MOCK_CONTENT.length, icon: '📝', color: '#3b82f6' },
-                    { label: 'Đã đăng', value: publishedCount, icon: '✅', color: '#10b981' },
-                    { label: 'Chờ duyệt', value: pendingCount, icon: '⏳', color: '#f59e0b' },
-                    { label: 'Lượt xem', value: totalViews.toLocaleString(), icon: '👁️', color: '#8b5cf6' },
+                    { label: 'Tổng nội dung', value: MOCK_CONTENT.length, icon: '📝', color: 'var(--vct-info)' },
+                    { label: 'Đã đăng', value: publishedCount, icon: '✅', color: 'var(--vct-success)' },
+                    { label: 'Chờ duyệt', value: pendingCount, icon: '⏳', color: 'var(--vct-warning)' },
+                    { label: 'Lượt xem', value: totalViews.toLocaleString(), icon: '👁️', color: 'var(--vct-info)' },
                 ].map(s => (
                     <div key={s.label} style={{
                         background: 'rgba(30,41,59,0.5)', border: '1px solid rgba(148,163,184,0.1)',
                         borderRadius: 12, padding: '16px 18px',
                     }}>
-                        <div style={{ fontSize: 12, color: '#64748b', marginBottom: 4 }}>{s.icon} {s.label}</div>
+                        <div style={{ fontSize: 12, color: 'var(--vct-text-tertiary)', marginBottom: 4 }}>{s.icon} {s.label}</div>
                         <div style={{ fontSize: 26, fontWeight: 700, color: s.color }}>{s.value}</div>
                     </div>
                 ))}
@@ -104,13 +104,13 @@ export function Page_pr_communications() {
                 <button onClick={() => setFilterType('all')} style={{
                     padding: '6px 14px', borderRadius: 8, border: 'none', fontSize: 13, cursor: 'pointer',
                     background: filterType === 'all' ? 'rgba(59,130,246,0.2)' : 'rgba(148,163,184,0.08)',
-                    color: filterType === 'all' ? '#60a5fa' : '#94a3b8',
+                    color: filterType === 'all' ? 'var(--vct-info)' : 'var(--vct-text-tertiary)',
                 }}>Tất cả</button>
                 {(Object.keys(TYPE_META) as ContentType[]).map(t => (
                     <button key={t} onClick={() => setFilterType(t)} style={{
                         padding: '6px 14px', borderRadius: 8, border: 'none', fontSize: 13, cursor: 'pointer',
                         background: filterType === t ? `${TYPE_META[t].color}20` : 'rgba(148,163,184,0.08)',
-                        color: filterType === t ? TYPE_META[t].color : '#94a3b8',
+                        color: filterType === t ? TYPE_META[t].color: 'var(--vct-text-tertiary)',
                     }}>{TYPE_META[t].icon} {TYPE_META[t].label}</button>
                 ))}
                 <div style={{ marginLeft: 'auto', display: 'flex', gap: 8 }}>
@@ -119,7 +119,7 @@ export function Page_pr_communications() {
                         style={{
                             padding: '6px 12px', borderRadius: 8, fontSize: 13,
                             background: 'rgba(15,23,42,0.6)', border: '1px solid rgba(148,163,184,0.15)',
-                            color: '#e2e8f0', outline: 'none',
+                            color: 'var(--vct-border-subtle)', outline: 'none',
                         }}
                     >
                         <option value="all">Mọi trạng thái</option>
@@ -132,7 +132,7 @@ export function Page_pr_communications() {
                         placeholder="Tìm kiếm..." style={{
                             padding: '6px 14px', borderRadius: 8, fontSize: 13, width: 180,
                             background: 'rgba(15,23,42,0.6)', border: '1px solid rgba(148,163,184,0.15)',
-                            color: '#e2e8f0', outline: 'none',
+                            color: 'var(--vct-border-subtle)', outline: 'none',
                         }}
                     />
                 </div>
@@ -156,14 +156,14 @@ export function Page_pr_communications() {
                             }}>{typeMeta.icon}</span>
                             <div style={{ flex: 1, minWidth: 0 }}>
                                 <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
-                                    <span style={{ fontSize: 14, fontWeight: 600, color: '#f1f5f9' }}>{c.title}</span>
+                                    <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--vct-text-primary)' }}>{c.title}</span>
                                 </div>
                                 <p style={{
-                                    fontSize: 13, color: '#94a3b8', margin: '2px 0 8px',
+                                    fontSize: 13, color: 'var(--vct-text-tertiary)', margin: '2px 0 8px',
                                     lineHeight: 1.4, overflow: 'hidden', textOverflow: 'ellipsis',
                                     display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical',
                                 }}>{c.summary}</p>
-                                <div style={{ display: 'flex', gap: 10, fontSize: 12, color: '#64748b' }}>
+                                <div style={{ display: 'flex', gap: 10, fontSize: 12, color: 'var(--vct-text-tertiary)' }}>
                                     <span style={{ padding: '2px 8px', borderRadius: 6, fontSize: 11, background: `${typeMeta.color}15`, color: typeMeta.color }}>{typeMeta.label}</span>
                                     <span>✍️ {c.author}</span>
                                     <span>📅 {c.created_at}</span>

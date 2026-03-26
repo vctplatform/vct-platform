@@ -5,10 +5,10 @@ import { useState, useMemo } from 'react'
 import {
     VCT_Badge, VCT_Button, VCT_Stack,
     VCT_SearchInput, VCT_Select,
-} from '../components/vct-ui'
-import type { StatItem } from '../components/VCT_StatRow'
-import { VCT_Icons } from '../components/vct-icons'
-import { VCT_Drawer } from '../components/VCT_Drawer'
+} from '@vct/ui'
+import type { StatItem } from '@vct/ui'
+import { VCT_Icons } from '@vct/ui'
+import { VCT_Drawer } from '@vct/ui'
 import { AdminDataTable } from './components/AdminDataTable'
 import { AdminPageShell, useShellToast } from './components/AdminPageShell'
 import { useAdminFetch } from './hooks/useAdminAPI'
@@ -96,10 +96,10 @@ const Page_admin_clubs_Content = () => {
     const totalAthletes = clubs.reduce((a, c) => a + c.athletes, 0)
 
     const stats: StatItem[] = [
-        { icon: <VCT_Icons.Home size={20} />, label: 'Tổng CLB', value: clubs.length, color: '#0ea5e9' },
-        { icon: <VCT_Icons.Users size={20} />, label: 'Tổng thành viên', value: totalMembers, color: '#10b981' },
-        { icon: <VCT_Icons.Award size={20} />, label: 'VĐV đang luyện', value: totalAthletes, color: '#94a3b8' },
-        { icon: <VCT_Icons.Clock size={20} />, label: 'Chờ duyệt', value: clubs.filter(c => c.status === 'pending').length, color: '#f59e0b' },
+        { icon: <VCT_Icons.Home size={20} />, label: 'Tổng CLB', value: clubs.length, color: 'var(--vct-accent-cyan)' },
+        { icon: <VCT_Icons.Users size={20} />, label: 'Tổng thành viên', value: totalMembers, color: 'var(--vct-success)' },
+        { icon: <VCT_Icons.Award size={20} />, label: 'VĐV đang luyện', value: totalAthletes, color: 'var(--vct-text-tertiary)' },
+        { icon: <VCT_Icons.Clock size={20} />, label: 'Chờ duyệt', value: clubs.filter(c => c.status === 'pending').length, color: 'var(--vct-warning)' },
     ]
 
     const handleSort = (key: string) => {
@@ -135,7 +135,7 @@ const Page_admin_clubs_Content = () => {
         <AdminPageShell
             title={t('admin.clubs.title')}
             subtitle="CLB, thành viên, cơ sở vật chất, và thiết bị"
-            icon={<VCT_Icons.Home size={28} className="text-[#10b981]" />}
+            icon={<VCT_Icons.Home size={28} className="text-(--vct-success)" />}
             stats={stats}
             actions={<VCT_Button variant="outline" icon={<VCT_Icons.Download size={16} />} onClick={handleExportCSV}>Xuất CSV</VCT_Button>}
         >
@@ -199,7 +199,7 @@ const Page_admin_clubs_Content = () => {
                         <div>
                             <div className="text-xs text-(--vct-text-tertiary) font-bold mb-2">Chất lượng thiết bị</div>
                             <div className="w-full h-3 bg-(--vct-bg-base) rounded-full overflow-hidden">
-                                <div className="admin-bar-fill" {...{ style: { '--_bar-width': `${selected.equipment_score}%`, '--_bar-color': selected.equipment_score >= 85 ? '#10b981' : selected.equipment_score >= 70 ? '#f59e0b' : '#ef4444' } as React.CSSProperties }} />
+                                <div className="admin-bar-fill" {...{ style: { '--_bar-width': `${selected.equipment_score}%`, '--_bar-color': selected.equipment_score >= 85 ? 'var(--vct-success)' : selected.equipment_score >= 70 ? 'var(--vct-warning)' : 'var(--vct-danger)' } as React.CSSProperties }} />
                             </div>
                         </div>
 

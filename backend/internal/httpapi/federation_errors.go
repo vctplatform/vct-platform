@@ -42,7 +42,7 @@ func federationValidationError(w http.ResponseWriter, err error) {
 		})
 		return
 	}
-	badRequest(w, err.Error())
+	apiError(w, http.StatusBadRequest, CodeBadRequest, err.Error())
 }
 
 func federationNotFound(w http.ResponseWriter, entity, id string) {

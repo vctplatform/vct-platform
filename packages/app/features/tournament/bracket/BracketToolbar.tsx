@@ -4,7 +4,7 @@ import { SCHEMA_OPTIONS } from './BracketTypes';
 import type { SchemaSize } from './BracketTypes';
 import {
     VCT_Card, VCT_Button, VCT_Stack,
-} from '../../components/vct-ui';
+} from '@vct/ui';
 
 // ════════════════════════════════════════════════════════════════
 // VCT PLATFORM — BRACKET TOOLBAR
@@ -79,7 +79,7 @@ export const BracketToolbar = ({
                                 padding: '8px 14px', borderRadius: 10, border: 'none',
                                 cursor: 'pointer', fontWeight: 700, fontSize: 13,
                                 transition: 'all 0.2s',
-                                background: selectedSchema === s ? '#3b82f6' : 'var(--vct-bg-elevated)',
+                                background: selectedSchema === s ? 'var(--vct-info)' : 'var(--vct-bg-elevated)',
                                 color: selectedSchema === s ? '#fff' : 'var(--vct-text-secondary)',
                             }}
                             disabled={!canUpdate}

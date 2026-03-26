@@ -2,7 +2,7 @@
 
 import React, { useState, useMemo } from 'react'
 import { motion } from 'framer-motion'
-import { VCT_Icons } from '../components/vct-icons'
+import { VCT_Icons } from '@vct/ui'
 
 // ════════════════════════════════════════
 // MOCK DATA
@@ -15,18 +15,18 @@ interface CommunityEvent {
 }
 
 const TYPE_CFG: Record<string, { label: string; color: string; icon: string }> = {
-    giao_luu: { label: 'Giao lưu', color: '#3b82f6', icon: '🤝' },
-    tap_huan: { label: 'Tập huấn', color: '#10b981', icon: '🥋' },
-    hoi_thao: { label: 'Hội thảo', color: '#8b5cf6', icon: '🎤' },
-    thi_dau: { label: 'Thi đấu', color: '#f59e0b', icon: '🏆' },
-    le_hoi: { label: 'Lễ hội', color: '#ef4444', icon: '🎊' },
+    giao_luu: { label: 'Giao lưu', color: 'var(--vct-info)', icon: '🤝' },
+    tap_huan: { label: 'Tập huấn', color: 'var(--vct-success)', icon: '🥋' },
+    hoi_thao: { label: 'Hội thảo', color: 'var(--vct-info)', icon: '🎤' },
+    thi_dau: { label: 'Thi đấu', color: 'var(--vct-warning)', icon: '🏆' },
+    le_hoi: { label: 'Lễ hội', color: 'var(--vct-danger)', icon: '🎊' },
 }
 
 const STATUS_CFG: Record<string, { label: string; color: string }> = {
-    upcoming: { label: 'Sắp tới', color: '#3b82f6' },
-    ongoing: { label: 'Đang diễn ra', color: '#10b981' },
-    completed: { label: 'Đã kết thúc', color: '#94a3b8' },
-    registration: { label: 'Đang mở ĐK', color: '#f59e0b' },
+    upcoming: { label: 'Sắp tới', color: 'var(--vct-info)' },
+    ongoing: { label: 'Đang diễn ra', color: 'var(--vct-success)' },
+    completed: { label: 'Đã kết thúc', color: 'var(--vct-text-tertiary)' },
+    registration: { label: 'Đang mở ĐK', color: 'var(--vct-warning)' },
 }
 
 const EVENTS: CommunityEvent[] = [
@@ -67,10 +67,10 @@ export function Page_community_events() {
 
             {/* KPI */}
             <div className="grid grid-cols-2 tablet:grid-cols-4 gap-3">
-                {[{ l: 'Tổng sự kiện', v: EVENTS.length, i: '📅', c: '#0ea5e9' },
-                { l: 'Đang mở ĐK', v: EVENTS.filter(e => e.status === 'registration').length, i: '📝', c: '#f59e0b' },
-                { l: 'Đang diễn ra', v: EVENTS.filter(e => e.status === 'ongoing').length, i: '🔴', c: '#10b981' },
-                { l: 'Tổng người tham gia', v: EVENTS.reduce((s, e) => s + e.participants, 0), i: '👥', c: '#8b5cf6' },
+                {[{ l: 'Tổng sự kiện', v: EVENTS.length, i: '📅', c: 'var(--vct-accent-cyan)' },
+                { l: 'Đang mở ĐK', v: EVENTS.filter(e => e.status === 'registration').length, i: '📝', c: 'var(--vct-warning)' },
+                { l: 'Đang diễn ra', v: EVENTS.filter(e => e.status === 'ongoing').length, i: '🔴', c: 'var(--vct-success)' },
+                { l: 'Tổng người tham gia', v: EVENTS.reduce((s, e) => s + e.participants, 0), i: '👥', c: 'var(--vct-info)' },
                 ].map(s => (
                     <div key={s.l} className="rounded-xl border border-vct-border bg-vct-elevated p-4 text-center">
                         <div className="text-xl mb-1">{s.i}</div>
@@ -126,14 +126,14 @@ export function Page_community_events() {
                                 <div className="mb-3">
                                     <div className="flex items-center justify-between text-[10px] text-vct-text-muted mb-1">
                                         <span>{ev.participants}/{ev.maxParticipants} người</span>
-                                        <span className="font-bold" style={{ color: pct >= 90 ? '#ef4444' : pct >= 70 ? '#f59e0b' : '#10b981' }}>{pct}%</span>
+                                        <span className="font-bold" style={{ color: pct >= 90 ? 'var(--vct-danger)' : pct >= 70 ? 'var(--vct-warning)' : 'var(--vct-success)' }}>{pct}%</span>
                                     </div>
                                     <div className="h-1.5 rounded-full bg-vct-input overflow-hidden">
-                                        <div className="h-full rounded-full transition-all" style={{ width: `${pct}%`, background: pct >= 90 ? '#ef4444' : pct >= 70 ? '#f59e0b' : '#10b981' }} />
+                                        <div className="h-full rounded-full transition-all" style={{ width: `${pct}%`, background: pct >= 90 ? 'var(--vct-danger)' : pct >= 70 ? 'var(--vct-warning)' : 'var(--vct-success)' }} />
                                     </div>
                                 </div>
                                 <div className="flex items-center justify-between pt-3 border-t border-vct-border">
-                                    {ev.fee !== undefined && <span className="text-xs font-bold" style={{ color: ev.fee === 0 ? '#10b981' : '#f59e0b' }}>{ev.fee === 0 ? 'Miễn phí' : `${ev.fee.toLocaleString()}đ`}</span>}
+                                    {ev.fee !== undefined && <span className="text-xs font-bold" style={{ color: ev.fee === 0 ? 'var(--vct-success)' : 'var(--vct-warning)' }}>{ev.fee === 0 ? 'Miễn phí' : `${ev.fee.toLocaleString()}đ`}</span>}
                                     {ev.status === 'registration' ?
                                         <button className="rounded-lg bg-vct-accent px-3 py-1.5 text-xs font-bold text-white hover:brightness-110 transition">Đăng ký</button>
                                         : <button className="rounded-lg border border-vct-border px-3 py-1.5 text-xs font-bold text-vct-text-muted hover:bg-vct-input transition">Chi tiết</button>}

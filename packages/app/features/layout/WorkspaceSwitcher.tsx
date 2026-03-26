@@ -13,7 +13,7 @@
 import * as React from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { useRouter } from 'next/navigation'
-import { VCT_Icons } from '../components/vct-icons'
+import { VCT_Icons } from '@vct/ui'
 import type { WorkspaceCard, WorkspaceType } from './workspace-types'
 import { WORKSPACE_META, WORKSPACE_CATEGORIES, getCategoryForType } from './workspace-types'
 import { useWorkspaceStore } from './workspace-store'

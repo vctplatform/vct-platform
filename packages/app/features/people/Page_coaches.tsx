@@ -5,10 +5,10 @@ import { useState, useMemo } from 'react'
 import {
     VCT_Badge, VCT_Button, VCT_Stack,
     VCT_SearchInput, VCT_AvatarLetter, VCT_EmptyState, VCT_Tabs
-} from '../components/vct-ui'
-import { VCT_PageContainer, VCT_PageHero, VCT_StatRow } from '../components/vct-ui'
-import type { StatItem } from '../components/VCT_StatRow'
-import { VCT_Icons } from '../components/vct-icons'
+} from '@vct/ui'
+import { VCT_PageContainer, VCT_PageHero, VCT_StatRow } from '@vct/ui'
+import type { StatItem } from '@vct/ui'
+import { VCT_Icons } from '@vct/ui'
 
 // ════════════════════════════════════════
 // TYPES & MOCK DATA
@@ -30,7 +30,7 @@ interface Coach {
 }
 
 const BELT_COLORS: Record<string, string> = {
-    'Đai Đen': '#1a1a2e', 'Hồng Đai': '#ec4899', 'Đai Đỏ': '#ef4444', 'Đai Xanh': '#3b82f6',
+    'Đai Đen': '#1a1a2e', 'Hồng Đai': 'var(--vct-accent-pink)', 'Đai Đỏ': 'var(--vct-danger)', 'Đai Xanh': 'var(--vct-info)',
 }
 
 const MOCK_COACHES: Coach[] = [
@@ -70,10 +70,10 @@ export const Page_coaches = () => {
     const avgExperience = Math.round(MOCK_COACHES.reduce((s, c) => s + c.experience_years, 0) / MOCK_COACHES.length)
 
     const kpis: StatItem[] = [
-        { label: 'Tổng HLV', value: MOCK_COACHES.length, icon: <VCT_Icons.UserCheck size={18} />, color: '#8b5cf6' },
-        { label: 'Đang hoạt động', value: MOCK_COACHES.filter(c => c.status === 'active').length, icon: <VCT_Icons.CheckCircle size={18} />, color: '#10b981' },
-        { label: 'Tổng học trò', value: totalStudents, icon: <VCT_Icons.Users size={18} />, color: '#0ea5e9' },
-        { label: 'KN trung bình', value: `${avgExperience} năm`, icon: <VCT_Icons.Award size={18} />, color: '#f59e0b' },
+        { label: 'Tổng HLV', value: MOCK_COACHES.length, icon: <VCT_Icons.UserCheck size={18} />, color: 'var(--vct-info)' },
+        { label: 'Đang hoạt động', value: MOCK_COACHES.filter(c => c.status === 'active').length, icon: <VCT_Icons.CheckCircle size={18} />, color: 'var(--vct-success)' },
+        { label: 'Tổng học trò', value: totalStudents, icon: <VCT_Icons.Users size={18} />, color: 'var(--vct-accent-cyan)' },
+        { label: 'KN trung bình', value: `${avgExperience} năm`, icon: <VCT_Icons.Award size={18} />, color: 'var(--vct-warning)' },
     ]
 
     return (
@@ -120,7 +120,7 @@ export const Page_coaches = () => {
                                     <div className="relative">
                                         <VCT_AvatarLetter name={coach.name} size={48} />
                                         <div className="absolute -bottom-1 -right-1 w-4 h-4 rounded-full border-2 border-vct-elevated"
-                                            style={{ background: coach.status === 'active' ? '#10b981' : coach.status === 'pending' ? '#f59e0b' : '#94a3b8' }}></div>
+                                            style={{ background: coach.status === 'active' ? 'var(--vct-success)' : coach.status === 'pending' ? 'var(--vct-warning)' : 'var(--vct-text-tertiary)' }}></div>
                                     </div>
                                     <div>
                                         <div className="font-bold text-vct-text group-hover:text-vct-accent transition-colors">{coach.name}</div>
@@ -132,7 +132,7 @@ export const Page_coaches = () => {
 
                             {/* Belt + Certification */}
                             <div className="flex items-center gap-2 mb-3">
-                                <span className="text-xs font-bold px-2 py-1 rounded-lg border" style={{ color: BELT_COLORS[coach.belt_rank] || '#64748b', background: `${BELT_COLORS[coach.belt_rank] || '#64748b'}12`, borderColor: `${BELT_COLORS[coach.belt_rank] || '#64748b'}25` }}>
+                                <span className="text-xs font-bold px-2 py-1 rounded-lg border" style={{ color: BELT_COLORS[coach.belt_rank] || 'var(--vct-text-tertiary)', background: `${BELT_COLORS[coach.belt_rank] || 'var(--vct-text-tertiary)'}12`, borderColor: `${BELT_COLORS[coach.belt_rank] || 'var(--vct-text-tertiary)'}25` }}>
                                     {coach.belt_rank}
                                 </span>
                                 <span className="text-[11px] text-vct-text-secondary">{coach.certification}</span>

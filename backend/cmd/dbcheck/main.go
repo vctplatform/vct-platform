@@ -91,7 +91,7 @@ $$ LANGUAGE plpgsql VOLATILE;`
 			os.Exit(1)
 		}
 		fmt.Println("uuidv7() function fixed successfully")
-		
+
 		// Test it
 		var uuid string
 		err = pool.QueryRow(ctx, "SELECT uuidv7()::text").Scan(&uuid)

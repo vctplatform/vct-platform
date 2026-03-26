@@ -2,10 +2,10 @@
 
 import * as React from 'react'
 import { useState, useEffect, useMemo, useCallback } from 'react'
-import { VCT_Badge, VCT_Button, VCT_Stack, VCT_Toast, VCT_SearchInput, VCT_EmptyState } from '../components/vct-ui'
-import { VCT_PageContainer, VCT_StatRow } from '../components/vct-ui'
-import type { StatItem } from '../components/VCT_StatRow'
-import { VCT_Icons } from '../components/vct-icons'
+import { VCT_Badge, VCT_Button, VCT_Stack, VCT_Toast, VCT_SearchInput, VCT_EmptyState } from '@vct/ui'
+import { VCT_PageContainer, VCT_StatRow } from '@vct/ui'
+import type { StatItem } from '@vct/ui'
+import { VCT_Icons } from '@vct/ui'
 
 const API = '/api/v1/provincial'
 
@@ -16,11 +16,11 @@ interface Tournament {
 }
 
 const STATUS_MAP: Record<string, { label: string; type: any; color: string }> = {
-    draft: { label: 'Bản nháp', type: 'neutral', color: '#94a3b8' },
-    open: { label: 'Mở đăng ký', type: 'info', color: '#3b82f6' },
-    in_progress: { label: 'Đang diễn ra', type: 'success', color: '#10b981' },
-    completed: { label: 'Đã kết thúc', type: 'warning', color: '#f59e0b' },
-    cancelled: { label: 'Đã hủy', type: 'error', color: '#ef4444' },
+    draft: { label: 'Bản nháp', type: 'neutral', color: 'var(--vct-text-tertiary)' },
+    open: { label: 'Mở đăng ký', type: 'info', color: 'var(--vct-info)' },
+    in_progress: { label: 'Đang diễn ra', type: 'success', color: 'var(--vct-success)' },
+    completed: { label: 'Đã kết thúc', type: 'warning', color: 'var(--vct-warning)' },
+    cancelled: { label: 'Đã hủy', type: 'error', color: 'var(--vct-danger)' },
 }
 
 export const Page_provincial_tournaments = () => {
@@ -57,10 +57,10 @@ export const Page_provincial_tournaments = () => {
             </div>
 
             <VCT_StatRow items={[
-                { label: 'Tổng giải đấu', value: tournaments.length, icon: <VCT_Icons.Award size={18} />, color: '#0ea5e9' },
-                { label: 'Đang diễn ra', value: tournaments.filter(t => t.status === 'in_progress').length, icon: <VCT_Icons.Activity size={18} />, color: '#10b981' },
-                { label: 'Mở đăng ký', value: tournaments.filter(t => t.status === 'open').length, icon: <VCT_Icons.FileText size={18} />, color: '#3b82f6' },
-                { label: 'Tổng VĐV', value: tournaments.reduce((s, t) => s + (t.total_athletes || 0), 0), icon: <VCT_Icons.Users size={18} />, color: '#f59e0b' },
+                { label: 'Tổng giải đấu', value: tournaments.length, icon: <VCT_Icons.Award size={18} />, color: 'var(--vct-accent-cyan)' },
+                { label: 'Đang diễn ra', value: tournaments.filter(t => t.status === 'in_progress').length, icon: <VCT_Icons.Activity size={18} />, color: 'var(--vct-success)' },
+                { label: 'Mở đăng ký', value: tournaments.filter(t => t.status === 'open').length, icon: <VCT_Icons.FileText size={18} />, color: 'var(--vct-info)' },
+                { label: 'Tổng VĐV', value: tournaments.reduce((s, t) => s + (t.total_athletes || 0), 0), icon: <VCT_Icons.Users size={18} />, color: 'var(--vct-warning)' },
             ] as StatItem[]} className="mb-6" />
 
             <VCT_Stack direction="row" gap={16} align="center" justify="space-between" className="mb-5">
@@ -73,7 +73,7 @@ export const Page_provincial_tournaments = () => {
             ) : (
                 <div className="grid gap-5 grid-cols-1 lg:grid-cols-2">
                     {filtered.map(t => {
-                        const st = STATUS_MAP[t.status] || { label: t.status, type: 'neutral', color: '#94a3b8' }
+                        const st = STATUS_MAP[t.status] || { label: t.status, type: 'neutral', color: 'var(--vct-text-tertiary)' }
                         return (
                             <div key={t.id} className="rounded-2xl border border-(--vct-border-subtle) bg-(--vct-bg-glass) p-5 hover:border-(--vct-accent-cyan) transition-all" style={{ borderLeftWidth: 4, borderLeftColor: st.color }}>
                                 <div className="flex items-start justify-between mb-3">
@@ -86,8 +86,8 @@ export const Page_provincial_tournaments = () => {
                                     <VCT_Badge text={st.label} type={st.type} />
                                 </div>
                                 <div className="flex gap-6 mt-4 text-xs">
-                                    <div><span className="font-bold text-lg" style={{ color: '#22d3ee' }}>{t.registered_teams}</span><span className="opacity-60">/{t.max_teams} đội</span></div>
-                                    <div><span className="font-bold text-lg" style={{ color: '#8b5cf6' }}>{t.total_athletes}</span><span className="opacity-60"> VĐV</span></div>
+                                    <div><span className="font-bold text-lg" style={{ color: 'var(--vct-accent-cyan)' }}>{t.registered_teams}</span><span className="opacity-60">/{t.max_teams} đội</span></div>
+                                    <div><span className="font-bold text-lg" style={{ color: 'var(--vct-info)' }}>{t.total_athletes}</span><span className="opacity-60"> VĐV</span></div>
                                 </div>
                                 {t.categories && t.categories.length > 0 && (
                                     <div className="mt-3 flex flex-wrap gap-1.5">

@@ -5,10 +5,10 @@ import { useState, useMemo } from 'react'
 import {
     VCT_Badge, VCT_Button, VCT_Stack,
     VCT_SearchInput, VCT_AvatarLetter, VCT_EmptyState, VCT_Tabs
-} from '../components/vct-ui'
-import { VCT_PageContainer, VCT_PageHero, VCT_SectionCard, VCT_StatRow } from '../components/vct-ui'
-import type { StatItem } from '../components/VCT_StatRow'
-import { VCT_Icons } from '../components/vct-icons'
+} from '@vct/ui'
+import { VCT_PageContainer, VCT_PageHero, VCT_SectionCard, VCT_StatRow } from '@vct/ui'
+import type { StatItem } from '@vct/ui'
+import { VCT_Icons } from '@vct/ui'
 
 // ════════════════════════════════════════
 // TYPES & MOCK DATA
@@ -30,7 +30,7 @@ interface Referee {
 }
 
 const CERT_COLORS: Record<string, string> = {
-    'Quốc tế': '#8b5cf6', 'Quốc gia A': '#ef4444', 'Quốc gia B': '#f59e0b', 'Cấp tỉnh': '#0ea5e9',
+    'Quốc tế': 'var(--vct-info)', 'Quốc gia A': 'var(--vct-danger)', 'Quốc gia B': 'var(--vct-warning)', 'Cấp tỉnh': 'var(--vct-accent-cyan)',
 }
 
 const MOCK_REFEREES: Referee[] = [
@@ -66,10 +66,10 @@ export const Page_referees = () => {
     }, [certFilter, search])
 
     const kpis: StatItem[] = [
-        { label: 'Tổng trọng tài', value: MOCK_REFEREES.length, icon: <VCT_Icons.UserCheck size={18} />, color: '#8b5cf6' },
-        { label: 'Cấp quốc tế', value: MOCK_REFEREES.filter(r => r.certification_level === 'Quốc tế').length, icon: <VCT_Icons.Award size={18} />, color: '#ef4444' },
-        { label: 'Rating TB', value: (MOCK_REFEREES.reduce((s, r) => s + r.rating, 0) / MOCK_REFEREES.length).toFixed(1), icon: <VCT_Icons.Star size={18} />, color: '#f59e0b' },
-        { label: 'Giải đã điều', value: MOCK_REFEREES.reduce((s, r) => s + r.tournaments_judged, 0), icon: <VCT_Icons.Trophy size={18} />, color: '#0ea5e9' },
+        { label: 'Tổng trọng tài', value: MOCK_REFEREES.length, icon: <VCT_Icons.UserCheck size={18} />, color: 'var(--vct-info)' },
+        { label: 'Cấp quốc tế', value: MOCK_REFEREES.filter(r => r.certification_level === 'Quốc tế').length, icon: <VCT_Icons.Award size={18} />, color: 'var(--vct-danger)' },
+        { label: 'Rating TB', value: (MOCK_REFEREES.reduce((s, r) => s + r.rating, 0) / MOCK_REFEREES.length).toFixed(1), icon: <VCT_Icons.Star size={18} />, color: 'var(--vct-warning)' },
+        { label: 'Giải đã điều', value: MOCK_REFEREES.reduce((s, r) => s + r.tournaments_judged, 0), icon: <VCT_Icons.Trophy size={18} />, color: 'var(--vct-accent-cyan)' },
     ]
 
     return (
@@ -104,7 +104,7 @@ export const Page_referees = () => {
             {filtered.length === 0 ? (
                 <VCT_EmptyState title="Không tìm thấy trọng tài" description="Thử thay đổi bộ lọc hoặc từ khóa." icon="⚖️" />
             ) : (
-                <VCT_SectionCard flush accentColor="#f59e0b">
+                <VCT_SectionCard flush accentColor="var(--vct-warning)">
                     <table className="w-full border-collapse">
                         <thead>
                             <tr className="border-b border-vct-border bg-vct-elevated text-[11px] uppercase tracking-wider font-bold text-vct-text-muted">
@@ -124,7 +124,7 @@ export const Page_referees = () => {
                                         </VCT_Stack>
                                     </td>
                                     <td className="p-4">
-                                        <span className="text-xs font-bold px-2 py-1 rounded-lg border" style={{ color: CERT_COLORS[ref.certification_level] || '#64748b', background: `${CERT_COLORS[ref.certification_level] || '#64748b'}12`, borderColor: `${CERT_COLORS[ref.certification_level] || '#64748b'}25` }}>
+                                        <span className="text-xs font-bold px-2 py-1 rounded-lg border" style={{ color: CERT_COLORS[ref.certification_level] || 'var(--vct-text-tertiary)', background: `${CERT_COLORS[ref.certification_level] || 'var(--vct-text-tertiary)'}12`, borderColor: `${CERT_COLORS[ref.certification_level] || 'var(--vct-text-tertiary)'}25` }}>
                                             {ref.certification_level}
                                         </span>
                                     </td>

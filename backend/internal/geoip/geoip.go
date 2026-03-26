@@ -102,8 +102,8 @@ func (db *Database) Size() int {
 type RuleMode int
 
 const (
-	ModeAllowAll  RuleMode = iota // Default: allow, block listed
-	ModeBlockAll                  // Default: block, allow listed
+	ModeAllowAll RuleMode = iota // Default: allow, block listed
+	ModeBlockAll                 // Default: block, allow listed
 )
 
 // AccessRules defines geo-based access control.

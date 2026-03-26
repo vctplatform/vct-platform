@@ -2,9 +2,9 @@
 
 import * as React from 'react'
 import { useState } from 'react'
-import { VCT_Badge, VCT_Button, VCT_Stack, VCT_AvatarLetter, VCT_Tabs } from '../components/vct-ui'
-import { VCT_PageContainer } from '../components/vct-ui'
-import { VCT_Icons } from '../components/vct-icons'
+import { VCT_Badge, VCT_Button, VCT_Stack, VCT_AvatarLetter, VCT_Tabs } from '@vct/ui'
+import { VCT_PageContainer } from '@vct/ui'
+import { VCT_Icons } from '@vct/ui'
 
 // ════════════════════════════════════════
 // MOCK DATA
@@ -73,13 +73,13 @@ export const Page_referee_profile = () => {
                     <div className="flex items-center gap-5">
                         <div className="relative">
                             <VCT_AvatarLetter name={r.name} size={80} />
-                            <div className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-[#10b981] border-3 border-(--vct-bg-elevated)"></div>
+                            <div className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-(--vct-success) border-3 border-(--vct-bg-elevated)"></div>
                         </div>
                         <div>
                             <h1 className="text-2xl font-bold text-(--vct-text-primary)">{r.name}</h1>
                             <div className="flex items-center gap-2 mt-1">
-                                <span className="text-xs font-bold px-2 py-1 rounded-lg bg-[#8b5cf615] text-[#8b5cf6] border border-[#8b5cf630]">{r.certification_level}</span>
-                                <span className="flex items-center gap-1 text-xs text-[#f59e0b]"><VCT_Icons.Star size={12} /> {r.rating}</span>
+                                <span className="text-xs font-bold px-2 py-1 rounded-lg bg-[#8b5cf615] text-(--vct-info) border border-[#8b5cf630]">{r.certification_level}</span>
+                                <span className="flex items-center gap-1 text-xs text-(--vct-warning)"><VCT_Icons.Star size={12} /> {r.rating}</span>
                             </div>
                             <div className="flex items-center gap-3 mt-2 text-[12px] text-(--vct-text-tertiary)">
                                 <span className="flex items-center gap-1"><VCT_Icons.Building2 size={12} /> {r.federation} – {r.city}</span>
@@ -95,19 +95,19 @@ export const Page_referee_profile = () => {
 
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-6 pt-6 border-t border-(--vct-border-subtle)">
                     <div className="text-center p-3 bg-(--vct-bg-base) rounded-xl">
-                        <div className="text-2xl font-black text-[#0ea5e9]">{r.tournaments_judged}</div>
+                        <div className="text-2xl font-black text-(--vct-accent-cyan)">{r.tournaments_judged}</div>
                         <div className="text-[10px] text-(--vct-text-tertiary) mt-1">Giải đã điều</div>
                     </div>
                     <div className="text-center p-3 bg-(--vct-bg-base) rounded-xl">
-                        <div className="text-2xl font-black text-[#10b981]">{r.experience_years}</div>
+                        <div className="text-2xl font-black text-(--vct-success)">{r.experience_years}</div>
                         <div className="text-[10px] text-(--vct-text-tertiary) mt-1">Năm kinh nghiệm</div>
                     </div>
                     <div className="text-center p-3 bg-(--vct-bg-base) rounded-xl">
-                        <div className="text-2xl font-black text-[#f59e0b]">{r.rating}</div>
+                        <div className="text-2xl font-black text-(--vct-warning)">{r.rating}</div>
                         <div className="text-[10px] text-(--vct-text-tertiary) mt-1">Rating</div>
                     </div>
                     <div className="text-center p-3 bg-(--vct-bg-base) rounded-xl">
-                        <div className="text-2xl font-black text-[#8b5cf6]">{CERTIFICATIONS.length}</div>
+                        <div className="text-2xl font-black text-(--vct-info)">{CERTIFICATIONS.length}</div>
                         <div className="text-[10px] text-(--vct-text-tertiary) mt-1">Chứng chỉ</div>
                     </div>
                 </div>
@@ -150,7 +150,7 @@ export const Page_referee_profile = () => {
                     {CERTIFICATIONS.map(cert => (
                         <div key={cert.id} className="bg-(--vct-bg-elevated) border border-(--vct-border-strong) rounded-2xl p-5 flex items-center justify-between hover:border-(--vct-accent-cyan) transition-colors">
                             <div className="flex items-center gap-4">
-                                <div className="w-12 h-12 rounded-xl bg-[#8b5cf615] flex items-center justify-center"><VCT_Icons.Award size={24} className="text-[#8b5cf6]" /></div>
+                                <div className="w-12 h-12 rounded-xl bg-[#8b5cf615] flex items-center justify-center"><VCT_Icons.Award size={24} className="text-(--vct-info)" /></div>
                                 <div>
                                     <div className="font-bold text-(--vct-text-primary)">{cert.name}</div>
                                     <div className="text-[12px] text-(--vct-text-tertiary) mt-1">Cấp bởi: {cert.issuer} • Level: {cert.level} • Ngày cấp: {cert.date} • Hết hạn: {cert.expiry}</div>
@@ -168,7 +168,7 @@ export const Page_referee_profile = () => {
                         <div key={a.id} className="bg-(--vct-bg-elevated) border border-(--vct-border-strong) rounded-2xl p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 hover:border-(--vct-accent-cyan) transition-colors">
                             <div className="flex items-center gap-4">
                                 <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${a.status === 'upcoming' ? 'bg-[#0ea5e915]' : 'bg-[#10b98115]'}`}>
-                                    <VCT_Icons.Trophy size={24} className={a.status === 'upcoming' ? 'text-[#0ea5e9]' : 'text-[#10b981]'} />
+                                    <VCT_Icons.Trophy size={24} className={a.status === 'upcoming' ? 'text-(--vct-accent-cyan)' : 'text-(--vct-success)'} />
                                 </div>
                                 <div>
                                     <div className="font-bold text-(--vct-text-primary)">{a.tournament}</div>
@@ -200,11 +200,11 @@ export const Page_referee_profile = () => {
                                 <tr key={h.year} className="hover:bg-white/5 transition-colors">
                                     <td className="p-4 font-bold text-(--vct-text-primary)">{h.year}</td>
                                     <td className="p-4 text-center font-bold text-(--vct-text-primary)">{h.tournaments}</td>
-                                    <td className="p-4 text-center font-bold text-[#0ea5e9]">{h.matches}</td>
+                                    <td className="p-4 text-center font-bold text-(--vct-accent-cyan)">{h.matches}</td>
                                     <td className="p-4 text-center">
-                                        <span className="font-bold text-[#10b981]">{h.accuracy}</span>
+                                        <span className="font-bold text-(--vct-success)">{h.accuracy}</span>
                                         <div className="w-full h-1.5 bg-(--vct-border-strong) rounded-full mt-1 overflow-hidden">
-                                            <div className="h-full bg-[#10b981] rounded-full" style={{ width: h.accuracy }}></div>
+                                            <div className="h-full bg-(--vct-success) rounded-full" style={{ width: h.accuracy }}></div>
                                         </div>
                                     </td>
                                 </tr>

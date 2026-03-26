@@ -1,6 +1,6 @@
 'use client'
 import React, { useState, useMemo } from 'react'
-import { VCT_Icons } from '../components/vct-icons'
+import { VCT_Icons } from '@vct/ui'
 
 interface ClubMember {
     id: string; name: string; dob: string; gender: 'Nam' | 'Nữ'; belt: string
@@ -17,7 +17,7 @@ const MEMBERS: ClubMember[] = [
     { id: 'm6', name: 'Ngô Thị Lan', dob: '18/02/2006', gender: 'Nữ', belt: 'Nâu đai', joinDate: '01/06/2021', status: 'active', phone: '0978-xxx', feeStatus: 'paid', attendance: 92 },
 ]
 
-const BELT_COLORS: Record<string, string> = { 'Vàng đai': '#eab308', 'Lam đai': '#3b82f6', 'Nâu đai': '#a16207', 'Hồng đai': '#ec4899', 'Huyền đai 1': '#1e293b', 'Huyền đai 2': '#0f172a' }
+const BELT_COLORS: Record<string, string> = { 'Vàng đai': 'var(--vct-gold)', 'Lam đai': 'var(--vct-info)', 'Nâu đai': '#a16207', 'Hồng đai': 'var(--vct-accent-pink)', 'Huyền đai 1': 'var(--vct-bg-input)', 'Huyền đai 2': 'var(--vct-text-primary)' }
 
 export function Page_club_members() {
     const [search, setSearch] = useState('')
@@ -43,9 +43,9 @@ export function Page_club_members() {
             </div>
 
             <div className="grid grid-cols-2 tablet:grid-cols-4 gap-3">
-                {[{ l: 'Tổng võ sinh', v: MEMBERS.length, c: '#3b82f6' }, { l: 'Đang tập', v: MEMBERS.filter(m => m.status === 'active').length, c: '#10b981' },
-                { l: 'Overdue phí', v: MEMBERS.filter(m => m.feeStatus === 'overdue').length, c: '#ef4444' },
-                { l: 'TB điểm danh', v: Math.round(MEMBERS.reduce((s, m) => s + m.attendance, 0) / MEMBERS.length) + '%', c: '#f59e0b' }
+                {[{ l: 'Tổng võ sinh', v: MEMBERS.length, c: 'var(--vct-info)' }, { l: 'Đang tập', v: MEMBERS.filter(m => m.status === 'active').length, c: 'var(--vct-success)' },
+                { l: 'Overdue phí', v: MEMBERS.filter(m => m.feeStatus === 'overdue').length, c: 'var(--vct-danger)' },
+                { l: 'TB điểm danh', v: Math.round(MEMBERS.reduce((s, m) => s + m.attendance, 0) / MEMBERS.length) + '%', c: 'var(--vct-warning)' }
                 ].map(s => (
                     <div key={s.l} className="rounded-xl border border-vct-border bg-vct-elevated p-3 text-center">
                         <div className="text-xl font-black" style={{ color: s.c }}>{s.v}</div>
@@ -86,7 +86,7 @@ export function Page_club_members() {
                                 </td>
                                 <td className="px-4 py-3">
                                     <span className="flex items-center gap-1.5">
-                                        <span className="h-3 w-3 rounded-full border" style={{ background: BELT_COLORS[m.belt] || '#64748b' }} />
+                                        <span className="h-3 w-3 rounded-full border" style={{ background: BELT_COLORS[m.belt] || 'var(--vct-text-tertiary)' }} />
                                         <span className="text-xs font-bold">{m.belt}</span>
                                     </span>
                                 </td>

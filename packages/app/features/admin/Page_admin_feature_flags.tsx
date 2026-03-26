@@ -6,9 +6,9 @@ import {
     VCT_Badge, VCT_Button,
     VCT_SearchInput, VCT_Tabs,
     VCT_ConfirmDialog, VCT_EmptyState
-} from '../components/vct-ui'
-import type { StatItem } from '../components/VCT_StatRow'
-import { VCT_Icons } from '../components/vct-icons'
+} from '@vct/ui'
+import type { StatItem } from '@vct/ui'
+import { VCT_Icons } from '@vct/ui'
 import { AdminPageShell, useShellToast } from './components/AdminPageShell'
 import { useAdminFetch } from './hooks/useAdminAPI'
 import { useAdminMutation } from './hooks/useAdminMutation'
@@ -145,17 +145,17 @@ const Page_admin_feature_flags_Content = () => {
     }
 
     const stats: StatItem[] = [
-        { label: 'Features', value: flags.length, icon: <VCT_Icons.Flag size={18} />, color: '#8b5cf6' },
-        { label: t('admin.flags.enabled'), value: flags.filter(f => f.status === 'enabled').length, icon: <VCT_Icons.CheckCircle size={18} />, color: '#10b981' },
-        { label: t('admin.flags.rollout'), value: flags.filter(f => f.status === 'partial').length, icon: <VCT_Icons.Activity size={18} />, color: '#f59e0b' },
-        { label: t('admin.flags.disabled'), value: flags.filter(f => f.status === 'disabled').length, icon: <VCT_Icons.x size={18} />, color: '#ef4444' },
+        { label: 'Features', value: flags.length, icon: <VCT_Icons.Flag size={18} />, color: 'var(--vct-info)' },
+        { label: t('admin.flags.enabled'), value: flags.filter(f => f.status === 'enabled').length, icon: <VCT_Icons.CheckCircle size={18} />, color: 'var(--vct-success)' },
+        { label: t('admin.flags.rollout'), value: flags.filter(f => f.status === 'partial').length, icon: <VCT_Icons.Activity size={18} />, color: 'var(--vct-warning)' },
+        { label: t('admin.flags.disabled'), value: flags.filter(f => f.status === 'disabled').length, icon: <VCT_Icons.x size={18} />, color: 'var(--vct-danger)' },
     ]
 
     return (
         <AdminPageShell
             title={t('admin.flags.title')}
             subtitle={t('admin.flags.subtitle')}
-            icon={<VCT_Icons.Flag size={28} className="text-[#8b5cf6]" />}
+            icon={<VCT_Icons.Flag size={28} className="text-(--vct-info)" />}
             breadcrumbs={[
                 { label: 'Admin', href: '/admin', icon: <VCT_Icons.Home size={14} /> },
                 { label: 'Feature Flags' },
@@ -227,7 +227,7 @@ const Page_admin_feature_flags_Content = () => {
                                             aria-label={`${flag.status !== 'disabled' ? 'Tắt' : 'Bật'} ${flag.name}`}
                                             role="switch"
                                             aria-checked={flag.status !== 'disabled' ? true : false}
-                                            className={`relative w-14 h-7 rounded-full transition-all duration-300 cursor-pointer ${flag.status !== 'disabled' ? 'bg-[#10b981] shadow-[0_0_12px_#10b98140]' : 'bg-(--vct-border-strong)'
+                                            className={`relative w-14 h-7 rounded-full transition-all duration-300 cursor-pointer ${flag.status !== 'disabled' ? 'bg-(--vct-success) shadow-[0_0_12px_#10b98140]' : 'bg-(--vct-border-strong)'
                                                 }`}>
                                             <div className={`absolute top-1 w-5 h-5 rounded-full bg-white shadow-md transition-all duration-300 ${flag.status !== 'disabled' ? 'left-8' : 'left-1'
                                                 }`}></div>

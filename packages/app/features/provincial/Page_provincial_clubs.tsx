@@ -6,10 +6,10 @@ import {
     VCT_Badge, VCT_Button, VCT_Stack, VCT_Toast,
     VCT_SearchInput, VCT_EmptyState, VCT_FilterChips,
     VCT_AvatarLetter, VCT_BulkActionsBar,
-} from '../components/vct-ui'
-import { VCT_PageContainer, VCT_StatRow } from '../components/vct-ui'
-import type { StatItem } from '../components/VCT_StatRow'
-import { VCT_Icons } from '../components/vct-icons'
+} from '@vct/ui'
+import { VCT_PageContainer, VCT_StatRow } from '@vct/ui'
+import type { StatItem } from '@vct/ui'
+import { VCT_Icons } from '@vct/ui'
 
 const API = '/api/v1/provincial'
 
@@ -84,10 +84,10 @@ export const Page_provincial_clubs = () => {
             </div>
 
             <VCT_StatRow items={[
-                { label: 'Tổng CLB', value: clubs.length, icon: <VCT_Icons.Building2 size={18} />, color: '#0ea5e9' },
-                { label: 'CLB hoạt động', value: clubs.filter(c => c.status === 'active').length, icon: <VCT_Icons.Activity size={18} />, color: '#10b981' },
-                { label: 'Tổng VĐV', value: totalAthletes, icon: <VCT_Icons.Users size={18} />, color: '#f59e0b' },
-                { label: 'Tổng HLV', value: totalCoaches, icon: <VCT_Icons.Award size={18} />, color: '#8b5cf6' },
+                { label: 'Tổng CLB', value: clubs.length, icon: <VCT_Icons.Building2 size={18} />, color: 'var(--vct-accent-cyan)' },
+                { label: 'CLB hoạt động', value: clubs.filter(c => c.status === 'active').length, icon: <VCT_Icons.Activity size={18} />, color: 'var(--vct-success)' },
+                { label: 'Tổng VĐV', value: totalAthletes, icon: <VCT_Icons.Users size={18} />, color: 'var(--vct-warning)' },
+                { label: 'Tổng HLV', value: totalCoaches, icon: <VCT_Icons.Award size={18} />, color: 'var(--vct-info)' },
             ] as StatItem[]} className="mb-6" />
 
             <VCT_FilterChips filters={activeFilters} onRemove={(k) => { if (k === 'status') setStatusFilter(null); if (k === 'search') setSearch('') }} onClearAll={() => { setStatusFilter(null); setSearch('') }} />
@@ -134,8 +134,8 @@ export const Page_provincial_clubs = () => {
                                         </td>
                                         <td className="px-4 py-3 text-sm">{c.district}</td>
                                         <td className="px-4 py-3 text-sm">{c.leader_name}</td>
-                                        <td className="px-4 py-3 text-sm text-center font-bold" style={{ color: '#22d3ee' }}>{c.athlete_count}</td>
-                                        <td className="px-4 py-3 text-sm text-center font-bold" style={{ color: '#8b5cf6' }}>{c.coach_count}</td>
+                                        <td className="px-4 py-3 text-sm text-center font-bold" style={{ color: 'var(--vct-accent-cyan)' }}>{c.athlete_count}</td>
+                                        <td className="px-4 py-3 text-sm text-center font-bold" style={{ color: 'var(--vct-info)' }}>{c.coach_count}</td>
                                         <td className="px-4 py-3 text-center"><VCT_Badge text={st.label} type={st.type} /></td>
                                     </tr>
                                 )

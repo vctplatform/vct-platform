@@ -6,9 +6,9 @@ import {
     VCT_Badge, VCT_Button, VCT_Stack,
     VCT_SearchInput, VCT_Modal, VCT_Input, VCT_Field, VCT_Tabs,
     VCT_ConfirmDialog, VCT_EmptyState
-} from '../components/vct-ui'
-import type { StatItem } from '../components/VCT_StatRow'
-import { VCT_Icons } from '../components/vct-icons'
+} from '@vct/ui'
+import type { StatItem } from '@vct/ui'
+import { VCT_Icons } from '@vct/ui'
 import { usePagination } from '../hooks/usePagination'
 import { AdminPageShell, useShellToast } from './components/AdminPageShell'
 import { useAdminFetch } from './hooks/useAdminAPI'
@@ -146,17 +146,17 @@ const Page_admin_reference_data_Content = () => {
     }
 
     const stats: StatItem[] = [
-        { label: 'Bảng TC', value: tables.length, icon: <VCT_Icons.Layers size={18} />, color: '#8b5cf6' },
-        { label: 'Tổng mục', value: totalItems, icon: <VCT_Icons.List size={18} />, color: '#0ea5e9' },
-        { label: 'Hoạt động', value: tables.reduce((s,t) => s + t.items.filter(i => i.is_active).length, 0), icon: <VCT_Icons.CheckCircle size={18} />, color: '#10b981' },
-        { label: 'Đã ẩn', value: tables.reduce((s,t) => s + t.items.filter(i => !i.is_active).length, 0), icon: <VCT_Icons.Eye size={18} />, color: '#f59e0b' },
+        { label: 'Bảng TC', value: tables.length, icon: <VCT_Icons.Layers size={18} />, color: 'var(--vct-info)' },
+        { label: 'Tổng mục', value: totalItems, icon: <VCT_Icons.List size={18} />, color: 'var(--vct-accent-cyan)' },
+        { label: 'Hoạt động', value: tables.reduce((s,t) => s + t.items.filter(i => i.is_active).length, 0), icon: <VCT_Icons.CheckCircle size={18} />, color: 'var(--vct-success)' },
+        { label: 'Đã ẩn', value: tables.reduce((s,t) => s + t.items.filter(i => !i.is_active).length, 0), icon: <VCT_Icons.Eye size={18} />, color: 'var(--vct-warning)' },
     ]
 
     return (
         <AdminPageShell
             title={t('admin.refdata.title')}
             subtitle="Quản lý bảng lookup: cấp đai, hạng cân, tiêu chí, lứa tuổi..."
-            icon={<VCT_Icons.Layers size={28} className="text-[#8b5cf6]" />}
+            icon={<VCT_Icons.Layers size={28} className="text-(--vct-info)" />}
             stats={stats}
             actions={
                 <VCT_Button icon={<VCT_Icons.Plus size={16} />} onClick={openAdd}>Thêm mục mới</VCT_Button>
@@ -187,7 +187,7 @@ const Page_admin_reference_data_Content = () => {
                                 <td className="p-4 text-center"><VCT_Badge text={item.is_active ? 'Hoạt động' : 'Đã ẩn'} type={item.is_active ? 'success' : 'neutral'} /></td>
                                 <td className="p-4 text-center"><VCT_Stack direction="row" gap={4} justify="center">
                                     <button onClick={() => openEdit(item)} aria-label={`Sửa ${item.name_vi}`} className="p-1.5 text-(--vct-text-tertiary) hover:text-white opacity-0 group-hover:opacity-100 transition-all rounded-md hover:bg-white/10"><VCT_Icons.Edit size={14} /></button>
-                                    <button onClick={() => setDeleteTarget(item)} aria-label={`Xóa ${item.name_vi}`} className="p-1.5 text-[#ef4444] opacity-0 group-hover:opacity-100 transition-all rounded-md hover:bg-[#ef444420]"><VCT_Icons.Trash size={14} /></button>
+                                    <button onClick={() => setDeleteTarget(item)} aria-label={`Xóa ${item.name_vi}`} className="p-1.5 text-(--vct-danger) opacity-0 group-hover:opacity-100 transition-all rounded-md hover:bg-[#ef444420]"><VCT_Icons.Trash size={14} /></button>
                                 </VCT_Stack></td>
                             </tr>
                         ))}

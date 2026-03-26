@@ -17,10 +17,10 @@ import {
   VCT_StatusPipeline,
   VCT_Table,
   VCT_Toast,
-} from '../components/vct-ui'
-import { VCT_PageContainer, VCT_StatRow } from '../components/vct-ui'
-import type { StatItem } from '../components/VCT_StatRow'
-import { VCT_Icons } from '../components/vct-icons'
+} from '@vct/ui'
+import { VCT_PageContainer, VCT_StatRow } from '@vct/ui'
+import type { StatItem } from '@vct/ui'
+import { VCT_Icons } from '@vct/ui'
 import { useRouteActionGuard } from '../hooks/use-route-action-guard'
 import {
   BELT_EMOJI,
@@ -415,19 +415,19 @@ export const Page_club_members = () => {
       label: 'Tong thanh vien',
       value: members.length,
       icon: <VCT_Icons.Users size={18} />,
-      color: '#0ea5e9',
+      color: 'var(--vct-accent-cyan)',
     },
     {
       label: 'Dang hoat dong',
       value: members.filter((item) => item.status === 'active').length,
       icon: <VCT_Icons.Activity size={18} />,
-      color: '#10b981',
+      color: 'var(--vct-success)',
     },
     {
       label: 'Cho duyet',
       value: members.filter((item) => item.status === 'pending').length,
       icon: <VCT_Icons.Clock size={18} />,
-      color: '#f59e0b',
+      color: 'var(--vct-warning)',
     },
     {
       label: 'HLV & tro giang',
@@ -435,7 +435,7 @@ export const Page_club_members = () => {
         members.filter((item) => item.role === 'coach' || item.role === 'assistant')
           .length,
       icon: <VCT_Icons.Award size={18} />,
-      color: '#8b5cf6',
+      color: 'var(--vct-info)',
     },
   ]
 
@@ -465,25 +465,25 @@ export const Page_club_members = () => {
           {
             key: 'active',
             label: 'Hoat dong',
-            color: '#10b981',
+            color: 'var(--vct-success)',
             count: members.filter((item) => item.status === 'active').length,
           },
           {
             key: 'pending',
             label: 'Cho duyet',
-            color: '#f59e0b',
+            color: 'var(--vct-warning)',
             count: members.filter((item) => item.status === 'pending').length,
           },
           {
             key: 'inactive',
             label: 'Ngung HD',
-            color: '#94a3b8',
+            color: 'var(--vct-text-tertiary)',
             count: members.filter((item) => item.status === 'inactive').length,
           },
           {
             key: 'rejected',
             label: 'Tu choi',
-            color: '#ef4444',
+            color: 'var(--vct-danger)',
             count: members.filter((item) => item.status === 'rejected').length,
           },
         ]}

@@ -2,7 +2,7 @@
 
 import React, { useState, useMemo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { VCT_Icons } from '../components/vct-icons'
+import { VCT_Icons } from '@vct/ui'
 
 // ════════════════════════════════════════
 // MOCK DATA
@@ -14,11 +14,11 @@ interface Invoice {
 }
 
 const STATUS_CFG: Record<string, { label: string; color: string }> = {
-    draft: { label: 'Nháp', color: '#94a3b8' },
-    pending: { label: 'Chờ duyệt', color: '#f59e0b' },
-    approved: { label: 'Đã duyệt', color: '#3b82f6' },
-    completed: { label: 'Hoàn tất', color: '#10b981' },
-    rejected: { label: 'Từ chối', color: '#ef4444' },
+    draft: { label: 'Nháp', color: 'var(--vct-text-tertiary)' },
+    pending: { label: 'Chờ duyệt', color: 'var(--vct-warning)' },
+    approved: { label: 'Đã duyệt', color: 'var(--vct-info)' },
+    completed: { label: 'Hoàn tất', color: 'var(--vct-success)' },
+    rejected: { label: 'Từ chối', color: 'var(--vct-danger)' },
 }
 
 const INVOICES: Invoice[] = [
@@ -70,10 +70,10 @@ export function Page_finance_invoices() {
 
             {/* KPI */}
             <div className="grid grid-cols-2 tablet:grid-cols-4 gap-3">
-                {[{ l: 'Tổng hóa đơn', v: INVOICES.length, i: '📄', c: '#0ea5e9' },
-                { l: 'Tổng thu (HT)', v: `${(totalReceipt / 1e6).toFixed(0)}M`, i: '📈', c: '#10b981' },
-                { l: 'Tổng chi (HT)', v: `${(totalPayment / 1e6).toFixed(0)}M`, i: '📉', c: '#ef4444' },
-                { l: 'Chờ duyệt', v: pendingCount, i: '⏳', c: '#f59e0b' },
+                {[{ l: 'Tổng hóa đơn', v: INVOICES.length, i: '📄', c: 'var(--vct-accent-cyan)' },
+                { l: 'Tổng thu (HT)', v: `${(totalReceipt / 1e6).toFixed(0)}M`, i: '📈', c: 'var(--vct-success)' },
+                { l: 'Tổng chi (HT)', v: `${(totalPayment / 1e6).toFixed(0)}M`, i: '📉', c: 'var(--vct-danger)' },
+                { l: 'Chờ duyệt', v: pendingCount, i: '⏳', c: 'var(--vct-warning)' },
                 ].map(s => (
                     <div key={s.l} className="rounded-xl border border-vct-border bg-vct-elevated p-4 text-center">
                         <div className="text-xl mb-1">{s.i}</div><div className="text-xl font-black" style={{ color: s.c }}>{s.v}</div>

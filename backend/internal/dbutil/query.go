@@ -11,9 +11,9 @@ import (
 
 // QueryStats tracks query performance metrics.
 type QueryStats struct {
-	TotalQueries   int64
-	SlowQueries    int64
-	ErrorQueries   int64
+	TotalQueries    int64
+	SlowQueries     int64
+	ErrorQueries    int64
 	TotalDurationNs int64
 }
 
@@ -87,13 +87,13 @@ func (m *QueryMiddleware) AvgDuration() time.Duration {
 
 // PoolStats holds connection pool statistics.
 type PoolStats struct {
-	MaxConns      int   `json:"max_conns"`
-	OpenConns     int   `json:"open_conns"`
-	InUse         int   `json:"in_use"`
-	Idle          int   `json:"idle"`
-	WaitCount     int64 `json:"wait_count"`
-	WaitDuration  time.Duration `json:"wait_duration"`
-	Utilization   float64 `json:"utilization"` // 0.0-1.0
+	MaxConns     int           `json:"max_conns"`
+	OpenConns    int           `json:"open_conns"`
+	InUse        int           `json:"in_use"`
+	Idle         int           `json:"idle"`
+	WaitCount    int64         `json:"wait_count"`
+	WaitDuration time.Duration `json:"wait_duration"`
+	Utilization  float64       `json:"utilization"` // 0.0-1.0
 }
 
 // PoolStatsProvider is any source of pool stats (e.g., sql.DB, pgxpool).

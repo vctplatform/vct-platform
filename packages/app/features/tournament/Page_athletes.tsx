@@ -6,10 +6,10 @@ import {
     VCT_Badge, VCT_Button, VCT_Text, VCT_Stack,
     VCT_Toast, VCT_Modal, VCT_SearchInput, VCT_ConfirmDialog,
     VCT_SegmentedControl, VCT_EmptyState
-} from '../components/vct-ui';
-import { VCT_PageContainer, VCT_StatRow } from '../components/vct-ui';
-import type { StatItem } from '../components/VCT_StatRow';
-import { VCT_Icons } from '../components/vct-icons';
+} from '@vct/ui';
+import { VCT_PageContainer, VCT_StatRow } from '@vct/ui';
+import type { StatItem } from '@vct/ui';
+import { VCT_Icons } from '@vct/ui';
 import { genId, useDonVis, useHangCans, useNoiDungQuyens } from '../hooks/useTournamentAPI';
 import type { DonVi, HangCan, NoiDungQuyen } from '../data/types';
 import type { VanDongVien, TrangThaiVDV, GioiTinh } from '../data/types';
@@ -341,10 +341,10 @@ export const Page_athletes = () => {
 
             {/* KPI HEADERS */}
             <VCT_StatRow items={[
-                { label: 'Tổng Võ Sinh', value: stats.total, icon: <VCT_Icons.Users size={18} />, color: '#22d3ee', sub: `${stats.nam} Nam - ${stats.nu} Nữ` },
-                { label: 'Đủ điều kiện', value: stats.ok, icon: <VCT_Icons.Check size={18} />, color: '#10b981' },
-                { label: 'Thiếu HS', value: stats.pending, icon: <VCT_Icons.Alert size={18} />, color: '#f59e0b' },
-                { label: 'TB cân nặng', value: `${stats.avgW}kg`, icon: <VCT_Icons.Activity size={18} />, color: '#a78bfa', sub: '42kg - 85kg' },
+                { label: 'Tổng Võ Sinh', value: stats.total, icon: <VCT_Icons.Users size={18} />, color: 'var(--vct-accent-cyan)', sub: `${stats.nam} Nam - ${stats.nu} Nữ` },
+                { label: 'Đủ điều kiện', value: stats.ok, icon: <VCT_Icons.Check size={18} />, color: 'var(--vct-success)' },
+                { label: 'Thiếu HS', value: stats.pending, icon: <VCT_Icons.Alert size={18} />, color: 'var(--vct-warning)' },
+                { label: 'TB cân nặng', value: `${stats.avgW}kg`, icon: <VCT_Icons.Activity size={18} />, color: 'var(--vct-info)', sub: '42kg - 85kg' },
             ] as StatItem[]} className="mb-6" />
 
             {/* TOOLBAR */}
@@ -376,15 +376,15 @@ export const Page_athletes = () => {
             </VCT_Stack>
 
             {/* BULK ACTION BAR */}
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 20px', background: selectedIds.length > 0 ? 'rgba(34, 211, 238, 0.1)' : 'var(--vct-bg-card)', border: `1px solid ${selectedIds.length > 0 ? '#22d3ee' : 'var(--vct-border-subtle)'}`, borderRadius: '16px', marginBottom: '24px', transition: 'all 0.3s' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 20px', background: selectedIds.length > 0 ? 'rgba(34, 211, 238, 0.1)' : 'var(--vct-bg-card)', border: `1px solid ${selectedIds.length > 0 ? 'var(--vct-accent-cyan)' : 'var(--vct-border-subtle)'}`, borderRadius: '16px', marginBottom: '24px', transition: 'all 0.3s' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
                     <label style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer' }}>
-                        <input type="checkbox" checked={filteredData.length > 0 && selectedIds.length === filteredData.length} onChange={toggleSelectAll} style={{ width: 18, height: 18, accentColor: '#22d3ee' }} />
+                        <input type="checkbox" checked={filteredData.length > 0 && selectedIds.length === filteredData.length} onChange={toggleSelectAll} style={{ width: 18, height: 18, accentColor: 'var(--vct-accent-cyan)' }} />
                         <span style={{ fontSize: '14px', fontWeight: 600 }}>Tất cả ({filteredData.length})</span>
                     </label>
                     {selectedIds.length > 0 && (
                         <div style={{ display: 'flex', alignItems: 'center', gap: 8, paddingLeft: 16, borderLeft: '1px solid var(--vct-border-strong)' }}>
-                            <VCT_Text style={{ fontWeight: 800, color: '#22d3ee' }}>Đã chọn: {selectedIds.length}</VCT_Text>
+                            <VCT_Text style={{ fontWeight: 800, color: 'var(--vct-accent-cyan)' }}>Đã chọn: {selectedIds.length}</VCT_Text>
                             <VCT_Button onClick={handleBulkApprove} icon={<VCT_Icons.Check size={14} />} style={{ padding: '6px 12px', fontSize: '12px' }} disabled={!permissions.canApprove}>Duyệt nhanh</VCT_Button>
                             <VCT_Button variant="secondary" onClick={() => permissions.canExport ? setShowPrintModal(true) : requireAction('export', 'in thẻ VĐV')} icon={<VCT_Icons.Printer size={14} />} style={{ padding: '6px 12px', fontSize: '12px', background: 'var(--vct-bg-input)' }} disabled={!permissions.canExport}>In Thẻ VĐV</VCT_Button>
                         </div>
@@ -401,7 +401,7 @@ export const Page_athletes = () => {
                         const hd = Object.values(v.ho_so).filter(Boolean).length;
                         return (
                             <div key={v.id} style={{
-                                background: 'var(--vct-bg-card)', borderRadius: '16px', border: `1px solid ${isSelected ? '#22d3ee' : 'var(--vct-border-subtle)'}`,
+                                background: 'var(--vct-bg-card)', borderRadius: '16px', border: `1px solid ${isSelected ? 'var(--vct-accent-cyan)' : 'var(--vct-border-subtle)'}`,
                                 overflow: 'hidden', transition: 'all 0.2s',
                                 boxShadow: isExpanded || isSelected ? '0 10px 40px rgba(0,0,0,0.1)' : 'none'
                             }}>
@@ -411,10 +411,10 @@ export const Page_athletes = () => {
                                     background: isExpanded || isSelected ? 'rgba(34, 211, 238, 0.05)' : 'transparent'
                                 }}>
                                     <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-                                        <input type="checkbox" checked={isSelected} onChange={(e) => { e.stopPropagation(); toggleSelect(v.id); }} style={{ width: 18, height: 18, accentColor: '#22d3ee', cursor: 'pointer' }} />
+                                        <input type="checkbox" checked={isSelected} onChange={(e) => { e.stopPropagation(); toggleSelect(v.id); }} style={{ width: 18, height: 18, accentColor: 'var(--vct-accent-cyan)', cursor: 'pointer' }} />
                                     </div>
                                     <div onClick={() => setExpandedId(isExpanded ? null : v.id)} style={{ display: 'flex', alignItems: 'center', gap: 16, flex: 2 }}>
-                                        <div style={{ width: 44, height: 44, borderRadius: 12, background: v.gioi === 'nam' ? 'rgba(96, 165, 250, 0.15)' : 'rgba(244, 114, 182, 0.15)', color: v.gioi === 'nam' ? '#60a5fa' : '#f472b6', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: '18px' }}>
+                                        <div style={{ width: 44, height: 44, borderRadius: 12, background: v.gioi === 'nam' ? 'rgba(96, 165, 250, 0.15)' : 'rgba(244, 114, 182, 0.15)', color: v.gioi === 'nam' ? 'var(--vct-info)' : '#f472b6', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: '18px' }}>
                                             {v.ho_ten.charAt(0)}
                                         </div>
                                         <div>
@@ -433,7 +433,7 @@ export const Page_athletes = () => {
                                         </VCT_Stack>
                                     </div>
                                     <div onClick={() => setExpandedId(isExpanded ? null : v.id)} style={{ flex: 1, textAlign: 'center' }}>
-                                        <div style={{ display: 'inline-flex', padding: '4px 10px', borderRadius: '8px', fontSize: '11px', fontWeight: 800, color: hd === 4 ? '#10b981' : '#f59e0b', background: hd === 4 ? 'rgba(16, 185, 129, 0.1)' : 'rgba(245, 158, 11, 0.1)' }}>
+                                        <div style={{ display: 'inline-flex', padding: '4px 10px', borderRadius: '8px', fontSize: '11px', fontWeight: 800, color: hd === 4 ? 'var(--vct-success)' : 'var(--vct-warning)', background: hd === 4 ? 'rgba(16, 185, 129, 0.1)' : 'rgba(245, 158, 11, 0.1)' }}>
                                             Hồ sơ: {hd}/4
                                         </div>
                                     </div>
@@ -456,7 +456,7 @@ export const Page_athletes = () => {
                                                         <VCT_Stack gap={10}>
                                                             <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid dashed var(--vct-border-subtle)', paddingBottom: 6 }}>
                                                                 <span style={{ fontSize: 13, opacity: 0.6 }}>Giới tính</span>
-                                                                <span style={{ fontSize: 13, fontWeight: 700, color: v.gioi === 'nam' ? '#60a5fa' : '#f472b6' }}>{v.gioi === 'nam' ? '♂ Nam' : '♀ Nữ'}</span>
+                                                                <span style={{ fontSize: 13, fontWeight: 700, color: v.gioi === 'nam' ? 'var(--vct-info)' : '#f472b6' }}>{v.gioi === 'nam' ? '♂ Nam' : '♀ Nữ'}</span>
                                                             </div>
                                                             <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid dashed var(--vct-border-subtle)', paddingBottom: 6 }}>
                                                                 <span style={{ fontSize: 13, opacity: 0.6 }}>Ngày sinh</span>
@@ -475,20 +475,20 @@ export const Page_athletes = () => {
                                                         <VCT_Stack gap={8}>
                                                             {v.nd_quyen.length > 0 ? v.nd_quyen.map(qid => (
                                                                 <div key={qid} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 12px', background: 'var(--vct-bg-elevated)', borderRadius: 8, border: '1px solid var(--vct-border-subtle)' }}>
-                                                                    <span style={{ color: '#22d3ee' }}>🥋</span>
+                                                                    <span style={{ color: 'var(--vct-accent-cyan)' }}>🥋</span>
                                                                     <span style={{ fontSize: 13, fontWeight: 600 }}>{getQuyenTen(qid, quyens)}</span>
                                                                 </div>
                                                             )) : <div style={{ fontSize: 12, opacity: 0.5, fontStyle: 'italic' }}>Chưa đăng ký quyền</div>}
 
                                                             {v.nd_dk ? (
                                                                 <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 12px', background: 'var(--vct-bg-elevated)', borderRadius: 8, border: '1px dashed #f59e0b', marginTop: 4 }}>
-                                                                    <span style={{ color: '#f59e0b' }}>🥊</span>
+                                                                    <span style={{ color: 'var(--vct-warning)' }}>🥊</span>
                                                                     <span style={{ fontSize: 13, fontWeight: 600 }}>{getDKTen(v.nd_dk, hangCans)}</span>
                                                                 </div>
                                                             ) : <div style={{ fontSize: 12, opacity: 0.5, fontStyle: 'italic', marginTop: 4 }}>Chưa đăng ký đối kháng</div>}
                                                         </VCT_Stack>
                                                         {v.ghi_chu && (
-                                                            <div style={{ marginTop: 12, fontSize: 12, color: '#ef4444', background: 'rgba(239, 68, 68, 0.1)', padding: '6px 12px', borderRadius: 6 }}>
+                                                            <div style={{ marginTop: 12, fontSize: 12, color: 'var(--vct-danger)', background: 'rgba(239, 68, 68, 0.1)', padding: '6px 12px', borderRadius: 6 }}>
                                                                 Chú ý: {v.ghi_chu}
                                                             </div>
                                                         )}
@@ -503,10 +503,10 @@ export const Page_athletes = () => {
                                                                 return (
                                                                     <label key={doc.key} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '8px 12px', borderRadius: 8, cursor: 'pointer', border: `1px solid ${checked ? 'rgba(16, 185, 129, 0.3)' : 'var(--vct-border-strong)'}`, background: checked ? 'rgba(16, 185, 129, 0.05)' : 'transparent', transition: 'all 0.2s' }}>
                                                                         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                                                                            <input type="checkbox" checked={checked} onChange={(e) => handleToggleDoc(v.id, doc.key as keyof VanDongVien['ho_so'], e.target.checked)} disabled={!permissions.canUpdate} style={{ width: 16, height: 16, accentColor: '#10b981' }} />
+                                                                            <input type="checkbox" checked={checked} onChange={(e) => handleToggleDoc(v.id, doc.key as keyof VanDongVien['ho_so'], e.target.checked)} disabled={!permissions.canUpdate} style={{ width: 16, height: 16, accentColor: 'var(--vct-success)' }} />
                                                                             <span style={{ fontSize: 13, fontWeight: checked ? 700 : 500, opacity: checked ? 1 : 0.6 }}>{doc.label}</span>
                                                                         </div>
-                                                                        {!checked && <span style={{ fontSize: 10, fontWeight: 800, color: '#ef4444', background: 'rgba(239, 68, 68, 0.1)', padding: '2px 6px', borderRadius: 4 }}>THIẾU</span>}
+                                                                        {!checked && <span style={{ fontSize: 10, fontWeight: 800, color: 'var(--vct-danger)', background: 'rgba(239, 68, 68, 0.1)', padding: '2px 6px', borderRadius: 4 }}>THIẾU</span>}
                                                                     </label>
                                                                 )
                                                             })}
@@ -517,11 +517,11 @@ export const Page_athletes = () => {
                                                 {/* FOOTER ACTIONS */}
                                                 <div style={{ marginTop: 16, display: 'flex', justifyContent: 'flex-end', gap: 12 }}>
                                                     {v.trang_thai === 'du_dieu_kien' ? (
-                                                        <VCT_Button variant="secondary" icon={<VCT_Icons.x size={14} />} onClick={() => handleReject(v.id)} style={{ color: '#f59e0b', borderColor: 'rgba(245, 158, 11, 0.3)' }} disabled={!permissions.canApprove}>Từ chối / Thiếu HS</VCT_Button>
+                                                        <VCT_Button variant="secondary" icon={<VCT_Icons.x size={14} />} onClick={() => handleReject(v.id)} style={{ color: 'var(--vct-warning)', borderColor: 'rgba(245, 158, 11, 0.3)' }} disabled={!permissions.canApprove}>Từ chối / Thiếu HS</VCT_Button>
                                                     ) : (
                                                         <VCT_Button icon={<VCT_Icons.Check size={14} />} onClick={() => handleApprove(v.id)} disabled={!permissions.canApprove}>Xác nhận Đủ Điều Kiện</VCT_Button>
                                                     )}
-                                                    <VCT_Button variant="secondary" icon={<VCT_Icons.Trash size={14} />} onClick={() => permissions.canDelete ? setDeleteTarget(v) : requireAction('delete', 'xóa VĐV')} style={{ color: '#ef4444', borderColor: 'rgba(239, 68, 68, 0.3)' }} disabled={!permissions.canDelete}>Hủy Đăng Ký</VCT_Button>
+                                                    <VCT_Button variant="secondary" icon={<VCT_Icons.Trash size={14} />} onClick={() => permissions.canDelete ? setDeleteTarget(v) : requireAction('delete', 'xóa VĐV')} style={{ color: 'var(--vct-danger)', borderColor: 'rgba(239, 68, 68, 0.3)' }} disabled={!permissions.canDelete}>Hủy Đăng Ký</VCT_Button>
                                                 </div>
                                             </div>
                                         </motion.div>
@@ -539,10 +539,10 @@ export const Page_athletes = () => {
             }>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '20px', padding: 10, maxHeight: '60vh', overflowY: 'auto' }} className="vct-hide-scrollbar print-only-cards">
                     {data.filter(v => selectedIds.includes(v.id)).map(v => (
-                        <div key={v.id} style={{ border: '2px solid var(--vct-accent-cyan)', borderRadius: 12, padding: 16, background: '#fff', color: '#000', position: 'relative', overflow: 'hidden' }}>
+                        <div key={v.id} style={{ border: '2px solid var(--vct-accent-cyan)', borderRadius: 12, padding: 16, background: 'var(--vct-bg-elevated)', color: '#000', position: 'relative', overflow: 'hidden' }}>
                             <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 60, background: 'linear-gradient(135deg, #1e3a8a, #3b82f6)', zIndex: 0 }} />
                             <div style={{ position: 'relative', zIndex: 1, textAlign: 'center' }}>
-                                <div style={{ fontWeight: 900, fontSize: 15, color: '#fff', marginBottom: 16, textTransform: 'uppercase', letterSpacing: 1 }}>THẺ GIẢI ĐẤU QUỐC GIA</div>
+                                <div style={{ fontWeight: 900, fontSize: 15, color: 'var(--vct-bg-elevated)', marginBottom: 16, textTransform: 'uppercase', letterSpacing: 1 }}>THẺ GIẢI ĐẤU QUỐC GIA</div>
                                 <div style={{ width: 80, height: 100, background: '#e5e7eb', margin: '0 auto', border: '3px solid #fff', borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                                     <span style={{ fontSize: 32, opacity: 0.3 }}>{v.ho_ten.charAt(0)}</span>
                                 </div>
@@ -551,21 +551,21 @@ export const Page_athletes = () => {
 
                                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginTop: 16, textAlign: 'left', background: '#f3f4f6', padding: 8, borderRadius: 8 }}>
                                     <div>
-                                        <div style={{ fontSize: 10, color: '#6b7280', fontWeight: 700 }}>Mã số</div>
-                                        <div style={{ fontSize: 12, fontWeight: 800, color: '#1f2937' }}>{v.id}</div>
+                                        <div style={{ fontSize: 10, color: 'var(--vct-text-tertiary)', fontWeight: 700 }}>Mã số</div>
+                                        <div style={{ fontSize: 12, fontWeight: 800, color: 'var(--vct-bg-input)' }}>{v.id}</div>
                                     </div>
                                     <div>
-                                        <div style={{ fontSize: 10, color: '#6b7280', fontWeight: 700 }}>Ngày sinh</div>
-                                        <div style={{ fontSize: 12, fontWeight: 800, color: '#1f2937' }}>{new Date(v.ngay_sinh).toLocaleDateString('vi-VN')}</div>
+                                        <div style={{ fontSize: 10, color: 'var(--vct-text-tertiary)', fontWeight: 700 }}>Ngày sinh</div>
+                                        <div style={{ fontSize: 12, fontWeight: 800, color: 'var(--vct-bg-input)' }}>{new Date(v.ngay_sinh).toLocaleDateString('vi-VN')}</div>
                                     </div>
                                     <div style={{ gridColumn: '1 / -1' }}>
-                                        <div style={{ fontSize: 10, color: '#6b7280', fontWeight: 700 }}>Hạng cân / Tuổi</div>
-                                        <div style={{ fontSize: 12, fontWeight: 800, color: '#1f2937' }}>{v.can_nang}kg • {calcTuoi(v.ngay_sinh)} tuổi</div>
+                                        <div style={{ fontSize: 10, color: 'var(--vct-text-tertiary)', fontWeight: 700 }}>Hạng cân / Tuổi</div>
+                                        <div style={{ fontSize: 12, fontWeight: 800, color: 'var(--vct-bg-input)' }}>{v.can_nang}kg • {calcTuoi(v.ngay_sinh)} tuổi</div>
                                     </div>
                                 </div>
 
                                 <div style={{ marginTop: 12, padding: '4px 0', borderTop: '1px dashed #d1d5db', borderBottom: '1px dashed #d1d5db' }}>
-                                    <div style={{ fontSize: 11, fontWeight: 800, color: '#dc2626' }}>VẬN ĐỘNG VIÊN</div>
+                                    <div style={{ fontSize: 11, fontWeight: 800, color: 'var(--vct-danger)' }}>VẬN ĐỘNG VIÊN</div>
                                 </div>
                             </div>
                         </div>

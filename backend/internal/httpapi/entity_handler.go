@@ -2,9 +2,11 @@ package httpapi
 
 import (
 	"encoding/json"
+	"errors"
 	"net/http"
 	"strings"
 
+	"vct-platform/backend/internal/apierror"
 	"vct-platform/backend/internal/auth"
 	"vct-platform/backend/internal/authz"
 	"vct-platform/backend/internal/pkg"
@@ -16,18 +18,18 @@ func (s *Server) handleEntityRoutes(w http.ResponseWriter, r *http.Request) {
 	path := strings.TrimPrefix(r.URL.Path, "/api/v1/")
 	path = strings.Trim(path, "/")
 	if path == "" {
-		notFound(w)
+		apiError(w, http.StatusNotFound, CodeNotFound, "Không tìm thấy tài nguyên")
 		return
 	}
 
 	segments := strings.Split(path, "/")
 	entity := segments[0]
 	if entity == "auth" {
-		notFound(w)
+		apiError(w, http.StatusNotFound, CodeNotFound, "Không tìm thấy tài nguyên")
 		return
 	}
 	if _, allowed := s.allowedEntities[entity]; !allowed {
-		notFound(w)
+		apiError(w, http.StatusNotFound, CodeNotFound, "Không tìm thấy tài nguyên")
 		return
 	}
 
@@ -49,7 +51,7 @@ func (s *Server) handleEntityRoutes(w http.ResponseWriter, r *http.Request) {
 	case 2:
 		s.handleEntityAction(entity, segments[1], principal, w, r)
 	default:
-		notFound(w)
+		apiError(w, http.StatusNotFound, CodeNotFound, "Không tìm thấy tài nguyên")
 	}
 }
 
@@ -70,17 +72,21 @@ func (s *Server) handleEntityCollection(entity string, principal *auth.Principal
 		}
 		item, err := decodeObject(r)
 		if err != nil {
-			badRequest(w, err.Error())
+			apiBadRequest(w, err)
 			return
 		}
 		b, err := json.Marshal(item)
 		if err != nil {
-			badRequest(w, err.Error())
+			apiBadRequest(w, err)
 			return
 		}
 		created, err := s.store.Create(entity, b)
 		if err != nil {
-			badRequest(w, err.Error())
+			if errors.Is(err, apierror.ErrDuplicateID) {
+				apiConflict(w, "Mã ID đã tồn tại")
+				return
+			}
+			apiBadRequest(w, err)
 			return
 		}
 		var createdMap map[string]any
@@ -89,7 +95,7 @@ func (s *Server) handleEntityCollection(entity string, principal *auth.Principal
 		s.broadcastEntityChange(entity, "created", createdID, createdMap, nil)
 		successJSONBytes(w, http.StatusCreated, created)
 	default:
-		methodNotAllowed(w)
+		apiMethodNotAllowed(w)
 	}
 }
 
@@ -115,7 +121,7 @@ func (s *Server) handleEntityAction(entity, action string, principal *auth.Princ
 		}
 		item, ok := s.store.GetByID(entity, id)
 		if !ok {
-			notFound(w)
+			apiError(w, http.StatusNotFound, CodeNotFound, "Không tìm thấy tài nguyên")
 			return
 		}
 		successJSONBytes(w, http.StatusOK, item)
@@ -126,17 +132,21 @@ func (s *Server) handleEntityAction(entity, action string, principal *auth.Princ
 		}
 		patch, err := decodeObject(r)
 		if err != nil {
-			badRequest(w, err.Error())
+			apiBadRequest(w, err)
 			return
 		}
 		b, err := json.Marshal(patch)
 		if err != nil {
-			badRequest(w, err.Error())
+			apiBadRequest(w, err)
 			return
 		}
 		updated, err := s.store.Update(entity, id, b)
 		if err != nil {
-			badRequest(w, err.Error())
+			if errors.Is(err, apierror.ErrNotFound) {
+				apiNotFound(w, entity, id)
+				return
+			}
+			apiBadRequest(w, err)
 			return
 		}
 		var updatedMap map[string]any
@@ -152,13 +162,13 @@ func (s *Server) handleEntityAction(entity, action string, principal *auth.Princ
 		s.broadcastEntityChange(entity, "deleted", id, nil, nil)
 		w.WriteHeader(http.StatusNoContent)
 	default:
-		methodNotAllowed(w)
+		apiMethodNotAllowed(w)
 	}
 }
 
 func (s *Server) handleBulkReplace(entity string, principal *auth.Principal, w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPut {
-		methodNotAllowed(w)
+		apiMethodNotAllowed(w)
 		return
 	}
 	if err := s.authorizeEntityAction(principal, entity, authz.ActionUpdate); err != nil {
@@ -170,7 +180,7 @@ func (s *Server) handleBulkReplace(entity string, principal *auth.Principal, w h
 		Items []map[string]any `json:"items"`
 	}
 	if err := decodeJSON(r, &payload); err != nil {
-		badRequest(w, err.Error())
+		apiError(w, http.StatusBadRequest, CodeBadRequest, err.Error())
 		return
 	}
 	var byteItems [][]byte
@@ -180,7 +190,7 @@ func (s *Server) handleBulkReplace(entity string, principal *auth.Principal, w h
 	}
 	replaced, err := s.store.ReplaceAll(entity, byteItems)
 	if err != nil {
-		badRequest(w, err.Error())
+		apiBadRequest(w, err)
 		return
 	}
 	s.broadcastEntityChange(entity, "replaced", "", nil, map[string]any{
@@ -200,7 +210,7 @@ func (s *Server) handleBulkReplace(entity string, principal *auth.Principal, w h
 
 func (s *Server) handleImport(entity string, principal *auth.Principal, w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
-		methodNotAllowed(w)
+		apiMethodNotAllowed(w)
 		return
 	}
 	if err := s.authorizeEntityAction(principal, entity, authz.ActionImport); err != nil {
@@ -212,7 +222,7 @@ func (s *Server) handleImport(entity string, principal *auth.Principal, w http.R
 		Items []any `json:"items"`
 	}
 	if err := decodeJSON(r, &payload); err != nil {
-		badRequest(w, err.Error())
+		apiError(w, http.StatusBadRequest, CodeBadRequest, err.Error())
 		return
 	}
 	report := s.store.Import(entity, payload.Items)
@@ -225,7 +235,7 @@ func (s *Server) handleImport(entity string, principal *auth.Principal, w http.R
 
 func (s *Server) handleExport(entity string, principal *auth.Principal, w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
-		methodNotAllowed(w)
+		apiMethodNotAllowed(w)
 		return
 	}
 	if err := s.authorizeEntityAction(principal, entity, authz.ActionExport); err != nil {
@@ -248,11 +258,11 @@ func (s *Server) handleExport(entity string, principal *auth.Principal, w http.R
 	case "csv":
 		payload, err = s.store.ExportCSV(entity)
 	default:
-		badRequest(w, "format không hỗ trợ, chỉ nhận json hoặc csv")
+		apiError(w, http.StatusBadRequest, CodeBadRequest, "format không hỗ trợ, chỉ nhận json hoặc csv")
 		return
 	}
 	if err != nil {
-		internalError(w, err)
+		apiInternal(w, err)
 		return
 	}
 

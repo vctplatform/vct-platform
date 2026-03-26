@@ -4,9 +4,9 @@ import * as React from 'react'
 import { useState, useMemo } from 'react'
 import {
     VCT_Badge, VCT_SearchInput, VCT_Select, VCT_Button
-} from '../components/vct-ui'
-import { VCT_Icons } from '../components/vct-icons'
-import { VCT_Drawer } from '../components/VCT_Drawer'
+} from '@vct/ui'
+import { VCT_Icons } from '@vct/ui'
+import { VCT_Drawer } from '@vct/ui'
 import { AdminDataTable } from './components/AdminDataTable'
 import { AdminPageShell, useShellToast } from './components/AdminPageShell'
 import { useAdminFetch } from './hooks/useAdminAPI'
@@ -112,7 +112,7 @@ const Page_audit_logs_Content = () => {
         <AdminPageShell
             title="Nhật Ký Hệ Thống (Audit Logs)"
             subtitle="Theo dõi và giám sát mọi hoạt động trên hệ thống VCT PLATFORM."
-            icon={<VCT_Icons.Shield size={28} className="text-[#8b5cf6]" />}
+            icon={<VCT_Icons.Shield size={28} className="text-(--vct-info)" />}
             actions={
                 <VCT_Button variant="outline" icon={<VCT_Icons.Download size={16} />} onClick={handleExport}>Xuất CSV</VCT_Button>
             }

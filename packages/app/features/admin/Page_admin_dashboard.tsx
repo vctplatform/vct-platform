@@ -5,11 +5,11 @@ import './admin.module.css'
 import * as React from 'react'
 import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
-import { VCT_Badge, VCT_Button, VCT_Stack } from '../components/vct-ui'
-import type { StatItem } from '../components/VCT_StatRow'
-import { VCT_Icons } from '../components/vct-icons'
-import { VCT_Timeline } from '../components/VCT_Timeline'
-import type { TimelineEvent } from '../components/VCT_Timeline'
+import { VCT_Badge, VCT_Button, VCT_Stack } from '@vct/ui'
+import type { StatItem } from '@vct/ui'
+import { VCT_Icons } from '@vct/ui'
+import { VCT_Timeline } from '@vct/ui'
+import type { TimelineEvent } from '@vct/ui'
 import { AdminPageShell } from './components/AdminPageShell'
 import { AdminGuard } from './components/AdminGuard'
 import { useAdminFetch } from './hooks/useAdminAPI'
@@ -121,7 +121,7 @@ const Page_admin_dashboard_Content = () => {
         title: e.title,
         description: e.description,
         icon: i % 3 === 0 ? <VCT_Icons.Settings size={14} /> : i % 3 === 1 ? <VCT_Icons.Users size={14} /> : <VCT_Icons.Shield size={14} />,
-        color: i % 3 === 0 ? '#0ea5e9' : i % 3 === 1 ? '#10b981' : '#f59e0b',
+        color: i % 3 === 0 ? 'var(--vct-accent-cyan)' : i % 3 === 1 ? 'var(--vct-success)' : 'var(--vct-warning)',
     }))
 
     // Auto-refresh every 30 seconds
@@ -152,17 +152,17 @@ const Page_admin_dashboard_Content = () => {
     const health = getHealthScore(services)
 
     const dashStats: StatItem[] = [
-        { label: 'Goroutines', value: dashData?.goroutines ?? '—', icon: <VCT_Icons.Activity size={18} />, color: '#10b981' },
-        { label: 'Memory', value: dashData ? `${dashData.memory_mb} MB` : '—', icon: <VCT_Icons.Layers size={18} />, color: '#0ea5e9' },
-        { label: 'GC Runs', value: dashData?.gc_runs ?? '—', icon: <VCT_Icons.TrendingUp size={18} />, color: '#f59e0b' },
-        { label: 'WS Clients', value: dashData?.ws_clients ?? 0, icon: <VCT_Icons.Users size={18} />, color: '#8b5cf6' },
+        { label: 'Goroutines', value: dashData?.goroutines ?? '—', icon: <VCT_Icons.Activity size={18} />, color: 'var(--vct-success)' },
+        { label: 'Memory', value: dashData ? `${dashData.memory_mb} MB` : '—', icon: <VCT_Icons.Layers size={18} />, color: 'var(--vct-accent-cyan)' },
+        { label: 'GC Runs', value: dashData?.gc_runs ?? '—', icon: <VCT_Icons.TrendingUp size={18} />, color: 'var(--vct-warning)' },
+        { label: 'WS Clients', value: dashData?.ws_clients ?? 0, icon: <VCT_Icons.Users size={18} />, color: 'var(--vct-info)' },
     ]
 
     return (
         <AdminPageShell
             title={t('admin.dashboard.title')}
             subtitle={t('admin.dashboard.subtitle')}
-            icon={<VCT_Icons.Activity size={28} className="text-[#10b981]" />}
+            icon={<VCT_Icons.Activity size={28} className="text-(--vct-success)" />}
             stats={dashStats}
             actions={
                 <VCT_Stack direction="row" gap={8} align="center">
@@ -173,7 +173,7 @@ const Page_admin_dashboard_Content = () => {
                     <button
                         onClick={() => setAutoRefresh(!autoRefresh)}
                         aria-label={autoRefresh ? 'Tắt tự động cập nhật' : 'Bật tự động cập nhật'}
-                        className={`px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all admin-focus-ring ${autoRefresh ? 'bg-[#10b98120] border-[#10b981] text-[#10b981]' : 'bg-transparent border-(--vct-border-subtle) text-(--vct-text-tertiary)'}`}
+                        className={`px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all admin-focus-ring ${autoRefresh ? 'bg-[#10b98120] border-(--vct-success) text-(--vct-success)' : 'bg-transparent border-(--vct-border-subtle) text-(--vct-text-tertiary)'}`}
                     >
                         {autoRefresh ? '● Auto' : '○ Manual'}
                     </button>
@@ -217,7 +217,7 @@ const Page_admin_dashboard_Content = () => {
                 <div className="lg:col-span-2 bg-(--vct-bg-elevated) border border-(--vct-border-strong) rounded-2xl p-6">
                     <div className="flex items-center justify-between mb-4">
                         <h2 className="font-bold text-lg text-(--vct-text-primary) flex items-center gap-2">
-                            <VCT_Icons.Activity size={20} className="text-[#10b981]" /> Trạng thái dịch vụ
+                            <VCT_Icons.Activity size={20} className="text-(--vct-success)" /> Trạng thái dịch vụ
                         </h2>
                         <VCT_Badge type={services.every(s => s.status === 'online') ? 'success' : 'warning'} text={`${services.length} dịch vụ`} />
                     </div>
@@ -233,7 +233,7 @@ const Page_admin_dashboard_Content = () => {
                             services.map(svc => (
                                 <div key={svc.name} className="flex items-center justify-between p-3 bg-(--vct-bg-base) rounded-xl border border-(--vct-border-subtle)">
                                     <div className="flex items-center gap-3">
-                                        <div className={`w-2.5 h-2.5 rounded-full ${svc.status === 'online' ? 'bg-[#10b981] shadow-[0_0_8px_#10b981]' : 'bg-[#f59e0b] shadow-[0_0_8px_#f59e0b] animate-pulse'}`}></div>
+                                        <div className={`w-2.5 h-2.5 rounded-full ${svc.status === 'online' ? 'bg-(--vct-success) shadow-[0_0_8px_#10b981]' : 'bg-(--vct-warning) shadow-[0_0_8px_#f59e0b] animate-pulse'}`}></div>
                                         <span className="font-semibold text-sm text-(--vct-text-primary)">{svc.name}</span>
                                     </div>
                                     <div className="flex items-center gap-4 text-[11px] text-(--vct-text-tertiary)">
@@ -252,7 +252,7 @@ const Page_admin_dashboard_Content = () => {
                 {/* Runtime Metrics */}
                 <div className="bg-(--vct-bg-elevated) border border-(--vct-border-strong) rounded-2xl p-6">
                     <h2 className="font-bold text-lg text-(--vct-text-primary) mb-4 flex items-center gap-2">
-                        <VCT_Icons.Activity size={20} className="text-[#0ea5e9]" /> Runtime Metrics
+                        <VCT_Icons.Activity size={20} className="text-(--vct-accent-cyan)" /> Runtime Metrics
                     </h2>
                     {isLoading ? (
                         <div className="grid grid-cols-2 gap-4">
@@ -284,7 +284,7 @@ const Page_admin_dashboard_Content = () => {
                 <div className="bg-(--vct-bg-elevated) border border-(--vct-border-strong) rounded-2xl p-6">
                     <div className="flex items-center justify-between mb-4">
                         <h2 className="font-bold text-lg text-(--vct-text-primary) flex items-center gap-2">
-                            <VCT_Icons.Clock size={20} className="text-[#f59e0b]" /> Hoạt động gần đây
+                            <VCT_Icons.Clock size={20} className="text-(--vct-warning)" /> Hoạt động gần đây
                         </h2>
                         <VCT_Badge type="info" text={`${timelineEvents.length} sự kiện`} />
                     </div>
@@ -306,7 +306,7 @@ const Page_admin_dashboard_Content = () => {
             {/* ── SYSTEM ADMIN QUICK NAV ── */}
             <div className="mt-6">
                 <h2 className="font-bold text-lg text-(--vct-text-primary) mb-4 flex items-center gap-2">
-                    <VCT_Icons.Settings size={20} className="text-[#0ea5e9]" /> Quản trị Hệ thống
+                    <VCT_Icons.Settings size={20} className="text-(--vct-accent-cyan)" /> Quản trị Hệ thống
                 </h2>
                 <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
                     {QUICK_NAV.map(nav => (

@@ -6,11 +6,11 @@ import {
     VCT_Badge, VCT_Button, VCT_Stack,
     VCT_SearchInput, VCT_Select, VCT_Tabs, VCT_EmptyState,
     VCT_Modal, VCT_Input, VCT_Field
-} from '../components/vct-ui'
-import type { StatItem } from '../components/VCT_StatRow'
-import { VCT_Icons } from '../components/vct-icons'
-import { VCT_Drawer } from '../components/VCT_Drawer'
-import { VCT_Timeline } from '../components/VCT_Timeline'
+} from '@vct/ui'
+import type { StatItem } from '@vct/ui'
+import { VCT_Icons } from '@vct/ui'
+import { VCT_Drawer } from '@vct/ui'
+import { VCT_Timeline } from '@vct/ui'
 import { AdminDataTable } from './components/AdminDataTable'
 import { AdminPageShell, useShellToast } from './components/AdminPageShell'
 import { AdminGuard } from './components/AdminGuard'
@@ -166,10 +166,10 @@ const Page_admin_subscriptions_Content = () => {
     const pastDueSubs = subs.filter(s => s.status === 'past_due' || s.status === 'suspended')
 
     const stats: StatItem[] = [
-        { icon: <VCT_Icons.Users size={20} />, label: 'Đang hoạt động', value: `${activeSubs.length}`, color: '#10b981' },
-        { icon: <VCT_Icons.AlertTriangle size={20} />, label: 'Quá hạn / Tạm ngưng', value: `${pastDueSubs.length}`, color: '#ef4444' },
-        { icon: <VCT_Icons.DollarSign size={20} />, label: 'Doanh thu kỳ này', value: fmt(totalRevenue), color: '#0ea5e9' },
-        { icon: <VCT_Icons.FileText size={20} />, label: 'Tổng gói dịch vụ', value: `${plans.length}`, color: '#8b5cf6' },
+        { icon: <VCT_Icons.Users size={20} />, label: 'Đang hoạt động', value: `${activeSubs.length}`, color: 'var(--vct-success)' },
+        { icon: <VCT_Icons.AlertTriangle size={20} />, label: 'Quá hạn / Tạm ngưng', value: `${pastDueSubs.length}`, color: 'var(--vct-danger)' },
+        { icon: <VCT_Icons.DollarSign size={20} />, label: 'Doanh thu kỳ này', value: fmt(totalRevenue), color: 'var(--vct-accent-cyan)' },
+        { icon: <VCT_Icons.FileText size={20} />, label: 'Tổng gói dịch vụ', value: `${plans.length}`, color: 'var(--vct-info)' },
     ]
 
     // ── Sort & Filter ──
@@ -241,7 +241,7 @@ const Page_admin_subscriptions_Content = () => {
         <AdminPageShell
             title={t('admin.subscriptions.title')}
             subtitle={t('admin.subscriptions.subtitle')}
-            icon={<VCT_Icons.CreditCard size={28} className="text-[#8b5cf6]" />}
+            icon={<VCT_Icons.CreditCard size={28} className="text-(--vct-info)" />}
             stats={stats}
         >
 
@@ -249,7 +249,7 @@ const Page_admin_subscriptions_Content = () => {
             {expiringSoon.length > 0 && (
                 <div className="mb-6 p-4 bg-[#f59e0b10] border border-[#f59e0b40] rounded-2xl flex items-center justify-between gap-4 flex-wrap">
                     <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-xl bg-[#f59e0b] flex items-center justify-center">
+                        <div className="w-10 h-10 rounded-xl bg-(--vct-warning) flex items-center justify-center">
                             <VCT_Icons.AlertTriangle size={20} className="text-white" />
                         </div>
                         <div>
@@ -327,7 +327,7 @@ const Page_admin_subscriptions_Content = () => {
                                     const days = daysUntil(sub.current_period_end)
                                     const isExpiring = sub.status === 'active' && days <= 30 && days > 0
                                     return (
-                                        <span className={`text-xs font-semibold ${isExpiring ? 'text-[#f59e0b]' : 'text-(--vct-text-tertiary)'}`}>
+                                        <span className={`text-xs font-semibold ${isExpiring ? 'text-(--vct-warning)' : 'text-(--vct-text-tertiary)'}`}>
                                             {sub.current_period_end}
                                             {isExpiring && <span className="block text-[10px]">({days} ngày)</span>}
                                         </span>
@@ -339,7 +339,7 @@ const Page_admin_subscriptions_Content = () => {
                                 label: 'Tự gia hạn',
                                 sortable: false,
                                 align: 'center',
-                                render: (sub) => sub.auto_renew ? <VCT_Icons.CheckCircle size={16} className="text-[#10b981] inline" /> : <VCT_Icons.X size={16} className="text-[#94a3b8] inline" />
+                                render: (sub) => sub.auto_renew ? <VCT_Icons.CheckCircle size={16} className="text-(--vct-success) inline" /> : <VCT_Icons.X size={16} className="text-(--vct-text-tertiary) inline" />
                             },
                             {
                                 key: 'status',
@@ -363,7 +363,7 @@ const Page_admin_subscriptions_Content = () => {
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
                     {plans.map(plan => (
-                        <div key={plan.id} className="bg-(--vct-bg-elevated) border border-(--vct-border-strong) rounded-2xl p-5 hover:border-[#8b5cf6] transition-colors group">
+                        <div key={plan.id} className="bg-(--vct-bg-elevated) border border-(--vct-border-strong) rounded-2xl p-5 hover:border-(--vct-info) transition-colors group">
                             <div className="flex items-center justify-between mb-3">
                                 <VCT_Badge type={ENTITY_MAP[plan.entity_type]?.type || 'info'} text={ENTITY_MAP[plan.entity_type]?.label || plan.entity_type} />
                                 <div className="flex items-center gap-2">
@@ -382,7 +382,7 @@ const Page_admin_subscriptions_Content = () => {
                                 </div>
                                 <div className="flex justify-between text-sm">
                                     <span className="text-(--vct-text-secondary)">Giá năm</span>
-                                    <span className="font-bold text-[#10b981]">{fmt(plan.price_yearly)}</span>
+                                    <span className="font-bold text-(--vct-success)">{fmt(plan.price_yearly)}</span>
                                 </div>
                                 <div className="border-t border-(--vct-border-subtle) pt-2 mt-2 space-y-1 text-xs text-(--vct-text-tertiary)">
                                     <div className="flex items-center gap-2"><VCT_Icons.Users size={12} /> Tối đa {plan.max_members} thành viên</div>
@@ -400,7 +400,7 @@ const Page_admin_subscriptions_Content = () => {
             {tab === 'history' && (
                 <div className="bg-(--vct-bg-elevated) border border-(--vct-border-strong) rounded-2xl p-5">
                     <h3 className="font-bold text-(--vct-text-primary) mb-4 flex items-center gap-2">
-                        <VCT_Icons.Activity size={18} className="text-[#8b5cf6]" /> Lịch sử gia hạn & thay đổi
+                        <VCT_Icons.Activity size={18} className="text-(--vct-info)" /> Lịch sử gia hạn & thay đổi
                     </h3>
                     <VCT_Timeline events={[]} />
                 </div>
@@ -414,7 +414,7 @@ const Page_admin_subscriptions_Content = () => {
                         <div className="flex rounded-xl border border-(--vct-border-strong) overflow-hidden">
                             {(['info', 'billing'] as const).map(t => (
                                 <button key={t} onClick={() => setDrawerTab(t)}
-                                    className={`flex-1 px-4 py-2 text-sm font-semibold transition-colors ${drawerTab === t ? 'bg-[#8b5cf6] text-white' : 'bg-(--vct-bg-elevated) text-(--vct-text-secondary) hover:bg-(--vct-bg-base)'}`}
+                                    className={`flex-1 px-4 py-2 text-sm font-semibold transition-colors ${drawerTab === t ? 'bg-(--vct-info) text-white' : 'bg-(--vct-bg-elevated) text-(--vct-text-secondary) hover:bg-(--vct-bg-base)'}`}
                                 >
                                     {t === 'info' ? 'Thông tin' : 'Thanh toán'}
                                 </button>
@@ -433,11 +433,11 @@ const Page_admin_subscriptions_Content = () => {
                                 {selected.status === 'trial' && (
                                     <div className="p-3 bg-[#8b5cf610] border border-[#8b5cf640] rounded-xl">
                                         <div className="flex items-center justify-between text-xs mb-2">
-                                            <span className="text-[#8b5cf6] font-bold">Trial Period</span>
+                                            <span className="text-(--vct-info) font-bold">Trial Period</span>
                                             <span className="text-(--vct-text-tertiary)">{Math.max(0, daysUntil(selected.current_period_end))} / {Math.ceil((new Date(selected.current_period_end).getTime() - new Date(selected.current_period_start).getTime()) / (1000 * 60 * 60 * 24))} ngày</span>
                                         </div>
                                         <div className="w-full h-2 bg-[#8b5cf620] rounded-full overflow-hidden">
-                                            <div className="admin-progress-width bg-linear-to-r from-[#8b5cf6] to-[#a855f7]"
+                                            <div className="admin-progress-width bg-linear-to-r from-(--vct-info) to-[#a855f7]"
                                                 {...{ style: { '--_progress-width': `${Math.min(100, Math.max(0, 100 - (daysUntil(selected.current_period_end) / Math.max(1, Math.ceil((new Date(selected.current_period_end).getTime() - new Date(selected.current_period_start).getTime()) / (1000 * 60 * 60 * 24))) * 100)))}%` } as React.CSSProperties }}
                                             />
                                         </div>
@@ -485,7 +485,7 @@ const Page_admin_subscriptions_Content = () => {
                         {drawerTab === 'billing' && (
                             <div>
                                 <h4 className="font-bold text-(--vct-text-primary) text-sm mb-3 flex items-center gap-2">
-                                    <VCT_Icons.FileText size={16} className="text-[#0ea5e9]" /> Lịch sử thanh toán
+                                    <VCT_Icons.FileText size={16} className="text-(--vct-accent-cyan)" /> Lịch sử thanh toán
                                 </h4>
                                 {(billingHistory[selected.id] || []).length === 0 ? (
                                     <VCT_EmptyState icon={<VCT_Icons.FileText size={32} />} title="Chưa có kỳ thanh toán" />
@@ -501,7 +501,7 @@ const Page_admin_subscriptions_Content = () => {
                                                     <div className="font-bold text-sm text-(--vct-text-primary)">{fmt(bc.amount)}</div>
                                                     <VCT_Badge type={bc.status === 'paid' ? 'success' : bc.status === 'pending' ? 'warning' : 'danger'} text={bc.status === 'paid' ? 'Đã TT' : bc.status === 'pending' ? 'Chờ TT' : 'Quá hạn'} />
                                                     {bc.status !== 'paid' && (
-                                                        <button onClick={() => handleMarkPaid(selected.id, bc.id)} className="text-[10px] text-[#8b5cf6] hover:underline font-bold mt-1">Đánh dấu đã thu</button>
+                                                        <button onClick={() => handleMarkPaid(selected.id, bc.id)} className="text-[10px] text-(--vct-info) hover:underline font-bold mt-1">Đánh dấu đã thu</button>
                                                     )}
                                                 </div>
                                             </div>

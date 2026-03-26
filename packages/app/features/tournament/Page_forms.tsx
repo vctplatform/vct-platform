@@ -6,19 +6,19 @@ import {
     VCT_Badge, VCT_Button, VCT_Text, VCT_Stack, VCT_Toast,
     VCT_SearchInput, VCT_Modal, VCT_Input, VCT_Field,
     VCT_StatusPipeline, VCT_EmptyState, VCT_AvatarLetter, VCT_Card
-} from '../components/vct-ui';
-import { VCT_PageContainer, VCT_StatRow } from '../components/vct-ui';
-import type { StatItem } from '../components/VCT_StatRow';
-import { VCT_Icons } from '../components/vct-icons';
+} from '@vct/ui';
+import { VCT_PageContainer, VCT_StatRow } from '@vct/ui';
+import type { StatItem } from '@vct/ui';
+import { VCT_Icons } from '@vct/ui';
 import type { LuotThiQuyen, TrangThaiQuyen } from '../data/types';
 import { repositories, useEntityCollection } from '../data/repository';
 import { useToast } from '../hooks/use-toast';
 
 const ST_MAP: Record<TrangThaiQuyen, { label: string; color: string; type: string }> = {
-    cho_thi: { label: 'Chờ thi', color: '#f59e0b', type: 'warning' },
-    dang_thi: { label: '🔴 Đang thi', color: '#ef4444', type: 'warning' },
-    da_cham: { label: '✓ Đã chấm', color: '#10b981', type: 'success' },
-    hoan: { label: 'Hoãn', color: '#94a3b8', type: 'info' },
+    cho_thi: { label: 'Chờ thi', color: 'var(--vct-warning)', type: 'warning' },
+    dang_thi: { label: '🔴 Đang thi', color: 'var(--vct-danger)', type: 'warning' },
+    da_cham: { label: '✓ Đã chấm', color: 'var(--vct-success)', type: 'success' },
+    hoan: { label: 'Hoãn', color: 'var(--vct-text-tertiary)', type: 'info' },
 };
 
 const calcQuyenScore = (diem: number[]) => {
@@ -85,10 +85,10 @@ export const Page_forms = () => {
         if (gioiTinhFilter !== 'all') d = d.filter(e => e.gioi_tinh === gioiTinhFilter);
         if (luaTuoiFilter !== 'all') d = d.filter(e => e.lua_tuoi === luaTuoiFilter);
         return [
-            { key: 'cho_thi', label: 'Chờ thi', color: '#f59e0b', count: d.filter(e => e.trang_thai === 'cho_thi').length },
-            { key: 'dang_thi', label: 'Đang thi', color: '#ef4444', count: d.filter(e => e.trang_thai === 'dang_thi').length },
-            { key: 'da_cham', label: 'Đã chấm', color: '#10b981', count: d.filter(e => e.trang_thai === 'da_cham').length },
-            { key: 'hoan', label: 'Hoãn', color: '#94a3b8', count: d.filter(e => e.trang_thai === 'hoan').length },
+            { key: 'cho_thi', label: 'Chờ thi', color: 'var(--vct-warning)', count: d.filter(e => e.trang_thai === 'cho_thi').length },
+            { key: 'dang_thi', label: 'Đang thi', color: 'var(--vct-danger)', count: d.filter(e => e.trang_thai === 'dang_thi').length },
+            { key: 'da_cham', label: 'Đã chấm', color: 'var(--vct-success)', count: d.filter(e => e.trang_thai === 'da_cham').length },
+            { key: 'hoan', label: 'Hoãn', color: 'var(--vct-text-tertiary)', count: d.filter(e => e.trang_thai === 'hoan').length },
         ];
     }, [entries, noiDungFilter, gioiTinhFilter, luaTuoiFilter]);
 
@@ -199,10 +199,10 @@ export const Page_forms = () => {
 
             {/* KPI */}
             <VCT_StatRow items={[
-                { label: 'Lượt thi', value: entries.length, icon: <VCT_Icons.Award size={18} />, color: '#22d3ee' },
-                { label: 'Đã chấm', value: entries.filter(e => e.trang_thai === 'da_cham').length, icon: <VCT_Icons.Check size={18} />, color: '#10b981' },
-                { label: 'Chờ thi', value: entries.filter(e => e.trang_thai === 'cho_thi').length, icon: <VCT_Icons.Clock size={18} />, color: '#f59e0b' },
-                { label: 'Điểm cao nhất', value: rankedFlat.length > 0 ? Array.from(rankedFlat).sort((a, b) => b.diem_tb - a.diem_tb)[0]?.diem_tb.toFixed(2) : '—', icon: <VCT_Icons.Star size={18} />, color: '#a78bfa', sub: rankedFlat.length > 0 ? Array.from(rankedFlat).sort((a, b) => b.diem_tb - a.diem_tb)[0]?.vdv_ten : '' },
+                { label: 'Lượt thi', value: entries.length, icon: <VCT_Icons.Award size={18} />, color: 'var(--vct-accent-cyan)' },
+                { label: 'Đã chấm', value: entries.filter(e => e.trang_thai === 'da_cham').length, icon: <VCT_Icons.Check size={18} />, color: 'var(--vct-success)' },
+                { label: 'Chờ thi', value: entries.filter(e => e.trang_thai === 'cho_thi').length, icon: <VCT_Icons.Clock size={18} />, color: 'var(--vct-warning)' },
+                { label: 'Điểm cao nhất', value: rankedFlat.length > 0 ? Array.from(rankedFlat).sort((a, b) => b.diem_tb - a.diem_tb)[0]?.diem_tb.toFixed(2) : '—', icon: <VCT_Icons.Star size={18} />, color: 'var(--vct-info)', sub: rankedFlat.length > 0 ? Array.from(rankedFlat).sort((a, b) => b.diem_tb - a.diem_tb)[0]?.vdv_ten : '' },
             ] as StatItem[]} className="mb-6" />
 
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 24, marginBottom: 24, justifyContent: 'space-between', alignItems: 'flex-start', background: 'var(--vct-bg-card)', padding: '20px 24px', borderRadius: 16, border: '1px solid var(--vct-border-subtle)' }}>
@@ -272,8 +272,8 @@ export const Page_forms = () => {
                                             <VCT_AvatarLetter name={r.vdv_ten} size={i === 1 ? 48 : 36} style={{ margin: '0 auto 6px' }} />
                                             <div style={{ fontSize: 13, fontWeight: 800 }}>{r.vdv_ten}</div>
                                             <div style={{ fontSize: 11, opacity: 0.5, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{r.doan_ten}</div>
-                                            <div style={{ fontSize: 20, fontWeight: 900, color: '#22d3ee', fontFamily: 'monospace', marginTop: 4 }}>{r.diem_tb.toFixed(2)}</div>
-                                            <div style={{ height: podiumHeight, background: `linear-gradient(180deg, ${'#22d3ee'}30, ${'#22d3ee'}08)`, borderRadius: '8px 8px 0 0', marginTop: 8, display: 'flex', alignItems: 'flex-end', justifyContent: 'center', paddingBottom: 8 }}>
+                                            <div style={{ fontSize: 20, fontWeight: 900, color: 'var(--vct-accent-cyan)', fontFamily: 'monospace', marginTop: 4 }}>{r.diem_tb.toFixed(2)}</div>
+                                            <div style={{ height: podiumHeight, background: `linear-gradient(180deg, ${'var(--vct-accent-cyan)'}30, ${'var(--vct-accent-cyan)'}08)`, borderRadius: '8px 8px 0 0', marginTop: 8, display: 'flex', alignItems: 'flex-end', justifyContent: 'center', paddingBottom: 8 }}>
                                                 <span style={{ fontSize: 24, fontWeight: 900, opacity: 0.3 }}>{r.xep_hang}</span>
                                             </div>
                                         </motion.div>
@@ -306,7 +306,7 @@ export const Page_forms = () => {
                                 const maxD = e.diem.length > 0 ? Math.max(...e.diem) : -1;
                                 return (
                                     <tr key={e.id} style={{ borderBottom: '1px solid var(--vct-border-subtle)', borderLeft: `3px solid ${st.color}`, background: idx % 2 === 0 ? 'transparent' : 'rgba(128,128,128,0.02)' }}>
-                                        <td style={{ padding: '12px 10px', fontWeight: 800, color: r && r.xep_hang <= 3 ? ['', '#fbbf24', '#94a3b8', '#d97706'][r.xep_hang] : 'var(--vct-text-tertiary)', fontSize: 14 }}>
+                                        <td style={{ padding: '12px 10px', fontWeight: 800, color: r && r.xep_hang <= 3 ? ['', 'var(--vct-warning)', 'var(--vct-text-tertiary)', 'var(--vct-warning)'][r.xep_hang] : 'var(--vct-text-tertiary)', fontSize: 14 }}>
                                             {r ? r.xep_hang : '—'}
                                         </td>
                                         <td style={{ padding: '12px 10px' }}>
@@ -318,14 +318,14 @@ export const Page_forms = () => {
                                         <td style={{ padding: '12px 10px', fontSize: 13 }}>{e.doan_ten}</td>
                                         <td style={{ padding: '12px 10px', fontSize: 12 }}>{e.noi_dung}</td>
                                         {[0, 1, 2, 3, 4].map(i => (
-                                            <td key={i} style={{ padding: '12px 6px', textAlign: 'center', fontSize: 14, fontWeight: 800, fontFamily: 'monospace', color: e.diem[i] === minD ? '#ef4444' : e.diem[i] === maxD ? '#3b82f6' : 'inherit', textDecoration: (e.diem[i] === minD || e.diem[i] === maxD) && e.diem.length === 5 ? 'line-through' : 'none', opacity: (e.diem[i] === minD || e.diem[i] === maxD) && e.diem.length === 5 ? 0.4 : 1 }}>
+                                            <td key={i} style={{ padding: '12px 6px', textAlign: 'center', fontSize: 14, fontWeight: 800, fontFamily: 'monospace', color: e.diem[i] === minD ? 'var(--vct-danger)' : e.diem[i] === maxD ? 'var(--vct-info)' : 'inherit', textDecoration: (e.diem[i] === minD || e.diem[i] === maxD) && e.diem.length === 5 ? 'line-through' : 'none', opacity: (e.diem[i] === minD || e.diem[i] === maxD) && e.diem.length === 5 ? 0.4 : 1 }}>
                                                 {e.diem[i] !== undefined ? e.diem[i].toFixed(1) : '—'}
                                             </td>
                                         ))}
                                         <td style={{ padding: '12px 10px', textAlign: 'center' }}>
                                             {e.diem_tb > 0 ? (
                                                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                                                    <span style={{ fontSize: 18, fontWeight: 900, color: '#22d3ee', fontFamily: 'monospace' }}>{e.diem_tb.toFixed(2)}</span>
+                                                    <span style={{ fontSize: 18, fontWeight: 900, color: 'var(--vct-accent-cyan)', fontFamily: 'monospace' }}>{e.diem_tb.toFixed(2)}</span>
                                                     {r?.tie_breaker_reason && <span style={{ fontSize: 10, color: 'var(--vct-text-tertiary)', marginTop: 4, fontStyle: 'italic', fontWeight: 600 }}>{r.tie_breaker_reason}</span>}
                                                 </div>
                                             ) : <span className="opacity-30">—</span>}
@@ -378,8 +378,8 @@ export const Page_forms = () => {
                                             }
                                         }}
                                             placeholder="8.5" style={{ textAlign: 'center', fontSize: 20, fontWeight: 900, fontFamily: 'monospace', border: isMin ? '2px solid #ef4444' : isMax ? '2px solid #3b82f6' : undefined, opacity: (isMin || isMax) ? 0.5 : 1 }} />
-                                        {isMin && <div style={{ fontSize: 9, color: '#ef4444', fontWeight: 700, marginTop: 2 }}>BỎ THẤP</div>}
-                                        {isMax && <div style={{ fontSize: 9, color: '#3b82f6', fontWeight: 700, marginTop: 2 }}>BỎ CAO</div>}
+                                        {isMin && <div style={{ fontSize: 9, color: 'var(--vct-danger)', fontWeight: 700, marginTop: 2 }}>BỎ THẤP</div>}
+                                        {isMax && <div style={{ fontSize: 9, color: 'var(--vct-info)', fontWeight: 700, marginTop: 2 }}>BỎ CAO</div>}
                                     </div>
                                 );
                             })}
@@ -388,7 +388,7 @@ export const Page_forms = () => {
                         {liveAvg !== null && liveScores.length === numJ && (
                             <div style={{ textAlign: 'center', padding: 20, borderRadius: 16, background: 'rgba(34, 211, 238, 0.05)', border: '1px solid rgba(34, 211, 238, 0.2)' }}>
                                 <div style={{ fontSize: 11, fontWeight: 700, opacity: 0.5, textTransform: 'uppercase' }}>Điểm Tổng (Bỏ cao / thấp)</div>
-                                <div style={{ fontSize: 42, fontWeight: 900, color: '#22d3ee', fontFamily: 'monospace', lineHeight: 1.2 }}>{liveAvg.toFixed(2)}</div>
+                                <div style={{ fontSize: 42, fontWeight: 900, color: 'var(--vct-accent-cyan)', fontFamily: 'monospace', lineHeight: 1.2 }}>{liveAvg.toFixed(2)}</div>
                             </div>
                         )}
                     </VCT_Stack>

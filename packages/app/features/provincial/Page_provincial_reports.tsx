@@ -1,10 +1,10 @@
 'use client'
 
 import * as React from 'react'
-import { VCT_PageContainer, VCT_StatRow } from '../components/vct-ui'
-import type { StatItem } from '../components/VCT_StatRow'
-import { VCT_Icons } from '../components/vct-icons'
-import { VCT_EmptyState } from '../components/vct-ui'
+import { VCT_PageContainer, VCT_StatRow } from '@vct/ui'
+import type { StatItem } from '@vct/ui'
+import { VCT_Icons } from '@vct/ui'
+import { VCT_EmptyState } from '@vct/ui'
 
 export const Page_provincial_reports = () => {
     const reports = [
@@ -22,9 +22,9 @@ export const Page_provincial_reports = () => {
             </div>
 
             <VCT_StatRow items={[
-                { label: 'Báo cáo', value: reports.length, icon: <VCT_Icons.FileText size={18} />, color: '#0ea5e9' },
-                { label: 'Đã gửi', value: reports.filter(r => r.status === 'Đã gửi').length, icon: <VCT_Icons.Check size={18} />, color: '#10b981' },
-                { label: 'Đang soạn', value: reports.filter(r => r.status === 'Đang soạn').length, icon: <VCT_Icons.Edit size={18} />, color: '#f59e0b' },
+                { label: 'Báo cáo', value: reports.length, icon: <VCT_Icons.FileText size={18} />, color: 'var(--vct-accent-cyan)' },
+                { label: 'Đã gửi', value: reports.filter(r => r.status === 'Đã gửi').length, icon: <VCT_Icons.Check size={18} />, color: 'var(--vct-success)' },
+                { label: 'Đang soạn', value: reports.filter(r => r.status === 'Đang soạn').length, icon: <VCT_Icons.Edit size={18} />, color: 'var(--vct-warning)' },
             ] as StatItem[]} className="mb-6" />
 
             <div className="grid gap-4 grid-cols-1 md:grid-cols-2">

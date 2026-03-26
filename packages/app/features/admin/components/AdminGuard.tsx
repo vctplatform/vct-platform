@@ -1,8 +1,8 @@
 'use client'
 
 import * as React from 'react'
-import { VCT_Icons } from '../../components/vct-icons'
-import { VCT_Button } from '../../components/vct-ui'
+import { VCT_Icons } from '@vct/ui'
+import { VCT_Button } from '@vct/ui'
 import { useI18n } from '../../i18n'
 import { AdminErrorBoundary } from './AdminErrorBoundary'
 import { AdminCommandPalette } from './AdminCommandPalette'
@@ -118,7 +118,7 @@ const PermissionDenied: React.FC<PermissionDeniedProps> = ({
     return (
         <div className="flex items-center justify-center h-[60vh]" role="alert">
             <div className="text-center max-w-md mx-auto px-6">
-                <div className="w-20 h-20 rounded-full bg-[#ef444415] flex items-center justify-center mx-auto mb-5 text-[#ef4444]">
+                <div className="w-20 h-20 rounded-full bg-[#ef444415] flex items-center justify-center mx-auto mb-5 text-(--vct-danger)">
                     {icon}
                 </div>
                 <h2 className="text-xl font-bold text-(--vct-text-primary) mb-2">{title}</h2>

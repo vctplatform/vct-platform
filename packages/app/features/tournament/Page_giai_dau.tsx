@@ -6,10 +6,10 @@ import {
     VCT_Card, VCT_Badge, VCT_Button, VCT_Text, VCT_Field, VCT_Input,
     VCT_Select, VCT_Stack, VCT_Toast, VCT_Modal, VCT_Table, VCT_Tabs,
     VCT_ConfirmDialog
-} from '../components/vct-ui';
-import { VCT_StatRow } from '../components/vct-ui';
-import type { StatItem } from '../components/VCT_StatRow';
-import { VCT_Icons } from '../components/vct-icons';
+} from '@vct/ui';
+import { VCT_StatRow } from '@vct/ui';
+import type { StatItem } from '@vct/ui';
+import { VCT_Icons } from '@vct/ui';
 import { TOURNAMENT_CONFIG } from '../data/tournament-config';
 import type { TournamentConfig, TrangThaiGiai } from '../data/types';
 import { useDonVis, useVanDongViens, useTrongTais, useSanDaus } from '../hooks/useTournamentAPI';
@@ -347,13 +347,13 @@ export const Page_giai_dau = () => {
                 {/* CỘT 2: CƠ CẤU GIẢI THƯỞNG */}
                 < VCT_Card title="Cơ cấu Giải thưởng" className="flex-1">
                     <VCT_Stack gap={16}>
-                        <div {...{ style: { fontSize: 13, fontWeight: 700, color: '#f59e0b', textTransform: 'uppercase' } }}>Thưởng Cá nhân</div>
+                        <div {...{ style: { fontSize: 13, fontWeight: 700, color: 'var(--vct-warning)', textTransform: 'uppercase' } }}>Thưởng Cá nhân</div>
                         <VCT_Stack direction="row" gap={12}>
                             <VCT_Field label="🥇 Vàng"><CurrencyInput value={config.giai_thuong.hcv} onChange={(v: number) => handleNestedChange('giai_thuong', 'hcv', v)} disabled={!isEditing} /></VCT_Field>
                             <VCT_Field label="🥈 Bạc"><CurrencyInput value={config.giai_thuong.hcb} onChange={(v: number) => handleNestedChange('giai_thuong', 'hcb', v)} disabled={!isEditing} /></VCT_Field>
                             <VCT_Field label="🥉 Đồng"><CurrencyInput value={config.giai_thuong.hcd} onChange={(v: number) => handleNestedChange('giai_thuong', 'hcd', v)} disabled={!isEditing} /></VCT_Field>
                         </VCT_Stack>
-                        <div {...{ style: { marginTop: 8, fontSize: 13, fontWeight: 700, color: '#10b981', textTransform: 'uppercase' } }}>Thưởng Toàn đoàn</div>
+                        <div {...{ style: { marginTop: 8, fontSize: 13, fontWeight: 700, color: 'var(--vct-success)', textTransform: 'uppercase' } }}>Thưởng Toàn đoàn</div>
                         <VCT_Stack direction="row" gap={12}>
                             <VCT_Field label="🏆 Nhất"><CurrencyInput value={config.giai_thuong_toan_doan.nhat} onChange={(v: number) => handleNestedChange('giai_thuong_toan_doan', 'nhat', v)} disabled={!isEditing} /></VCT_Field>
                             <VCT_Field label="🏆 Nhì"><CurrencyInput value={config.giai_thuong_toan_doan.nhi} onChange={(v: number) => handleNestedChange('giai_thuong_toan_doan', 'nhi', v)} disabled={!isEditing} /></VCT_Field>
@@ -365,7 +365,7 @@ export const Page_giai_dau = () => {
                 {/* CỘT 3: Y TẾ & PHÁP LÝ */}
                 < VCT_Card title="Y tế & Pháp lý" className="flex-1">
                     <VCT_Stack gap={16}>
-                        <div {...{ style: { fontSize: 13, fontWeight: 700, color: '#ef4444', textTransform: 'uppercase' } }}>Hỗ trợ Y tế</div>
+                        <div {...{ style: { fontSize: 13, fontWeight: 700, color: 'var(--vct-danger)', textTransform: 'uppercase' } }}>Hỗ trợ Y tế</div>
                         <VCT_Field label="Bệnh viện trực tuyến & Khoảng cách">
                             <div {...{ style: { display: 'flex', gap: 8 } }}>
                                 <div {...{ style: { flex: 2 } }}><VCT_Input value={config.y_te.benh_vien} onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleNestedChange('y_te', 'benh_vien', e.target.value)} disabled={!isEditing} placeholder="Tên BV..." /></div>
@@ -376,7 +376,7 @@ export const Page_giai_dau = () => {
                             <VCT_Field label="Hotline cấp cứu"><VCT_Input value={config.y_te.bv_sdt} onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleNestedChange('y_te', 'bv_sdt', e.target.value)} disabled={!isEditing} /></VCT_Field>
                             <VCT_Field label="Đội ngũ sơ cứu"><VCT_Input value={config.y_te.doi_y_te} onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleNestedChange('y_te', 'doi_y_te', e.target.value)} disabled={!isEditing} /></VCT_Field>
                         </VCT_Stack>
-                        <div {...{ style: { marginTop: 8, fontSize: 13, fontWeight: 700, color: '#3b82f6', textTransform: 'uppercase' } }}>Pháp lý</div>
+                        <div {...{ style: { marginTop: 8, fontSize: 13, fontWeight: 700, color: 'var(--vct-info)', textTransform: 'uppercase' } }}>Pháp lý</div>
                         <VCT_Stack direction="row" gap={16}>
                             <VCT_Field label="Quyết định tổ chức"><VCT_Input value={config.phap_ly.qd_to_chuc} onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleNestedChange('phap_ly', 'qd_to_chuc', e.target.value)} disabled={!isEditing} /></VCT_Field>
                             <VCT_Field label="Bảo hiểm VĐV"><VCT_Input value={config.phap_ly.bao_hiem} onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleNestedChange('phap_ly', 'bao_hiem', e.target.value)} disabled={!isEditing} /></VCT_Field>
@@ -408,7 +408,7 @@ export const Page_giai_dau = () => {
                             } }}
                         >
                             <VCT_Stack direction="row" gap={8} align="center">
-                                <VCT_Icons.Award size={16} color={config.cach_tinh_diem_toan_doan === 'theo_huy_chuong' ? '#f59e0b' : 'currentColor'} />
+                                <VCT_Icons.Award size={16} color={config.cach_tinh_diem_toan_doan === 'theo_huy_chuong' ? 'var(--vct-warning)' : 'currentColor'} />
                                 Theo Huy Chương
                             </VCT_Stack>
                         </button>
@@ -425,7 +425,7 @@ export const Page_giai_dau = () => {
                             } }}
                         >
                             <VCT_Stack direction="row" gap={8} align="center">
-                                <VCT_Icons.CheckCircle size={16} color={config.cach_tinh_diem_toan_doan === 'theo_diem' ? '#10b981' : 'currentColor'} />
+                                <VCT_Icons.CheckCircle size={16} color={config.cach_tinh_diem_toan_doan === 'theo_diem' ? 'var(--vct-success)' : 'currentColor'} />
                                 Tính Điểm
                             </VCT_Stack>
                         </button>
@@ -435,7 +435,7 @@ export const Page_giai_dau = () => {
                 {config.cach_tinh_diem_toan_doan === 'theo_huy_chuong' ? (
                     <div {...{ style: { padding: '24px', background: 'var(--vct-bg-input)', borderRadius: 12, border: '1px solid var(--vct-border-subtle)', display: 'flex', alignItems: 'center', gap: 16 } }}>
                         <div {...{ style: { padding: '16px', borderRadius: '50%', background: 'rgba(245, 158, 11, 0.1)' } }}>
-                            <VCT_Icons.Award size={32} color="#f59e0b" />
+                            <VCT_Icons.Award size={32} color="var(--vct-warning)" />
                         </div>
                         <div>
                             <VCT_Text {...{ style: { fontWeight: 600, fontSize: 15, marginBottom: 4 } }}>Xếp hạng theo Chỉ số Huy Chương</VCT_Text>
@@ -472,7 +472,7 @@ export const Page_giai_dau = () => {
                                         border: '1px solid var(--vct-border-subtle)', borderRadius: 12, padding: '8px 16px', gap: 12
                                     } }}>
                                         <div {...{ style: {
-                                            width: 24, height: 24, borderRadius: '50%', background: pt.thu_hang === 1 ? '#f59e0b' : pt.thu_hang === 2 ? '#94a3b8' : pt.thu_hang === 3 ? '#d97706' : 'var(--vct-border-strong)',
+                                            width: 24, height: 24, borderRadius: '50%', background: pt.thu_hang === 1 ? 'var(--vct-warning)' : pt.thu_hang === 2 ? 'var(--vct-text-tertiary)' : pt.thu_hang === 3 ? 'var(--vct-warning)' : 'var(--vct-border-strong)',
                                             color: pt.thu_hang <= 3 ? '#fff' : 'var(--vct-text-primary)', display: 'flex', justifyContent: 'center', alignItems: 'center', fontSize: 13, fontWeight: 800
                                         } }}>
                                             {pt.thu_hang}
@@ -497,7 +497,7 @@ export const Page_giai_dau = () => {
                                                     onClick={() => permissions.canUpdate
                                                         ? setConfirmDeletePoint({ open: true, index: idx })
                                                         : requireAction('update', 'xóa cấu hình điểm')}
-                                                    {...{ style: { background: 'none', border: 'none', color: '#ef4444', cursor: permissions.canUpdate ? 'pointer' : 'not-allowed', padding: 2, opacity: permissions.canUpdate ? 1 : 0.5 } }}
+                                                    {...{ style: { background: 'none', border: 'none', color: 'var(--vct-danger)', cursor: permissions.canUpdate ? 'pointer' : 'not-allowed', padding: 2, opacity: permissions.canUpdate ? 1 : 0.5 } }}
                                                     aria-label="Xóa cấu hình điểm"
                                                     disabled={!permissions.canUpdate}
                                                 >
@@ -557,7 +557,7 @@ export const Page_giai_dau = () => {
                                 onClick={() => permissions.canUpdate
                                     ? setConfirmDeleteBtc({ open: true, index: idx })
                                     : requireAction('update', 'xóa thành viên BTC')}
-                                {...{ style: { background: 'none', border: 'none', color: '#ef4444', cursor: permissions.canUpdate ? 'pointer' : 'not-allowed', opacity: permissions.canUpdate ? 1 : 0.5 } }}
+                                {...{ style: { background: 'none', border: 'none', color: 'var(--vct-danger)', cursor: permissions.canUpdate ? 'pointer' : 'not-allowed', opacity: permissions.canUpdate ? 1 : 0.5 } }}
                                 aria-label="Xóa thành viên BTC"
                                 disabled={!permissions.canUpdate}
                             >
@@ -581,9 +581,9 @@ export const Page_giai_dau = () => {
                 <div {...{ style: { display: 'grid', gap: 10 } }}>
                     {config.checklist.map(ck => (
                         <label key={ck.id} {...{ style: { display: 'flex', alignItems: 'center', gap: 12, padding: '12px 16px', background: 'var(--vct-bg-elevated)', borderRadius: 12, border: `1px solid ${ck.done ? 'var(--vct-border-subtle)' : 'var(--vct-border-strong)'}`, cursor: isEditing ? 'pointer' : 'default', opacity: isEditing ? 1 : 0.8 } }}>
-                            <input type="checkbox" checked={ck.done} onChange={() => toggleChecklist(ck.id)} disabled={!isEditing} {...{ style: { width: 18, height: 18, accentColor: '#22d3ee' } }} />
+                            <input type="checkbox" checked={ck.done} onChange={() => toggleChecklist(ck.id)} disabled={!isEditing} {...{ style: { width: 18, height: 18, accentColor: 'var(--vct-accent-cyan)' } }} />
                             <span {...{ style: { fontSize: 13, fontWeight: ck.done ? 500 : 700, textDecoration: ck.done ? 'line-through' : 'none', opacity: ck.done ? 0.6 : 1 } }}>{ck.label}</span>
-                            {ck.done && <VCT_Icons.Check size={16} color="#10b981" {...{ style: { marginLeft: 'auto' } }} />}
+                            {ck.done && <VCT_Icons.Check size={16} color="var(--vct-success)" {...{ style: { marginLeft: 'auto' } }} />}
                         </label>
                     ))}
                 </div>
@@ -638,10 +638,10 @@ export const Page_giai_dau = () => {
                             <VCT_Badge text={`Cấp ${CAP_DO_LABELS[config.cap_do] || config.cap_do}`} type="info" pulse={false} {...{ style: { paddingLeft: '24px', paddingRight: '24px' } }} />
                         </VCT_Stack>
 
-                        <VCT_Text variant="h1" {...{ style: { marginBottom: '8px', color: '#1e293b' } }}>{config.ten_giai}</VCT_Text>
-                        <VCT_Text variant="mono" {...{ style: { opacity: 0.6, marginBottom: '16px', color: '#475569' } }}>{config.ma_giai}</VCT_Text>
+                        <VCT_Text variant="h1" {...{ style: { marginBottom: '8px', color: 'var(--vct-bg-input)' } }}>{config.ten_giai}</VCT_Text>
+                        <VCT_Text variant="mono" {...{ style: { opacity: 0.6, marginBottom: '16px', color: 'var(--vct-text-secondary)' } }}>{config.ma_giai}</VCT_Text>
 
-                        <VCT_Stack direction="row" gap={16} {...{ style: { color: '#475569', fontWeight: 500 } }}>
+                        <VCT_Stack direction="row" gap={16} {...{ style: { color: 'var(--vct-text-secondary)', fontWeight: 500 } }}>
                             <VCT_Stack direction="row" gap={6} align="center"><VCT_Icons.MapPin size={14} /> <VCT_Text variant="small">{config.dia_diem}, {config.tinh}</VCT_Text></VCT_Stack>
                             <VCT_Stack direction="row" gap={6} align="center"><VCT_Icons.Clock size={14} /> <VCT_Text variant="small">{config.ngay_bat_dau} → {config.ngay_ket_thuc}</VCT_Text></VCT_Stack>
                         </VCT_Stack>
@@ -650,9 +650,9 @@ export const Page_giai_dau = () => {
                     <VCT_Stack align="flex-end" gap={20}>
                         {daysUntil > 0 && (
                             <div {...{ style: { textAlign: 'center', padding: '20px 40px', borderRadius: '24px', background: 'rgba(255, 255, 255, 0.6)', backdropFilter: 'blur(12px)', border: '1px solid rgba(255,255,255,0.8)', boxShadow: '0 10px 30px rgba(0,0,0,0.05)' } }}>
-                                <VCT_Text variant="small" {...{ style: { letterSpacing: '0.15em', marginBottom: '4px', color: '#64748b', textTransform: 'uppercase', fontSize: 11, fontWeight: 700 } }}>Khai mạc sau</VCT_Text>
-                                <div {...{ style: { fontSize: '48px', fontWeight: 900, lineHeight: 1, color: '#1e293b', filter: 'drop-shadow(0 2px 10px rgba(0,0,0,0.05))' } }}>
-                                    {daysUntil} <span {...{ style: { fontSize: 16, fontWeight: 700, color: '#64748b' } }}>ngày</span>
+                                <VCT_Text variant="small" {...{ style: { letterSpacing: '0.15em', marginBottom: '4px', color: 'var(--vct-text-tertiary)', textTransform: 'uppercase', fontSize: 11, fontWeight: 700 } }}>Khai mạc sau</VCT_Text>
+                                <div {...{ style: { fontSize: '48px', fontWeight: 900, lineHeight: 1, color: 'var(--vct-bg-input)', filter: 'drop-shadow(0 2px 10px rgba(0,0,0,0.05))' } }}>
+                                    {daysUntil} <span {...{ style: { fontSize: 16, fontWeight: 700, color: 'var(--vct-text-tertiary)' } }}>ngày</span>
                                 </div>
                             </div>
                         )}
@@ -680,10 +680,10 @@ export const Page_giai_dau = () => {
 
             {/* 2. LIVE STATS */}
             <VCT_StatRow items={[
-                { label: 'Đoàn tham dự', value: stats.doan, icon: <VCT_Icons.Users size={18} />, color: '#22d3ee', sub: `Quota: ${config.quota.max_doan}` },
-                { label: 'Vận động viên', value: stats.vdv, icon: <VCT_Icons.User size={18} />, color: '#f59e0b' },
-                { label: 'Trọng tài', value: stats.trong_tai, icon: <VCT_Icons.Shield size={18} />, color: '#10b981' },
-                { label: 'Sàn đang đấu', value: `${stats.san_active}/${stats.san}`, icon: <VCT_Icons.Columns size={18} />, color: '#a78bfa' },
+                { label: 'Đoàn tham dự', value: stats.doan, icon: <VCT_Icons.Users size={18} />, color: 'var(--vct-accent-cyan)', sub: `Quota: ${config.quota.max_doan}` },
+                { label: 'Vận động viên', value: stats.vdv, icon: <VCT_Icons.User size={18} />, color: 'var(--vct-warning)' },
+                { label: 'Trọng tài', value: stats.trong_tai, icon: <VCT_Icons.Shield size={18} />, color: 'var(--vct-success)' },
+                { label: 'Sàn đang đấu', value: `${stats.san_active}/${stats.san}`, icon: <VCT_Icons.Columns size={18} />, color: 'var(--vct-info)' },
             ] as StatItem[]} className="mb-6" />
 
             {/* 3. TABS CONTENT */}

@@ -64,7 +64,7 @@ func (s *Server) handleFederationProvinceRoutes(w http.ResponseWriter, r *http.R
 			provinces, err = s.Federation.Main.ListProvinces(r.Context())
 		}
 		if err != nil {
-			internalError(w, err)
+			apiInternal(w, err)
 			return
 		}
 		// Apply search filter
@@ -87,7 +87,7 @@ func (s *Server) handleFederationProvinceRoutes(w http.ResponseWriter, r *http.R
 		}
 		var prov federation.Province
 		if err := json.NewDecoder(r.Body).Decode(&prov); err != nil {
-			badRequest(w, "invalid JSON: "+err.Error())
+			apiError(w, http.StatusBadRequest, CodeBadRequest, "invalid JSON: "+err.Error())
 			return
 		}
 		created, err := s.Federation.Main.CreateProvince(r.Context(), prov)
@@ -109,7 +109,7 @@ func (s *Server) handleFederationProvinceRoutes(w http.ResponseWriter, r *http.R
 		success(w, http.StatusOK, prov)
 
 	default:
-		methodNotAllowed(w)
+		apiMethodNotAllowed(w)
 	}
 }
 
@@ -124,7 +124,7 @@ func (s *Server) handleFederationUnitRoutes(w http.ResponseWriter, r *http.Reque
 		}
 		units, err := s.Federation.Main.ListUnits(r.Context())
 		if err != nil {
-			internalError(w, err)
+			apiInternal(w, err)
 			return
 		}
 		params := parsePagination(r)
@@ -137,12 +137,12 @@ func (s *Server) handleFederationUnitRoutes(w http.ResponseWriter, r *http.Reque
 		}
 		var unit federation.FederationUnit
 		if err := json.NewDecoder(r.Body).Decode(&unit); err != nil {
-			badRequest(w, "invalid JSON: "+err.Error())
+			apiError(w, http.StatusBadRequest, CodeBadRequest, "invalid JSON: "+err.Error())
 			return
 		}
 		created, err := s.Federation.Main.CreateUnit(r.Context(), unit)
 		if err != nil {
-			badRequest(w, err.Error())
+			apiError(w, http.StatusBadRequest, CodeBadRequest, err.Error())
 			return
 		}
 		success(w, http.StatusCreated, created)
@@ -153,13 +153,13 @@ func (s *Server) handleFederationUnitRoutes(w http.ResponseWriter, r *http.Reque
 		}
 		unit, err := s.Federation.Main.GetUnit(r.Context(), id)
 		if err != nil {
-			notFoundError(w, "unit not found")
+			apiError(w, http.StatusNotFound, CodeNotFound, "unit not found")
 			return
 		}
 		success(w, http.StatusOK, unit)
 
 	default:
-		methodNotAllowed(w)
+		apiMethodNotAllowed(w)
 	}
 }
 
@@ -169,7 +169,7 @@ func (s *Server) handleOrgChart(w http.ResponseWriter, r *http.Request, p auth.P
 	}
 	chart, err := s.Federation.Main.BuildOrgChart(r.Context())
 	if err != nil {
-		internalError(w, err)
+		apiInternal(w, err)
 		return
 	}
 	success(w, http.StatusOK, map[string]any{"root": chart})
@@ -181,7 +181,7 @@ func (s *Server) handleFederationStats(w http.ResponseWriter, r *http.Request, p
 	}
 	stats, err := s.Federation.Main.GetNationalStatistics(r.Context())
 	if err != nil {
-		internalError(w, err)
+		apiInternal(w, err)
 		return
 	}
 	success(w, http.StatusOK, stats)
@@ -202,7 +202,7 @@ func (s *Server) handlePersonnelRoutes(w http.ResponseWriter, r *http.Request, p
 		}
 		list, err := s.Federation.Main.ListPersonnel(r.Context(), unitID)
 		if err != nil {
-			internalError(w, err)
+			apiInternal(w, err)
 			return
 		}
 		params := parsePagination(r)
@@ -215,17 +215,17 @@ func (s *Server) handlePersonnelRoutes(w http.ResponseWriter, r *http.Request, p
 		}
 		var assign federation.PersonnelAssignment
 		if err := json.NewDecoder(r.Body).Decode(&assign); err != nil {
-			badRequest(w, "invalid JSON: "+err.Error())
+			apiError(w, http.StatusBadRequest, CodeBadRequest, "invalid JSON: "+err.Error())
 			return
 		}
 		if err := s.Federation.Main.AssignPersonnel(r.Context(), assign); err != nil {
-			badRequest(w, err.Error())
+			apiError(w, http.StatusBadRequest, CodeBadRequest, err.Error())
 			return
 		}
 		success(w, http.StatusCreated, map[string]string{"status": "personnel_assigned"})
 
 	default:
-		methodNotAllowed(w)
+		apiMethodNotAllowed(w)
 	}
 }
 
@@ -252,7 +252,7 @@ func (s *Server) handleDocumentCRUD(w http.ResponseWriter, r *http.Request, p au
 		}
 		docs, err := s.Federation.Document.ListDocuments(r.Context())
 		if err != nil {
-			internalError(w, err)
+			apiInternal(w, err)
 			return
 		}
 		success(w, http.StatusOK, map[string]any{"documents": docs, "total": len(docs)})
@@ -263,13 +263,13 @@ func (s *Server) handleDocumentCRUD(w http.ResponseWriter, r *http.Request, p au
 		}
 		var doc document.OfficialDocument
 		if err := json.NewDecoder(r.Body).Decode(&doc); err != nil {
-			badRequest(w, "invalid JSON: "+err.Error())
+			apiError(w, http.StatusBadRequest, CodeBadRequest, "invalid JSON: "+err.Error())
 			return
 		}
 		doc.IssuedBy = p.User.ID
 		created, err := s.Federation.Document.CreateDraft(r.Context(), doc)
 		if err != nil {
-			badRequest(w, err.Error())
+			apiError(w, http.StatusBadRequest, CodeBadRequest, err.Error())
 			return
 		}
 		success(w, http.StatusCreated, created)
@@ -280,7 +280,7 @@ func (s *Server) handleDocumentCRUD(w http.ResponseWriter, r *http.Request, p au
 		}
 		doc, err := s.Federation.Document.GetDocument(r.Context(), id)
 		if err != nil {
-			notFoundError(w, "document not found")
+			apiError(w, http.StatusNotFound, CodeNotFound, "document not found")
 			return
 		}
 		success(w, http.StatusOK, doc)
@@ -290,7 +290,7 @@ func (s *Server) handleDocumentCRUD(w http.ResponseWriter, r *http.Request, p au
 			return
 		}
 		if err := s.Federation.Document.SubmitForApproval(r.Context(), id); err != nil {
-			badRequest(w, err.Error())
+			apiError(w, http.StatusBadRequest, CodeBadRequest, err.Error())
 			return
 		}
 		success(w, http.StatusOK, map[string]string{"status": "pending_approval"})
@@ -300,7 +300,7 @@ func (s *Server) handleDocumentCRUD(w http.ResponseWriter, r *http.Request, p au
 			return
 		}
 		if err := s.Federation.Document.Approve(r.Context(), id, p.User.ID, p.User.DisplayName); err != nil {
-			badRequest(w, err.Error())
+			apiError(w, http.StatusBadRequest, CodeBadRequest, err.Error())
 			return
 		}
 		success(w, http.StatusOK, map[string]string{"status": "approved"})
@@ -310,7 +310,7 @@ func (s *Server) handleDocumentCRUD(w http.ResponseWriter, r *http.Request, p au
 			return
 		}
 		if err := s.Federation.Document.Publish(r.Context(), id); err != nil {
-			badRequest(w, err.Error())
+			apiError(w, http.StatusBadRequest, CodeBadRequest, err.Error())
 			return
 		}
 		success(w, http.StatusOK, map[string]string{"status": "published"})
@@ -324,13 +324,13 @@ func (s *Server) handleDocumentCRUD(w http.ResponseWriter, r *http.Request, p au
 		}
 		_ = json.NewDecoder(r.Body).Decode(&body)
 		if err := s.Federation.Document.Revoke(r.Context(), id, body.Reason); err != nil {
-			badRequest(w, err.Error())
+			apiError(w, http.StatusBadRequest, CodeBadRequest, err.Error())
 			return
 		}
 		success(w, http.StatusOK, map[string]string{"status": "revoked"})
 
 	default:
-		notFoundError(w, "endpoint not found")
+		apiError(w, http.StatusNotFound, CodeNotFound, "endpoint not found")
 	}
 }
 
@@ -364,7 +364,7 @@ func (s *Server) handleDisciplineCRUD(w http.ResponseWriter, r *http.Request, p 
 			cases, err = s.Federation.Discipline.ListCases(r.Context())
 		}
 		if err != nil {
-			internalError(w, err)
+			apiInternal(w, err)
 			return
 		}
 		success(w, http.StatusOK, map[string]any{"cases": cases, "total": len(cases)})
@@ -375,13 +375,13 @@ func (s *Server) handleDisciplineCRUD(w http.ResponseWriter, r *http.Request, p 
 		}
 		var dc discipline.DisciplineCase
 		if err := json.NewDecoder(r.Body).Decode(&dc); err != nil {
-			badRequest(w, "invalid JSON: "+err.Error())
+			apiError(w, http.StatusBadRequest, CodeBadRequest, "invalid JSON: "+err.Error())
 			return
 		}
 		dc.ReportedBy = p.User.ID
 		created, err := s.Federation.Discipline.ReportViolation(r.Context(), dc)
 		if err != nil {
-			badRequest(w, err.Error())
+			apiError(w, http.StatusBadRequest, CodeBadRequest, err.Error())
 			return
 		}
 		success(w, http.StatusCreated, created)
@@ -392,7 +392,7 @@ func (s *Server) handleDisciplineCRUD(w http.ResponseWriter, r *http.Request, p 
 		}
 		dc, err := s.Federation.Discipline.GetCase(r.Context(), id)
 		if err != nil {
-			notFoundError(w, "case not found")
+			apiError(w, http.StatusNotFound, CodeNotFound, "case not found")
 			return
 		}
 		success(w, http.StatusOK, dc)
@@ -406,7 +406,7 @@ func (s *Server) handleDisciplineCRUD(w http.ResponseWriter, r *http.Request, p 
 		}
 		_ = json.NewDecoder(r.Body).Decode(&body)
 		if err := s.Federation.Discipline.AssignInvestigator(r.Context(), id, body.InvestigatorID); err != nil {
-			badRequest(w, err.Error())
+			apiError(w, http.StatusBadRequest, CodeBadRequest, err.Error())
 			return
 		}
 		success(w, http.StatusOK, map[string]string{"status": "investigating"})
@@ -417,13 +417,13 @@ func (s *Server) handleDisciplineCRUD(w http.ResponseWriter, r *http.Request, p 
 		}
 		var h discipline.Hearing
 		if err := json.NewDecoder(r.Body).Decode(&h); err != nil {
-			badRequest(w, "invalid JSON: "+err.Error())
+			apiError(w, http.StatusBadRequest, CodeBadRequest, "invalid JSON: "+err.Error())
 			return
 		}
 		h.CaseID = id
 		created, err := s.Federation.Discipline.ScheduleHearing(r.Context(), h)
 		if err != nil {
-			badRequest(w, err.Error())
+			apiError(w, http.StatusBadRequest, CodeBadRequest, err.Error())
 			return
 		}
 		success(w, http.StatusCreated, created)
@@ -433,13 +433,13 @@ func (s *Server) handleDisciplineCRUD(w http.ResponseWriter, r *http.Request, p 
 			return
 		}
 		if err := s.Federation.Discipline.DismissCase(r.Context(), id, p.User.ID); err != nil {
-			badRequest(w, err.Error())
+			apiError(w, http.StatusBadRequest, CodeBadRequest, err.Error())
 			return
 		}
 		success(w, http.StatusOK, map[string]string{"status": "dismissed"})
 
 	default:
-		notFoundError(w, "endpoint not found")
+		apiError(w, http.StatusNotFound, CodeNotFound, "endpoint not found")
 	}
 }
 
@@ -468,7 +468,7 @@ func (s *Server) handleCertCRUD(w http.ResponseWriter, r *http.Request, p auth.P
 		certs, err := s.Federation.Certification.ListByHolder(r.Context(), "", "")
 		if err != nil {
 			// Fallback: try to list via repo if ListByHolder returns error for empty args
-			internalError(w, err)
+			apiInternal(w, err)
 			return
 		}
 		success(w, http.StatusOK, map[string]any{"certifications": certs, "total": len(certs)})
@@ -479,13 +479,13 @@ func (s *Server) handleCertCRUD(w http.ResponseWriter, r *http.Request, p auth.P
 		}
 		var cert certification.Certificate
 		if err := json.NewDecoder(r.Body).Decode(&cert); err != nil {
-			badRequest(w, "invalid JSON: "+err.Error())
+			apiError(w, http.StatusBadRequest, CodeBadRequest, "invalid JSON: "+err.Error())
 			return
 		}
 		cert.IssuedBy = p.User.ID
 		issued, err := s.Federation.Certification.Issue(r.Context(), cert)
 		if err != nil {
-			badRequest(w, err.Error())
+			apiError(w, http.StatusBadRequest, CodeBadRequest, err.Error())
 			return
 		}
 		success(w, http.StatusCreated, issued)
@@ -496,7 +496,7 @@ func (s *Server) handleCertCRUD(w http.ResponseWriter, r *http.Request, p auth.P
 		}
 		cert, err := s.Federation.Certification.GetCertificate(r.Context(), id)
 		if err != nil {
-			notFoundError(w, "certification not found")
+			apiError(w, http.StatusNotFound, CodeNotFound, "certification not found")
 			return
 		}
 		success(w, http.StatusOK, cert)
@@ -511,7 +511,7 @@ func (s *Server) handleCertCRUD(w http.ResponseWriter, r *http.Request, p auth.P
 		_ = json.NewDecoder(r.Body).Decode(&body)
 		renewed, err := s.Federation.Certification.Renew(r.Context(), id, body.ValidUntil)
 		if err != nil {
-			badRequest(w, err.Error())
+			apiError(w, http.StatusBadRequest, CodeBadRequest, err.Error())
 			return
 		}
 		success(w, http.StatusOK, renewed)
@@ -525,20 +525,20 @@ func (s *Server) handleCertCRUD(w http.ResponseWriter, r *http.Request, p auth.P
 		}
 		_ = json.NewDecoder(r.Body).Decode(&body)
 		if err := s.Federation.Certification.Revoke(r.Context(), id, body.Reason); err != nil {
-			badRequest(w, err.Error())
+			apiError(w, http.StatusBadRequest, CodeBadRequest, err.Error())
 			return
 		}
 		success(w, http.StatusOK, map[string]string{"status": "revoked"})
 
 	default:
-		notFoundError(w, "endpoint not found")
+		apiError(w, http.StatusNotFound, CodeNotFound, "endpoint not found")
 	}
 }
 
 func (s *Server) handleCertVerifyPublic(w http.ResponseWriter, r *http.Request) {
 	code := strings.TrimPrefix(r.URL.Path, "/api/v1/certifications/verify/")
 	if code == "" {
-		badRequest(w, "verification code required")
+		apiError(w, http.StatusBadRequest, CodeBadRequest, "verification code required")
 		return
 	}
 	cert, err := s.Federation.Certification.Verify(r.Context(), code)

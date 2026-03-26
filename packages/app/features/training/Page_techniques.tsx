@@ -8,10 +8,10 @@ import {
     VCT_SearchInput, VCT_Modal, VCT_Input, VCT_Field, VCT_Select,
     VCT_ConfirmDialog, VCT_EmptyState, VCT_FilterChips,
     VCT_Tabs
-} from '../components/vct-ui'
-import { VCT_PageContainer, VCT_PageHero, VCT_StatRow } from '../components/vct-ui'
-import type { StatItem } from '../components/VCT_StatRow'
-import { VCT_Icons } from '../components/vct-icons'
+} from '@vct/ui'
+import { VCT_PageContainer, VCT_PageHero, VCT_StatRow } from '@vct/ui'
+import type { StatItem } from '@vct/ui'
+import { VCT_Icons } from '@vct/ui'
 import { useTechniques } from '../hooks/useHeritageAPI'
 
 // ════════════════════════════════════════
@@ -39,9 +39,9 @@ const CAT_MAP: Record<TechCategory, string> = {
 }
 
 const DIFF_MAP: Record<string, { label: string; color: string }> = {
-    co_ban: { label: 'Cơ bản', color: '#10b981' },
-    trung_cap: { label: 'Trung cấp', color: '#f59e0b' },
-    cao_cap: { label: 'Cao cấp', color: '#ef4444' }
+    co_ban: { label: 'Cơ bản', color: 'var(--vct-success)' },
+    trung_cap: { label: 'Trung cấp', color: 'var(--vct-warning)' },
+    cao_cap: { label: 'Cao cấp', color: 'var(--vct-danger)' }
 }
 
 const BLANK_FORM: Partial<Technique> = {
@@ -194,10 +194,10 @@ export const Page_techniques = () => {
             />
 
             <VCT_StatRow items={[
-                { label: 'Tổng kỹ thuật', value: techs.length, icon: <VCT_Icons.Layers size={18} />, color: '#0ea5e9' },
-                { label: 'Cơ bản', value: techs.filter(t => t.difficulty === 'co_ban').length, icon: <VCT_Icons.Check size={18} />, color: '#10b981' },
-                { label: 'Nâng cao', value: techs.filter(t => t.difficulty !== 'co_ban').length, icon: <VCT_Icons.Activity size={18} />, color: '#ef4444' },
-                { label: 'Video', value: totalVideos, sub: `${Math.round((totalVideos / techs.length) * 100 || 0)}% bao phủ`, icon: <VCT_Icons.Video size={18} />, color: '#8b5cf6' },
+                { label: 'Tổng kỹ thuật', value: techs.length, icon: <VCT_Icons.Layers size={18} />, color: 'var(--vct-accent-cyan)' },
+                { label: 'Cơ bản', value: techs.filter(t => t.difficulty === 'co_ban').length, icon: <VCT_Icons.Check size={18} />, color: 'var(--vct-success)' },
+                { label: 'Nâng cao', value: techs.filter(t => t.difficulty !== 'co_ban').length, icon: <VCT_Icons.Activity size={18} />, color: 'var(--vct-danger)' },
+                { label: 'Video', value: totalVideos, sub: `${Math.round((totalVideos / techs.length) * 100 || 0)}% bao phủ`, icon: <VCT_Icons.Video size={18} />, color: 'var(--vct-info)' },
             ] as StatItem[]} className="mb-6" />
 
             {/* ── FILTER CHIPS ── */}
@@ -266,12 +266,12 @@ export const Page_techniques = () => {
                                         <h3 className="font-bold text-[15px] text-(--vct-text-primary) leading-tight">{tech.name}</h3>
                                         <div className="shrink-0 flex gap-1">
                                             <button aria-label={`Sửa ${tech.name}`} onClick={(e) => { e.stopPropagation(); openEditModal(tech) }} className="p-1.5 text-(--vct-text-tertiary) hover:text-(--vct-accent-cyan) hover:bg-(--vct-bg-glass) rounded-md transition-colors"><VCT_Icons.Edit size={14} /></button>
-                                            <button aria-label={`Xóa ${tech.name}`} onClick={(e) => { e.stopPropagation(); setDeleteTarget(tech) }} className="p-1.5 text-(--vct-text-tertiary) hover:text-[#ef4444] hover:bg-[#ef444420] rounded-md transition-colors"><VCT_Icons.Trash size={14} /></button>
+                                            <button aria-label={`Xóa ${tech.name}`} onClick={(e) => { e.stopPropagation(); setDeleteTarget(tech) }} className="p-1.5 text-(--vct-text-tertiary) hover:text-(--vct-danger) hover:bg-[#ef444420] rounded-md transition-colors"><VCT_Icons.Trash size={14} /></button>
                                         </div>
                                     </div>
 
                                     <div className="flex flex-wrap items-center gap-2 mb-3">
-                                        <span {...{style: { color: DIFF_MAP[tech.difficulty]?.color ?? '#94a3b8', background: `${DIFF_MAP[tech.difficulty]?.color ?? '#94a3b8'}15`, padding: '2px 8px', borderRadius: 4, fontSize: 10, fontWeight: 700 }}}>
+                                        <span {...{style: { color: DIFF_MAP[tech.difficulty]?.color ?? 'var(--vct-text-tertiary)', background: `${DIFF_MAP[tech.difficulty]?.color ?? 'var(--vct-text-tertiary)'}15`, padding: '2px 8px', borderRadius: 4, fontSize: 10, fontWeight: 700 }}}>
                                             {DIFF_MAP[tech.difficulty]?.label ?? tech.difficulty}
                                         </span>
                                         <span className="text-[11px] font-medium text-(--vct-text-secondary) bg-(--vct-bg-base) px-2 py-0.5 rounded border border-(--vct-border-subtle)">
@@ -330,7 +330,7 @@ export const Page_techniques = () => {
                             <VCT_Input value={form.tagsInput} onChange={(e: any) => setForm({ ...form, tagsInput: e.target.value })} placeholder="VD: cơ bản, tấn, móc" />
                         </VCT_Field>
                         <label className="flex items-center gap-3 cursor-pointer pb-2 bg-(--vct-bg-elevated) border border-(--vct-border-subtle) rounded-lg h-10 mb-1 px-3 py-2">
-                            <input aria-label="Có video" type="checkbox" checked={form.has_video} onChange={(e) => setForm({ ...form, has_video: e.target.checked })} {...{style: { accentColor: '#22d3ee', width: 16, height: 16 }}} />
+                            <input aria-label="Có video" type="checkbox" checked={form.has_video} onChange={(e) => setForm({ ...form, has_video: e.target.checked })} {...{style: { accentColor: 'var(--vct-accent-cyan)', width: 16, height: 16 }}} />
                             <span className="text-sm font-semibold text-(--vct-text-primary)">Có Video</span>
                         </label>
                     </VCT_Stack>

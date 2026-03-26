@@ -2,10 +2,10 @@
 
 import * as React from 'react'
 import { useState, useEffect, useMemo, useCallback } from 'react'
-import { VCT_Badge, VCT_Button, VCT_Stack, VCT_Toast, VCT_SearchInput, VCT_EmptyState } from '../components/vct-ui'
-import { VCT_PageContainer, VCT_StatRow } from '../components/vct-ui'
-import type { StatItem } from '../components/VCT_StatRow'
-import { VCT_Icons } from '../components/vct-icons'
+import { VCT_Badge, VCT_Button, VCT_Stack, VCT_Toast, VCT_SearchInput, VCT_EmptyState } from '@vct/ui'
+import { VCT_PageContainer, VCT_StatRow } from '@vct/ui'
+import type { StatItem } from '@vct/ui'
+import { VCT_Icons } from '@vct/ui'
 
 const API = '/api/v1/provincial'
 
@@ -48,9 +48,9 @@ export const Page_provincial_documents = () => {
             </div>
 
             <VCT_StatRow items={[
-                { label: 'Tổng văn bản', value: docs.length, icon: <VCT_Icons.FileText size={18} />, color: '#0ea5e9' },
-                { label: 'Đã ban hành', value: docs.filter(d => d.status === 'published').length, icon: <VCT_Icons.Check size={18} />, color: '#10b981' },
-                { label: 'Bản nháp', value: docs.filter(d => d.status === 'draft').length, icon: <VCT_Icons.Edit size={18} />, color: '#f59e0b' },
+                { label: 'Tổng văn bản', value: docs.length, icon: <VCT_Icons.FileText size={18} />, color: 'var(--vct-accent-cyan)' },
+                { label: 'Đã ban hành', value: docs.filter(d => d.status === 'published').length, icon: <VCT_Icons.Check size={18} />, color: 'var(--vct-success)' },
+                { label: 'Bản nháp', value: docs.filter(d => d.status === 'draft').length, icon: <VCT_Icons.Edit size={18} />, color: 'var(--vct-warning)' },
             ] as StatItem[]} className="mb-6" />
 
             <VCT_Stack direction="row" gap={16} align="center" justify="space-between" className="mb-5">

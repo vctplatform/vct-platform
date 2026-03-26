@@ -2,10 +2,10 @@
 
 import * as React from 'react'
 import { useState, useMemo } from 'react'
-import { VCT_Badge, VCT_Button, VCT_Stack, VCT_SearchInput, VCT_Tabs, VCT_EmptyState } from '../components/vct-ui'
-import { VCT_PageContainer, VCT_PageHero, VCT_StatRow } from '../components/vct-ui'
-import type { StatItem } from '../components/VCT_StatRow'
-import { VCT_Icons } from '../components/vct-icons'
+import { VCT_Badge, VCT_Button, VCT_Stack, VCT_SearchInput, VCT_Tabs, VCT_EmptyState } from '@vct/ui'
+import { VCT_PageContainer, VCT_PageHero, VCT_StatRow } from '@vct/ui'
+import type { StatItem } from '@vct/ui'
+import { VCT_Icons } from '@vct/ui'
 
 // ════════════════════════════════════════
 // TYPES & MOCK DATA
@@ -69,11 +69,11 @@ export const Page_tournament_protests = () => {
             />
 
             <VCT_StatRow items={[
-                { label: 'Tổng khiếu nại', value: MOCK_PROTESTS.length, icon: <VCT_Icons.AlertCircle size={18} />, color: '#8b5cf6' },
-                { label: 'Chờ xử lý', value: MOCK_PROTESTS.filter(p => p.status === 'pending').length, icon: <VCT_Icons.Clock size={18} />, color: '#f59e0b' },
-                { label: 'Đang xem', value: MOCK_PROTESTS.filter(p => p.status === 'reviewing').length, icon: <VCT_Icons.Eye size={18} />, color: '#0ea5e9' },
-                { label: 'Chấp nhận', value: MOCK_PROTESTS.filter(p => p.status === 'accepted').length, icon: <VCT_Icons.CheckCircle size={18} />, color: '#10b981' },
-                { label: 'Từ chối', value: MOCK_PROTESTS.filter(p => p.status === 'rejected').length, icon: <VCT_Icons.x size={18} />, color: '#ef4444' },
+                { label: 'Tổng khiếu nại', value: MOCK_PROTESTS.length, icon: <VCT_Icons.AlertCircle size={18} />, color: 'var(--vct-info)' },
+                { label: 'Chờ xử lý', value: MOCK_PROTESTS.filter(p => p.status === 'pending').length, icon: <VCT_Icons.Clock size={18} />, color: 'var(--vct-warning)' },
+                { label: 'Đang xem', value: MOCK_PROTESTS.filter(p => p.status === 'reviewing').length, icon: <VCT_Icons.Eye size={18} />, color: 'var(--vct-accent-cyan)' },
+                { label: 'Chấp nhận', value: MOCK_PROTESTS.filter(p => p.status === 'accepted').length, icon: <VCT_Icons.CheckCircle size={18} />, color: 'var(--vct-success)' },
+                { label: 'Từ chối', value: MOCK_PROTESTS.filter(p => p.status === 'rejected').length, icon: <VCT_Icons.x size={18} />, color: 'var(--vct-danger)' },
             ] as StatItem[]} className="mb-8" />
 
             <div className="mb-6 flex flex-wrap items-center justify-between gap-4 border-b border-(--vct-border-subtle) pb-4">
@@ -104,7 +104,7 @@ export const Page_tournament_protests = () => {
                                             <div className="flex items-center gap-3 text-[11px] text-(--vct-text-tertiary) mt-0.5">
                                                 <span className="font-mono text-(--vct-accent-cyan)">{protest.match_id}</span>
                                                 <VCT_Badge text={protest.type} type="info" />
-                                                {protest.has_video && <span className="flex items-center gap-0.5 text-[#f59e0b]"><VCT_Icons.Video size={10} /> VAR</span>}
+                                                {protest.has_video && <span className="flex items-center gap-0.5 text-(--vct-warning)"><VCT_Icons.Video size={10} /> VAR</span>}
                                             </div>
                                         </div>
                                     </div>

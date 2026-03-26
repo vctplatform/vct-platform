@@ -3,7 +3,7 @@
 import * as React from 'react'
 import { useState, useMemo, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
-import { VCT_Icons } from '../../components/vct-icons'
+import { VCT_Icons } from '@vct/ui'
 import { useAdminShortcuts } from '../hooks/useAdminShortcuts'
 
 interface PaletteItem {
@@ -90,7 +90,7 @@ export function AdminCommandPalette({ open, onClose }: AdminCommandPaletteProps)
         <div className="fixed inset-0 z- flex items-start justify-center pt-[15vh]" onClick={onClose}>
             <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
             <div
-                className="relative w-full max-w-[560px] rounded-2xl border border-white/10 bg-[#0f172a]/95 shadow-2xl overflow-hidden"
+                className="relative w-full max-w-[560px] rounded-2xl border border-white/10 bg-(--vct-text-primary)/95 shadow-2xl overflow-hidden"
                 onClick={e => e.stopPropagation()}
             >
                 {/* Search input */}

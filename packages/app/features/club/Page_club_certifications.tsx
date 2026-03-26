@@ -15,10 +15,10 @@ import {
   VCT_Select,
   VCT_Table,
   VCT_Toast,
-} from '../components/vct-ui'
-import { VCT_PageContainer, VCT_StatRow } from '../components/vct-ui'
-import type { StatItem } from '../components/VCT_StatRow'
-import { VCT_Icons } from '../components/vct-icons'
+} from '@vct/ui'
+import { VCT_PageContainer, VCT_StatRow } from '@vct/ui'
+import type { StatItem } from '@vct/ui'
+import { VCT_Icons } from '@vct/ui'
 import { useRouteActionGuard } from '../hooks/use-route-action-guard'
 import {
   BELT_EMOJI,
@@ -388,26 +388,26 @@ export const Page_club_certifications = () => {
       label: 'Tong ho so',
       value: records.length,
       icon: <VCT_Icons.FileText size={18} />,
-      color: '#0ea5e9',
+      color: 'var(--vct-accent-cyan)',
     },
     {
       label: 'Ty le dat',
       value: `${passRate}%`,
       icon: <VCT_Icons.TrendingUp size={18} />,
-      color: '#10b981',
+      color: 'var(--vct-success)',
       sub: `${totalPass}/${records.length} ket qua`,
     },
     {
       label: 'Vo sinh dai den',
       value: members.filter((item) => item.beltRank === 'black').length,
       icon: <VCT_Icons.Award size={18} />,
-      color: '#1e293b',
+      color: 'var(--vct-bg-input)',
     },
     {
       label: 'Ky thi sap toi',
       value: beltExams.filter((item) => item.status === 'upcoming').length,
       icon: <VCT_Icons.Calendar size={18} />,
-      color: '#8b5cf6',
+      color: 'var(--vct-info)',
     },
   ]
 

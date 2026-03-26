@@ -10,7 +10,7 @@ import (
 
 func (s *Server) handleMarketplaceProducts(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
-		methodNotAllowed(w)
+		apiMethodNotAllowed(w)
 		return
 	}
 
@@ -22,7 +22,7 @@ func (s *Server) handleMarketplaceProducts(w http.ResponseWriter, r *http.Reques
 		FeaturedOnly: strings.EqualFold(strings.TrimSpace(r.URL.Query().Get("featured")), "true"),
 	})
 	if err != nil {
-		internalError(w, err)
+		apiInternal(w, err)
 		return
 	}
 	success(w, http.StatusOK, result)
@@ -30,20 +30,20 @@ func (s *Server) handleMarketplaceProducts(w http.ResponseWriter, r *http.Reques
 
 func (s *Server) handleMarketplaceProductDetail(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
-		methodNotAllowed(w)
+		apiMethodNotAllowed(w)
 		return
 	}
 
 	slug := strings.TrimPrefix(r.URL.Path, "/api/v1/marketplace/products/")
 	slug = strings.TrimSpace(strings.Trim(slug, "/"))
 	if slug == "" {
-		notFound(w)
+		apiError(w, http.StatusNotFound, CodeNotFound, "Không tìm thấy tài nguyên")
 		return
 	}
 
 	product, err := s.Extended.Marketplace.GetProductBySlug(r.Context(), slug)
 	if err != nil {
-		notFoundError(w, err.Error())
+		apiError(w, http.StatusNotFound, CodeNotFound, err.Error())
 		return
 	}
 	success(w, http.StatusOK, product)
@@ -51,19 +51,19 @@ func (s *Server) handleMarketplaceProductDetail(w http.ResponseWriter, r *http.R
 
 func (s *Server) handleMarketplaceOrders(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
-		methodNotAllowed(w)
+		apiMethodNotAllowed(w)
 		return
 	}
 
 	var payload marketplace.CreateOrderInput
 	if err := decodeJSON(r, &payload); err != nil {
-		badRequest(w, err.Error())
+		apiError(w, http.StatusBadRequest, CodeBadRequest, err.Error())
 		return
 	}
 
 	order, err := s.Extended.Marketplace.CreateOrder(r.Context(), payload)
 	if err != nil {
-		badRequest(w, err.Error())
+		apiError(w, http.StatusBadRequest, CodeBadRequest, err.Error())
 		return
 	}
 	success(w, http.StatusCreated, order)
@@ -71,13 +71,13 @@ func (s *Server) handleMarketplaceOrders(w http.ResponseWriter, r *http.Request)
 
 func (s *Server) handleMarketplaceStats(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
-		methodNotAllowed(w)
+		apiMethodNotAllowed(w)
 		return
 	}
 
 	result, err := s.Extended.Marketplace.ListCatalog(r.Context(), marketplace.CatalogFilter{})
 	if err != nil {
-		internalError(w, err)
+		apiInternal(w, err)
 		return
 	}
 	success(w, http.StatusOK, map[string]any{"stats": result.Stats})
@@ -85,7 +85,7 @@ func (s *Server) handleMarketplaceStats(w http.ResponseWriter, r *http.Request) 
 
 func (s *Server) handleMarketplaceSellerDashboard(w http.ResponseWriter, r *http.Request, p auth.Principal) {
 	if r.Method != http.MethodGet {
-		methodNotAllowed(w)
+		apiMethodNotAllowed(w)
 		return
 	}
 	if !requireMarketplaceManager(w, p) {
@@ -94,7 +94,7 @@ func (s *Server) handleMarketplaceSellerDashboard(w http.ResponseWriter, r *http
 
 	dashboard, err := s.Extended.Marketplace.SellerDashboard(r.Context(), marketplaceScopeSellerID(p))
 	if err != nil {
-		internalError(w, err)
+		apiInternal(w, err)
 		return
 	}
 	success(w, http.StatusOK, dashboard)
@@ -109,7 +109,7 @@ func (s *Server) handleMarketplaceSellerProducts(w http.ResponseWriter, r *http.
 	case http.MethodGet:
 		items, err := s.Extended.Marketplace.ListSellerProducts(r.Context(), marketplaceScopeSellerID(p))
 		if err != nil {
-			internalError(w, err)
+			apiInternal(w, err)
 			return
 		}
 		success(w, http.StatusOK, map[string]any{
@@ -119,7 +119,7 @@ func (s *Server) handleMarketplaceSellerProducts(w http.ResponseWriter, r *http.
 	case http.MethodPost:
 		var payload marketplace.Product
 		if err := decodeJSON(r, &payload); err != nil {
-			badRequest(w, err.Error())
+			apiError(w, http.StatusBadRequest, CodeBadRequest, err.Error())
 			return
 		}
 		if !isMarketplaceAdmin(p) {
@@ -140,12 +140,12 @@ func (s *Server) handleMarketplaceSellerProducts(w http.ResponseWriter, r *http.
 
 		created, err := s.Extended.Marketplace.CreateProduct(r.Context(), payload)
 		if err != nil {
-			badRequest(w, err.Error())
+			apiError(w, http.StatusBadRequest, CodeBadRequest, err.Error())
 			return
 		}
 		success(w, http.StatusCreated, created)
 	default:
-		methodNotAllowed(w)
+		apiMethodNotAllowed(w)
 	}
 }
 
@@ -157,7 +157,7 @@ func (s *Server) handleMarketplaceSellerProductDetail(w http.ResponseWriter, r *
 	productID := strings.TrimPrefix(r.URL.Path, "/api/v1/marketplace/seller/products/")
 	productID = strings.TrimSpace(strings.Trim(productID, "/"))
 	if productID == "" {
-		notFound(w)
+		apiError(w, http.StatusNotFound, CodeNotFound, "Không tìm thấy tài nguyên")
 		return
 	}
 
@@ -165,7 +165,7 @@ func (s *Server) handleMarketplaceSellerProductDetail(w http.ResponseWriter, r *
 	case http.MethodGet:
 		items, err := s.Extended.Marketplace.ListSellerProducts(r.Context(), marketplaceScopeSellerID(p))
 		if err != nil {
-			internalError(w, err)
+			apiInternal(w, err)
 			return
 		}
 		for _, item := range items {
@@ -174,27 +174,27 @@ func (s *Server) handleMarketplaceSellerProductDetail(w http.ResponseWriter, r *
 				return
 			}
 		}
-		notFound(w)
+		apiError(w, http.StatusNotFound, CodeNotFound, "Không tìm thấy tài nguyên")
 	case http.MethodPatch:
 		patch := map[string]any{}
 		if err := decodeJSON(r, &patch); err != nil {
-			badRequest(w, err.Error())
+			apiError(w, http.StatusBadRequest, CodeBadRequest, err.Error())
 			return
 		}
 		updated, err := s.Extended.Marketplace.UpdateProduct(r.Context(), productID, patch)
 		if err != nil {
-			badRequest(w, err.Error())
+			apiError(w, http.StatusBadRequest, CodeBadRequest, err.Error())
 			return
 		}
 		success(w, http.StatusOK, updated)
 	default:
-		methodNotAllowed(w)
+		apiMethodNotAllowed(w)
 	}
 }
 
 func (s *Server) handleMarketplaceSellerOrders(w http.ResponseWriter, r *http.Request, p auth.Principal) {
 	if r.Method != http.MethodGet {
-		methodNotAllowed(w)
+		apiMethodNotAllowed(w)
 		return
 	}
 	if !requireMarketplaceManager(w, p) {
@@ -203,7 +203,7 @@ func (s *Server) handleMarketplaceSellerOrders(w http.ResponseWriter, r *http.Re
 
 	items, err := s.Extended.Marketplace.ListOrders(r.Context(), marketplaceScopeSellerID(p))
 	if err != nil {
-		internalError(w, err)
+		apiInternal(w, err)
 		return
 	}
 	success(w, http.StatusOK, map[string]any{
@@ -214,7 +214,7 @@ func (s *Server) handleMarketplaceSellerOrders(w http.ResponseWriter, r *http.Re
 
 func (s *Server) handleMarketplaceSellerOrderDetail(w http.ResponseWriter, r *http.Request, p auth.Principal) {
 	if r.Method != http.MethodPatch {
-		methodNotAllowed(w)
+		apiMethodNotAllowed(w)
 		return
 	}
 	if !requireMarketplaceManager(w, p) {
@@ -224,18 +224,18 @@ func (s *Server) handleMarketplaceSellerOrderDetail(w http.ResponseWriter, r *ht
 	orderID := strings.TrimPrefix(r.URL.Path, "/api/v1/marketplace/seller/orders/")
 	orderID = strings.TrimSpace(strings.Trim(orderID, "/"))
 	if orderID == "" {
-		notFound(w)
+		apiError(w, http.StatusNotFound, CodeNotFound, "Không tìm thấy tài nguyên")
 		return
 	}
 
 	patch := map[string]any{}
 	if err := decodeJSON(r, &patch); err != nil {
-		badRequest(w, err.Error())
+		apiError(w, http.StatusBadRequest, CodeBadRequest, err.Error())
 		return
 	}
 	updated, err := s.Extended.Marketplace.UpdateOrder(r.Context(), orderID, patch)
 	if err != nil {
-		badRequest(w, err.Error())
+		apiError(w, http.StatusBadRequest, CodeBadRequest, err.Error())
 		return
 	}
 	success(w, http.StatusOK, updated)

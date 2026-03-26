@@ -1,6 +1,6 @@
 import React from 'react'
-import { VCT_Icons } from '../../components/vct-icons'
-import { VCT_Button } from '../../components/vct-ui'
+import { VCT_Icons } from '@vct/ui'
+import { VCT_Button } from '@vct/ui'
 
 interface Props {
     children: React.ReactNode

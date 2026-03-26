@@ -5,12 +5,12 @@ import { motion } from 'framer-motion';
 import {
     VCT_Badge, VCT_Stack, VCT_Toast, VCT_AvatarLetter,
     VCT_SegmentedControl, VCT_ProgressBar
-} from '../components/vct-ui';
-import { VCT_PageContainer, VCT_PageHero, VCT_SectionCard, VCT_StatRow } from '../components/vct-ui';
-import type { StatItem } from '../components/VCT_StatRow';
-import { VCT_Icons } from '../components/vct-icons';
+} from '@vct/ui';
+import { VCT_PageContainer, VCT_PageHero, VCT_SectionCard, VCT_StatRow } from '@vct/ui';
+import type { StatItem } from '@vct/ui';
+import { VCT_Icons } from '@vct/ui';
 import type { DonVi, LuotThiQuyen, TranDauDK } from '../data/types';
-import { VCT_Button, VCT_EmptyState, VCT_Modal } from '../components/vct-ui';
+import { VCT_Button, VCT_EmptyState, VCT_Modal } from '@vct/ui';
 import { repositories, useEntityCollection } from '../data/repository';
 import { useRouteActionGuard } from '../hooks/use-route-action-guard';
 
@@ -18,9 +18,9 @@ import { useRouteActionGuard } from '../hooks/use-route-action-guard';
 interface MedalRow { id: string; ten: string; tat: string; hcv: number; hcb: number; hcd: number; tong: number }
 
 const MEDAL_COLORS: Record<string, { label: string; color: string; icon: string }> = {
-    vang: { label: 'Huy chương Vàng', color: '#fbbf24', icon: '🥇' },
-    bac: { label: 'Huy chương Bạc', color: '#94a3b8', icon: '🥈' },
-    dong: { label: 'Huy chương Đồng', color: '#d97706', icon: '🥉' },
+    vang: { label: 'Huy chương Vàng', color: 'var(--vct-warning)', icon: '🥇' },
+    bac: { label: 'Huy chương Bạc', color: 'var(--vct-text-tertiary)', icon: '🥈' },
+    dong: { label: 'Huy chương Đồng', color: 'var(--vct-warning)', icon: '🥉' },
 };
 
 const buildMedalTable = (
@@ -119,10 +119,10 @@ export const Page_medals = () => {
     }, [medalTable, filterMedal]);
 
     const kpis: StatItem[] = [
-        { label: '🥇 Vàng', value: totalHCV, icon: <VCT_Icons.Award size={18} />, color: '#fbbf24' },
-        { label: '🥈 Bạc', value: totalHCB, icon: <VCT_Icons.Award size={18} />, color: '#94a3b8' },
-        { label: '🥉 Đồng', value: totalHCD, icon: <VCT_Icons.Award size={18} />, color: '#d97706' },
-        { label: 'Tổng HC', value: totalHCV + totalHCB + totalHCD, icon: <VCT_Icons.Star size={18} />, color: '#22d3ee', sub: `${medalTable.length} đoàn có huy chương` },
+        { label: '🥇 Vàng', value: totalHCV, icon: <VCT_Icons.Award size={18} />, color: 'var(--vct-warning)' },
+        { label: '🥈 Bạc', value: totalHCB, icon: <VCT_Icons.Award size={18} />, color: 'var(--vct-text-tertiary)' },
+        { label: '🥉 Đồng', value: totalHCD, icon: <VCT_Icons.Award size={18} />, color: 'var(--vct-warning)' },
+        { label: 'Tổng HC', value: totalHCV + totalHCB + totalHCD, icon: <VCT_Icons.Star size={18} />, color: 'var(--vct-accent-cyan)', sub: `${medalTable.length} đoàn có huy chương` },
     ];
 
     return (
@@ -160,16 +160,16 @@ export const Page_medals = () => {
                                     <span style={{ fontWeight: 700, fontSize: 12, minWidth: 100, textAlign: 'right' }}>{m.ten}</span>
                                     <div style={{ flex: 1, height: 20, display: 'flex', borderRadius: 4, overflow: 'hidden', background: 'rgba(255,255,255,0.05)' }}>
                                         <motion.div initial={{ width: 0 }} animate={{ width: `${(m.hcv / maxTong) * 100}%` }} transition={{ delay: 0.1 }}
-                                            style={{ height: '100%', background: '#fbbf24', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                            {m.hcv > 0 && <span style={{ fontSize: 10, fontWeight: 900, color: '#fff', textShadow: '0 1px 2px rgba(0,0,0,0.5)' }}>{m.hcv}</span>}
+                                            style={{ height: '100%', background: 'var(--vct-warning)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                            {m.hcv > 0 && <span style={{ fontSize: 10, fontWeight: 900, color: 'var(--vct-bg-elevated)', textShadow: '0 1px 2px rgba(0,0,0,0.5)' }}>{m.hcv}</span>}
                                         </motion.div>
                                         <motion.div initial={{ width: 0 }} animate={{ width: `${(m.hcb / maxTong) * 100}%` }} transition={{ delay: 0.2 }}
-                                            style={{ height: '100%', background: '#94a3b8', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                            {m.hcb > 0 && <span style={{ fontSize: 10, fontWeight: 900, color: '#fff', textShadow: '0 1px 2px rgba(0,0,0,0.5)' }}>{m.hcb}</span>}
+                                            style={{ height: '100%', background: 'var(--vct-text-tertiary)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                            {m.hcb > 0 && <span style={{ fontSize: 10, fontWeight: 900, color: 'var(--vct-bg-elevated)', textShadow: '0 1px 2px rgba(0,0,0,0.5)' }}>{m.hcb}</span>}
                                         </motion.div>
                                         <motion.div initial={{ width: 0 }} animate={{ width: `${(m.hcd / maxTong) * 100}%` }} transition={{ delay: 0.3 }}
-                                            style={{ height: '100%', background: '#d97706', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                            {m.hcd > 0 && <span style={{ fontSize: 10, fontWeight: 900, color: '#fff', textShadow: '0 1px 2px rgba(0,0,0,0.5)' }}>{m.hcd}</span>}
+                                            style={{ height: '100%', background: 'var(--vct-warning)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                            {m.hcd > 0 && <span style={{ fontSize: 10, fontWeight: 900, color: 'var(--vct-bg-elevated)', textShadow: '0 1px 2px rgba(0,0,0,0.5)' }}>{m.hcd}</span>}
                                         </motion.div>
                                     </div>
                                     <span style={{ fontWeight: 900, fontSize: 14, fontFamily: 'monospace', minWidth: 30, color: 'var(--vct-accent-cyan)' }}>{m.tong}</span>
@@ -187,7 +187,7 @@ export const Page_medals = () => {
                         if (!m) return null;
                         const podH = [100, 140, 80][i];
                         const medal = ['🥈', '🥇', '🥉'][i];
-                        const border = ['#94a3b8', '#fbbf24', '#d97706'][i];
+                        const border = ['var(--vct-text-tertiary)', 'var(--vct-warning)', 'var(--vct-warning)'][i];
                         return (
                             <motion.div key={m.id} initial={{ y: 40, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: i * 0.2 }}
                                 style={{ textAlign: 'center', width: 160 }}>
@@ -221,7 +221,7 @@ export const Page_medals = () => {
             {filtered.length === 0 ? (
                 <VCT_EmptyState title="Không tìm thấy VĐV đạt huy chương" description="Thay đổi bộ lọc hoặc kiểm tra lại." icon="🏅" />
             ) : (
-                <VCT_SectionCard flush accentColor="#fbbf24">
+                <VCT_SectionCard flush accentColor="var(--vct-warning)">
                     <table className="w-full border-collapse">
                         <thead>
                             <tr className="border-b border-vct-border bg-vct-elevated">
@@ -252,7 +252,7 @@ export const Page_medals = () => {
                                         </td>
                                         <td className="p-4 text-sm font-semibold text-vct-text-secondary">{r.doan_ten}</td>
                                         <td style={{ padding: '16px' }}>
-                                            <div style={{ display: 'inline-flex', padding: '4px 10px', borderRadius: '8px', fontSize: '12px', fontWeight: 800, color: '#f59e0b', background: 'rgba(245, 158, 11, 0.1)' }}>
+                                            <div style={{ display: 'inline-flex', padding: '4px 10px', borderRadius: '8px', fontSize: '12px', fontWeight: 800, color: 'var(--vct-warning)', background: 'rgba(245, 158, 11, 0.1)' }}>
                                                 {r.nd_ten}
                                             </div>
                                         </td>
@@ -286,12 +286,12 @@ export const Page_medals = () => {
             }>
                 {certModal && (
                     <div className="print-cert-container" style={{ padding: 20 }}>
-                        <div style={{ border: '15px solid transparent', borderImage: 'url("data:image/svg+xml,%3Csvg width=\'100\' height=\'100\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cpath d=\'M0 0h100v100H0z\' fill=\'none\' stroke=\'%23d4af37\' stroke-width=\'4\'/%3E%3Cpath d=\'M10 10h80v80H10z\' fill=\'none\' stroke=\'%23d4af37\' stroke-width=\'1\'/%3E%3C/svg%3E") 15 stretch', padding: '40px', textAlign: 'center', background: '#fff', color: '#000', position: 'relative', minHeight: 600, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+                        <div style={{ border: '15px solid transparent', borderImage: 'url("data:image/svg+xml,%3Csvg width=\'100\' height=\'100\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cpath d=\'M0 0h100v100H0z\' fill=\'none\' stroke=\'%23d4af37\' stroke-width=\'4\'/%3E%3Cpath d=\'M10 10h80v80H10z\' fill=\'none\' stroke=\'%23d4af37\' stroke-width=\'1\'/%3E%3C/svg%3E") 15 stretch', padding: '40px', textAlign: 'center', background: 'var(--vct-bg-elevated)', color: '#000', position: 'relative', minHeight: 600, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
                             <div style={{ fontSize: 14, fontWeight: 'bold', textTransform: 'uppercase', marginBottom: 30, letterSpacing: 2 }}>
                                 CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM<br />Độc lập - Tự do - Hạnh phúc
                             </div>
 
-                            <h1 style={{ color: '#b91c1c', fontSize: 36, fontWeight: 900, textTransform: 'uppercase', margin: '0 0 10px 0', letterSpacing: 3 }}>GIẤY CHỨNG NHẬN</h1>
+                            <h1 style={{ color: 'var(--vct-danger)', fontSize: 36, fontWeight: 900, textTransform: 'uppercase', margin: '0 0 10px 0', letterSpacing: 3 }}>GIẤY CHỨNG NHẬN</h1>
                             <div style={{ fontSize: 20, color: '#d4af37', fontWeight: 800, textTransform: 'uppercase', marginBottom: 40, letterSpacing: 2 }}>THÀNH TÍCH THI ĐẤU</div>
 
                             <div style={{ fontSize: 18, marginBottom: 15 }}>Chứng nhận Vận động viên:</div>
@@ -331,7 +331,7 @@ export const Page_medals = () => {
             </VCT_Modal>
 
             {/* Medal Table */}
-            <VCT_SectionCard flush accentColor="#22d3ee" className="mt-10">
+            <VCT_SectionCard flush accentColor="var(--vct-accent-cyan)" className="mt-10">
                 <table className="w-full border-collapse">
                     <thead>
                         <tr className="border-b border-vct-border bg-vct-elevated">
@@ -342,17 +342,17 @@ export const Page_medals = () => {
                     </thead>
                     <tbody>
                         {medalTable.map((m, idx) => (
-                            <tr key={m.id} style={{ borderBottom: '1px solid var(--vct-border-subtle)', background: idx < 3 ? `${['#fbbf24', '#94a3b8', '#d97706'][idx]}08` : idx % 2 === 0 ? 'transparent' : 'rgba(128,128,128,0.02)' }}>
-                                <td style={{ padding: '14px 16px', fontWeight: 900, fontSize: 16, color: idx < 3 ? ['#fbbf24', '#94a3b8', '#d97706'][idx] : 'var(--vct-text-tertiary)' }}>{idx + 1}</td>
+                            <tr key={m.id} style={{ borderBottom: '1px solid var(--vct-border-subtle)', background: idx < 3 ? `${['var(--vct-warning)', 'var(--vct-text-tertiary)', 'var(--vct-warning)'][idx]}08` : idx % 2 === 0 ? 'transparent' : 'rgba(128,128,128,0.02)' }}>
+                                <td style={{ padding: '14px 16px', fontWeight: 900, fontSize: 16, color: idx < 3 ? ['var(--vct-warning)', 'var(--vct-text-tertiary)', 'var(--vct-warning)'][idx] : 'var(--vct-text-tertiary)' }}>{idx + 1}</td>
                                 <td style={{ padding: '14px 16px' }}>
                                     <VCT_Stack direction="row" gap={10} align="center">
                                         <VCT_AvatarLetter name={m.ten} size={32} />
                                         <div><div style={{ fontWeight: 700, fontSize: 14 }}>{m.ten}</div><div style={{ fontSize: 11, opacity: 0.4 }}>{m.tat}</div></div>
                                     </VCT_Stack>
                                 </td>
-                                <td style={{ padding: '14px 16px', textAlign: 'center', fontWeight: 900, fontSize: 18, color: '#fbbf24' }}>{m.hcv || '—'}</td>
-                                <td style={{ padding: '14px 16px', textAlign: 'center', fontWeight: 900, fontSize: 18, color: '#94a3b8' }}>{m.hcb || '—'}</td>
-                                <td style={{ padding: '14px 16px', textAlign: 'center', fontWeight: 900, fontSize: 18, color: '#d97706' }}>{m.hcd || '—'}</td>
+                                <td style={{ padding: '14px 16px', textAlign: 'center', fontWeight: 900, fontSize: 18, color: 'var(--vct-warning)' }}>{m.hcv || '—'}</td>
+                                <td style={{ padding: '14px 16px', textAlign: 'center', fontWeight: 900, fontSize: 18, color: 'var(--vct-text-tertiary)' }}>{m.hcb || '—'}</td>
+                                <td style={{ padding: '14px 16px', textAlign: 'center', fontWeight: 900, fontSize: 18, color: 'var(--vct-warning)' }}>{m.hcd || '—'}</td>
                                 <td style={{ padding: '14px 16px', textAlign: 'center', fontWeight: 900, fontSize: 18, color: 'var(--vct-accent-cyan)' }}>{m.tong}</td>
                             </tr>
                         ))}

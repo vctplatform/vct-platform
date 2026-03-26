@@ -6,10 +6,10 @@ import {
     VCT_Badge, VCT_Button, VCT_Stack,
     VCT_SearchInput, VCT_Modal, VCT_Input, VCT_Field, VCT_Select,
     VCT_ConfirmDialog, VCT_AvatarLetter, VCT_EmptyState, VCT_Tabs,
-} from '../components/vct-ui'
-import { VCT_Textarea } from '../components/VCT_Textarea'
-import type { StatItem } from '../components/VCT_StatRow'
-import { VCT_Icons } from '../components/vct-icons'
+} from '@vct/ui'
+import { VCT_Textarea } from '@vct/ui'
+import type { StatItem } from '@vct/ui'
+import { VCT_Icons } from '@vct/ui'
 import { AdminSkeletonRow } from './components/AdminSkeletonRow'
 import { AdminPaginationBar } from './components/AdminPaginationBar'
 import { AdminPageShell, useShellToast } from './components/AdminPageShell'
@@ -131,11 +131,11 @@ const Page_admin_support_Content = () => {
     const slaViolations = tickets.filter(t => t.mucUuTien === 'critical' && t.trangThai === 'open').length
 
     const stats: StatItem[] = [
-        { icon: <VCT_Icons.FileText size={20} />, label: 'Tổng tickets', value: tickets.length, color: '#0ea5e9' },
-        { icon: <VCT_Icons.AlertTriangle size={20} />, label: 'Đang mở', value: countByStatus('open'), color: '#f59e0b' },
-        { icon: <VCT_Icons.Clock size={20} />, label: 'Phản hồi TB', value: `${avgResponseHours}h`, color: '#8b5cf6' },
-        { icon: <VCT_Icons.Activity size={20} />, label: 'Tỉ lệ giải quyết', value: `${resolutionRate}%`, color: '#10b981' },
-        { icon: <VCT_Icons.AlertTriangle size={20} />, label: 'Vi phạm SLA', value: slaViolations, color: slaViolations > 0 ? '#ef4444' : '#10b981' },
+        { icon: <VCT_Icons.FileText size={20} />, label: 'Tổng tickets', value: tickets.length, color: 'var(--vct-accent-cyan)' },
+        { icon: <VCT_Icons.AlertTriangle size={20} />, label: 'Đang mở', value: countByStatus('open'), color: 'var(--vct-warning)' },
+        { icon: <VCT_Icons.Clock size={20} />, label: 'Phản hồi TB', value: `${avgResponseHours}h`, color: 'var(--vct-info)' },
+        { icon: <VCT_Icons.Activity size={20} />, label: 'Tỉ lệ giải quyết', value: `${resolutionRate}%`, color: 'var(--vct-success)' },
+        { icon: <VCT_Icons.AlertTriangle size={20} />, label: 'Vi phạm SLA', value: slaViolations, color: slaViolations > 0 ? 'var(--vct-danger)' : 'var(--vct-success)' },
     ]
 
     // ── MUTATIONS ──
@@ -246,7 +246,7 @@ const Page_admin_support_Content = () => {
         <AdminPageShell
             title="Chăm sóc Khách hàng & Hỗ trợ Kỹ thuật"
             subtitle="Quản lý ticket hỗ trợ, FAQ, và danh mục dịch vụ"
-            icon={<VCT_Icons.Shield size={28} className="text-[#8b5cf6]" />}
+            icon={<VCT_Icons.Shield size={28} className="text-(--vct-info)" />}
             stats={stats}
         >
             <style>{`
@@ -260,17 +260,17 @@ const Page_admin_support_Content = () => {
             <div className="flex items-center gap-4 mb-4 flex-wrap">
                 {slaViolations > 0 && (
                     <div className="flex items-center gap-2 bg-[#ef444418] border border-[#ef444430] rounded-full px-3 py-1.5">
-                        <span className="w-2 h-2 rounded-full bg-[#ef4444] vct-blink" />
-                        <span className="text-xs font-bold text-[#ef4444]">{slaViolations} vi phạm SLA</span>
+                        <span className="w-2 h-2 rounded-full bg-(--vct-danger) vct-blink" />
+                        <span className="text-xs font-bold text-(--vct-danger)">{slaViolations} vi phạm SLA</span>
                     </div>
                 )}
                 <div className="flex items-center gap-2 bg-[#f59e0b18] border border-[#f59e0b30] rounded-full px-3 py-1.5">
-                    <span className="w-2 h-2 rounded-full bg-[#f59e0b] vct-blink" />
-                    <span className="text-xs font-bold text-[#f59e0b]">{countByStatus('open')} chờ phản hồi</span>
+                    <span className="w-2 h-2 rounded-full bg-(--vct-warning) vct-blink" />
+                    <span className="text-xs font-bold text-(--vct-warning)">{countByStatus('open')} chờ phản hồi</span>
                 </div>
                 <div className="flex items-center gap-2 bg-[#0ea5e918] border border-[#0ea5e930] rounded-full px-3 py-1.5">
-                    <span className="w-2 h-2 rounded-full bg-[#10b981]" />
-                    <span className="text-xs font-bold text-[#0ea5e9]">{resolutionRate}% giải quyết</span>
+                    <span className="w-2 h-2 rounded-full bg-(--vct-success)" />
+                    <span className="text-xs font-bold text-(--vct-accent-cyan)">{resolutionRate}% giải quyết</span>
                 </div>
             </div>
 
@@ -451,7 +451,7 @@ const Page_admin_support_Content = () => {
                                 >
                                     <div className="flex items-center gap-3 flex-1 min-w-0">
                                         <div className="w-8 h-8 rounded-full bg-[#8b5cf620] flex items-center justify-center shrink-0">
-                                            <VCT_Icons.Info size={16} className="text-[#8b5cf6]" />
+                                            <VCT_Icons.Info size={16} className="text-(--vct-info)" />
                                         </div>
                                         <div className="flex-1 min-w-0">
                                             <div className="font-bold text-sm text-(--vct-text-primary) line-clamp-1">{faq.cauHoi}</div>
@@ -511,7 +511,7 @@ const Page_admin_support_Content = () => {
                                         <div className="text-xs text-(--vct-text-secondary) mt-1 line-clamp-2">{cat.moTa}</div>
                                         <div className="flex items-center gap-2 mt-3">
                                             <VCT_Badge type="info" text={`${cat.soTicket} tickets`} />
-                                            {cat.isActive && <span className="w-2 h-2 rounded-full bg-[#10b981]" />}
+                                            {cat.isActive && <span className="w-2 h-2 rounded-full bg-(--vct-success)" />}
                                         </div>
                                         <div className="flex items-center gap-1 mt-2">
                                             <VCT_Button size="sm" variant="ghost" onClick={() => { setEditingCat(cat); setShowCatModal(true) }} icon={<VCT_Icons.Edit size={12} />}>Sửa</VCT_Button>
@@ -613,7 +613,7 @@ const Page_admin_support_Content = () => {
                     const CatForm = () => {
                         const [ten, setTen] = useState(editingCat?.ten ?? '')
                         const [moTa, setMoTa] = useState(editingCat?.moTa ?? '')
-                        const [mauSac, setMauSac] = useState(editingCat?.mauSac ?? '#8b5cf6')
+                        const [mauSac, setMauSac] = useState(editingCat?.mauSac ?? 'var(--vct-info)')
                         return (
                             <VCT_Stack gap={16}>
                                 <VCT_Field label="Tên danh mục"><VCT_Input value={ten} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setTen(e.target.value)} placeholder="VD: Hỗ trợ tài khoản..." /></VCT_Field>

@@ -25,7 +25,7 @@ func main() {
 	defer pool.Close()
 
 	// Drop schemas
-	schemas := []string{"public", "core", "extensions", "platform", "training"}
+	schemas := []string{"public", "core", "extensions", "platform", "training", "people", "tournament", "system", "api_v1"}
 	for _, schema := range schemas {
 		query := fmt.Sprintf("DROP SCHEMA IF EXISTS %s CASCADE;", schema)
 		_, err := pool.Exec(ctx, query)

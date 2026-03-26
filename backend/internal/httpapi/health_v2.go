@@ -17,28 +17,28 @@ import (
 
 // HealthResponse represents the response from health endpoints.
 type HealthResponse struct {
-	Status     string                  `json:"status"`
-	Timestamp  string                  `json:"timestamp"`
-	Version    string                  `json:"version"`
-	Uptime     string                  `json:"uptime"`
-	GoVersion  string                  `json:"go_version"`
-	Checks     map[string]*CheckResult `json:"checks"`
-	System     *SystemInfo             `json:"system,omitempty"`
+	Status    string                  `json:"status"`
+	Timestamp string                  `json:"timestamp"`
+	Version   string                  `json:"version"`
+	Uptime    string                  `json:"uptime"`
+	GoVersion string                  `json:"go_version"`
+	Checks    map[string]*CheckResult `json:"checks"`
+	System    *SystemInfo             `json:"system,omitempty"`
 }
 
 // CheckResult is the outcome of a single dependency check.
 type CheckResult struct {
-	Status   string `json:"status"`            // up, down, degraded
-	Latency  string `json:"latency,omitempty"` // e.g. "2.3ms"
-	Message  string `json:"message,omitempty"`
+	Status  string `json:"status"`            // up, down, degraded
+	Latency string `json:"latency,omitempty"` // e.g. "2.3ms"
+	Message string `json:"message,omitempty"`
 }
 
 // SystemInfo has runtime info.
 type SystemInfo struct {
-	NumGoroutine int    `json:"num_goroutine"`
-	MemAllocMB   int    `json:"mem_alloc_mb"`
-	MemSysMB     int    `json:"mem_sys_mb"`
-	NumCPU       int    `json:"num_cpu"`
+	NumGoroutine int `json:"num_goroutine"`
+	MemAllocMB   int `json:"mem_alloc_mb"`
+	MemSysMB     int `json:"mem_sys_mb"`
+	NumCPU       int `json:"num_cpu"`
 }
 
 // HealthChecker collects health probes.

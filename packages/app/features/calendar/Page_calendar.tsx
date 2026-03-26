@@ -2,7 +2,7 @@
 
 import React, { useState, useMemo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { VCT_Icons } from '../components/vct-icons'
+import { VCT_Icons } from '@vct/ui'
 import { useCalendarEvents } from '../hooks/useCalendarAPI'
 
 // ════════════════════════════════════════
@@ -24,11 +24,11 @@ interface CalendarEvent {
 // MOCK DATA
 // ════════════════════════════════════════
 const TYPE_CONFIG: Record<string, { label: string; color: string; icon: string }> = {
-    tournament: { label: 'Giải đấu', color: '#f59e0b', icon: '🏆' },
-    exam: { label: 'Thi thăng cấp', color: '#8b5cf6', icon: '🎓' },
-    training: { label: 'Tập huấn', color: '#10b981', icon: '🥋' },
-    meeting: { label: 'Họp chuyên môn', color: '#3b82f6', icon: '📋' },
-    seminar: { label: 'Hội thảo', color: '#ef4444', icon: '🎤' },
+    tournament: { label: 'Giải đấu', color: 'var(--vct-warning)', icon: '🏆' },
+    exam: { label: 'Thi thăng cấp', color: 'var(--vct-info)', icon: '🎓' },
+    training: { label: 'Tập huấn', color: 'var(--vct-success)', icon: '🥋' },
+    meeting: { label: 'Họp chuyên môn', color: 'var(--vct-info)', icon: '📋' },
+    seminar: { label: 'Hội thảo', color: 'var(--vct-danger)', icon: '🎤' },
 }
 
 const MOCK_EVENTS: CalendarEvent[] = [
@@ -45,9 +45,9 @@ const MOCK_EVENTS: CalendarEvent[] = [
 ]
 
 const STATUS_LABELS: Record<string, { label: string; color: string }> = {
-    upcoming: { label: 'Sắp tới', color: '#3b82f6' },
-    ongoing: { label: 'Đang diễn ra', color: '#10b981' },
-    completed: { label: 'Đã kết thúc', color: '#94a3b8' },
+    upcoming: { label: 'Sắp tới', color: 'var(--vct-info)' },
+    ongoing: { label: 'Đang diễn ra', color: 'var(--vct-success)' },
+    completed: { label: 'Đã kết thúc', color: 'var(--vct-text-tertiary)' },
 }
 
 const MONTHS_VI = [
@@ -167,10 +167,10 @@ export function Page_calendar() {
             {/* ── KPI ── */}
             <div className="grid grid-cols-2 tablet:grid-cols-4 gap-3">
                 {[
-                    { label: 'Tổng sự kiện', value: allEvents.length, icon: '📅', color: '#0ea5e9' },
-                    { label: 'Sắp diễn ra', value: upcomingCount, icon: '🔜', color: '#f59e0b' },
-                    { label: 'Đang diễn ra', value: ongoingCount, icon: '🔴', color: '#10b981' },
-                    { label: 'Tháng này', value: thisMonthCount, icon: '📊', color: '#8b5cf6' },
+                    { label: 'Tổng sự kiện', value: allEvents.length, icon: '📅', color: 'var(--vct-accent-cyan)' },
+                    { label: 'Sắp diễn ra', value: upcomingCount, icon: '🔜', color: 'var(--vct-warning)' },
+                    { label: 'Đang diễn ra', value: ongoingCount, icon: '🔴', color: 'var(--vct-success)' },
+                    { label: 'Tháng này', value: thisMonthCount, icon: '📊', color: 'var(--vct-info)' },
                 ].map(s => (
                     <div key={s.label} className="rounded-xl border border-vct-border bg-vct-elevated p-4 text-center">
                         <div className="text-2xl mb-1">{s.icon}</div>

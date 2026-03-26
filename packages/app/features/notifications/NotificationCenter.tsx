@@ -2,8 +2,8 @@
 
 import { useState, useEffect, type ReactNode } from 'react'
 import { createPortal } from 'react-dom'
-import { VCT_NotificationBell } from '../components/VCT_NotificationBell'
-import { VCT_Timeline, type TimelineEvent } from '../components/VCT_Timeline'
+import { VCT_NotificationBell } from '@vct/ui'
+import { VCT_Timeline, type TimelineEvent } from '@vct/ui'
 import { useI18n } from '../i18n'
 
 /* ────────────────────────────────────────────

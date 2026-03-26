@@ -1,7 +1,7 @@
 'use client'
 import React, { useState, useMemo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { VCT_Icons } from '../components/vct-icons'
+import { VCT_Icons } from '@vct/ui'
 
 interface Technique {
     id: string; name: string; category: 'quyen' | 'doi_khang' | 'vu_khi' | 'tu_ve'
@@ -18,10 +18,10 @@ const TECHNIQUES: Technique[] = [
 ]
 
 const CAT_MAP: Record<string, { label: string; color: string; icon: string }> = {
-    quyen: { label: 'Quyền thuật', color: '#8b5cf6', icon: '🥋' },
-    doi_khang: { label: 'Đối kháng', color: '#ef4444', icon: '⚔️' },
-    vu_khi: { label: 'Vũ khí', color: '#f59e0b', icon: '🗡️' },
-    tu_ve: { label: 'Tự vệ', color: '#10b981', icon: '🛡️' },
+    quyen: { label: 'Quyền thuật', color: 'var(--vct-info)', icon: '🥋' },
+    doi_khang: { label: 'Đối kháng', color: 'var(--vct-danger)', icon: '⚔️' },
+    vu_khi: { label: 'Vũ khí', color: 'var(--vct-warning)', icon: '🗡️' },
+    tu_ve: { label: 'Tự vệ', color: 'var(--vct-success)', icon: '🛡️' },
 }
 
 export function Page_heritage_techniques() {

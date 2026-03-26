@@ -26,7 +26,7 @@ func (s *Server) handleParentRoutes(mux *http.ServeMux) {
 // Returns true if OK, false if denied (and writes the HTTP error).
 func requireParentRole(w http.ResponseWriter, p auth.Principal) bool {
 	if p.User.Role != auth.RoleParent {
-		http.Error(w, "forbidden: requires parent role", http.StatusForbidden)
+		apiForbidden(w)
 		return false
 	}
 	return true
@@ -35,7 +35,7 @@ func requireParentRole(w http.ResponseWriter, p auth.Principal) bool {
 // GET /api/v1/parent/dashboard
 func (s *Server) handleParentDashboard(w http.ResponseWriter, r *http.Request, p auth.Principal) {
 	if r.Method != http.MethodGet {
-		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+		apiMethodNotAllowed(w)
 		return
 	}
 	if !requireParentRole(w, p) {
@@ -43,7 +43,7 @@ func (s *Server) handleParentDashboard(w http.ResponseWriter, r *http.Request, p
 	}
 	dash, err := s.Extended.Parent.GetDashboard(r.Context(), p.User.ID)
 	if err != nil {
-		internalError(w, err)
+		apiInternal(w, err)
 		return
 	}
 	success(w, http.StatusOK, dash)
@@ -58,7 +58,7 @@ func (s *Server) handleParentChildren(w http.ResponseWriter, r *http.Request, p 
 	case http.MethodGet:
 		links, err := s.Extended.Parent.ListAllLinks(r.Context(), p.User.ID)
 		if err != nil {
-			internalError(w, err)
+			apiInternal(w, err)
 			return
 		}
 		if links == nil {
@@ -66,14 +66,14 @@ func (s *Server) handleParentChildren(w http.ResponseWriter, r *http.Request, p 
 		}
 		success(w, http.StatusOK, links)
 	default:
-		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+		apiMethodNotAllowed(w)
 	}
 }
 
 // POST /api/v1/parent/children/link
 func (s *Server) handleParentLinkChild(w http.ResponseWriter, r *http.Request, p auth.Principal) {
 	if r.Method != http.MethodPost {
-		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+		apiMethodNotAllowed(w)
 		return
 	}
 	if !requireParentRole(w, p) {
@@ -85,7 +85,7 @@ func (s *Server) handleParentLinkChild(w http.ResponseWriter, r *http.Request, p
 		Relation    string `json:"relation"`
 	}
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		http.Error(w, "invalid json", http.StatusBadRequest)
+		apiValidation(w, "Dữ liệu JSON không hợp lệ")
 		return
 	}
 	link := parent.ParentLink{
@@ -98,7 +98,7 @@ func (s *Server) handleParentLinkChild(w http.ResponseWriter, r *http.Request, p
 	created, err := s.Extended.Parent.RequestLink(r.Context(), link)
 	if err != nil {
 		// Validation errors are returned as 400, not 500
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		apiBadRequest(w, err)
 		return
 	}
 	success(w, http.StatusCreated, created)
@@ -115,7 +115,7 @@ func (s *Server) handleParentChildDetail(w http.ResponseWriter, r *http.Request,
 	parts := strings.SplitN(path, "/", 2)
 
 	if len(parts) == 0 || parts[0] == "" {
-		http.Error(w, "missing child link id", http.StatusBadRequest)
+		apiValidation(w, "Thiếu ID liên kết")
 		return
 	}
 
@@ -126,15 +126,15 @@ func (s *Server) handleParentChildDetail(w http.ResponseWriter, r *http.Request,
 		// Verify ownership: make sure this link belongs to the parent
 		link, err := s.Extended.Parent.GetLinkByID(r.Context(), linkID)
 		if err != nil {
-			http.Error(w, "link not found", http.StatusNotFound)
+			apiError(w, http.StatusNotFound, CodeNotFound, "Không tìm thấy liên kết")
 			return
 		}
 		if link.ParentID != p.User.ID {
-			http.Error(w, "forbidden: link does not belong to you", http.StatusForbidden)
+			apiForbidden(w)
 			return
 		}
 		if err := s.Extended.Parent.DeleteLink(r.Context(), linkID); err != nil {
-			internalError(w, err)
+			apiInternal(w, err)
 			return
 		}
 		success(w, http.StatusOK, map[string]string{"status": "deleted", "id": linkID})
@@ -142,13 +142,13 @@ func (s *Server) handleParentChildDetail(w http.ResponseWriter, r *http.Request,
 	}
 
 	if r.Method != http.MethodGet {
-		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+		apiMethodNotAllowed(w)
 		return
 	}
 
 	// For GET sub-resources, we need {id}/{sub}
 	if len(parts) < 2 {
-		http.Error(w, "missing sub-resource (attendance|results)", http.StatusBadRequest)
+		apiValidation(w, "Thiếu tài nguyên phụ")
 		return
 	}
 
@@ -157,7 +157,7 @@ func (s *Server) handleParentChildDetail(w http.ResponseWriter, r *http.Request,
 
 	// Ownership check: verify this athlete is linked to the parent
 	if !s.Extended.Parent.IsChildOfParent(r.Context(), p.User.ID, athleteID) {
-		http.Error(w, "forbidden: athlete is not linked to your account", http.StatusForbidden)
+		apiForbidden(w)
 		return
 	}
 
@@ -165,19 +165,19 @@ func (s *Server) handleParentChildDetail(w http.ResponseWriter, r *http.Request,
 	case "attendance":
 		records, err := s.Extended.Parent.GetChildAttendance(r.Context(), athleteID)
 		if err != nil {
-			internalError(w, err)
+			apiInternal(w, err)
 			return
 		}
 		success(w, http.StatusOK, records)
 	case "results":
 		results, err := s.Extended.Parent.GetChildResults(r.Context(), athleteID)
 		if err != nil {
-			internalError(w, err)
+			apiInternal(w, err)
 			return
 		}
 		success(w, http.StatusOK, results)
 	default:
-		http.Error(w, "unknown sub-resource", http.StatusBadRequest)
+		apiValidation(w, "Tài nguyên phụ không hợp lệ")
 	}
 }
 
@@ -191,7 +191,7 @@ func (s *Server) handleParentConsents(w http.ResponseWriter, r *http.Request, p 
 	case http.MethodGet:
 		consents, err := s.Extended.Parent.ListConsents(r.Context(), p.User.ID)
 		if err != nil {
-			internalError(w, err)
+			apiInternal(w, err)
 			return
 		}
 		if consents == nil {
@@ -208,13 +208,13 @@ func (s *Server) handleParentConsents(w http.ResponseWriter, r *http.Request, p 
 			Description string `json:"description"`
 		}
 		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-			http.Error(w, "invalid json", http.StatusBadRequest)
+			apiValidation(w, "Dữ liệu JSON không hợp lệ")
 			return
 		}
 
 		// Verify the athlete is linked to this parent
 		if !s.Extended.Parent.IsChildOfParent(r.Context(), p.User.ID, req.AthleteID) {
-			http.Error(w, "forbidden: athlete is not linked to your account", http.StatusForbidden)
+			apiForbidden(w)
 			return
 		}
 
@@ -228,13 +228,13 @@ func (s *Server) handleParentConsents(w http.ResponseWriter, r *http.Request, p 
 		}
 		created, err := s.Extended.Parent.CreateConsent(r.Context(), c)
 		if err != nil {
-			http.Error(w, err.Error(), http.StatusBadRequest)
+			apiBadRequest(w, err)
 			return
 		}
 		success(w, http.StatusCreated, created)
 
 	default:
-		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+		apiMethodNotAllowed(w)
 	}
 }
 
@@ -244,21 +244,21 @@ func (s *Server) handleParentConsentAction(w http.ResponseWriter, r *http.Reques
 		return
 	}
 	if r.Method != http.MethodDelete {
-		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+		apiMethodNotAllowed(w)
 		return
 	}
 	id := strings.TrimPrefix(r.URL.Path, "/api/v1/parent/consents/")
 	if id == "" {
-		http.Error(w, "missing consent id", http.StatusBadRequest)
+		apiValidation(w, "Thiếu ID chấp thuận")
 		return
 	}
 	// RevokeConsent now verifies ownership internally
 	if err := s.Extended.Parent.RevokeConsent(r.Context(), id, p.User.ID); err != nil {
 		if strings.Contains(err.Error(), "does not belong") || strings.Contains(err.Error(), "not active") {
-			http.Error(w, err.Error(), http.StatusForbidden)
+			apiForbidden(w)
 			return
 		}
-		internalError(w, err)
+		apiInternal(w, err)
 		return
 	}
 	success(w, http.StatusOK, map[string]string{"status": "revoked", "id": id})

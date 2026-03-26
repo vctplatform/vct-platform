@@ -85,10 +85,10 @@ func Middleware(cfg MiddlewareConfig) func(http.Handler) http.Handler {
 				w.Header().Set("Retry-After", fmt.Sprintf("%.0f", retryAfter))
 				w.WriteHeader(http.StatusTooManyRequests)
 				json.NewEncoder(w).Encode(map[string]interface{}{
-					"error":        "rate_limit_exceeded",
-					"message":      "Too many requests, please slow down",
-					"retry_after":  retryAfter,
-					"tier":         tier,
+					"error":       "rate_limit_exceeded",
+					"message":     "Too many requests, please slow down",
+					"retry_after": retryAfter,
+					"tier":        tier,
 				})
 				return
 			}

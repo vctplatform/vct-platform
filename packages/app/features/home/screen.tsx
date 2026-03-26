@@ -15,7 +15,7 @@ import { Colors, SharedStyles, FontWeight, Radius, Space } from '../mobile/mobil
 // ═══════════════════════════════════════════════════════════════
 
 const styles = StyleSheet.create({
-  page: { flex: 1, backgroundColor: '#f1f5f9' },
+  page: { flex: 1, backgroundColor: 'var(--vct-text-primary)' },
   content: { padding: Space.lg, gap: 10, paddingBottom: 28 },
 
   heroCard: {
@@ -29,7 +29,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12, paddingVertical: 5, borderRadius: Radius.pill,
     backgroundColor: Colors.overlay(Colors.accent, 0.15), alignSelf: 'flex-start',
   },
-  heroRoleText: { fontSize: 11, fontWeight: FontWeight.extrabold, color: '#60a5fa' },
+  heroRoleText: { fontSize: 11, fontWeight: FontWeight.extrabold, color: 'var(--vct-info)' },
 
   statsRow: { flexDirection: 'row', gap: 10, marginBottom: 6 },
   statBox: {
@@ -46,18 +46,18 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.bgCard, borderWidth: 1, borderColor: Colors.border,
   },
   quickIcon: { fontSize: 20, marginBottom: 4 },
-  quickLabel: { fontSize: 10, fontWeight: FontWeight.bold, color: '#334155' },
+  quickLabel: { fontSize: 10, fontWeight: FontWeight.bold, color: 'var(--vct-text-secondary)' },
 
   sectionTitle: { fontSize: 14, fontWeight: FontWeight.black, color: Colors.textPrimary, marginBottom: 4, marginTop: 8 },
   sectionSub: { fontSize: 11, color: Colors.textSecondary, marginBottom: 10 },
 
   roleWrap: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 6 },
   roleButton: {
-    borderRadius: Radius.pill, borderWidth: 1, borderColor: '#cbd5e1',
+    borderRadius: Radius.pill, borderWidth: 1, borderColor: 'var(--vct-text-secondary)',
     paddingVertical: 6, paddingHorizontal: 12, backgroundColor: Colors.bgCard,
   },
-  roleButtonActive: { borderColor: '#0ea5e9', backgroundColor: '#e0f2fe' },
-  roleButtonText: { fontSize: 12, fontWeight: FontWeight.bold, color: '#334155' },
+  roleButtonActive: { borderColor: 'var(--vct-accent-cyan)', backgroundColor: '#e0f2fe' },
+  roleButtonText: { fontSize: 12, fontWeight: FontWeight.bold, color: 'var(--vct-text-secondary)' },
   roleButtonTextActive: { color: '#0369a1' },
 
   moduleSeparator: { height: 8 },
@@ -66,7 +66,7 @@ const styles = StyleSheet.create({
     borderColor: '#fecaca', backgroundColor: '#fef2f2', padding: 14,
   },
   emptyTitle: { color: '#991b1b', fontWeight: FontWeight.bold, marginBottom: 6 },
-  emptyText: { color: '#b91c1c', fontSize: 12 },
+  emptyText: { color: 'var(--vct-danger)', fontSize: 12 },
 })
 
 const RoleButton = React.memo(function RoleButton({

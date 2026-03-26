@@ -21,21 +21,21 @@ const (
 
 // CheckResult holds the result of a single dependency check.
 type CheckResult struct {
-	Name     string        `json:"name"`
-	Status   Status        `json:"status"`
-	Duration time.Duration `json:"-"`
-	DurationMs float64    `json:"duration_ms"`
-	Message  string        `json:"message,omitempty"`
-	Error    string        `json:"error,omitempty"`
+	Name       string        `json:"name"`
+	Status     Status        `json:"status"`
+	Duration   time.Duration `json:"-"`
+	DurationMs float64       `json:"duration_ms"`
+	Message    string        `json:"message,omitempty"`
+	Error      string        `json:"error,omitempty"`
 }
 
 // HealthResponse is the complete health check response.
 type HealthResponse struct {
-	Status     Status        `json:"status"`
-	Version    string        `json:"version"`
-	Uptime     string        `json:"uptime"`
-	Checks     []CheckResult `json:"checks"`
-	Timestamp  string        `json:"timestamp"`
+	Status    Status        `json:"status"`
+	Version   string        `json:"version"`
+	Uptime    string        `json:"uptime"`
+	Checks    []CheckResult `json:"checks"`
+	Timestamp string        `json:"timestamp"`
 }
 
 // Checker is a function that checks a dependency's health.

@@ -44,39 +44,6 @@ func successJSONBytes(w http.ResponseWriter, status int, payload []byte) {
 	_, _ = w.Write(payload)
 }
 
-
-func badRequest(w http.ResponseWriter, message string) {
-	success(w, http.StatusBadRequest, map[string]string{"message": message})
-}
-
-func unauthorized(w http.ResponseWriter, message string) {
-	success(w, http.StatusUnauthorized, map[string]string{"message": message})
-}
-
-func notFound(w http.ResponseWriter) {
-	success(w, http.StatusNotFound, map[string]string{"message": "không tìm thấy tài nguyên"})
-}
-
-func methodNotAllowed(w http.ResponseWriter) {
-	success(w, http.StatusMethodNotAllowed, map[string]string{"message": "method không được hỗ trợ"})
-}
-
-func internalError(w http.ResponseWriter, err error) {
-	success(w, http.StatusInternalServerError, map[string]string{"message": err.Error()})
-}
-
-func conflict(w http.ResponseWriter, message string) {
-	success(w, http.StatusConflict, map[string]string{"message": message})
-}
-
-func notFoundError(w http.ResponseWriter, message string) {
-	success(w, http.StatusNotFound, map[string]string{"message": message})
-}
-
-func forbidden(w http.ResponseWriter, message string) {
-	success(w, http.StatusForbidden, map[string]string{"message": message})
-}
-
 // requireRole checks if the principal has one of the allowed roles.
 // Returns true if access is granted (caller should continue). Returns false and writes 403 if denied.
 func requireRole(w http.ResponseWriter, p auth.Principal, roles ...auth.UserRole) bool {
@@ -85,33 +52,43 @@ func requireRole(w http.ResponseWriter, p auth.Principal, roles ...auth.UserRole
 			return true // access granted
 		}
 	}
-	forbidden(w, "Bạn không có quyền thực hiện thao tác này")
+	apiError(w, http.StatusForbidden, CodeForbidden, "Bạn không có quyền thực hiện thao tác này")
 	return false // access denied
 }
 
 func writeAuthError(w http.ResponseWriter, err error) {
 	status := http.StatusUnauthorized
+	code := CodeUnauthorized
+
 	switch {
 	case errors.Is(err, auth.ErrConflict):
 		status = http.StatusConflict
+		code = CodeConflict
 	case errors.Is(err, auth.ErrBadRequest):
 		status = http.StatusBadRequest
+		code = CodeBadRequest
 	case errors.Is(err, auth.ErrInvalidCredentials):
 		status = http.StatusUnauthorized
+		code = auth.CodeInvalidCredentials
 	case errors.Is(err, auth.ErrForbidden):
 		status = http.StatusForbidden
+		code = CodeForbidden
 	case errors.Is(err, auth.ErrUnauthorized):
 		status = http.StatusUnauthorized
+		code = CodeUnauthorized
 	}
-	success(w, status, map[string]string{"message": authMessage(err)})
-}
 
-func authMessage(err error) string {
+	msg := err.Error()
 	parts := strings.SplitN(err.Error(), ":", 2)
-	if len(parts) < 2 {
-		return err.Error()
+	if len(parts) >= 2 {
+		potentialCode := strings.TrimSpace(parts[0])
+		if strings.HasPrefix(potentialCode, "ERR_") {
+			code = potentialCode
+		}
+		msg = strings.TrimSpace(parts[1])
 	}
-	return strings.TrimSpace(parts[1])
+
+	apiError(w, status, code, msg)
 }
 
 // ── Entity Registry ──────────────────────────────────────────

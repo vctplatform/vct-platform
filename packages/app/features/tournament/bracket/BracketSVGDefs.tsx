@@ -21,17 +21,17 @@ export const BracketSVGDefs = () => (
         {/* Indicator Gradients */}
         <linearGradient id="grad-red-indicator" x1="0%" y1="0%" x2="0%" y2="100%">
             <stop offset="0%" stopColor="#fb7185" />
-            <stop offset="100%" stopColor="#ef4444" />
+            <stop offset="100%" stopColor="var(--vct-danger)" />
         </linearGradient>
         <linearGradient id="grad-blue-indicator" x1="0%" y1="0%" x2="0%" y2="100%">
-            <stop offset="0%" stopColor="#60a5fa" />
-            <stop offset="100%" stopColor="#2563eb" />
+            <stop offset="0%" stopColor="var(--vct-info)" />
+            <stop offset="100%" stopColor="var(--vct-info)" />
         </linearGradient>
 
         {/* Match node gradient */}
         <radialGradient id="node-active-grad" cx="50%" cy="50%" r="50%">
-            <stop offset="0%" stopColor="#34d399" />
-            <stop offset="100%" stopColor="#059669" />
+            <stop offset="0%" stopColor="var(--vct-success)" />
+            <stop offset="100%" stopColor="var(--vct-success)" />
         </radialGradient>
 
         {/* Card Shadows */}

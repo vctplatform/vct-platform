@@ -31,7 +31,7 @@ type ChangeEntry struct {
 
 // Version describes an API version and its lifecycle.
 type Version struct {
-	Name         string        `json:"name"`       // e.g. "v1", "v2"
+	Name         string        `json:"name"` // e.g. "v1", "v2"
 	Status       Status        `json:"status"`
 	ReleasedAt   time.Time     `json:"released_at"`
 	DeprecatedAt *time.Time    `json:"deprecated_at,omitempty"`
@@ -266,4 +266,3 @@ func extractVersion(r *http.Request) string {
 
 	return ""
 }
-

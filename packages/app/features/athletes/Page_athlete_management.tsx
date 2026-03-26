@@ -1,8 +1,8 @@
 'use client'
 import React, { useState, useMemo } from 'react'
-import { VCT_Icons } from '../components/vct-icons'
-import { VCT_Image } from '../components/VCT_Image'
-import { VCT_PageContainer, VCT_SectionCard, VCT_EmptyState, VCT_Badge, VCT_SearchInput, VCT_Modal } from '../components/vct-ui'
+import { VCT_Icons } from '@vct/ui'
+import { VCT_Image } from '@vct/ui'
+import { VCT_PageContainer, VCT_SectionCard, VCT_EmptyState, VCT_Badge, VCT_SearchInput, VCT_Modal } from '@vct/ui'
 import { useApiQuery } from '../hooks/useApiQuery'
 import { AthleteProfile, AthleteStats } from '@vct/shared-types'
 
@@ -24,9 +24,9 @@ const STATUS_MAP: Record<string, { label: string; variant: 'success' | 'warning'
 }
 
 const BELT_COLORS: Record<string, string> = {
-    none: '#94a3b8', yellow: '#eab308', green: '#22c55e', blue: '#3b82f6',
-    red: '#ef4444', so_dang: '#1e293b', nhat_dang: '#1e293b', nhi_dang: '#1e293b',
-    tam_dang: '#1e293b', tu_dang: '#1e293b', ngu_dang: '#1e293b',
+    none: 'var(--vct-text-tertiary)', yellow: 'var(--vct-gold)', green: 'var(--vct-success)', blue: 'var(--vct-info)',
+    red: 'var(--vct-danger)', so_dang: 'var(--vct-bg-input)', nhat_dang: 'var(--vct-bg-input)', nhi_dang: 'var(--vct-bg-input)',
+    tam_dang: 'var(--vct-bg-input)', tu_dang: 'var(--vct-bg-input)', ngu_dang: 'var(--vct-bg-input)',
 }
 
 type SortKey = 'full_name' | 'belt_rank' | 'elo_rating' | 'total_medals' | 'total_tournaments'
@@ -137,9 +137,9 @@ function AthleteDetailView({ athlete }: { athlete: AthleteProfile }) {
             {/* Stats Row */}
             <div className="grid grid-cols-3 gap-3">
                 {[
-                    { icon: <VCT_Icons.Building size={16} />, value: athlete.total_clubs, label: 'CLB', color: '#8b5cf6' },
-                    { icon: <VCT_Icons.Trophy size={16} />, value: athlete.total_tournaments, label: 'Giải đấu', color: '#3b82f6' },
-                    { icon: <VCT_Icons.Award size={16} />, value: athlete.total_medals, label: 'Huy chương', color: '#f59e0b' },
+                    { icon: <VCT_Icons.Building size={16} />, value: athlete.total_clubs, label: 'CLB', color: 'var(--vct-info)' },
+                    { icon: <VCT_Icons.Trophy size={16} />, value: athlete.total_tournaments, label: 'Giải đấu', color: 'var(--vct-info)' },
+                    { icon: <VCT_Icons.Award size={16} />, value: athlete.total_medals, label: 'Huy chương', color: 'var(--vct-warning)' },
                 ].map((s, i) => (
                     <div key={i} className="p-4 rounded-xl border border-vct-border text-center bg-vct-bg">
                         <div className="mx-auto w-8 h-8 rounded-lg flex items-center justify-center mb-2" style={{ background: `${s.color}15`, color: s.color }}>{s.icon}</div>
@@ -159,7 +159,7 @@ function AthleteDetailView({ athlete }: { athlete: AthleteProfile }) {
                 </div>
                 <div className="h-1.5 bg-vct-border rounded-full overflow-hidden mb-3">
                     <div className="h-full rounded-full transition-all duration-500"
-                        style={{ width: `${hoSoPct}%`, background: hoSoPct === 100 ? '#22c55e' : '#f59e0b' }} />
+                        style={{ width: `${hoSoPct}%`, background: hoSoPct === 100 ? 'var(--vct-success)' : 'var(--vct-warning)' }} />
                 </div>
                 <div className="grid grid-cols-2 gap-2">
                     {hoSoItems.map(h => (
@@ -176,7 +176,7 @@ function AthleteDetailView({ athlete }: { athlete: AthleteProfile }) {
                 <div className="p-4 rounded-xl border border-vct-border bg-vct-bg">
                     <div className="text-xs font-bold text-vct-text uppercase tracking-wider mb-3">Lịch sử thăng đai</div>
                     <div className="relative pl-6">
-                        <div className="absolute left-[7px] top-1 bottom-1 w-0.5 bg-gradient-to-b from-[#eab308] to-[#1e293b] rounded-full" />
+                        <div className="absolute left-[7px] top-1 bottom-1 w-0.5 bg-gradient-to-b from-(--vct-gold) to-(--vct-bg-input) rounded-full" />
                         <div className="space-y-2.5">
                             {athlete.belt_history.map((b, i) => (
                                 <div key={i} className="relative flex items-center gap-3">
@@ -290,17 +290,17 @@ export function Page_athlete_management() {
         <VCT_PageContainer size="wide" animated>
             {/* ══ STATS DASHBOARD ══ */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-                <StatCard icon={<VCT_Icons.Users size={20} />} label="Tổng VĐV" value={stats?.total ?? '—'} color="#3b82f6"
+                <StatCard icon={<VCT_Icons.Users size={20} />} label="Tổng VĐV" value={stats?.total ?? '—'} color="var(--vct-info)"
                     sub={stats ? `${stats.by_gender?.['nam'] ?? 0} nam · ${stats.by_gender?.['nu'] ?? 0} nữ` : undefined} />
-                <StatCard icon={<VCT_Icons.Award size={20} />} label="Huy chương" value={stats?.total_medals ?? '—'} color="#f59e0b" />
-                <StatCard icon={<VCT_Icons.TrendingUp size={20} />} label="Elo TB" value={stats?.avg_elo ?? '—'} color="#8b5cf6" />
-                <StatCard icon={<VCT_Icons.CheckCircle size={20} />} label="Hoạt động" value={stats?.by_status?.['active'] ?? '—'} color="#22c55e"
+                <StatCard icon={<VCT_Icons.Award size={20} />} label="Huy chương" value={stats?.total_medals ?? '—'} color="var(--vct-warning)" />
+                <StatCard icon={<VCT_Icons.TrendingUp size={20} />} label="Elo TB" value={stats?.avg_elo ?? '—'} color="var(--vct-info)" />
+                <StatCard icon={<VCT_Icons.CheckCircle size={20} />} label="Hoạt động" value={stats?.by_status?.['active'] ?? '—'} color="var(--vct-success)"
                     sub={stats?.by_status?.['draft'] ? `${stats.by_status['draft']} nháp` : undefined} />
             </div>
 
             {/* ══ BELT DISTRIBUTION ══ */}
             {stats?.by_belt_rank && Object.keys(stats.by_belt_rank).length > 0 && (
-                <VCT_SectionCard title="Phân bố Đẳng đai" icon={<VCT_Icons.BarChart2 size={18} />} accentColor="#f59e0b" className="mb-6 border border-vct-border">
+                <VCT_SectionCard title="Phân bố Đẳng đai" icon={<VCT_Icons.BarChart2 size={18} />} accentColor="var(--vct-warning)" className="mb-6 border border-vct-border">
                     <div className="flex items-end gap-2 h-24">
                         {BELT_ORDER.filter(b => stats.by_belt_rank[b]).map(belt => {
                             const count = stats.by_belt_rank[belt] || 0
@@ -310,7 +310,7 @@ export function Page_athlete_management() {
                                 <div key={belt} className="flex-1 flex flex-col items-center gap-1">
                                     <span className="text-[10px] font-bold text-vct-text">{count}</span>
                                     <div className="w-full rounded-t-lg transition-all duration-500"
-                                        style={{ height: `${Math.max(pct, 8)}%`, background: BELT_COLORS[belt] || '#94a3b8', minHeight: '6px' }} />
+                                        style={{ height: `${Math.max(pct, 8)}%`, background: BELT_COLORS[belt] || 'var(--vct-text-tertiary)', minHeight: '6px' }} />
                                     <span className="text-[8px] text-vct-text-muted font-medium text-center leading-tight truncate w-full">
                                         {BELT_LABELS[belt]?.replace('Đai ', '') || belt}
                                     </span>

@@ -9,13 +9,13 @@ import (
 // handleAuthSendOTP handles POST /api/v1/auth/send-otp
 func (s *Server) handleAuthSendOTP(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
-		methodNotAllowed(w)
+		apiMethodNotAllowed(w)
 		return
 	}
 
 	var input auth.SendOTPRequest
 	if err := decodeJSON(r, &input); err != nil {
-		badRequest(w, err.Error())
+		apiError(w, http.StatusBadRequest, CodeBadRequest, err.Error())
 		return
 	}
 
@@ -30,13 +30,13 @@ func (s *Server) handleAuthSendOTP(w http.ResponseWriter, r *http.Request) {
 // handleAuthVerifyOTP handles POST /api/v1/auth/verify-otp
 func (s *Server) handleAuthVerifyOTP(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
-		methodNotAllowed(w)
+		apiMethodNotAllowed(w)
 		return
 	}
 
 	var input auth.VerifyOTPRequest
 	if err := decodeJSON(r, &input); err != nil {
-		badRequest(w, err.Error())
+		apiError(w, http.StatusBadRequest, CodeBadRequest, err.Error())
 		return
 	}
 

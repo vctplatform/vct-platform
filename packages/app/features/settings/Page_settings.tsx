@@ -2,8 +2,8 @@
 
 import React, { useState, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { VCT_Icons } from '../components/vct-icons'
-import { VCT_PageContainer } from '../components/vct-ui'
+import { VCT_Icons } from '@vct/ui'
+import { VCT_PageContainer } from '@vct/ui'
 import { useAuth } from '../auth/AuthProvider'
 
 // ════════════════════════════════════════
@@ -14,11 +14,11 @@ interface NotifSetting {
 }
 
 const NOTIF_SETTINGS: NotifSetting[] = [
-    { id: 'n1', label: 'Giải đấu', desc: 'Đăng ký, lịch thi đấu, kết quả', email: true, push: true, icon: 'Trophy', color: '#f59e0b' },
-    { id: 'n2', label: 'Tài chính', desc: 'Phiếu thu, phiếu chi, hạn thanh toán', email: true, push: false, icon: 'DollarSign', color: '#10b981' },
-    { id: 'n3', label: 'Đào tạo', desc: 'Lịch tập, thi thăng cấp, điểm danh', email: false, push: true, icon: 'Award', color: '#8b5cf6' },
-    { id: 'n4', label: 'Cộng đồng', desc: 'Bài viết mới, bình luận, nhóm', email: false, push: false, icon: 'Users', color: '#ec4899' },
-    { id: 'n5', label: 'Hệ thống', desc: 'Cập nhật, bảo trì, thay đổi quyền', email: true, push: true, icon: 'Settings', color: '#64748b' },
+    { id: 'n1', label: 'Giải đấu', desc: 'Đăng ký, lịch thi đấu, kết quả', email: true, push: true, icon: 'Trophy', color: 'var(--vct-warning)' },
+    { id: 'n2', label: 'Tài chính', desc: 'Phiếu thu, phiếu chi, hạn thanh toán', email: true, push: false, icon: 'DollarSign', color: 'var(--vct-success)' },
+    { id: 'n3', label: 'Đào tạo', desc: 'Lịch tập, thi thăng cấp, điểm danh', email: false, push: true, icon: 'Award', color: 'var(--vct-info)' },
+    { id: 'n4', label: 'Cộng đồng', desc: 'Bài viết mới, bình luận, nhóm', email: false, push: false, icon: 'Users', color: 'var(--vct-accent-pink)' },
+    { id: 'n5', label: 'Hệ thống', desc: 'Cập nhật, bảo trì, thay đổi quyền', email: true, push: true, icon: 'Settings', color: 'var(--vct-text-tertiary)' },
 ]
 
 const SESSIONS = [
@@ -356,7 +356,7 @@ export function Page_settings() {
                                             <div className="text-[11px] text-(--vct-text-secondary) mt-0.5">Google Authenticator hoặc tương tự</div>
                                         </div>
                                     </div>
-                                    <AnimToggle checked={twoFA} onChange={() => setTwoFA(!twoFA)} color="#10b981" />
+                                    <AnimToggle checked={twoFA} onChange={() => setTwoFA(!twoFA)} color="var(--vct-success)" />
                                 </div>
                                 {twoFA && (
                                     <motion.div

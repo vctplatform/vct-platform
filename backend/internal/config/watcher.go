@@ -10,14 +10,14 @@ import (
 // Watcher provides hot-reload by polling for config file changes
 // and notifying subscribers when configuration is updated.
 type Watcher struct {
-	path      string
-	interval  time.Duration
-	logger    *slog.Logger
-	onChange  []func(Config)
-	lastMod   time.Time
-	stopCh    chan struct{}
-	mu        sync.RWMutex
-	current   Config
+	path     string
+	interval time.Duration
+	logger   *slog.Logger
+	onChange []func(Config)
+	lastMod  time.Time
+	stopCh   chan struct{}
+	mu       sync.RWMutex
+	current  Config
 }
 
 // NewWatcher creates a config watcher that polls a file for changes.

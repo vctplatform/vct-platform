@@ -1,8 +1,8 @@
 'use client'
 import React, { useState, useCallback } from 'react'
-import { VCT_Icons } from '../components/vct-icons'
-import { VCT_Image } from '../components/VCT_Image'
-import { VCT_PageContainer, VCT_SectionCard, VCT_EmptyState, VCT_StatRow, VCT_Badge } from '../components/vct-ui'
+import { VCT_Icons } from '@vct/ui'
+import { VCT_Image } from '@vct/ui'
+import { VCT_PageContainer, VCT_SectionCard, VCT_EmptyState, VCT_StatRow, VCT_Badge } from '@vct/ui'
 import { useApiQuery } from '../hooks/useApiQuery'
 import { AthleteProfile, ClubMembership, TournamentEntry } from '@vct/shared-types'
 import { useRouter } from 'next/navigation'
@@ -30,10 +30,10 @@ function SkillBar({ label, value, max = 100, color }: { label: string; value: nu
 /* ── Belt Timeline — derived from profile ─────────────────── */
 
 const BELT_COLOR_MAP: Record<string, string> = {
-    'Trắng đai': '#e2e8f0',
-    'Lam đai 1': '#60a5fa', 'Lam đai 2': '#3b82f6', 'Lam đai 3': '#2563eb',
-    'Hoàng đai 1': '#fbbf24', 'Hoàng đai 2': '#f59e0b', 'Hoàng đai 3': '#d97706',
-    'Hồng đai 1': '#f87171', 'Hồng đai 2': '#ef4444', 'Hồng đai 3': '#dc2626',
+    'Trắng đai': 'var(--vct-border-subtle)',
+    'Lam đai 1': 'var(--vct-info)', 'Lam đai 2': 'var(--vct-info)', 'Lam đai 3': 'var(--vct-info)',
+    'Hoàng đai 1': 'var(--vct-warning)', 'Hoàng đai 2': 'var(--vct-warning)', 'Hoàng đai 3': 'var(--vct-warning)',
+    'Hồng đai 1': 'var(--vct-danger)', 'Hồng đai 2': 'var(--vct-danger)', 'Hồng đai 3': 'var(--vct-danger)',
 }
 
 function deriveBeltHistory(profile: AthleteProfile | null) {
@@ -41,12 +41,12 @@ function deriveBeltHistory(profile: AthleteProfile | null) {
         return profile.belt_history.map((b: { belt: string; date: string }) => ({
             belt: b.belt,
             date: b.date,
-            color: BELT_COLOR_MAP[b.belt] || '#94a3b8',
+            color: BELT_COLOR_MAP[b.belt] || 'var(--vct-text-tertiary)',
         }))
     }
     // Fallback: single entry from current belt
     if (profile?.belt_label) {
-        return [{ belt: profile.belt_label, date: '—', color: BELT_COLOR_MAP[profile.belt_label] || '#f59e0b' }]
+        return [{ belt: profile.belt_label, date: '—', color: BELT_COLOR_MAP[profile.belt_label] || 'var(--vct-warning)' }]
     }
     return []
 }
@@ -61,14 +61,14 @@ function deriveGoals(profile: AthleteProfile | null) {
             training: <VCT_Icons.Activity size={16} />,
         }
         const colorMap: Record<string, string> = {
-            belt: '#ef4444', tournament: '#3b82f6', training: '#22c55e',
+            belt: 'var(--vct-danger)', tournament: 'var(--vct-info)', training: 'var(--vct-success)',
         }
         return profile.goals.map((g: { id: number; title: string; progress: number; type?: string }, idx: number) => ({
             id: g.id || idx + 1,
             title: g.title,
             progress: g.progress,
             icon: iconMap[g.type || 'training'] || <VCT_Icons.Target size={16} />,
-            color: colorMap[g.type || 'training'] || '#3b82f6',
+            color: colorMap[g.type || 'training'] || 'var(--vct-info)',
         }))
     }
     // Fallback: derive from profile stats
@@ -76,15 +76,15 @@ function deriveGoals(profile: AthleteProfile | null) {
     if (profile) {
         goals.push({
             id: 1, title: 'Nâng đẳng cấp đai', progress: Math.min(((profile.elo_rating || 0) / 2000) * 100, 95),
-            icon: <VCT_Icons.Award size={16} />, color: '#ef4444',
+            icon: <VCT_Icons.Award size={16} />, color: 'var(--vct-danger)',
         })
         goals.push({
             id: 2, title: `Thi đấu nhiều giải hơn`, progress: Math.min(((profile.total_tournaments || 0) / 10) * 100, 100),
-            icon: <VCT_Icons.Trophy size={16} />, color: '#3b82f6',
+            icon: <VCT_Icons.Trophy size={16} />, color: 'var(--vct-info)',
         })
         goals.push({
             id: 3, title: 'Duy trì tập luyện đều đặn', progress: 75,
-            icon: <VCT_Icons.Activity size={16} />, color: '#22c55e',
+            icon: <VCT_Icons.Activity size={16} />, color: 'var(--vct-success)',
         })
     }
     return goals
@@ -100,12 +100,12 @@ function deriveSkillStats(profile: AthleteProfile | null) {
     const elo = profile?.elo_rating || 1000
     const base = Math.min(Math.round((elo / 2500) * 100), 95)
     return [
-        { label: 'Kỹ thuật', value: Math.min(base + 5, 100), color: '#3b82f6' },
-        { label: 'Thể lực', value: Math.min(base - 8, 100), color: '#22c55e' },
-        { label: 'Tốc độ', value: Math.min(base - 2, 100), color: '#f59e0b' },
-        { label: 'Sức mạnh', value: Math.min(base - 12, 100), color: '#ef4444' },
-        { label: 'Phản xạ', value: Math.min(base + 10, 100), color: '#8b5cf6' },
-        { label: 'Tinh thần', value: Math.min(base + 8, 100), color: '#06b6d4' },
+        { label: 'Kỹ thuật', value: Math.min(base + 5, 100), color: 'var(--vct-info)' },
+        { label: 'Thể lực', value: Math.min(base - 8, 100), color: 'var(--vct-success)' },
+        { label: 'Tốc độ', value: Math.min(base - 2, 100), color: 'var(--vct-warning)' },
+        { label: 'Sức mạnh', value: Math.min(base - 12, 100), color: 'var(--vct-danger)' },
+        { label: 'Phản xạ', value: Math.min(base + 10, 100), color: 'var(--vct-info)' },
+        { label: 'Tinh thần', value: Math.min(base + 8, 100), color: 'var(--vct-accent-cyan)' },
     ]
 }
 
@@ -296,7 +296,7 @@ export function Page_athlete_portal() {
                             <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-vct-bg border border-vct-border whitespace-nowrap">
                                 <VCT_Icons.Building size={14} /> {activeClubs.length > 0 ? activeClubs[0]?.club_name : 'Tự do'}
                             </span>
-                            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#3b82f6]/10 text-[#3b82f6] border border-[#3b82f6]/20 font-bold whitespace-nowrap">
+                            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-(--vct-info)/10 text-(--vct-info) border border-(--vct-info)/20 font-bold whitespace-nowrap">
                                 <VCT_Icons.TrendingUp size={14} /> Elo: {profile.elo_rating}
                             </span>
                         </div>
@@ -325,7 +325,7 @@ export function Page_athlete_portal() {
                     <VCT_SectionCard
                         title="Chỉ số Kỹ năng"
                         icon={<VCT_Icons.Activity size={20} />}
-                        accentColor="#8b5cf6"
+                        accentColor="var(--vct-info)"
                         className="border border-vct-border"
                     >
                         <div className="space-y-3 py-2">
@@ -335,7 +335,7 @@ export function Page_athlete_portal() {
                         </div>
                         <div className="mt-4 pt-4 border-t border-vct-border flex items-center justify-between">
                             <span className="text-xs text-vct-text-muted">Điểm trung bình: <strong className="text-vct-text">{skillStats.length > 0 ? Math.round(skillStats.reduce((a, s) => a + s.value, 0) / skillStats.length) : 0}</strong>/100</span>
-                            <span className="text-xs px-2.5 py-1 rounded-full bg-[#8b5cf6]/10 text-[#8b5cf6] font-bold border border-[#8b5cf6]/20">
+                            <span className="text-xs px-2.5 py-1 rounded-full bg-(--vct-info)/10 text-(--vct-info) font-bold border border-(--vct-info)/20">
                                 {skillStats.length > 0 && skillStats.reduce((a, s) => a + s.value, 0) / skillStats.length >= 80 ? '⭐ Xuất sắc' : skillStats.length > 0 && skillStats.reduce((a, s) => a + s.value, 0) / skillStats.length >= 60 ? '💪 Tốt' : '📈 Đang phát triển'}
                             </span>
                         </div>
@@ -345,9 +345,9 @@ export function Page_athlete_portal() {
                     <VCT_SectionCard
                         title="Giải đấu sắp tới & Gần đây"
                         icon={<VCT_Icons.Trophy size={20} />}
-                        accentColor="#3b82f6"
+                        accentColor="var(--vct-info)"
                         headerAction={
-                            <button onClick={() => router.push('/athlete-portal/tournaments')} className="text-xs text-[#3b82f6] font-bold hover:underline">
+                            <button onClick={() => router.push('/athlete-portal/tournaments')} className="text-xs text-(--vct-info) font-bold hover:underline">
                                 Xem tất cả →
                             </button>
                         }
@@ -368,11 +368,11 @@ export function Page_athlete_portal() {
                                 {tournaments.slice(0, 3).map((entry, idx) => (
                                     <div key={entry.id} className="py-4 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 group px-2 hover:bg-vct-bg/50 rounded-xl transition-colors -mx-2">
                                         <div className="flex items-start gap-4">
-                                            <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-vct-border flex items-center justify-center text-vct-text-muted group-hover:bg-[#3b82f6]/10 group-hover:text-[#3b82f6] transition-colors font-bold">
+                                            <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-vct-border flex items-center justify-center text-vct-text-muted group-hover:bg-(--vct-info)/10 group-hover:text-(--vct-info) transition-colors font-bold">
                                                 {idx + 1}
                                             </div>
                                             <div>
-                                                <h4 className="font-bold text-vct-text group-hover:text-[#3b82f6] transition-colors">{entry.tournament_name}</h4>
+                                                <h4 className="font-bold text-vct-text group-hover:text-(--vct-info) transition-colors">{entry.tournament_name}</h4>
                                                 <div className="text-xs text-vct-text-muted mt-1.5 flex flex-wrap gap-2">
                                                     {entry.categories?.map((c, i) => (
                                                         <span key={i} className="px-2 py-0.5 rounded bg-vct-bg border border-vct-border">{c}</span>
@@ -395,8 +395,8 @@ export function Page_athlete_portal() {
                 <div className="space-y-6">
                     {/* ══ QUICK STATS ══ */}
                     <div className="grid grid-cols-2 gap-4">
-                        <div className="p-5 rounded-2xl bg-gradient-to-br from-[#3b82f6]/10 to-[#2563eb]/10 border border-[#3b82f6]/20 flex flex-col items-center justify-center text-center group hover:scale-[1.02] transition-transform">
-                            <VCT_Icons.Trophy size={24} className="text-[#3b82f6] mb-2 group-hover:scale-110 transition-transform" />
+                        <div className="p-5 rounded-2xl bg-gradient-to-br from-(--vct-info)/10 to-(--vct-info)/10 border border-(--vct-info)/20 flex flex-col items-center justify-center text-center group hover:scale-[1.02] transition-transform">
+                            <VCT_Icons.Trophy size={24} className="text-(--vct-info) mb-2 group-hover:scale-110 transition-transform" />
                             <div className="text-2xl font-black text-vct-text">{profile.total_tournaments}</div>
                             <div className="text-xs font-medium text-vct-text-muted mt-1 uppercase tracking-wider">Giải đấu</div>
                         </div>
@@ -411,7 +411,7 @@ export function Page_athlete_portal() {
                     <VCT_SectionCard
                         title="Mục tiêu cá nhân"
                         icon={<VCT_Icons.Target size={18} />}
-                        accentColor="#ef4444"
+                        accentColor="var(--vct-danger)"
                         className="border border-vct-border"
                     >
                         <div className="space-y-4">
@@ -439,12 +439,12 @@ export function Page_athlete_portal() {
                     <VCT_SectionCard
                         title="Hành trình Thăng đai"
                         icon={<VCT_Icons.Award size={18} />}
-                        accentColor="#f59e0b"
+                        accentColor="var(--vct-warning)"
                         className="border border-vct-border"
                     >
                         <div className="relative pl-6">
                             {/* Vertical line */}
-                            <div className="absolute left-[7px] top-2 bottom-2 w-0.5 bg-gradient-to-b from-[#e2e8f0] via-[#fbbf24] to-[#d97706] rounded-full"></div>
+                            <div className="absolute left-[7px] top-2 bottom-2 w-0.5 bg-gradient-to-b from-(--vct-border-subtle) via-(--vct-warning) to-(--vct-warning) rounded-full"></div>
 
                             <div className="space-y-4">
                                 {beltHistory.map((b, i) => (
@@ -466,7 +466,7 @@ export function Page_athlete_portal() {
                     <VCT_SectionCard
                         title="Đơn vị trực thuộc"
                         icon={<VCT_Icons.Building size={18} />}
-                        accentColor="#8b5cf6"
+                        accentColor="var(--vct-info)"
                         headerAction={<button onClick={() => router.push('/athlete-portal/clubs')} className="p-2 -mr-2 text-vct-text-muted hover:bg-vct-bg rounded-lg transition-colors"><VCT_Icons.Settings size={16} /></button>}
                         className="border border-vct-border"
                     >
@@ -481,14 +481,14 @@ export function Page_athlete_portal() {
                         ) : (
                             <div className="space-y-3">
                                 {activeClubs.map(c => (
-                                    <div key={c.id} className="p-4 rounded-xl border border-vct-border bg-vct-bg hover:border-[#8b5cf6]/30 transition-colors flex items-center gap-4">
-                                        <div className="w-10 h-10 rounded-full bg-[#8b5cf6]/10 flex items-center justify-center text-[#8b5cf6]">
+                                    <div key={c.id} className="p-4 rounded-xl border border-vct-border bg-vct-bg hover:border-(--vct-info)/30 transition-colors flex items-center gap-4">
+                                        <div className="w-10 h-10 rounded-full bg-(--vct-info)/10 flex items-center justify-center text-(--vct-info)">
                                             <VCT_Icons.Building size={18} />
                                         </div>
                                         <div>
                                             <div className="font-bold text-sm text-vct-text">{c.club_name}</div>
                                             <div className="text-xs text-vct-text-muted mt-0.5 inline-flex items-center gap-1">
-                                                <div className={`w-1.5 h-1.5 rounded-full ${c.role === 'captain' ? 'bg-amber-500' : 'bg-[#8b5cf6]'}`}></div>
+                                                <div className={`w-1.5 h-1.5 rounded-full ${c.role === 'captain' ? 'bg-amber-500' : 'bg-(--vct-info)'}`}></div>
                                                 {c.role === 'captain' ? 'Đội trưởng' : 'Thành viên'}
                                             </div>
                                         </div>

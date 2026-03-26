@@ -4,11 +4,11 @@ import * as React from 'react'
 import { useState, useMemo, useCallback } from 'react'
 import {
     VCT_Button, VCT_SearchInput, VCT_Badge, VCT_Select,
-} from '../components/vct-ui'
-import type { StatItem } from '../components/VCT_StatRow'
-import { VCT_Icons } from '../components/vct-icons'
-import { VCT_Drawer } from '../components/VCT_Drawer'
-import { VCT_ConfirmDialog } from '../components/vct-ui-overlay'
+} from '@vct/ui'
+import type { StatItem } from '@vct/ui'
+import { VCT_Icons } from '@vct/ui'
+import { VCT_Drawer } from '@vct/ui'
+import { VCT_ConfirmDialog } from '@vct/ui'
 import { AdminDataTable } from './components/AdminDataTable'
 import { AdminPageShell, useShellToast } from './components/AdminPageShell'
 import { useAdminFetch } from './hooks/useAdminAPI'
@@ -16,7 +16,7 @@ import { useDebounce } from '../hooks/useDebounce'
 import { exportToCSV } from './utils/adminExport'
 import { AdminGuard } from './components/AdminGuard'
 import { useI18n } from '../i18n'
-import { VCT_Icons as BreadcrumbIcons } from '../components/vct-icons'
+import { VCT_Icons as BreadcrumbIcons } from '@vct/ui'
 
 // ════════════════════════════════════════
 // MOCK DATA — Tenants / Organizations
@@ -180,17 +180,17 @@ const Page_admin_tenants_Content = () => {
     }), [tenants])
 
     const kpiStats: StatItem[] = [
-        { label: 'Tổng TC', value: stats.total, icon: <VCT_Icons.Building size={18} />, color: '#3b82f6' },
-        { label: 'Hoạt động', value: stats.active, icon: <VCT_Icons.CheckCircle size={18} />, color: '#10b981' },
-        { label: 'Thành viên', value: stats.totalMembers.toLocaleString(), icon: <VCT_Icons.Users size={18} />, color: '#0ea5e9' },
-        { label: 'Chờ xử lý', value: stats.pending, icon: <VCT_Icons.Clock size={18} />, color: '#f59e0b' },
+        { label: 'Tổng TC', value: stats.total, icon: <VCT_Icons.Building size={18} />, color: 'var(--vct-info)' },
+        { label: 'Hoạt động', value: stats.active, icon: <VCT_Icons.CheckCircle size={18} />, color: 'var(--vct-success)' },
+        { label: 'Thành viên', value: stats.totalMembers.toLocaleString(), icon: <VCT_Icons.Users size={18} />, color: 'var(--vct-accent-cyan)' },
+        { label: 'Chờ xử lý', value: stats.pending, icon: <VCT_Icons.Clock size={18} />, color: 'var(--vct-warning)' },
     ]
 
     return (
         <AdminPageShell
             title={t('admin.tenants.title')}
             subtitle={t('admin.tenants.subtitle')}
-            icon={<VCT_Icons.Building size={28} className="text-[#3b82f6]" />}
+            icon={<VCT_Icons.Building size={28} className="text-(--vct-info)" />}
             breadcrumbs={[
                 { label: 'Admin', href: '/admin', icon: <BreadcrumbIcons.Home size={14} /> },
                 { label: 'Tổ chức (Tenants)' },

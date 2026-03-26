@@ -4,7 +4,7 @@ import { useState, useCallback } from 'react'
 import { motion } from 'framer-motion'
 import {
     VCT_Text, VCT_Card, VCT_Badge, VCT_Button,
-} from 'app/features/components/vct-ui'
+} from '@vct/ui'
 import { useChannel, useRealtimeStatus } from 'app/features/data/repository/realtime-client'
 import { calculateFormsScore, type FormsScoreResult } from 'app/features/data/scoring-engine'
 
@@ -109,7 +109,7 @@ export function Page_FormsScoringPad() {
             <div className="px-4 py-3" style={{ background: 'linear-gradient(135deg, #7c3aed, #a855f7)' }}>
                 <div className="flex items-center justify-between">
                     <div>
-                        <VCT_Text variant="h3" style={{ color: '#fff', margin: 0 }}>Chấm điểm Quyền</VCT_Text>
+                        <VCT_Text variant="h3" style={{ color: 'var(--vct-bg-elevated)', margin: 0 }}>Chấm điểm Quyền</VCT_Text>
                         <VCT_Text variant="small" style={{ color: 'rgba(255,255,255,0.8)' }}>
                             {performance.judgeCount} trọng tài
                         </VCT_Text>
@@ -262,7 +262,7 @@ export function Page_FormsScoringPad() {
                                                     textDecoration: s === result.trimmedHigh || s === result.trimmedLow
                                                         ? 'line-through' : 'none',
                                                     color: s === result.trimmedHigh || s === result.trimmedLow
-                                                        ? '#ef4444' : 'var(--vct-text-primary)',
+                                                        ? 'var(--vct-danger)' : 'var(--vct-text-primary)',
                                                     fontWeight: 700,
                                                     fontFamily: 'monospace',
                                                 }}
@@ -277,7 +277,7 @@ export function Page_FormsScoringPad() {
                                         <VCT_Text variant="small" style={{ color: 'var(--vct-text-tertiary)' }}>
                                             Điểm trung bình (sau loại cao/thấp)
                                         </VCT_Text>
-                                        <div style={{ fontSize: '2.5rem', fontWeight: 800, color: '#22c55e' }}>
+                                        <div style={{ fontSize: '2.5rem', fontWeight: 800, color: 'var(--vct-success)' }}>
                                             {result.finalScore.toFixed(2)}
                                         </div>
                                     </div>

@@ -62,7 +62,6 @@ func TestBreaker_ClosesOnSuccessInHalfOpen(t *testing.T) {
 
 	time.Sleep(150 * time.Millisecond)
 
-
 	// Should succeed in half-open and close circuit
 	cb.Execute(func() error { return nil })
 

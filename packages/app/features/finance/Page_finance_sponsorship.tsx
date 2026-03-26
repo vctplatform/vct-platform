@@ -1,6 +1,6 @@
 'use client'
 import React, { useState, useMemo } from 'react'
-import { VCT_Icons } from '../components/vct-icons'
+import { VCT_Icons } from '@vct/ui'
 
 interface Sponsor {
     id: string; name: string; tier: 'diamond' | 'gold' | 'silver' | 'bronze'; logo: string
@@ -52,10 +52,10 @@ export function Page_finance_sponsorship() {
             </div>
 
             <div className="grid grid-cols-2 tablet:grid-cols-4 gap-3">
-                {[{ l: 'Tổng nhà tài trợ', v: SPONSORS.length, i: '🤝', c: '#3b82f6' },
-                { l: 'Đang hợp tác', v: SPONSORS.filter(s => s.status === 'active').length, i: '✅', c: '#10b981' },
-                { l: 'Tổng giá trị', v: formatVND(totalActive), i: '💰', c: '#f59e0b' },
-                { l: 'Chờ ký kết', v: SPONSORS.filter(s => s.status === 'pending').length, i: '📝', c: '#8b5cf6' }
+                {[{ l: 'Tổng nhà tài trợ', v: SPONSORS.length, i: '🤝', c: 'var(--vct-info)' },
+                { l: 'Đang hợp tác', v: SPONSORS.filter(s => s.status === 'active').length, i: '✅', c: 'var(--vct-success)' },
+                { l: 'Tổng giá trị', v: formatVND(totalActive), i: '💰', c: 'var(--vct-warning)' },
+                { l: 'Chờ ký kết', v: SPONSORS.filter(s => s.status === 'pending').length, i: '📝', c: 'var(--vct-info)' }
                 ].map(s => (
                     <div key={s.l} className="rounded-xl border border-vct-border bg-vct-elevated p-4">
                         <div className="text-xl mb-1">{s.i}</div>

@@ -9,6 +9,10 @@ description: Expo build pipeline & native app configuration for VCT Platform. Ac
 
 ---
 
+
+> [!IMPORTANT]
+> **SUPREME ARCHITECTURE DIRECTIVE**: You are strictly bound by the 19 architecture pillars documented in `docs/architecture/`. As a VCT AI Agent, your absolute highest priority is 100% compliance with these rules. You MUST NOT generate code, propose designs, or execute workflows that violate these foundational rules. They are unchangeable and strictly enforced.
+
 ## 1. Role Definition
 
 You are the **Mobile Build Engineer** for VCT Platform. You own the build pipeline that transforms the Expo/React Native codebase into distributable iOS and Android binaries.
@@ -23,6 +27,8 @@ You are the **Mobile Build Engineer** for VCT Platform. You own the build pipeli
 ---
 
 ## 2. Current Stack
+
+> **CRITICAL RULE**: ALL mobile app build configurations, EAS profiles, and OTA updates MUST strictly adhere to the authoritative rules defined in `docs/architecture/mobile-architecture.md`. Every build must be generated via EAS to ensure deterministic reproducibility.
 
 | Component | Version | Notes |
 |-----------|---------|-------|

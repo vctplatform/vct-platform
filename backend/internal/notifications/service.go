@@ -17,32 +17,32 @@ import (
 type NotificationType string
 
 const (
-	NotifMatchResult  NotificationType = "match_result"
-	NotifSchedule     NotificationType = "schedule"
-	NotifRankChange   NotificationType = "rank_change"
-	NotifBTCAlert     NotificationType = "btc_alert"
-	NotifConsent      NotificationType = "consent"
-	NotifGeneral      NotificationType = "general"
+	NotifMatchResult NotificationType = "match_result"
+	NotifSchedule    NotificationType = "schedule"
+	NotifRankChange  NotificationType = "rank_change"
+	NotifBTCAlert    NotificationType = "btc_alert"
+	NotifConsent     NotificationType = "consent"
+	NotifGeneral     NotificationType = "general"
 )
 
 // Notification is a single notification entry.
 type Notification struct {
-	ID        string           `json:"id"`
-	UserID    string           `json:"user_id"`
-	Type      NotificationType `json:"type"`
-	Title     string           `json:"title"`
-	Body      string           `json:"body"`
+	ID        string            `json:"id"`
+	UserID    string            `json:"user_id"`
+	Type      NotificationType  `json:"type"`
+	Title     string            `json:"title"`
+	Body      string            `json:"body"`
 	Data      map[string]string `json:"data,omitempty"`
-	Read      bool             `json:"read"`
-	CreatedAt time.Time        `json:"created_at"`
+	Read      bool              `json:"read"`
+	CreatedAt time.Time         `json:"created_at"`
 }
 
 // UserPreferences controls which notification types a user receives.
 type UserPreferences struct {
-	UserID       string                      `json:"user_id"`
-	Preferences  map[NotificationType]bool    `json:"preferences"`
-	PushEnabled  bool                        `json:"push_enabled"`
-	FCMToken     string                      `json:"fcm_token,omitempty"`
+	UserID      string                    `json:"user_id"`
+	Preferences map[NotificationType]bool `json:"preferences"`
+	PushEnabled bool                      `json:"push_enabled"`
+	FCMToken    string                    `json:"fcm_token,omitempty"`
 }
 
 // Store persists notifications.
@@ -63,10 +63,10 @@ type PushSender interface {
 
 // Service handles notification delivery.
 type Service struct {
-	store  Store
-	push   PushSender
-	idGen  func() string
-	mu     sync.RWMutex
+	store Store
+	push  PushSender
+	idGen func() string
+	mu    sync.RWMutex
 }
 
 // NewService creates a new notification service.

@@ -1,9 +1,9 @@
 'use client'
 
 import * as React from 'react'
-import { VCT_PageContainer, VCT_StatRow } from '../components/vct-ui'
-import type { StatItem } from '../components/VCT_StatRow'
-import { VCT_Icons } from '../components/vct-icons'
+import { VCT_PageContainer, VCT_StatRow } from '@vct/ui'
+import type { StatItem } from '@vct/ui'
+import { VCT_Icons } from '@vct/ui'
 
 // ════════════════════════════════════════════════════════════════
 // PROVINCIAL — REPORTS (Báo cáo tổng hợp cấp tỉnh)
@@ -23,9 +23,9 @@ const TYPE_MAP: Record<string, string> = {
 }
 
 const STATUS_MAP: Record<string, { label: string; color: string }> = {
-    DRAFT: { label: 'Nháp', color: '#6b7280' },
-    SUBMITTED: { label: 'Đã gửi', color: '#0ea5e9' },
-    APPROVED: { label: 'Đã duyệt', color: '#10b981' },
+    DRAFT: { label: 'Nháp', color: 'var(--vct-text-tertiary)' },
+    SUBMITTED: { label: 'Đã gửi', color: 'var(--vct-accent-cyan)' },
+    APPROVED: { label: 'Đã duyệt', color: 'var(--vct-success)' },
 }
 
 export const Page_province_reports = () => {
@@ -37,10 +37,10 @@ export const Page_province_reports = () => {
             </div>
 
             <VCT_StatRow items={[
-                { label: 'Tổng báo cáo', value: MOCK_REPORTS.length, icon: <VCT_Icons.FileText size={18} />, color: '#10b981' },
-                { label: 'Đã duyệt', value: MOCK_REPORTS.filter(r => r.status === 'APPROVED').length, icon: <VCT_Icons.CheckCircle size={18} />, color: '#10b981' },
-                { label: 'Chờ duyệt', value: MOCK_REPORTS.filter(r => r.status === 'SUBMITTED').length, icon: <VCT_Icons.Clock size={18} />, color: '#0ea5e9' },
-                { label: 'Nháp', value: MOCK_REPORTS.filter(r => r.status === 'DRAFT').length, icon: <VCT_Icons.Edit size={18} />, color: '#6b7280' },
+                { label: 'Tổng báo cáo', value: MOCK_REPORTS.length, icon: <VCT_Icons.FileText size={18} />, color: 'var(--vct-success)' },
+                { label: 'Đã duyệt', value: MOCK_REPORTS.filter(r => r.status === 'APPROVED').length, icon: <VCT_Icons.CheckCircle size={18} />, color: 'var(--vct-success)' },
+                { label: 'Chờ duyệt', value: MOCK_REPORTS.filter(r => r.status === 'SUBMITTED').length, icon: <VCT_Icons.Clock size={18} />, color: 'var(--vct-accent-cyan)' },
+                { label: 'Nháp', value: MOCK_REPORTS.filter(r => r.status === 'DRAFT').length, icon: <VCT_Icons.Edit size={18} />, color: 'var(--vct-text-tertiary)' },
             ] as StatItem[]} className="mb-6" />
 
             {/* Report List */}
@@ -92,7 +92,7 @@ export const Page_province_reports = () => {
                             {rpt.issues && (
                                 <div className="text-sm">
                                     <span className="text-(--vct-text-secondary)">Vướng mắc: </span>
-                                    <span className="text-[#f59e0b]">{rpt.issues}</span>
+                                    <span className="text-(--vct-warning)">{rpt.issues}</span>
                                 </div>
                             )}
                         </div>

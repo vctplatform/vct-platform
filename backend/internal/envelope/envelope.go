@@ -14,11 +14,11 @@ import (
 
 // Response is the standard API response envelope.
 type Response struct {
-	Success   bool        `json:"success"`
-	Data      any         `json:"data,omitempty"`
-	Error     *ErrorInfo  `json:"error,omitempty"`
-	Meta      *Meta       `json:"meta,omitempty"`
-	Timestamp string      `json:"timestamp"`
+	Success   bool       `json:"success"`
+	Data      any        `json:"data,omitempty"`
+	Error     *ErrorInfo `json:"error,omitempty"`
+	Meta      *Meta      `json:"meta,omitempty"`
+	Timestamp string     `json:"timestamp"`
 }
 
 // ErrorInfo holds error details.

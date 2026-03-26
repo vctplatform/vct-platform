@@ -20,16 +20,16 @@ import (
 
 // Key represents an API key with metadata and scoped permissions.
 type Key struct {
-	ID          string    `json:"id"`
-	Name        string    `json:"name"`
-	Prefix      string    `json:"prefix"`       // Visible prefix (e.g., "vct_")
-	Hash        string    `json:"-"`             // SHA-256 hash of the full key (never stored raw)
-	Scopes      []string  `json:"scopes"`        // e.g., ["athletes:read", "matches:read"]
-	OwnerID     string    `json:"owner_id"`      // User or service that owns this key
-	ExpiresAt   time.Time `json:"expires_at,omitempty"`
-	CreatedAt   time.Time `json:"created_at"`
-	LastUsedAt  time.Time `json:"last_used_at,omitempty"`
-	Active      bool      `json:"active"`
+	ID         string    `json:"id"`
+	Name       string    `json:"name"`
+	Prefix     string    `json:"prefix"`   // Visible prefix (e.g., "vct_")
+	Hash       string    `json:"-"`        // SHA-256 hash of the full key (never stored raw)
+	Scopes     []string  `json:"scopes"`   // e.g., ["athletes:read", "matches:read"]
+	OwnerID    string    `json:"owner_id"` // User or service that owns this key
+	ExpiresAt  time.Time `json:"expires_at,omitempty"`
+	CreatedAt  time.Time `json:"created_at"`
+	LastUsedAt time.Time `json:"last_used_at,omitempty"`
+	Active     bool      `json:"active"`
 }
 
 // IsExpired checks if the key has expired.

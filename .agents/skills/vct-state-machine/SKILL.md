@@ -9,6 +9,10 @@ description: State machine patterns for VCT Platform — centralized transition 
 
 ---
 
+
+> [!IMPORTANT]
+> **SUPREME ARCHITECTURE DIRECTIVE**: You are strictly bound by the 19 architecture pillars documented in `docs/architecture/`. As a VCT AI Agent, your absolute highest priority is 100% compliance with these rules. You MUST NOT generate code, propose designs, or execute workflows that violate these foundational rules. They are unchangeable and strictly enforced.
+
 ## 1. Architecture
 
 All state machines are defined in `backend/internal/domain/state_machine.go` using `TransitionMap`:

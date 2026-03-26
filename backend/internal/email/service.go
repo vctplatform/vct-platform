@@ -40,22 +40,22 @@ type NotifProvider interface {
 type NotificationType string
 
 const (
-	NotifWelcome              NotificationType = "welcome"
-	NotifPasswordReset        NotificationType = "password_reset"
-	NotifTournamentInvite     NotificationType = "tournament_invite"
-	NotifRegistrationConfirm  NotificationType = "registration_confirm"
-	NotifMatchSchedule        NotificationType = "match_schedule"
-	NotifResultPublished      NotificationType = "result_published"
-	NotifBeltPromotion        NotificationType = "belt_promotion"
+	NotifWelcome             NotificationType = "welcome"
+	NotifPasswordReset       NotificationType = "password_reset"
+	NotifTournamentInvite    NotificationType = "tournament_invite"
+	NotifRegistrationConfirm NotificationType = "registration_confirm"
+	NotifMatchSchedule       NotificationType = "match_schedule"
+	NotifResultPublished     NotificationType = "result_published"
+	NotifBeltPromotion       NotificationType = "belt_promotion"
 )
 
 // Notification is a high-level email request.
 type Notification struct {
-	Type      NotificationType       `json:"type"`
-	To        []string               `json:"to"`
-	Locale    string                 `json:"locale"` // vi, en
-	Data      map[string]interface{} `json:"data"`
-	Priority  int                    `json:"priority"` // 0=normal, 1=high
+	Type     NotificationType       `json:"type"`
+	To       []string               `json:"to"`
+	Locale   string                 `json:"locale"` // vi, en
+	Data     map[string]interface{} `json:"data"`
+	Priority int                    `json:"priority"` // 0=normal, 1=high
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -137,12 +137,12 @@ func DefaultNotifConfig() NotifConfig {
 
 // SentRecord tracks a sent email.
 type SentRecord struct {
-	Type      NotificationType `json:"type"`
-	To        []string         `json:"to"`
-	Subject   string           `json:"subject"`
-	Status    string           `json:"status"`
-	Error     string           `json:"error,omitempty"`
-	SentAt    time.Time        `json:"sent_at"`
+	Type    NotificationType `json:"type"`
+	To      []string         `json:"to"`
+	Subject string           `json:"subject"`
+	Status  string           `json:"status"`
+	Error   string           `json:"error,omitempty"`
+	SentAt  time.Time        `json:"sent_at"`
 }
 
 // NotificationService manages templated email notifications.

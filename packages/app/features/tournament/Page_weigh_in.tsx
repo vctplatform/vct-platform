@@ -7,25 +7,25 @@ import {
     VCT_SearchInput, VCT_Modal, VCT_Input, VCT_Field,
     VCT_StatusPipeline, VCT_FilterChips, VCT_ProgressBar, VCT_EmptyState,
     VCT_AvatarLetter, VCT_SegmentedControl
-} from '../components/vct-ui';
-import { VCT_PageContainer, VCT_StatRow } from '../components/vct-ui';
-import type { StatItem } from '../components/VCT_StatRow';
-import { VCT_Icons } from '../components/vct-icons';
+} from '@vct/ui';
+import { VCT_PageContainer, VCT_StatRow } from '@vct/ui';
+import type { StatItem } from '@vct/ui';
+import { VCT_Icons } from '@vct/ui';
 import type { CanKy, KetQuaCan } from '../data/types';
 import { repositories, useEntityCollection } from '../data/repository';
 import { useToast } from '../hooks/use-toast';
-import { VCT_Card } from '../components/vct-ui';
+import { VCT_Card } from '@vct/ui';
 
 const KQ_MAP: Record<KetQuaCan, { label: string; color: string; type: string; borderClass: string; bgClass: string }> = {
-    dat: { label: '✓ Đạt', color: '#10b981', type: 'success', borderClass: 'border-emerald-500', bgClass: 'bg-emerald-500/5' },
-    khong_dat: { label: '✗ Không đạt', color: '#ef4444', type: 'danger', borderClass: 'border-red-500', bgClass: 'bg-red-500/5' },
-    cho_can: { label: '⏳ Chờ cân', color: '#f59e0b', type: 'warning', borderClass: 'border-amber-500', bgClass: 'bg-amber-500/5' },
+    dat: { label: '✓ Đạt', color: 'var(--vct-success)', type: 'success', borderClass: 'border-emerald-500', bgClass: 'bg-emerald-500/5' },
+    khong_dat: { label: '✗ Không đạt', color: 'var(--vct-danger)', type: 'danger', borderClass: 'border-red-500', bgClass: 'bg-red-500/5' },
+    cho_can: { label: '⏳ Chờ cân', color: 'var(--vct-warning)', type: 'warning', borderClass: 'border-amber-500', bgClass: 'bg-amber-500/5' },
 };
 
 const PIPELINE = [
-    { key: 'dat', label: '✓ Đạt', color: '#10b981' },
-    { key: 'khong_dat', label: '✗ Không đạt', color: '#ef4444' },
-    { key: 'cho_can', label: '⏳ Chờ cân', color: '#f59e0b' },
+    { key: 'dat', label: '✓ Đạt', color: 'var(--vct-success)' },
+    { key: 'khong_dat', label: '✗ Không đạt', color: 'var(--vct-danger)' },
+    { key: 'cho_can', label: '⏳ Chờ cân', color: 'var(--vct-warning)' },
 ];
 
 export const Page_weigh_in = () => {
@@ -101,11 +101,11 @@ export const Page_weigh_in = () => {
             {/* KPI Row */}
             {!isKioskMode && (
                 <VCT_StatRow items={[
-                    { label: 'Tổng VĐV cần cân', value: records.length, icon: <VCT_Icons.Activity size={18} />, color: '#0ea5e9' },
-                    { label: 'Đã cân', value: daCan, icon: <VCT_Icons.Check size={18} />, color: '#10b981', sub: `${Math.round((daCan / Math.max(1, records.length)) * 100)}% hoàn thành` },
-                    { label: 'Đạt cân', value: records.filter(r => r.ket_qua === 'dat').length, icon: <VCT_Icons.Check size={18} />, color: '#22d3ee' },
-                    { label: 'Lố cân', value: records.filter(r => r.ket_qua === 'khong_dat').length, icon: <VCT_Icons.Alert size={18} />, color: '#ef4444', sub: 'Cần xử lý' },
-                    { label: 'Chờ cân', value: records.filter(r => r.ket_qua === 'cho_can').length, icon: <VCT_Icons.Clock size={18} />, color: '#f59e0b' },
+                    { label: 'Tổng VĐV cần cân', value: records.length, icon: <VCT_Icons.Activity size={18} />, color: 'var(--vct-accent-cyan)' },
+                    { label: 'Đã cân', value: daCan, icon: <VCT_Icons.Check size={18} />, color: 'var(--vct-success)', sub: `${Math.round((daCan / Math.max(1, records.length)) * 100)}% hoàn thành` },
+                    { label: 'Đạt cân', value: records.filter(r => r.ket_qua === 'dat').length, icon: <VCT_Icons.Check size={18} />, color: 'var(--vct-accent-cyan)' },
+                    { label: 'Lố cân', value: records.filter(r => r.ket_qua === 'khong_dat').length, icon: <VCT_Icons.Alert size={18} />, color: 'var(--vct-danger)', sub: 'Cần xử lý' },
+                    { label: 'Chờ cân', value: records.filter(r => r.ket_qua === 'cho_can').length, icon: <VCT_Icons.Clock size={18} />, color: 'var(--vct-warning)' },
                 ] as StatItem[]} className="mb-6" />
             )}
 
@@ -131,11 +131,11 @@ export const Page_weigh_in = () => {
                         return (
                             <>
                                 <svg width={140} height={140} viewBox="0 0 140 140">
-                                    <circle cx={cx} cy={cy} r={r} fill="none" stroke="#f59e0b" strokeWidth={sw} opacity={0.15} />
-                                    <circle cx={cx} cy={cy} r={r} fill="none" stroke="#10b981" strokeWidth={sw}
+                                    <circle cx={cx} cy={cy} r={r} fill="none" stroke="var(--vct-warning)" strokeWidth={sw} opacity={0.15} />
+                                    <circle cx={cx} cy={cy} r={r} fill="none" stroke="var(--vct-success)" strokeWidth={sw}
                                         strokeDasharray={`${circ * pDat} ${circ}`} strokeDashoffset={0}
                                         transform={`rotate(-90 ${cx} ${cy})`} strokeLinecap="round" />
-                                    {fail > 0 && <circle cx={cx} cy={cy} r={r} fill="none" stroke="#ef4444" strokeWidth={sw}
+                                    {fail > 0 && <circle cx={cx} cy={cy} r={r} fill="none" stroke="var(--vct-danger)" strokeWidth={sw}
                                         strokeDasharray={`${circ * pFail} ${circ}`} strokeDashoffset={-circ * pDat}
                                         transform={`rotate(-90 ${cx} ${cy})`} strokeLinecap="round" />}
                                     <text x={cx} y={cy - 6} textAnchor="middle" fill="var(--vct-text-primary)" className="text-[22px] font-black">{Math.round((dat / total) * 100)}%</text>

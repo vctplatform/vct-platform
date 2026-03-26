@@ -20,8 +20,8 @@ type PageRequest struct {
 	Page    int    `json:"page"`
 	PerPage int    `json:"per_page"`
 	Cursor  string `json:"cursor,omitempty"`
-	Sort    string `json:"sort,omitempty"`    // e.g. "name,-created_at"
-	Filter  string `json:"filter,omitempty"`  // raw filter string
+	Sort    string `json:"sort,omitempty"`   // e.g. "name,-created_at"
+	Filter  string `json:"filter,omitempty"` // raw filter string
 }
 
 const (
@@ -72,7 +72,7 @@ func (p PageRequest) Limit() int {
 
 // PageResponse wraps paginated data with metadata.
 type PageResponse[T any] struct {
-	Data       []T        `json:"data"`
+	Data       []T            `json:"data"`
 	Pagination PaginationMeta `json:"pagination"`
 }
 

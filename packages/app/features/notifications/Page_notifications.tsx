@@ -1,7 +1,7 @@
 'use client'
 import React, { useState, useMemo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { VCT_Icons } from '../components/vct-icons'
+import { VCT_Icons } from '@vct/ui'
 
 interface Notification {
     id: string; type: 'info' | 'warning' | 'success' | 'danger'; title: string; message: string
@@ -20,10 +20,10 @@ const NOTIFICATIONS: Notification[] = [
 ]
 
 const TYPE_STYLES: Record<string, { icon: string; color: string; bg: string }> = {
-    info: { icon: 'ℹ️', color: '#3b82f6', bg: 'bg-blue-500/10' },
-    warning: { icon: '⚠️', color: '#f59e0b', bg: 'bg-amber-500/10' },
-    success: { icon: '✅', color: '#10b981', bg: 'bg-emerald-500/10' },
-    danger: { icon: '🚨', color: '#ef4444', bg: 'bg-red-500/10' },
+    info: { icon: 'ℹ️', color: 'var(--vct-info)', bg: 'bg-blue-500/10' },
+    warning: { icon: '⚠️', color: 'var(--vct-warning)', bg: 'bg-amber-500/10' },
+    success: { icon: '✅', color: 'var(--vct-success)', bg: 'bg-emerald-500/10' },
+    danger: { icon: '🚨', color: 'var(--vct-danger)', bg: 'bg-red-500/10' },
 }
 
 const CATEGORIES: Record<string, string> = { tournament: 'Giải đấu', registration: 'Đăng ký', finance: 'Tài chính', system: 'Hệ thống', community: 'Cộng đồng' }

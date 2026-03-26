@@ -4,9 +4,9 @@ import { useState, useMemo, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import {
     VCT_PageContainer, VCT_Text, VCT_Stack, VCT_Badge, VCT_StatRow, VCT_Card, VCT_Button, VCT_Toast,
-} from '../../components/vct-ui';
-import type { StatItem } from '../../components/VCT_StatRow';
-import { VCT_Icons } from '../../components/vct-icons';
+} from '@vct/ui';
+import type { StatItem } from '@vct/ui';
+import { VCT_Icons } from '@vct/ui';
 import {
     SCHEMA_OPTIONS, getBracketSchemaInfo,
     generateMockSlots, generateMockMatches,
@@ -99,7 +99,7 @@ const BracketTemplateCard = ({
                     </VCT_Stack>
                     <div style={{
                         background: info.color,
-                        color: '#fff',
+                        color: 'var(--vct-bg-elevated)',
                         padding: '4px 12px',
                         borderRadius: 20,
                         fontSize: 13,
@@ -193,7 +193,7 @@ const BracketTemplateCard = ({
                     background: info.color, display: 'flex',
                     alignItems: 'center', justifyContent: 'center',
                 }}>
-                    <span style={{ color: '#fff', fontWeight: 900, fontSize: 14 }}>✓</span>
+                    <span style={{ color: 'var(--vct-bg-elevated)', fontWeight: 900, fontSize: 14 }}>✓</span>
                 </div>
             )}
         </motion.div>
@@ -287,7 +287,7 @@ const ExpandedPreview = ({
                 >
                     <div style={{
                         position: 'absolute', top: 10, right: 10, zIndex: 10,
-                        background: 'rgba(0,0,0,0.5)', color: '#fff', padding: '5px 10px',
+                        background: 'rgba(0,0,0,0.5)', color: 'var(--vct-bg-elevated)', padding: '5px 10px',
                         borderRadius: 8, fontSize: 10, fontWeight: 600, pointerEvents: 'none', opacity: 0.7,
                     }}>
                         🖱 Scroll = Zoom | Kéo = Di chuyển
@@ -359,10 +359,10 @@ export const Page_bracket_templates = () => {
 
             {/* KPI Stats */}
             <VCT_StatRow items={[
-                { label: 'Templates', value: totalSchemas, icon: <VCT_Icons.LayoutGrid size={18} />, color: '#8b5cf6' },
-                { label: 'Min VĐV', value: 2, icon: <VCT_Icons.Users size={18} />, color: '#ef4444' },
-                { label: 'Max VĐV', value: 128, icon: <VCT_Icons.Users size={18} />, color: '#3b82f6' },
-                { label: 'Max vòng', value: maxRounds, icon: <VCT_Icons.GitMerge size={18} />, color: '#10b981' },
+                { label: 'Templates', value: totalSchemas, icon: <VCT_Icons.LayoutGrid size={18} />, color: 'var(--vct-info)' },
+                { label: 'Min VĐV', value: 2, icon: <VCT_Icons.Users size={18} />, color: 'var(--vct-danger)' },
+                { label: 'Max VĐV', value: 128, icon: <VCT_Icons.Users size={18} />, color: 'var(--vct-info)' },
+                { label: 'Max vòng', value: maxRounds, icon: <VCT_Icons.GitMerge size={18} />, color: 'var(--vct-success)' },
             ] as StatItem[]} className="mb-6" />
 
             {/* Template Grid */}

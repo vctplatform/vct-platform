@@ -1,7 +1,7 @@
 'use client'
 import React from 'react'
-import { VCT_Icons } from '../components/vct-icons'
-import { VCT_PageContainer, VCT_SectionCard, VCT_EmptyState, VCT_StatRow } from '../components/vct-ui'
+import { VCT_Icons } from '@vct/ui'
+import { VCT_PageContainer, VCT_SectionCard, VCT_EmptyState, VCT_StatRow } from '@vct/ui'
 import { useApiQuery } from '../hooks/useApiQuery'
 import { AthleteProfile } from '@vct/shared-types'
 
@@ -48,7 +48,7 @@ export function Page_athlete_rankings() {
             <div className="mb-8">
                 <div className="flex items-center gap-3 mb-2">
                     <div className="flex items-center justify-center w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-500/20 to-purple-500/20 border border-vct-border">
-                        <VCT_Icons.BarChart2 size={24} className="text-[#3b82f6]" />
+                        <VCT_Icons.BarChart2 size={24} className="text-(--vct-info)" />
                     </div>
                     <div>
                         <h1 className="text-2xl font-black text-vct-text m-0">BXH & Thành tích</h1>
@@ -59,8 +59,8 @@ export function Page_athlete_rankings() {
 
             {/* ══ QUICK STATS ══ */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
-                <div className="p-6 rounded-2xl bg-gradient-to-br from-[#3b82f6]/10 to-[#2563eb]/10 border border-[#3b82f6]/20 text-center group hover:scale-[1.02] transition-transform">
-                    <VCT_Icons.TrendingUp size={28} className="text-[#3b82f6] mx-auto mb-3 group-hover:scale-110 transition-transform" />
+                <div className="p-6 rounded-2xl bg-gradient-to-br from-(--vct-info)/10 to-(--vct-info)/10 border border-(--vct-info)/20 text-center group hover:scale-[1.02] transition-transform">
+                    <VCT_Icons.TrendingUp size={28} className="text-(--vct-info) mx-auto mb-3 group-hover:scale-110 transition-transform" />
                     <div className="text-3xl font-black text-vct-text">{profile.elo_rating || '—'}</div>
                     <div className="text-xs font-medium text-vct-text-muted mt-1 uppercase tracking-wider">Điểm ELO</div>
                 </div>
@@ -81,21 +81,21 @@ export function Page_athlete_rankings() {
                 <VCT_SectionCard
                     title="Mục tiêu cá nhân"
                     icon={<VCT_Icons.Target size={20} />}
-                    accentColor="#8b5cf6"
+                    accentColor="var(--vct-info)"
                     className="border border-vct-border mb-8"
                 >
                     <div className="space-y-4">
                         {profile.goals.map((g, idx) => (
                             <div key={idx} className="p-4 rounded-xl bg-vct-bg border border-vct-border group hover:border-vct-border-strong transition-colors">
                                 <div className="flex items-center justify-between mb-2">
-                                    <span className="text-sm font-bold text-vct-text group-hover:text-[#8b5cf6] transition-colors">{g.title}</span>
+                                    <span className="text-sm font-bold text-vct-text group-hover:text-(--vct-info) transition-colors">{g.title}</span>
                                     <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${g.progress >= 100 ? 'bg-emerald-500/10 text-emerald-500' : g.progress >= 50 ? 'bg-blue-500/10 text-blue-500' : 'bg-amber-500/10 text-amber-500'}`}>
                                         {g.progress}%
                                     </span>
                                 </div>
                                 <div className="h-2 bg-vct-border rounded-full overflow-hidden">
                                     <div className="h-full rounded-full transition-all duration-1000"
-                                        style={{ width: `${Math.min(g.progress, 100)}%`, background: g.progress >= 100 ? '#22c55e' : g.progress >= 50 ? '#3b82f6' : '#f59e0b' }} />
+                                        style={{ width: `${Math.min(g.progress, 100)}%`, background: g.progress >= 100 ? 'var(--vct-success)' : g.progress >= 50 ? 'var(--vct-info)' : 'var(--vct-warning)' }} />
                                 </div>
                                 {g.type && <div className="text-[10px] text-vct-text-muted mt-1.5 uppercase tracking-wider">{g.type}</div>}
                             </div>
@@ -109,7 +109,7 @@ export function Page_athlete_rankings() {
                 <VCT_SectionCard
                     title="Chỉ số kỹ năng"
                     icon={<VCT_Icons.Activity size={20} />}
-                    accentColor="#3b82f6"
+                    accentColor="var(--vct-info)"
                     className="border border-vct-border mb-8"
                 >
                     <div className="space-y-3">
@@ -130,7 +130,7 @@ export function Page_athlete_rankings() {
             <VCT_SectionCard
                 title="Lịch sử xếp hạng"
                 icon={<VCT_Icons.BarChart2 size={20} />}
-                accentColor="#3b82f6"
+                accentColor="var(--vct-info)"
                 className="border border-vct-border"
             >
                 <div className="py-8">

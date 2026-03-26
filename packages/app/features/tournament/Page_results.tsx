@@ -6,10 +6,10 @@ import {
     VCT_Badge, VCT_Button, VCT_Stack, VCT_Toast,
     VCT_SearchInput, VCT_EmptyState, VCT_AvatarLetter, VCT_SegmentedControl,
     VCT_Modal, VCT_Select, VCT_Input, VCT_Field
-} from '../components/vct-ui';
-import { VCT_PageContainer, VCT_PageHero, VCT_SectionCard, VCT_StatRow } from '../components/vct-ui';
-import type { StatItem } from '../components/VCT_StatRow';
-import { VCT_Icons } from '../components/vct-icons';
+} from '@vct/ui';
+import { VCT_PageContainer, VCT_PageHero, VCT_SectionCard, VCT_StatRow } from '@vct/ui';
+import type { StatItem } from '@vct/ui';
+import { VCT_Icons } from '@vct/ui';
 import { TRAN_DAUS, LUOT_THI_QUYENS, genId } from '../data/mock-data';
 import type { VongDau } from '../data/types';
 import { repositories, useEntityCollection, type ResultRecord } from '../data/repository';
@@ -184,10 +184,10 @@ export const Page_results = () => {
     };
 
     const kpis: StatItem[] = [
-        { label: 'Tổng kết quả', value: allResults.length, icon: <VCT_Icons.Award size={18} />, color: '#0ea5e9' },
-        { label: 'Đối kháng', value: allResults.filter(r => r.loai === 'doi_khang').length, icon: <VCT_Icons.Swords size={18} />, color: '#f59e0b' },
-        { label: 'Quyền', value: allResults.filter(r => r.loai === 'quyen').length, icon: <VCT_Icons.Award size={18} />, color: '#22d3ee' },
-        { label: 'Huy chương', value: allResults.filter(r => r.huy_chuong).length, icon: <VCT_Icons.Star size={18} />, color: '#fbbf24' },
+        { label: 'Tổng kết quả', value: allResults.length, icon: <VCT_Icons.Award size={18} />, color: 'var(--vct-accent-cyan)' },
+        { label: 'Đối kháng', value: allResults.filter(r => r.loai === 'doi_khang').length, icon: <VCT_Icons.Swords size={18} />, color: 'var(--vct-warning)' },
+        { label: 'Quyền', value: allResults.filter(r => r.loai === 'quyen').length, icon: <VCT_Icons.Award size={18} />, color: 'var(--vct-accent-cyan)' },
+        { label: 'Huy chương', value: allResults.filter(r => r.huy_chuong).length, icon: <VCT_Icons.Star size={18} />, color: 'var(--vct-warning)' },
     ];
 
     return (
@@ -220,9 +220,9 @@ export const Page_results = () => {
                         <div key={doan} style={{ padding: '8px 14px', borderRadius: 10, background: 'var(--vct-bg-glass)', border: '1px solid var(--vct-border-subtle)', flexShrink: 0, textAlign: 'center' }}>
                             <div style={{ fontWeight: 800, fontSize: 12 }}>{doan}</div>
                             <div style={{ fontSize: 11, marginTop: 2 }}>
-                                {s.hcv > 0 && <span style={{ color: '#fbbf24' }}>🥇{s.hcv} </span>}
-                                {s.hcb > 0 && <span style={{ color: '#94a3b8' }}>🥈{s.hcb} </span>}
-                                {s.hcd > 0 && <span style={{ color: '#d97706' }}>🥉{s.hcd} </span>}
+                                {s.hcv > 0 && <span style={{ color: 'var(--vct-warning)' }}>🥇{s.hcv} </span>}
+                                {s.hcb > 0 && <span style={{ color: 'var(--vct-text-tertiary)' }}>🥈{s.hcb} </span>}
+                                {s.hcd > 0 && <span style={{ color: 'var(--vct-warning)' }}>🥉{s.hcd} </span>}
                             </div>
                         </div>
                     ))}
@@ -230,7 +230,7 @@ export const Page_results = () => {
             )}
 
             {/* Table */}
-            <VCT_SectionCard flush accentColor="#0ea5e9">
+            <VCT_SectionCard flush accentColor="var(--vct-accent-cyan)">
                 <table className="w-full border-collapse">
                     <thead><tr className="border-b border-vct-border bg-vct-elevated">
                         {['Loại', 'Nội dung', 'VĐV', 'Đoàn', 'Kết quả', 'Điểm', 'HC', ''].map((h, i) => (
@@ -240,7 +240,7 @@ export const Page_results = () => {
                     <tbody>
                         {filtered.map((r, idx) => (
                             <motion.tr key={r.id} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: idx * 0.02 }}
-                                style={{ borderBottom: '1px solid var(--vct-border-subtle)', borderLeft: `3px solid ${r.loai === 'quyen' ? '#22d3ee' : '#f59e0b'}`, background: idx % 2 === 0 ? 'transparent' : 'rgba(128,128,128,0.02)', cursor: 'pointer' }}
+                                style={{ borderBottom: '1px solid var(--vct-border-subtle)', borderLeft: `3px solid ${r.loai === 'quyen' ? 'var(--vct-accent-cyan)' : 'var(--vct-warning)'}`, background: idx % 2 === 0 ? 'transparent' : 'rgba(128,128,128,0.02)', cursor: 'pointer' }}
                                 onClick={() => setDetailItem(r)}
                             >
                                 <td style={{ padding: '14px 16px' }}><VCT_Badge text={r.loai === 'quyen' ? '🥋 Quyền' : '🥊 ĐK'} type="info" /></td>
@@ -252,7 +252,7 @@ export const Page_results = () => {
                                     </VCT_Stack>
                                 </td>
                                 <td style={{ padding: '14px 16px', fontSize: 13 }}>{r.doan}</td>
-                                <td style={{ padding: '14px 16px', fontSize: 13, fontWeight: 700, color: '#10b981' }}>{r.ket_qua}</td>
+                                <td style={{ padding: '14px 16px', fontSize: 13, fontWeight: 700, color: 'var(--vct-success)' }}>{r.ket_qua}</td>
                                 <td style={{ padding: '14px 16px', fontSize: 14, fontWeight: 800, fontFamily: 'monospace' }}>{r.diem}</td>
                                 <td style={{ padding: '14px 16px', fontSize: 20 }}>{r.huy_chuong || '—'}</td>
                                 <td style={{ padding: '14px 16px' }}>
@@ -288,11 +288,11 @@ export const Page_results = () => {
                             </div>
                             <div style={{ padding: 12, borderRadius: 10, background: 'var(--vct-bg-input)' }}>
                                 <div style={{ fontSize: 10, fontWeight: 700, opacity: 0.4, textTransform: 'uppercase' }}>Kết quả</div>
-                                <div style={{ fontWeight: 700, fontSize: 14, color: '#10b981' }}>{detailItem.ket_qua}</div>
+                                <div style={{ fontWeight: 700, fontSize: 14, color: 'var(--vct-success)' }}>{detailItem.ket_qua}</div>
                             </div>
                             <div style={{ padding: 12, borderRadius: 10, background: 'var(--vct-bg-input)' }}>
                                 <div style={{ fontSize: 10, fontWeight: 700, opacity: 0.4, textTransform: 'uppercase' }}>Điểm</div>
-                                <div style={{ fontWeight: 900, fontSize: 20, fontFamily: 'monospace', color: '#22d3ee' }}>{detailItem.diem}</div>
+                                <div style={{ fontWeight: 900, fontSize: 20, fontFamily: 'monospace', color: 'var(--vct-accent-cyan)' }}>{detailItem.diem}</div>
                             </div>
                         </div>
                         {detailItem.vong && <VCT_Badge text={`Vòng: ${detailItem.vong}`} type="info" />}

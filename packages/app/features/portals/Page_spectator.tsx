@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { VCT_Text, VCT_Badge } from 'app/features/components/vct-ui'
+import { VCT_Text, VCT_Badge } from '@vct/ui'
 import { useChannelEvents, useRealtimeStatus } from 'app/features/data/repository/realtime-client'
 
 /* ── Demo Data ──────────────────────────────────────────────── */
@@ -61,7 +61,7 @@ export function Page_SpectatorPortal() {
                 className="px-4 py-4 text-center"
                 style={{ borderBottom: '1px solid rgba(255,255,255,0.1)' }}
             >
-                <VCT_Text variant="h1" style={{ color: '#fff', margin: 0 }}>
+                <VCT_Text variant="h1" style={{ color: 'var(--vct-bg-elevated)', margin: 0 }}>
                     🏆 Giải Vovinam Toàn Quốc 2026
                 </VCT_Text>
                 <div className="flex items-center justify-center gap-2 mt-1">
@@ -149,7 +149,7 @@ function LiveScoreboard({ events, status }: { events: unknown[]; status: string 
         <div>
             {liveMatches.length > 0 && (
                 <>
-                    <VCT_Text variant="h2" style={{ color: '#fff', marginBottom: '0.75rem' }}>
+                    <VCT_Text variant="h2" style={{ color: 'var(--vct-bg-elevated)', marginBottom: '0.75rem' }}>
                         🔴 Đang diễn ra
                     </VCT_Text>
                     <div className="grid gap-3 mb-6">
@@ -203,18 +203,18 @@ function MatchScoreCard({ match, live }: { match: typeof DEMO_MATCHES[0]; live: 
             </div>
             <div className="flex items-center justify-between mt-2">
                 <div className="flex-1 text-left">
-                    <div style={{ color: '#ef4444', fontWeight: 700 }}>{match.red}</div>
+                    <div style={{ color: 'var(--vct-danger)', fontWeight: 700 }}>{match.red}</div>
                     <VCT_Text variant="small" style={{ color: 'rgba(255,255,255,0.4)' }}>{match.teamRed}</VCT_Text>
                 </div>
                 <div className="text-center px-4">
-                    <div style={{ fontSize: '2rem', fontWeight: 800, color: '#fff', letterSpacing: '0.1em' }}>
-                        <span style={{ color: '#ef4444' }}>{match.scoreRed}</span>
+                    <div style={{ fontSize: '2rem', fontWeight: 800, color: 'var(--vct-bg-elevated)', letterSpacing: '0.1em' }}>
+                        <span style={{ color: 'var(--vct-danger)' }}>{match.scoreRed}</span>
                         <span style={{ color: 'rgba(255,255,255,0.3)', margin: '0 0.25rem' }}>-</span>
-                        <span style={{ color: '#3b82f6' }}>{match.scoreBlue}</span>
+                        <span style={{ color: 'var(--vct-info)' }}>{match.scoreBlue}</span>
                     </div>
                 </div>
                 <div className="flex-1 text-right">
-                    <div style={{ color: '#3b82f6', fontWeight: 700 }}>{match.blue}</div>
+                    <div style={{ color: 'var(--vct-info)', fontWeight: 700 }}>{match.blue}</div>
                     <VCT_Text variant="small" style={{ color: 'rgba(255,255,255,0.4)' }}>{match.teamBlue}</VCT_Text>
                 </div>
             </div>
@@ -227,7 +227,7 @@ function MatchScoreCard({ match, live }: { match: typeof DEMO_MATCHES[0]; live: 
 function ScheduleView() {
     return (
         <div>
-            <VCT_Text variant="h2" style={{ color: '#fff', marginBottom: '0.75rem' }}>
+            <VCT_Text variant="h2" style={{ color: 'var(--vct-bg-elevated)', marginBottom: '0.75rem' }}>
                 📅 Lịch thi đấu hôm nay
             </VCT_Text>
             <div className="grid gap-2">
@@ -243,7 +243,7 @@ function ScheduleView() {
                             {item.time}
                         </div>
                         <div className="flex-1">
-                            <div style={{ color: '#fff', fontWeight: 600 }}>{item.category}</div>
+                            <div style={{ color: 'var(--vct-bg-elevated)', fontWeight: 600 }}>{item.category}</div>
                             <VCT_Text variant="small" style={{ color: 'rgba(255,255,255,0.4)' }}>
                                 {item.arena} · {item.vong}
                             </VCT_Text>
@@ -260,15 +260,15 @@ function ScheduleView() {
 function MedalTable() {
     return (
         <div>
-            <VCT_Text variant="h2" style={{ color: '#fff', marginBottom: '0.75rem' }}>
+            <VCT_Text variant="h2" style={{ color: 'var(--vct-bg-elevated)', marginBottom: '0.75rem' }}>
                 🏅 Bảng huy chương
             </VCT_Text>
             <div className="rounded-xl overflow-hidden" style={{ border: '1px solid rgba(255,255,255,0.08)' }}>
                 <div className="grid grid-cols-5 gap-2 px-4 py-2" style={{ background: 'rgba(255,255,255,0.06)' }}>
                     <VCT_Text variant="small" style={{ color: 'rgba(255,255,255,0.5)' }}>#</VCT_Text>
                     <VCT_Text variant="small" style={{ color: 'rgba(255,255,255,0.5)' }}>Đoàn</VCT_Text>
-                    <VCT_Text variant="small" style={{ color: '#fbbf24', textAlign: 'center' }}>🥇</VCT_Text>
-                    <VCT_Text variant="small" style={{ color: '#94a3b8', textAlign: 'center' }}>🥈</VCT_Text>
+                    <VCT_Text variant="small" style={{ color: 'var(--vct-warning)', textAlign: 'center' }}>🥇</VCT_Text>
+                    <VCT_Text variant="small" style={{ color: 'var(--vct-text-tertiary)', textAlign: 'center' }}>🥈</VCT_Text>
                     <VCT_Text variant="small" style={{ color: '#cd7f32', textAlign: 'center' }}>🥉</VCT_Text>
                 </div>
                 {DEMO_MEDALS.map((row, i) => (
@@ -283,9 +283,9 @@ function MedalTable() {
                         }}
                     >
                         <div style={{ color: 'rgba(255,255,255,0.5)', fontWeight: 600 }}>{i + 1}</div>
-                        <div style={{ color: '#fff', fontWeight: 600 }}>{row.team}</div>
-                        <div style={{ color: '#fbbf24', fontWeight: 700, textAlign: 'center' }}>{row.gold}</div>
-                        <div style={{ color: '#94a3b8', fontWeight: 700, textAlign: 'center' }}>{row.silver}</div>
+                        <div style={{ color: 'var(--vct-bg-elevated)', fontWeight: 600 }}>{row.team}</div>
+                        <div style={{ color: 'var(--vct-warning)', fontWeight: 700, textAlign: 'center' }}>{row.gold}</div>
+                        <div style={{ color: 'var(--vct-text-tertiary)', fontWeight: 700, textAlign: 'center' }}>{row.silver}</div>
                         <div style={{ color: '#cd7f32', fontWeight: 700, textAlign: 'center' }}>{row.bronze}</div>
                     </motion.div>
                 ))}
@@ -348,7 +348,7 @@ function AthleteSearch() {
 
     return (
         <div>
-            <VCT_Text variant="h2" style={{ color: '#fff', marginBottom: '0.75rem' }}>
+            <VCT_Text variant="h2" style={{ color: 'var(--vct-bg-elevated)', marginBottom: '0.75rem' }}>
                 🔍 Tìm kiếm vận động viên
             </VCT_Text>
             <div className="mb-4 relative">
@@ -361,7 +361,7 @@ function AthleteSearch() {
                     style={{
                         background: 'rgba(255,255,255,0.06)',
                         border: '1px solid rgba(255,255,255,0.12)',
-                        color: '#fff',
+                        color: 'var(--vct-bg-elevated)',
                         outline: 'none',
                     }}
                 />
@@ -385,7 +385,7 @@ function AthleteSearch() {
                                 🥋
                             </div>
                             <div className="flex-1">
-                                <div style={{ color: '#fff', fontWeight: 600 }}>{athlete.ho_ten}</div>
+                                <div style={{ color: 'var(--vct-bg-elevated)', fontWeight: 600 }}>{athlete.ho_ten}</div>
                                 <VCT_Text variant="small" style={{ color: 'rgba(255,255,255,0.4)' }}>
                                     {athlete.club} · {athlete.province}
                                 </VCT_Text>
@@ -411,12 +411,12 @@ function AthleteSearch() {
 
 function TournamentStats() {
     const [stats, setStats] = useState([
-        { label: 'Vận động viên', value: 324, icon: '🥋', color: '#3b82f6' },
-        { label: 'Trận đấu', value: 186, icon: '⚔️', color: '#ef4444' },
-        { label: 'Huy chương', value: 96, icon: '🏅', color: '#fbbf24' },
-        { label: 'Đoàn', value: 42, icon: '🏢', color: '#8b5cf6' },
-        { label: 'Hạng mục', value: 12, icon: '📋', color: '#22c55e' },
-        { label: 'Sân đấu', value: 6, icon: '🏟️', color: '#06b6d4' },
+        { label: 'Vận động viên', value: 324, icon: '🥋', color: 'var(--vct-info)' },
+        { label: 'Trận đấu', value: 186, icon: '⚔️', color: 'var(--vct-danger)' },
+        { label: 'Huy chương', value: 96, icon: '🏅', color: 'var(--vct-warning)' },
+        { label: 'Đoàn', value: 42, icon: '🏢', color: 'var(--vct-info)' },
+        { label: 'Hạng mục', value: 12, icon: '📋', color: 'var(--vct-success)' },
+        { label: 'Sân đấu', value: 6, icon: '🏟️', color: 'var(--vct-accent-cyan)' },
     ])
 
     // Try to fetch real stats from API
@@ -431,12 +431,12 @@ function TournamentStats() {
 
     return (
         <div>
-            <VCT_Text variant="h2" style={{ color: '#fff', marginBottom: '0.75rem' }}>
+            <VCT_Text variant="h2" style={{ color: 'var(--vct-bg-elevated)', marginBottom: '0.75rem' }}>
                 📊 Thống kê giải đấu
             </VCT_Text>
             <div className="rounded-xl p-5 mb-6"
                 style={{ background: 'linear-gradient(135deg, rgba(59,130,246,0.08), rgba(139,92,246,0.08))', border: '1px solid rgba(99,102,241,0.2)' }}>
-                <div style={{ color: '#fff', fontWeight: 700, fontSize: '1.1rem', marginBottom: '0.5rem' }}>
+                <div style={{ color: 'var(--vct-bg-elevated)', fontWeight: 700, fontSize: '1.1rem', marginBottom: '0.5rem' }}>
                     🏆 Giải Vovinam Toàn Quốc 2026
                 </div>
                 <div className="grid grid-cols-2 gap-2">

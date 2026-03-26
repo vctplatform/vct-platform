@@ -59,10 +59,10 @@ func (c *Claims) HasRole(role string) bool {
 
 // Service handles token creation and validation.
 type Service struct {
-	secret         []byte
-	issuer         string
-	accessTTL      time.Duration
-	refreshTTL     time.Duration
+	secret     []byte
+	issuer     string
+	accessTTL  time.Duration
+	refreshTTL time.Duration
 }
 
 // Config for token service.

@@ -1,7 +1,7 @@
 'use client'
 import * as React from 'react'
 import { usePermission } from './usePermission'
-import { VCT_Icons } from '../components/vct-icons'
+import { VCT_Icons } from '@vct/ui'
 
 // ════════════════════════════════════════════════════════════════
 // VCT PLATFORM — Permission-Gated UI Components

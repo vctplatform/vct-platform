@@ -1,8 +1,8 @@
 'use client'
 import React, { useState, useMemo } from 'react'
-import { VCT_Icons } from '../components/vct-icons'
-import { VCT_PageContainer, VCT_EmptyState, VCT_Badge, VCT_StatRow, VCT_SearchInput } from '../components/vct-ui'
-import type { StatItem } from '../components/VCT_StatRow'
+import { VCT_Icons } from '@vct/ui'
+import { VCT_PageContainer, VCT_EmptyState, VCT_Badge, VCT_StatRow, VCT_SearchInput } from '@vct/ui'
+import type { StatItem } from '@vct/ui'
 import { useApiQuery } from '../hooks/useApiQuery'
 import { AthleteProfile, TournamentEntry } from '@vct/shared-types'
 import { useRouter } from 'next/navigation'
@@ -109,10 +109,10 @@ export function Page_athlete_tournaments() {
 
             {/* ── Stats Header ─────────────────────────── */}
             <VCT_StatRow items={[
-                { label: 'Tổng giải', value: stats.total, icon: <VCT_Icons.Trophy size={18} />, color: '#3b82f6' },
-                { label: 'Hồ sơ hợp lệ', value: stats.eligible, icon: <VCT_Icons.CheckCircle size={18} />, color: '#22c55e' },
-                { label: 'Thiếu hồ sơ', value: stats.missing, icon: <VCT_Icons.Info size={18} />, color: '#f59e0b' },
-                { label: 'Bị từ chối', value: stats.rejected, icon: <VCT_Icons.X size={18} />, color: '#ef4444' },
+                { label: 'Tổng giải', value: stats.total, icon: <VCT_Icons.Trophy size={18} />, color: 'var(--vct-info)' },
+                { label: 'Hồ sơ hợp lệ', value: stats.eligible, icon: <VCT_Icons.CheckCircle size={18} />, color: 'var(--vct-success)' },
+                { label: 'Thiếu hồ sơ', value: stats.missing, icon: <VCT_Icons.Info size={18} />, color: 'var(--vct-warning)' },
+                { label: 'Bị từ chối', value: stats.rejected, icon: <VCT_Icons.X size={18} />, color: 'var(--vct-danger)' },
             ] as StatItem[]} className="mb-6" />
 
             {/* ── Toolbar: Tabs + Search + Sort ─────────── */}
@@ -157,7 +157,7 @@ export function Page_athlete_tournaments() {
             {!filtered || filtered.length === 0 ? (
                 <div className="py-12">
                     <VCT_EmptyState
-                        icon={<VCT_Icons.Trophy size={64} className="text-[#3b82f6]/50" />}
+                        icon={<VCT_Icons.Trophy size={64} className="text-(--vct-info)/50" />}
                         title="Chưa có dữ liệu giải đấu"
                         description={search ? `Không tìm thấy giải đấu nào với từ khóa "${search}".` : filter === 'all' ? "Bạn chưa tham gia giải đấu nào trong hệ thống VCT." : "Không tìm thấy giải đấu nào phù hợp với bộ lọc."}
                     />
@@ -176,11 +176,11 @@ export function Page_athlete_tournaments() {
                         const isComplete = okCount === docs.length
 
                         return (
-                            <div key={t.id} className="rounded-3xl border border-vct-border bg-vct-elevated overflow-hidden group hover:border-[#3b82f6]/30 hover:shadow-md transition-all duration-300">
+                            <div key={t.id} className="rounded-3xl border border-vct-border bg-vct-elevated overflow-hidden group hover:border-(--vct-info)/30 hover:shadow-md transition-all duration-300">
                                 <div className="p-6 md:flex md:items-start md:justify-between gap-8">
                                     <div className="flex-1">
                                         <div className="flex flex-col sm:flex-row sm:items-center gap-3 mb-2">
-                                            <h3 className="text-xl font-black text-vct-text group-hover:text-[#3b82f6] transition-colors">{t.tournament_name}</h3>
+                                            <h3 className="text-xl font-black text-vct-text group-hover:text-(--vct-info) transition-colors">{t.tournament_name}</h3>
                                             <div className="self-start sm:self-center">
                                                 <VCT_Badge variant={t.status === 'du_dieu_kien' ? 'success' : t.status === 'thieu_ho_so' ? 'warning' : 'neutral'}>
                                                     {t.status === 'du_dieu_kien' ? 'Hồ sơ Hợp lệ' : t.status === 'thieu_ho_so' ? 'Thiếu Hồ sơ' : t.status}
@@ -203,7 +203,7 @@ export function Page_athlete_tournaments() {
                                             <div className="text-xs font-bold text-vct-text-muted uppercase tracking-wider mb-3">Nội dung đăng ký</div>
                                             <div className="flex flex-wrap gap-2">
                                                 {t.categories?.map((c, i) => (
-                                                    <div key={i} className="px-3 py-1.5 rounded-lg bg-[#3b82f6]/10 border border-[#3b82f6]/20 text-xs font-bold text-[#3b82f6]">
+                                                    <div key={i} className="px-3 py-1.5 rounded-lg bg-(--vct-info)/10 border border-(--vct-info)/20 text-xs font-bold text-(--vct-info)">
                                                         {c}
                                                     </div>
                                                 ))}

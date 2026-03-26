@@ -10,15 +10,16 @@
 //   • No mock data — uses resolveWorkspacesForUser
 // ════════════════════════════════════════════════════════════════
 
-import React, { Suspense, useMemo } from 'react'
+import React, { Suspense, useMemo, useRef, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
-import { VCT_Icons } from '../components/vct-icons'
+import { VCT_Icons } from '@vct/ui'
 import { useAuth } from '../auth/AuthProvider'
 import { useI18n } from '../i18n'
 import { useWorkspaceStore, generateWorkspaceCards } from '../layout/workspace-store'
 import { WORKSPACE_META } from '../layout/workspace-types'
 import type { WorkspaceCard } from '../layout/workspace-types'
+import { VCT_CommandPalette } from '../components/VCT_CommandPalette'
 
 // Sub-components
 import { PortalSearchBar } from './portal/PortalSearchBar'
@@ -86,8 +87,54 @@ function PortalHubContent() {
 
     const portal = usePortalState(workspaces)
 
+    // ── Keyboard Navigation for Grid ──
+    const gridRef = useRef<HTMLDivElement>(null)
+
+    const handleGridKeyDown = useCallback((e: React.KeyboardEvent<HTMLDivElement>) => {
+        if (!['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.key)) return
+
+        // Find all focusable card containers within the grid
+        const cards = Array.from(
+            gridRef.current?.querySelectorAll('[role="button"][tabindex="0"]') || []
+        ) as HTMLElement[]
+        
+        if (cards.length === 0) return
+
+        const currentIndex = cards.findIndex(card => card === document.activeElement)
+        if (currentIndex === -1) return
+
+        e.preventDefault() // Prevent page scroll
+
+        // Calculate columns based on window width to handle responsive grid
+        let cols = 1
+        if (portal.viewMode === 'list') {
+            cols = 1
+        } else {
+            if (window.innerWidth >= 1280) cols = 3       // xl:grid-cols-3
+            else if (window.innerWidth >= 640) cols = 2   // sm:grid-cols-2
+        }
+
+        let nextIndex = currentIndex
+        switch (e.key) {
+            case 'ArrowRight':
+                nextIndex = Math.min(currentIndex + 1, cards.length - 1)
+                break
+            case 'ArrowLeft':
+                nextIndex = Math.max(currentIndex - 1, 0)
+                break
+            case 'ArrowDown':
+                nextIndex = Math.min(currentIndex + cols, cards.length - 1)
+                break
+            case 'ArrowUp':
+                nextIndex = Math.max(currentIndex - cols, 0)
+                break
+        }
+
+        cards[nextIndex]?.focus()
+    }, [portal.viewMode])
+
     // ── Navigate to workspace ──
-    const handleCardClick = React.useCallback(
+    const handleCardClick = useCallback(
         (card: WorkspaceCard) => {
             // Track access
             trackAccess(card.id)
@@ -124,6 +171,13 @@ function PortalHubContent() {
 
     return (
         <div className="relative min-h-screen w-full">
+            {/* Skip to main content link for screen readers */}
+            <a 
+                href="#portal-main-grid" 
+                className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:rounded-md focus:bg-vct-primary focus:px-4 focus:py-2 focus:text-white"
+            >
+                {t('portal.skipToMain') || 'Skip to main content'}
+            </a>
             <PortalBackground />
             <motion.div 
                 initial={{ opacity: 0 }}
@@ -195,6 +249,11 @@ function PortalHubContent() {
                         {/* Smart Unified Grid (All workspace cards) */}
                         {portal.filteredCards.length > 0 ? (
                             <motion.div
+                                id="portal-main-grid"
+                                ref={gridRef}
+                                onKeyDown={handleGridKeyDown}
+                                role="grid"
+                                aria-label={t('portal.workspaceList') || 'Workspace List'}
                                 className={
                                     portal.viewMode === 'list'
                                         ? 'flex flex-col gap-2'
@@ -237,6 +296,9 @@ function PortalHubContent() {
                     </div>
                 </div>
             </motion.div>
+
+            {/* Global Command Palette (Cmd+K) */}
+            <VCT_CommandPalette />
         </div>
     )
 }

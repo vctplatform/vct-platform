@@ -16,8 +16,8 @@
     "include": [
         "src/**/*.ts",
         "src/**/*.tsx",
-        "../app/features/components/**/*.ts",
-        "../app/features/components/**/*.tsx"
+        "./src/components/**/*.ts",
+        "./src/components/**/*.tsx"
     ],
     "exclude": [
         "node_modules",

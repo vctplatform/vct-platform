@@ -28,32 +28,32 @@ const (
 
 // Curriculum is a training program for a specific belt level.
 type Curriculum struct {
-	ID          string          `json:"id"`
-	Level       CurriculumLevel `json:"level"`
-	Title       string          `json:"title"`
-	Description string          `json:"description"`
-	DurationWeeks int           `json:"duration_weeks"`
-	Modules     []CurrModule    `json:"modules"`
-	CreatedAt   time.Time       `json:"created_at"`
+	ID            string          `json:"id"`
+	Level         CurriculumLevel `json:"level"`
+	Title         string          `json:"title"`
+	Description   string          `json:"description"`
+	DurationWeeks int             `json:"duration_weeks"`
+	Modules       []CurrModule    `json:"modules"`
+	CreatedAt     time.Time       `json:"created_at"`
 }
 
 // CurrModule is a section within a curriculum.
 type CurrModule struct {
-	ID          string         `json:"id"`
-	Title       string         `json:"title"`
-	Order       int            `json:"order"`
-	Description string         `json:"description"`
-	Techniques  []Technique    `json:"techniques"`
-	Videos      []VideoRef     `json:"videos,omitempty"`
+	ID          string      `json:"id"`
+	Title       string      `json:"title"`
+	Order       int         `json:"order"`
+	Description string      `json:"description"`
+	Techniques  []Technique `json:"techniques"`
+	Videos      []VideoRef  `json:"videos,omitempty"`
 }
 
 // Technique is a single martial arts technique to learn.
 type Technique struct {
 	ID          string `json:"id"`
-	Name        string `json:"name"`        // e.g. "Đá tống trước"
-	Category    string `json:"category"`    // quyen, don_chan, don_tay, tu_ve
+	Name        string `json:"name"`     // e.g. "Đá tống trước"
+	Category    string `json:"category"` // quyen, don_chan, don_tay, tu_ve
 	Description string `json:"description"`
-	Difficulty  int    `json:"difficulty"`  // 1-5
+	Difficulty  int    `json:"difficulty"` // 1-5
 }
 
 // VideoRef links to a training video.
@@ -69,15 +69,15 @@ type VideoRef struct {
 
 // Progress tracks an athlete's advancement through a curriculum.
 type Progress struct {
-	ID            string          `json:"id"`
-	AthleteID     string          `json:"athlete_id"`
-	CurriculumID  string          `json:"curriculum_id"`
-	Level         CurriculumLevel `json:"level"`
-	CompletedItems []string       `json:"completed_items"` // technique IDs
-	TotalItems    int             `json:"total_items"`
-	Percentage    float64         `json:"percentage"`
-	StartedAt     time.Time       `json:"started_at"`
-	LastActivity  time.Time       `json:"last_activity"`
+	ID             string          `json:"id"`
+	AthleteID      string          `json:"athlete_id"`
+	CurriculumID   string          `json:"curriculum_id"`
+	Level          CurriculumLevel `json:"level"`
+	CompletedItems []string        `json:"completed_items"` // technique IDs
+	TotalItems     int             `json:"total_items"`
+	Percentage     float64         `json:"percentage"`
+	StartedAt      time.Time       `json:"started_at"`
+	LastActivity   time.Time       `json:"last_activity"`
 }
 
 // ── Coach Assignment ────────────────────────────────────────
@@ -145,13 +145,13 @@ func (s *CurriculumService) CompleteTechnique(ctx context.Context, athleteID, cu
 			totalItems += len(mod.Techniques)
 		}
 		prog = &Progress{
-			ID:           s.idGen(),
-			AthleteID:    athleteID,
-			CurriculumID: curriculumID,
-			Level:        curr.Level,
+			ID:             s.idGen(),
+			AthleteID:      athleteID,
+			CurriculumID:   curriculumID,
+			Level:          curr.Level,
 			CompletedItems: []string{},
-			TotalItems:   totalItems,
-			StartedAt:    time.Now().UTC(),
+			TotalItems:     totalItems,
+			StartedAt:      time.Now().UTC(),
 		}
 	}
 

@@ -1,10 +1,10 @@
 'use client'
 
 import * as React from 'react'
-import { VCT_Stack } from '../components/vct-ui'
-import { VCT_PageContainer, VCT_StatRow } from '../components/vct-ui'
-import type { StatItem } from '../components/VCT_StatRow'
-import { VCT_Icons } from '../components/vct-icons'
+import { VCT_Stack } from '@vct/ui'
+import { VCT_PageContainer, VCT_StatRow } from '@vct/ui'
+import type { StatItem } from '@vct/ui'
+import { VCT_Icons } from '@vct/ui'
 
 // ════════════════════════════════════════
 // FEDERATION — ORG CHART (Tree View)
@@ -44,14 +44,14 @@ const ORG_TREE: OrgNode = {
 }
 
 const TYPE_COLORS: Record<string, string> = {
-    central: '#8b5cf6', committee: '#0ea5e9', department: '#10b981',
-    oversight: '#f59e0b', federation_branch: '#ec4899', provincial: '#7c3aed',
+    central: 'var(--vct-info)', committee: 'var(--vct-accent-cyan)', department: 'var(--vct-success)',
+    oversight: 'var(--vct-warning)', federation_branch: 'var(--vct-accent-pink)', provincial: '#7c3aed',
 }
 
 const TreeNode: React.FC<{ node: OrgNode; isLast?: boolean }> = ({ node, isLast }) => {
     const [expanded, setExpanded] = React.useState(node.level < 2)
     const hasChildren = node.children.length > 0
-    const color = TYPE_COLORS[node.type] || '#64748b'
+    const color = TYPE_COLORS[node.type] || 'var(--vct-text-tertiary)'
 
     return (
         <div style={{ marginLeft: node.level > 0 ? 28 : 0 }}>
@@ -91,10 +91,10 @@ export const Page_federation_org_chart = () => {
             </div>
 
             <VCT_StatRow items={[
-                { label: 'Ban chuyên môn', value: 5, icon: <VCT_Icons.Building2 size={18} />, color: '#0ea5e9' },
-                { label: 'LĐ cấp tỉnh', value: 48, icon: <VCT_Icons.MapPin size={18} />, color: '#8b5cf6' },
-                { label: 'Tổng nhân sự', value: 156, icon: <VCT_Icons.Users size={18} />, color: '#10b981' },
-                { label: 'Vị trí trống', value: 12, icon: <VCT_Icons.AlertCircle size={18} />, color: '#f59e0b' },
+                { label: 'Ban chuyên môn', value: 5, icon: <VCT_Icons.Building2 size={18} />, color: 'var(--vct-accent-cyan)' },
+                { label: 'LĐ cấp tỉnh', value: 48, icon: <VCT_Icons.MapPin size={18} />, color: 'var(--vct-info)' },
+                { label: 'Tổng nhân sự', value: 156, icon: <VCT_Icons.Users size={18} />, color: 'var(--vct-success)' },
+                { label: 'Vị trí trống', value: 12, icon: <VCT_Icons.AlertCircle size={18} />, color: 'var(--vct-warning)' },
             ] as StatItem[]} className="mb-6" />
 
             <div className="rounded-2xl border border-(--vct-border-subtle) bg-(--vct-bg-card) p-6">

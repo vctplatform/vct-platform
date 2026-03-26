@@ -2,8 +2,8 @@
 
 import React, { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { VCT_Icons } from '../components/vct-icons'
-import { VCT_PageContainer } from '../components/vct-ui'
+import { VCT_Icons } from '@vct/ui'
+import { VCT_PageContainer } from '@vct/ui'
 import { useAuth } from '../auth/AuthProvider'
 
 // ════════════════════════════════════════
@@ -16,10 +16,10 @@ const PROFILE = {
 }
 
 const STATS = [
-    { label: 'Giải đấu', value: 24, target: 24, icon: 'Trophy', color: '#f59e0b' },
-    { label: 'Năm KN', value: 6, target: 6, icon: 'Award', color: '#8b5cf6' },
-    { label: 'VĐV giám sát', value: 1200, target: 1200, icon: 'Users', color: '#0ea5e9', fmt: '1.2k' },
-    { label: 'Chứng nhận', value: 8, target: 8, icon: 'FileText', color: '#10b981' },
+    { label: 'Giải đấu', value: 24, target: 24, icon: 'Trophy', color: 'var(--vct-warning)' },
+    { label: 'Năm KN', value: 6, target: 6, icon: 'Award', color: 'var(--vct-info)' },
+    { label: 'VĐV giám sát', value: 1200, target: 1200, icon: 'Users', color: 'var(--vct-accent-cyan)', fmt: '1.2k' },
+    { label: 'Chứng nhận', value: 8, target: 8, icon: 'FileText', color: 'var(--vct-success)' },
 ]
 
 const SKILLS = [
@@ -45,11 +45,11 @@ const CERTIFICATIONS = [
 ]
 
 const TIMELINE = [
-    { icon: 'Trophy', text: 'Tạo giải Vô địch Quốc gia 2026', time: '2 giờ trước', color: '#f59e0b', date: 'Hôm nay' },
-    { icon: 'CheckCircle', text: 'Duyệt 23 hồ sơ VĐV mới', time: '5 giờ trước', color: '#10b981', date: 'Hôm nay' },
-    { icon: 'FileText', text: 'Cập nhật luật thi đấu 2026', time: '1 ngày trước', color: '#3b82f6', date: 'Hôm qua' },
-    { icon: 'DollarSign', text: 'Phê duyệt ngân sách Q2/2026', time: '2 ngày trước', color: '#8b5cf6', date: '11/03' },
-    { icon: 'Award', text: 'Mở khóa đào tạo TT cấp QG', time: '3 ngày trước', color: '#0ea5e9', date: '10/03' },
+    { icon: 'Trophy', text: 'Tạo giải Vô địch Quốc gia 2026', time: '2 giờ trước', color: 'var(--vct-warning)', date: 'Hôm nay' },
+    { icon: 'CheckCircle', text: 'Duyệt 23 hồ sơ VĐV mới', time: '5 giờ trước', color: 'var(--vct-success)', date: 'Hôm nay' },
+    { icon: 'FileText', text: 'Cập nhật luật thi đấu 2026', time: '1 ngày trước', color: 'var(--vct-info)', date: 'Hôm qua' },
+    { icon: 'DollarSign', text: 'Phê duyệt ngân sách Q2/2026', time: '2 ngày trước', color: 'var(--vct-info)', date: '11/03' },
+    { icon: 'Award', text: 'Mở khóa đào tạo TT cấp QG', time: '3 ngày trước', color: 'var(--vct-accent-cyan)', date: '10/03' },
 ]
 
 type Tab = 'overview' | 'achievements' | 'certifications' | 'activity'
@@ -120,7 +120,7 @@ const SkillRadar = ({ skills, size = 200 }: { skills: typeof SKILLS; size?: numb
             <defs>
                 <linearGradient id="radarGradient" x1="0%" y1="0%" x2="100%" y2="100%">
                     <stop offset="0%" stopColor="var(--vct-accent)" stopOpacity={0.25} />
-                    <stop offset="100%" stopColor="#8b5cf6" stopOpacity={0.15} />
+                    <stop offset="100%" stopColor="var(--vct-info)" stopOpacity={0.15} />
                 </linearGradient>
             </defs>
         </svg>
@@ -295,12 +295,12 @@ export function Page_user_profile() {
                                 </h3>
                                 <div className="grid gap-3">
                                     {[
-                                        { l: 'Email', v: PROFILE.email, icon: 'Mail', color: '#0ea5e9' },
-                                        { l: 'Điện thoại', v: PROFILE.phone, icon: 'Phone', color: '#10b981' },
-                                        { l: 'Ngày sinh', v: PROFILE.dob, icon: 'Calendar', color: '#f59e0b' },
-                                        { l: 'Địa chỉ', v: PROFILE.address, icon: 'MapPin', color: '#8b5cf6' },
-                                        { l: 'Tổ chức', v: PROFILE.club, icon: 'Building', color: '#ec4899' },
-                                        { l: 'Ngày tham gia', v: PROFILE.joinedDate, icon: 'Clock', color: '#64748b' },
+                                        { l: 'Email', v: PROFILE.email, icon: 'Mail', color: 'var(--vct-accent-cyan)' },
+                                        { l: 'Điện thoại', v: PROFILE.phone, icon: 'Phone', color: 'var(--vct-success)' },
+                                        { l: 'Ngày sinh', v: PROFILE.dob, icon: 'Calendar', color: 'var(--vct-warning)' },
+                                        { l: 'Địa chỉ', v: PROFILE.address, icon: 'MapPin', color: 'var(--vct-info)' },
+                                        { l: 'Tổ chức', v: PROFILE.club, icon: 'Building', color: 'var(--vct-accent-pink)' },
+                                        { l: 'Ngày tham gia', v: PROFILE.joinedDate, icon: 'Clock', color: 'var(--vct-text-tertiary)' },
                                     ].map(item => {
                                         const ItemIcon = iconMap[item.icon] ?? VCT_Icons.Activity
                                         return (

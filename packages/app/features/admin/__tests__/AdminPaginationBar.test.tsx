@@ -2,7 +2,7 @@ import { describe, it, expect, vi } from 'vitest'
 import * as React from 'react'
 import { render } from '@testing-library/react'
 import { screen, fireEvent } from '@testing-library/dom'
-import { AdminPaginationBar } from '../components/AdminPaginationBar'
+import { AdminPaginationBar } from '@vct/ui'
 
 // Mock useI18n
 vi.mock('../../i18n', () => ({

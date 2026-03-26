@@ -28,7 +28,7 @@ func (s *Server) handleTournamentRoutes(w http.ResponseWriter, r *http.Request) 
 			}
 			list, fetchErr := s.Core.Tournament.List(r.Context())
 			if fetchErr != nil {
-				internalError(w, fetchErr)
+				apiInternal(w, fetchErr)
 				return
 			}
 			success(w, http.StatusOK, list)
@@ -41,12 +41,12 @@ func (s *Server) handleTournamentRoutes(w http.ResponseWriter, r *http.Request) 
 			}
 			var payload domain.Tournament
 			if err := decodeJSON(r, &payload); err != nil {
-				badRequest(w, err.Error())
+				apiError(w, http.StatusBadRequest, CodeBadRequest, err.Error())
 				return
 			}
 			created, err := s.Core.Tournament.Create(r.Context(), payload)
 			if err != nil {
-				badRequest(w, err.Error())
+				apiError(w, http.StatusBadRequest, CodeBadRequest, err.Error())
 				return
 			}
 			raw, _ := toMap(created)
@@ -54,7 +54,7 @@ func (s *Server) handleTournamentRoutes(w http.ResponseWriter, r *http.Request) 
 			success(w, http.StatusCreated, created)
 			return
 		default:
-			methodNotAllowed(w)
+			apiMethodNotAllowed(w)
 			return
 		}
 	}
@@ -72,7 +72,7 @@ func (s *Server) handleTournamentRoutes(w http.ResponseWriter, r *http.Request) 
 			}
 			t, err := s.Core.Tournament.GetByID(r.Context(), id)
 			if err != nil {
-				notFound(w)
+				apiError(w, http.StatusNotFound, CodeNotFound, "Không tìm thấy tài nguyên")
 				return
 			}
 			success(w, http.StatusOK, t)
@@ -84,12 +84,12 @@ func (s *Server) handleTournamentRoutes(w http.ResponseWriter, r *http.Request) 
 			}
 			var patch map[string]interface{}
 			if err := json.NewDecoder(r.Body).Decode(&patch); err != nil {
-				badRequest(w, "invalid json")
+				apiError(w, http.StatusBadRequest, CodeBadRequest, "invalid json")
 				return
 			}
 			updated, err := s.Core.Tournament.Update(r.Context(), id, patch)
 			if err != nil {
-				badRequest(w, err.Error())
+				apiError(w, http.StatusBadRequest, CodeBadRequest, err.Error())
 				return
 			}
 			raw, _ := toMap(updated)
@@ -103,18 +103,18 @@ func (s *Server) handleTournamentRoutes(w http.ResponseWriter, r *http.Request) 
 				return
 			}
 			if err := s.Core.Tournament.Delete(r.Context(), id); err != nil {
-				badRequest(w, err.Error())
+				apiError(w, http.StatusBadRequest, CodeBadRequest, err.Error())
 				return
 			}
 			s.broadcastEntityChange("tournaments", "deleted", id, nil, nil)
 			w.WriteHeader(http.StatusNoContent)
 			return
 		default:
-			methodNotAllowed(w)
+			apiMethodNotAllowed(w)
 			return
 		}
 	default:
-		notFound(w)
+		apiError(w, http.StatusNotFound, CodeNotFound, "Không tìm thấy tài nguyên")
 		return
 	}
 }

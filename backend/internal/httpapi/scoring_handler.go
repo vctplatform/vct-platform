@@ -25,7 +25,7 @@ func (s *Server) handleScoringRoutes(w http.ResponseWriter, r *http.Request) {
 	segments := strings.Split(path, "/")
 
 	if len(segments) < 2 {
-		badRequest(w, "invalid scoring path, expected /scoring/{type}/{id}/{action}")
+		apiError(w, http.StatusBadRequest, CodeBadRequest, "invalid scoring path, expected /scoring/{type}/{id}/{action}")
 		return
 	}
 
@@ -49,7 +49,7 @@ func (s *Server) handleScoringRoutes(w http.ResponseWriter, r *http.Request) {
 	case "forms":
 		s.handleFormsScoring(w, r, matchID, action, principal.User.ID)
 	default:
-		badRequest(w, "match type phải là 'combat' hoặc 'forms'")
+		apiError(w, http.StatusBadRequest, CodeBadRequest, "match type phải là 'combat' hoặc 'forms'")
 	}
 }
 
@@ -59,47 +59,47 @@ func (s *Server) handleCombatScoring(w http.ResponseWriter, r *http.Request, mat
 	switch action {
 	case "start":
 		if r.Method != http.MethodPost {
-			methodNotAllowed(w)
+			apiMethodNotAllowed(w)
 			return
 		}
 		s.handleCombatStart(w, r, matchID, userID)
 
 	case "score":
 		if r.Method != http.MethodPost {
-			methodNotAllowed(w)
+			apiMethodNotAllowed(w)
 			return
 		}
 		s.handleCombatScore(w, r, matchID, userID)
 
 	case "penalty":
 		if r.Method != http.MethodPost {
-			methodNotAllowed(w)
+			apiMethodNotAllowed(w)
 			return
 		}
 		s.handleCombatPenalty(w, r, matchID, userID)
 
 	case "end":
 		if r.Method != http.MethodPost {
-			methodNotAllowed(w)
+			apiMethodNotAllowed(w)
 			return
 		}
 		s.handleCombatEnd(w, r, matchID, userID)
 
 	case "state", "":
 		if r.Method != http.MethodGet {
-			methodNotAllowed(w)
+			apiMethodNotAllowed(w)
 			return
 		}
 		s.handleCombatState(w, r, matchID)
 
 	default:
-		notFound(w)
+		apiError(w, http.StatusNotFound, CodeNotFound, "Không tìm thấy tài nguyên")
 	}
 }
 
 func (s *Server) handleCombatStart(w http.ResponseWriter, r *http.Request, matchID, userID string) {
 	if err := s.Core.Scoring.StartCombatMatch(r.Context(), matchID, userID); err != nil {
-		internalError(w, err)
+		apiInternal(w, err)
 		return
 	}
 
@@ -123,21 +123,21 @@ func (s *Server) handleCombatScore(w http.ResponseWriter, r *http.Request, match
 		Points float64 `json:"points"`
 	}
 	if err := decodeJSON(r, &payload); err != nil {
-		badRequest(w, err.Error())
+		apiError(w, http.StatusBadRequest, CodeBadRequest, err.Error())
 		return
 	}
 
 	if payload.Corner != "red" && payload.Corner != "blue" {
-		badRequest(w, "corner phải là 'red' hoặc 'blue'")
+		apiError(w, http.StatusBadRequest, CodeBadRequest, "corner phải là 'red' hoặc 'blue'")
 		return
 	}
 	if payload.Round < 1 {
-		badRequest(w, "round phải >= 1")
+		apiError(w, http.StatusBadRequest, CodeBadRequest, "round phải >= 1")
 		return
 	}
 
 	if err := s.Core.Scoring.RecordCombatScore(r.Context(), matchID, userID, payload.Round, payload.Corner, payload.Points); err != nil {
-		internalError(w, err)
+		apiInternal(w, err)
 		return
 	}
 
@@ -165,12 +165,12 @@ func (s *Server) handleCombatPenalty(w http.ResponseWriter, r *http.Request, mat
 		Reason    string  `json:"reason"`
 	}
 	if err := decodeJSON(r, &payload); err != nil {
-		badRequest(w, err.Error())
+		apiError(w, http.StatusBadRequest, CodeBadRequest, err.Error())
 		return
 	}
 
 	if err := s.Core.Scoring.RecordPenalty(r.Context(), matchID, userID, payload.Round, payload.Corner, payload.Deduction, payload.Reason); err != nil {
-		internalError(w, err)
+		apiInternal(w, err)
 		return
 	}
 
@@ -193,7 +193,7 @@ func (s *Server) handleCombatPenalty(w http.ResponseWriter, r *http.Request, mat
 func (s *Server) handleCombatEnd(w http.ResponseWriter, r *http.Request, matchID, userID string) {
 	result, err := s.Core.Scoring.EndCombatMatch(r.Context(), matchID, userID)
 	if err != nil {
-		internalError(w, err)
+		apiInternal(w, err)
 		return
 	}
 
@@ -217,7 +217,7 @@ func (s *Server) handleCombatEnd(w http.ResponseWriter, r *http.Request, matchID
 func (s *Server) handleCombatState(w http.ResponseWriter, r *http.Request, matchID string) {
 	state, err := s.Core.Scoring.BuildCombatState(r.Context(), matchID)
 	if err != nil {
-		internalError(w, err)
+		apiInternal(w, err)
 		return
 	}
 	success(w, http.StatusOK, state)
@@ -229,20 +229,20 @@ func (s *Server) handleFormsScoring(w http.ResponseWriter, r *http.Request, perf
 	switch action {
 	case "score":
 		if r.Method != http.MethodPost {
-			methodNotAllowed(w)
+			apiMethodNotAllowed(w)
 			return
 		}
 		s.handleFormsScore(w, r, perfID, userID)
 
 	case "finalize":
 		if r.Method != http.MethodPost {
-			methodNotAllowed(w)
+			apiMethodNotAllowed(w)
 			return
 		}
 		s.handleFormsFinalize(w, r, perfID, userID)
 
 	default:
-		notFound(w)
+		apiError(w, http.StatusNotFound, CodeNotFound, "Không tìm thấy tài nguyên")
 	}
 }
 
@@ -253,17 +253,17 @@ func (s *Server) handleFormsScore(w http.ResponseWriter, r *http.Request, perfID
 		Score     float64 `json:"score"`
 	}
 	if err := decodeJSON(r, &payload); err != nil {
-		badRequest(w, err.Error())
+		apiError(w, http.StatusBadRequest, CodeBadRequest, err.Error())
 		return
 	}
 
 	if payload.Score < 0 || payload.Score > 10 {
-		badRequest(w, "điểm phải từ 0 đến 10")
+		apiError(w, http.StatusBadRequest, CodeBadRequest, "điểm phải từ 0 đến 10")
 		return
 	}
 
 	if err := s.Core.Scoring.SubmitFormsScore(r.Context(), perfID, payload.RefereeID, payload.AthleteID, payload.Score); err != nil {
-		internalError(w, err)
+		apiInternal(w, err)
 		return
 	}
 
@@ -285,7 +285,7 @@ func (s *Server) handleFormsScore(w http.ResponseWriter, r *http.Request, perfID
 func (s *Server) handleFormsFinalize(w http.ResponseWriter, r *http.Request, perfID, userID string) {
 	result, err := s.Core.Scoring.FinalizeFormsPerformance(r.Context(), perfID)
 	if err != nil {
-		internalError(w, err)
+		apiInternal(w, err)
 		return
 	}
 

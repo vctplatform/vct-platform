@@ -10,7 +10,7 @@ import (
 
 func TestTenantValidationMiddleware(t *testing.T) {
 	s := &Server{}
-	
+
 	tests := []struct {
 		name           string
 		cfgDisableAuth bool
@@ -58,12 +58,12 @@ func TestTenantValidationMiddleware(t *testing.T) {
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
 			s.cfg.DisableAuthForData = tc.cfgDisableAuth
-			
+
 			// Mock inner handler
 			innerHandler := func(w http.ResponseWriter, r *http.Request, principal auth.Principal) {
 				w.WriteHeader(http.StatusOK)
 			}
-			
+
 			middleware := s.withTenantValidation(innerHandler)
 
 			// Setup request
@@ -71,7 +71,7 @@ func TestTenantValidationMiddleware(t *testing.T) {
 			if tc.headerScope != "" {
 				req.Header.Set("X-Context-Scope", tc.headerScope)
 			}
-			
+
 			// Setup mock principal
 			principal := auth.Principal{
 				User: auth.AuthUser{

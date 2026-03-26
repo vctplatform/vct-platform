@@ -5,10 +5,10 @@ import { useState } from 'react'
 import {
     VCT_Badge, VCT_Button, VCT_Stack,
     VCT_EmptyState,
-} from '../components/vct-ui'
-import type { StatItem } from '../components/VCT_StatRow'
-import { VCT_Icons } from '../components/vct-icons'
-import { VCT_Drawer } from '../components/VCT_Drawer'
+} from '@vct/ui'
+import type { StatItem } from '@vct/ui'
+import { VCT_Icons } from '@vct/ui'
+import { VCT_Drawer } from '@vct/ui'
 import { AdminPageShell, useShellToast } from './components/AdminPageShell'
 import { useAdminFetch } from './hooks/useAdminAPI'
 import { AdminGuard } from './components/AdminGuard'
@@ -90,9 +90,9 @@ const LiveMatchCard = ({ match, onClick }: { match: LiveMatch; onClick: () => vo
             {isDoiKhang ? (
                 <div className="flex items-center justify-between gap-4">
                     <div className="flex-1 text-center">
-                        <div className="text-xs text-[#ef4444] uppercase font-bold mb-1">🔴 Đỏ</div>
+                        <div className="text-xs text-(--vct-danger) uppercase font-bold mb-1">🔴 Đỏ</div>
                         <div className="font-bold text-(--vct-text-primary)">{match.athlete_red}</div>
-                        <div className="text-3xl font-black mt-2 text-[#ef4444]">{match.score_red}</div>
+                        <div className="text-3xl font-black mt-2 text-(--vct-danger)">{match.score_red}</div>
                         {match.penalties_red > 0 && <div className="text-xs text-(--vct-text-tertiary) mt-1">⚠ {match.penalties_red} lỗi</div>}
                     </div>
                     <div className="text-center">
@@ -100,23 +100,23 @@ const LiveMatchCard = ({ match, onClick }: { match: LiveMatch; onClick: () => vo
                         <div className="text-xs text-(--vct-text-tertiary) mt-1">Hiệp {match.round}/{match.max_rounds}</div>
                     </div>
                     <div className="flex-1 text-center">
-                        <div className="text-xs text-[#0ea5e9] uppercase font-bold mb-1">🔵 Xanh</div>
+                        <div className="text-xs text-(--vct-accent-cyan) uppercase font-bold mb-1">🔵 Xanh</div>
                         <div className="font-bold text-(--vct-text-primary)">{match.athlete_blue}</div>
-                        <div className="text-3xl font-black mt-2 text-[#0ea5e9]">{match.score_blue}</div>
+                        <div className="text-3xl font-black mt-2 text-(--vct-accent-cyan)">{match.score_blue}</div>
                         {match.penalties_blue > 0 && <div className="text-xs text-(--vct-text-tertiary) mt-1">⚠ {match.penalties_blue} lỗi</div>}
                     </div>
                 </div>
             ) : (
                 <div className="text-center">
                     <div className="font-bold text-(--vct-text-primary)">{match.athlete_red}</div>
-                    {match.score_red > 0 && <div className="text-3xl font-black mt-2 text-[#f59e0b]">{match.score_red.toFixed(2)}</div>}
+                    {match.score_red > 0 && <div className="text-3xl font-black mt-2 text-(--vct-warning)">{match.score_red.toFixed(2)}</div>}
                 </div>
             )}
 
             {/* Referee */}
             <div className="mt-4 pt-3 border-t border-(--vct-border-subtle) flex items-center justify-between">
                 <span className="text-xs text-(--vct-text-tertiary)">Trọng tài: {match.referee}</span>
-                {isLive && <span className="text-xs text-[#ef4444] animate-pulse">● Live</span>}
+                {isLive && <span className="text-xs text-(--vct-danger) animate-pulse">● Live</span>}
             </div>
         </div>
     )
@@ -144,17 +144,17 @@ const Page_admin_scoring_Content = () => {
     const arenas = Array.from(new Set(MOCK_MATCHES.map(m => m.arena))).length
 
     const stats: StatItem[] = [
-        { icon: <VCT_Icons.Activity size={20} />, label: 'Trận đang diễn ra', value: liveCount, color: '#ef4444' },
-        { icon: <VCT_Icons.CheckCircle size={20} />, label: 'Đã kết thúc', value: finishedCount, color: '#10b981' },
-        { icon: <VCT_Icons.Clock size={20} />, label: 'Sắp tới', value: MOCK_MATCHES.filter(m => m.status === 'upcoming').length, color: '#94a3b8' },
-        { icon: <VCT_Icons.Layers size={20} />, label: 'Sàn đấu', value: arenas, color: '#0ea5e9' },
+        { icon: <VCT_Icons.Activity size={20} />, label: 'Trận đang diễn ra', value: liveCount, color: 'var(--vct-danger)' },
+        { icon: <VCT_Icons.CheckCircle size={20} />, label: 'Đã kết thúc', value: finishedCount, color: 'var(--vct-success)' },
+        { icon: <VCT_Icons.Clock size={20} />, label: 'Sắp tới', value: MOCK_MATCHES.filter(m => m.status === 'upcoming').length, color: 'var(--vct-text-tertiary)' },
+        { icon: <VCT_Icons.Layers size={20} />, label: 'Sàn đấu', value: arenas, color: 'var(--vct-accent-cyan)' },
     ]
 
     return (
         <AdminPageShell
             title="Chấm điểm & Giám sát Live"
             subtitle="Theo dõi real-time các trận đấu đang diễn ra"
-            icon={<VCT_Icons.Activity size={28} className="text-[#ef4444]" />}
+            icon={<VCT_Icons.Activity size={28} className="text-(--vct-danger)" />}
             stats={stats}
         >
 
@@ -211,19 +211,19 @@ const Page_admin_scoring_Content = () => {
                         {/* Judge Scores */}
                         <div>
                             <h4 className="font-bold text-(--vct-text-primary) mb-3 flex items-center gap-2">
-                                <VCT_Icons.Shield size={16} className="text-[#8b5cf6]" /> Bảng điểm giám khảo
+                                <VCT_Icons.Shield size={16} className="text-(--vct-info)" /> Bảng điểm giám khảo
                             </h4>
                             <div className="space-y-2">
                                 {MOCK_JUDGES.map(j => (
                                     <div key={j.judge} className="flex items-center justify-between p-3 bg-(--vct-bg-base) rounded-xl border border-(--vct-border-subtle)">
                                         <div className="flex items-center gap-2">
-                                            <div className={`w-2 h-2 rounded-full ${j.submitted ? 'bg-[#10b981]' : 'bg-[#94a3b8] animate-pulse'}`} />
+                                            <div className={`w-2 h-2 rounded-full ${j.submitted ? 'bg-(--vct-success)' : 'bg-(--vct-text-tertiary) animate-pulse'}`} />
                                             <span className="text-sm text-(--vct-text-secondary)">{j.judge}</span>
                                         </div>
                                         {j.submitted ? (
                                             <div className="flex gap-4">
-                                                <span className="font-bold text-sm text-[#ef4444]">🔴 {j.score_red.toFixed(1)}</span>
-                                                <span className="font-bold text-sm text-[#0ea5e9]">🔵 {j.score_blue.toFixed(1)}</span>
+                                                <span className="font-bold text-sm text-(--vct-danger)">🔴 {j.score_red.toFixed(1)}</span>
+                                                <span className="font-bold text-sm text-(--vct-accent-cyan)">🔵 {j.score_blue.toFixed(1)}</span>
                                             </div>
                                         ) : (
                                             <span className="text-xs text-(--vct-text-tertiary)">Chưa chấm</span>

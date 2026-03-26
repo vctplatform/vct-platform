@@ -6,7 +6,7 @@
 
 import React, { useState } from 'react'
 import { motion } from 'framer-motion'
-import { VCT_Icons } from '../components/vct-icons'
+import { VCT_Icons } from '@vct/ui'
 
 interface WorkflowStep {
     id: string; label: string; icon: string; status: 'done' | 'active' | 'pending' | 'locked'

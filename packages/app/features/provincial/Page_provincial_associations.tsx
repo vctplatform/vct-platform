@@ -6,10 +6,10 @@ import {
     VCT_Badge, VCT_Button, VCT_Stack, VCT_Toast,
     VCT_SearchInput, VCT_EmptyState, VCT_FilterChips,
     VCT_AvatarLetter,
-} from '../components/vct-ui'
-import { VCT_PageContainer, VCT_StatRow } from '../components/vct-ui'
-import type { StatItem } from '../components/VCT_StatRow'
-import { VCT_Icons } from '../components/vct-icons'
+} from '@vct/ui'
+import { VCT_PageContainer, VCT_StatRow } from '@vct/ui'
+import type { StatItem } from '@vct/ui'
+import { VCT_Icons } from '@vct/ui'
 
 const API = '/api/v1/provincial'
 
@@ -91,11 +91,11 @@ export const Page_provincial_associations = () => {
             </div>
 
             <VCT_StatRow items={[
-                { label: 'Tổng Hội', value: associations.length, icon: <VCT_Icons.Building2 size={18} />, color: '#0ea5e9' },
-                { label: 'Hội hoạt động', value: associations.filter(a => a.status === 'active').length, icon: <VCT_Icons.Activity size={18} />, color: '#10b981' },
-                { label: 'Tổng Chi hội', value: totalSubAssoc, icon: <VCT_Icons.MapPin size={18} />, color: '#f59e0b' },
-                { label: 'Tổng CLB', value: totalClubs, icon: <VCT_Icons.Users size={18} />, color: '#8b5cf6' },
-                { label: 'Tổng VĐV', value: totalAthletes, icon: <VCT_Icons.Award size={18} />, color: '#ef4444' },
+                { label: 'Tổng Hội', value: associations.length, icon: <VCT_Icons.Building2 size={18} />, color: 'var(--vct-accent-cyan)' },
+                { label: 'Hội hoạt động', value: associations.filter(a => a.status === 'active').length, icon: <VCT_Icons.Activity size={18} />, color: 'var(--vct-success)' },
+                { label: 'Tổng Chi hội', value: totalSubAssoc, icon: <VCT_Icons.MapPin size={18} />, color: 'var(--vct-warning)' },
+                { label: 'Tổng CLB', value: totalClubs, icon: <VCT_Icons.Users size={18} />, color: 'var(--vct-info)' },
+                { label: 'Tổng VĐV', value: totalAthletes, icon: <VCT_Icons.Award size={18} />, color: 'var(--vct-danger)' },
             ] as StatItem[]} className="mb-6" />
 
             <VCT_FilterChips filters={activeFilters} onRemove={(k) => { if (k === 'status') setStatusFilter(null); if (k === 'search') setSearch('') }} onClearAll={() => { setStatusFilter(null); setSearch('') }} />
@@ -142,9 +142,9 @@ export const Page_provincial_associations = () => {
                                         </td>
                                         <td className="px-4 py-3 text-sm">{a.district}</td>
                                         <td className="px-4 py-3 text-sm">{a.president_name}</td>
-                                        <td className="px-4 py-3 text-sm text-center font-bold" style={{ color: '#f59e0b' }}>{a.total_sub_associations}</td>
-                                        <td className="px-4 py-3 text-sm text-center font-bold" style={{ color: '#22d3ee' }}>{a.total_clubs}</td>
-                                        <td className="px-4 py-3 text-sm text-center font-bold" style={{ color: '#8b5cf6' }}>{a.total_athletes}</td>
+                                        <td className="px-4 py-3 text-sm text-center font-bold" style={{ color: 'var(--vct-warning)' }}>{a.total_sub_associations}</td>
+                                        <td className="px-4 py-3 text-sm text-center font-bold" style={{ color: 'var(--vct-accent-cyan)' }}>{a.total_clubs}</td>
+                                        <td className="px-4 py-3 text-sm text-center font-bold" style={{ color: 'var(--vct-info)' }}>{a.total_athletes}</td>
                                         <td className="px-4 py-3 text-center"><VCT_Badge text={st.label} type={st.type} /></td>
                                     </tr>
                                 )

@@ -19,7 +19,7 @@ import (
 
 func (s *Server) handlePublicRoutes(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
-		methodNotAllowed(w)
+		apiMethodNotAllowed(w)
 		return
 	}
 
@@ -46,12 +46,12 @@ func (s *Server) handlePublicRoutes(w http.ResponseWriter, r *http.Request) {
 		if len(segments) > 1 && segments[1] == "search" {
 			s.handlePublicAthleteSearch(w, r)
 		} else {
-			notFound(w)
+			apiError(w, http.StatusNotFound, CodeNotFound, "Không tìm thấy tài nguyên")
 		}
 	case "stats":
 		s.handlePublicStats(w, r)
 	default:
-		notFound(w)
+		apiError(w, http.StatusNotFound, CodeNotFound, "Không tìm thấy tài nguyên")
 	}
 }
 
@@ -104,7 +104,7 @@ func (s *Server) handlePublicBracket(w http.ResponseWriter, _ *http.Request, id 
 
 	bracket, ok := s.store.GetByID("brackets", id)
 	if !ok {
-		notFound(w)
+		apiError(w, http.StatusNotFound, CodeNotFound, "Không tìm thấy tài nguyên")
 		return
 	}
 	successJSONBytes(w, http.StatusOK, bracket)

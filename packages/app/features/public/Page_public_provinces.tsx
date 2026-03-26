@@ -1,7 +1,7 @@
 'use client'
 import * as React from 'react'
 import { useState, useEffect } from 'react'
-import { VCT_Icons } from '../components/vct-icons'
+import { VCT_Icons } from '@vct/ui'
 
 // Mock Data
 const MOCK_PROVINCES = [
@@ -43,7 +43,7 @@ export const Page_public_provinces = () => {
           placeholder="Tìm kiếm theo Tỉnh/Thành hoặc Chức sắc..." 
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="w-full bg-[#162032] border border-slate-700/50 rounded-2xl py-3 pl-12 pr-4 text-sm font-medium focus:outline-none focus:border-cyan-500/50 focus:ring-1 focus:ring-cyan-500/50 transition-all placeholder:text-slate-500 shadow-xl shadow-black/10"
+          className="w-full bg-(--vct-bg-elevated) border border-slate-700/50 rounded-2xl py-3 pl-12 pr-4 text-sm font-medium focus:outline-none focus:border-cyan-500/50 focus:ring-1 focus:ring-cyan-500/50 transition-all placeholder:text-slate-500 shadow-xl shadow-black/10"
         />
       </div>
 
@@ -52,7 +52,7 @@ export const Page_public_provinces = () => {
         {loading ? (
           // Skeleton loading state
           Array.from({ length: 6 }).map((_, i) => (
-            <div key={i} className="bg-[#162032] border border-slate-800 rounded-2xl p-6 relative overflow-hidden shadow-sm">
+            <div key={i} className="bg-(--vct-bg-elevated) border border-slate-800 rounded-2xl p-6 relative overflow-hidden shadow-sm">
               <div className="absolute inset-0 bg-gradient-to-r from-transparent via-slate-700/10 to-transparent w-[200%] animate-[shimmer_2s_infinite]" />
               <div className="h-5 bg-slate-800 rounded-md w-3/4 mb-5" />
               <div className="space-y-4">
@@ -67,7 +67,7 @@ export const Page_public_provinces = () => {
           ))
         ) : (
           filtered.map(province => (
-            <div key={province.id} className="group bg-[#162032] hover:bg-[#1a253a] border border-slate-800 hover:border-cyan-500/30 rounded-2xl p-6 transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl hover:shadow-cyan-500/10 cursor-pointer overflow-hidden relative">
+            <div key={province.id} className="group bg-(--vct-bg-elevated) hover:bg-[#1a253a] border border-slate-800 hover:border-cyan-500/30 rounded-2xl p-6 transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl hover:shadow-cyan-500/10 cursor-pointer overflow-hidden relative">
               
               {/* Card Glow */}
               <div className="absolute inset-x-0 -top-px h-px w-full bg-gradient-to-r from-transparent via-cyan-500/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />

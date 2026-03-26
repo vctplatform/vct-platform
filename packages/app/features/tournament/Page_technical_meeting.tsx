@@ -5,10 +5,10 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
     VCT_Card, VCT_Badge, VCT_Button, VCT_Text, VCT_Stack,
     VCT_Toast, VCT_SearchInput, VCT_Table, VCT_EmptyState, VCT_ConfirmDialog, VCT_Modal
-} from '../components/vct-ui';
-import { VCT_PageContainer, VCT_StatRow } from '../components/vct-ui';
-import type { StatItem } from '../components/VCT_StatRow';
-import { VCT_Icons } from '../components/vct-icons';
+} from '@vct/ui';
+import { VCT_PageContainer, VCT_StatRow } from '@vct/ui';
+import type { StatItem } from '@vct/ui';
+import { VCT_Icons } from '@vct/ui';
 import { HANG_CANS, NOI_DUNG_QUYENS } from '../data/mock-data';
 import type { DangKy, VanDongVien, TrangThaiDK } from '../data/types';
 import { repositories, useEntityCollection } from '../data/repository';
@@ -83,7 +83,7 @@ export const Page_technical_meeting = () => {
                 <div style={{ position: 'relative', zIndex: 1, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                     <div>
                         <VCT_Stack direction="row" gap={12} align="center" style={{ marginBottom: 8 }}>
-                            <VCT_Icons.CheckCircle size={24} color="#22d3ee" />
+                            <VCT_Icons.CheckCircle size={24} color="var(--vct-accent-cyan)" />
                             <VCT_Text variant="h2" style={{ fontSize: 20 }}>Rà Soát Danh Sách Chốt (Final Entry List)</VCT_Text>
                         </VCT_Stack>
                         <VCT_Text variant="small" style={{ opacity: 0.8, maxWidth: 600 }}>Dành cho buổi **Họp chuyên môn** trước giải. Các Trưởng đoàn kiểm tra lại thông tin VĐV, hạng cân đăng ký đã chính xác chưa. Chỉ hiển thị các trạng thái &quot;Đã Duyệt&quot;.</VCT_Text>
@@ -94,10 +94,10 @@ export const Page_technical_meeting = () => {
 
             {/* KPI STATS */}
             <VCT_StatRow items={[
-                { label: 'Đoàn tham dự', value: stats.countDoan, icon: <VCT_Icons.Flag size={18} />, color: '#f59e0b' },
-                { label: 'VĐV đủ ĐK', value: stats.totalVdv, icon: <VCT_Icons.Users size={18} />, color: '#10b981' },
-                { label: 'Quyền', value: stats.totalQuyen, icon: <VCT_Icons.Activity size={18} />, color: '#22d3ee' },
-                { label: 'Đ.Kháng', value: stats.totalDK, icon: <VCT_Icons.Shuffle size={18} />, color: '#ef4444' },
+                { label: 'Đoàn tham dự', value: stats.countDoan, icon: <VCT_Icons.Flag size={18} />, color: 'var(--vct-warning)' },
+                { label: 'VĐV đủ ĐK', value: stats.totalVdv, icon: <VCT_Icons.Users size={18} />, color: 'var(--vct-success)' },
+                { label: 'Quyền', value: stats.totalQuyen, icon: <VCT_Icons.Activity size={18} />, color: 'var(--vct-accent-cyan)' },
+                { label: 'Đ.Kháng', value: stats.totalDK, icon: <VCT_Icons.Shuffle size={18} />, color: 'var(--vct-danger)' },
             ] as StatItem[]} className="mb-6" />
 
             {/* TOOLBAR */}
@@ -137,7 +137,7 @@ export const Page_technical_meeting = () => {
                         {
                             key: 'noi_dung_dk', label: 'Nội dung chốt thi đấu', render: (r: any) => (
                                 <div>
-                                    <div style={{ display: 'inline-flex', padding: '4px 8px', borderRadius: '6px', fontSize: '12px', fontWeight: 800, background: r.loai === 'quyen' ? 'rgba(34,211,238,0.1)' : 'rgba(245,158,11,0.1)', color: r.loai === 'quyen' ? '#22d3ee' : '#f59e0b', alignItems: 'center', gap: 6 }}>
+                                    <div style={{ display: 'inline-flex', padding: '4px 8px', borderRadius: '6px', fontSize: '12px', fontWeight: 800, background: r.loai === 'quyen' ? 'rgba(34,211,238,0.1)' : 'rgba(245,158,11,0.1)', color: r.loai === 'quyen' ? 'var(--vct-accent-cyan)' : 'var(--vct-warning)', alignItems: 'center', gap: 6 }}>
                                         {r.loai === 'quyen' ? '🥋' : '🥊'} {r.nd_ten}
                                     </div>
                                     {r.loai === 'doi_khang' && (

@@ -15,13 +15,13 @@ import (
 type Action string
 
 const (
-	ActionCreate Action = "create"
-	ActionUpdate Action = "update"
-	ActionDelete Action = "delete"
-	ActionLogin  Action = "login"
-	ActionExport Action = "export"
+	ActionCreate  Action = "create"
+	ActionUpdate  Action = "update"
+	ActionDelete  Action = "delete"
+	ActionLogin   Action = "login"
+	ActionExport  Action = "export"
 	ActionApprove Action = "approve"
-	ActionReject Action = "reject"
+	ActionReject  Action = "reject"
 )
 
 // Entry is a single audit log entry.
@@ -31,7 +31,7 @@ type Entry struct {
 	UserName   string            `json:"user_name"`
 	UserRole   string            `json:"user_role"`
 	Action     Action            `json:"action"`
-	Resource   string            `json:"resource"`   // e.g. "athlete", "tournament"
+	Resource   string            `json:"resource"`    // e.g. "athlete", "tournament"
 	ResourceID string            `json:"resource_id"` // e.g. "ATH-001"
 	Changes    map[string]Change `json:"changes,omitempty"`
 	IPAddress  string            `json:"ip_address"`

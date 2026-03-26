@@ -1,6 +1,6 @@
 'use client'
 import React, { useState } from 'react'
-import { VCT_Icons } from '../components/vct-icons'
+import { VCT_Icons } from '@vct/ui'
 
 interface Facility { id: string; name: string; type: string; status: 'available' | 'in_use' | 'maintenance'; capacity: number; equipment: string[]; schedule?: string }
 
@@ -14,9 +14,9 @@ const FACILITIES: Facility[] = [
 ]
 
 const STATUS_MAP: Record<string, { label: string; color: string; bg: string }> = {
-    available: { label: '✅ Trống', color: '#10b981', bg: 'bg-emerald-500/15' },
-    in_use: { label: '🔵 Đang sử dụng', color: '#3b82f6', bg: 'bg-blue-500/15' },
-    maintenance: { label: '🔧 Bảo trì', color: '#f59e0b', bg: 'bg-amber-500/15' },
+    available: { label: '✅ Trống', color: 'var(--vct-success)', bg: 'bg-emerald-500/15' },
+    in_use: { label: '🔵 Đang sử dụng', color: 'var(--vct-info)', bg: 'bg-blue-500/15' },
+    maintenance: { label: '🔧 Bảo trì', color: 'var(--vct-warning)', bg: 'bg-amber-500/15' },
 }
 
 export function Page_club_facilities() {

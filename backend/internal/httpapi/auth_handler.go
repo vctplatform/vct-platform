@@ -13,13 +13,13 @@ import (
 
 func (s *Server) handleAuthLogin(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
-		methodNotAllowed(w)
+		apiMethodNotAllowed(w)
 		return
 	}
 
 	var input auth.LoginRequest
 	if err := decodeJSON(r, &input); err != nil {
-		badRequest(w, err.Error())
+		apiError(w, http.StatusBadRequest, CodeBadRequest, err.Error())
 		return
 	}
 
@@ -33,13 +33,13 @@ func (s *Server) handleAuthLogin(w http.ResponseWriter, r *http.Request) {
 
 func (s *Server) handleAuthRefresh(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
-		methodNotAllowed(w)
+		apiMethodNotAllowed(w)
 		return
 	}
 
 	var input auth.RefreshRequest
 	if err := decodeJSON(r, &input); err != nil {
-		badRequest(w, err.Error())
+		apiError(w, http.StatusBadRequest, CodeBadRequest, err.Error())
 		return
 	}
 
@@ -53,13 +53,13 @@ func (s *Server) handleAuthRefresh(w http.ResponseWriter, r *http.Request) {
 
 func (s *Server) handleAuthMe(w http.ResponseWriter, r *http.Request, principal auth.Principal) {
 	if r.Method != http.MethodGet {
-		methodNotAllowed(w)
+		apiMethodNotAllowed(w)
 		return
 	}
-	
+
 	// Get base user and workspace data
 	result := s.authService.Me(principal)
-	
+
 	// For VCT Portal Hub, we inject real-time or simulated pending task counts
 	// In production, you would fetch this from a workflow/notification service.
 	response := map[string]any{
@@ -83,7 +83,7 @@ func (s *Server) handleAuthMe(w http.ResponseWriter, r *http.Request, principal 
 
 func (s *Server) handleAuthLogout(w http.ResponseWriter, r *http.Request, principal auth.Principal) {
 	if r.Method != http.MethodPost {
-		methodNotAllowed(w)
+		apiMethodNotAllowed(w)
 		return
 	}
 	s.authService.Logout(principal, requestContextFromRequest(r))
@@ -92,13 +92,13 @@ func (s *Server) handleAuthLogout(w http.ResponseWriter, r *http.Request, princi
 
 func (s *Server) handleAuthRevoke(w http.ResponseWriter, r *http.Request, principal auth.Principal) {
 	if r.Method != http.MethodPost {
-		methodNotAllowed(w)
+		apiMethodNotAllowed(w)
 		return
 	}
 
 	var input auth.RevokeRequest
 	if err := decodeJSON(r, &input); err != nil {
-		badRequest(w, err.Error())
+		apiError(w, http.StatusBadRequest, CodeBadRequest, err.Error())
 		return
 	}
 
@@ -115,7 +115,7 @@ func (s *Server) handleAuthRevoke(w http.ResponseWriter, r *http.Request, princi
 
 func (s *Server) handleAuthAudit(w http.ResponseWriter, r *http.Request, principal auth.Principal) {
 	if r.Method != http.MethodGet {
-		methodNotAllowed(w)
+		apiMethodNotAllowed(w)
 		return
 	}
 
@@ -140,13 +140,13 @@ func (s *Server) handleAuthAudit(w http.ResponseWriter, r *http.Request, princip
 
 func (s *Server) handleAuthRegister(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
-		methodNotAllowed(w)
+		apiMethodNotAllowed(w)
 		return
 	}
 
 	var input auth.RegisterRequest
 	if err := decodeJSON(r, &input); err != nil {
-		badRequest(w, err.Error())
+		apiError(w, http.StatusBadRequest, CodeBadRequest, err.Error())
 		return
 	}
 
@@ -161,13 +161,13 @@ func (s *Server) handleAuthRegister(w http.ResponseWriter, r *http.Request) {
 // handleAuthSwitchContext handles POST /api/v1/auth/switch-context
 func (s *Server) handleAuthSwitchContext(w http.ResponseWriter, r *http.Request, p auth.Principal) {
 	if r.Method != http.MethodPost {
-		methodNotAllowed(w)
+		apiMethodNotAllowed(w)
 		return
 	}
 
 	var input auth.SwitchContextRequest
 	if err := decodeJSON(r, &input); err != nil {
-		badRequest(w, err.Error())
+		apiError(w, http.StatusBadRequest, CodeBadRequest, err.Error())
 		return
 	}
 
@@ -182,7 +182,7 @@ func (s *Server) handleAuthSwitchContext(w http.ResponseWriter, r *http.Request,
 // handleAuthMyRoles handles GET /api/v1/auth/my-roles
 func (s *Server) handleAuthMyRoles(w http.ResponseWriter, r *http.Request, p auth.Principal) {
 	if r.Method != http.MethodGet {
-		methodNotAllowed(w)
+		apiMethodNotAllowed(w)
 		return
 	}
 

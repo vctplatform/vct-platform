@@ -5,10 +5,10 @@ import { useState, useMemo, useEffect } from 'react'
 import {
     VCT_Badge, VCT_Button, VCT_Stack, VCT_SearchInput,
     VCT_Select, VCT_EmptyState, VCT_Tabs
-} from '../components/vct-ui'
-import { VCT_PageContainer, VCT_PageHero, VCT_StatRow } from '../components/vct-ui'
-import type { StatItem } from '../components/VCT_StatRow'
-import { VCT_Icons } from '../components/vct-icons'
+} from '@vct/ui'
+import { VCT_PageContainer, VCT_PageHero, VCT_StatRow } from '@vct/ui'
+import type { StatItem } from '@vct/ui'
+import { VCT_Icons } from '@vct/ui'
 import { useBeltExams } from '../hooks/useTrainingAPI'
 
 // ════════════════════════════════════════
@@ -80,10 +80,10 @@ export const Page_belt_exams = () => {
             />
 
             <VCT_StatRow items={[
-                { label: 'Đang đăng ký', value: exams.filter(e => e.status === 'registration').length, icon: <VCT_Icons.Calendar size={18} />, color: '#0ea5e9' },
-                { label: 'Đang chấm điểm', value: exams.filter(e => e.status === 'grading').length, icon: <VCT_Icons.Edit size={18} />, color: '#f59e0b' },
-                { label: 'Thí sinh', value: exams.reduce((s, e) => s + e.candidates_count, 0), icon: <VCT_Icons.Users size={18} />, color: '#10b981' },
-                { label: 'Hoàn tất', value: exams.filter(e => e.status === 'completed').length, icon: <VCT_Icons.Award size={18} />, color: '#8b5cf6' },
+                { label: 'Đang đăng ký', value: exams.filter(e => e.status === 'registration').length, icon: <VCT_Icons.Calendar size={18} />, color: 'var(--vct-accent-cyan)' },
+                { label: 'Đang chấm điểm', value: exams.filter(e => e.status === 'grading').length, icon: <VCT_Icons.Edit size={18} />, color: 'var(--vct-warning)' },
+                { label: 'Thí sinh', value: exams.reduce((s, e) => s + e.candidates_count, 0), icon: <VCT_Icons.Users size={18} />, color: 'var(--vct-success)' },
+                { label: 'Hoàn tất', value: exams.filter(e => e.status === 'completed').length, icon: <VCT_Icons.Award size={18} />, color: 'var(--vct-info)' },
             ] as StatItem[]} className="mb-6" />
 
             {/* ── TABS & TOOLBAR ── */}
@@ -120,10 +120,10 @@ export const Page_belt_exams = () => {
                             <h3 className="text-lg font-bold text-(--vct-text-primary) mb-3 leading-tight line-clamp-2">{exam.title}</h3>
 
                             <div className="flex flex-col gap-2 text-[13px] text-(--vct-text-secondary) mb-4 flex-1">
-                                <div className="flex items-center gap-2"><VCT_Icons.Calendar size={14} className="text-[#0ea5e9]" /> {exam.date}</div>
-                                <div className="flex items-start gap-2"><VCT_Icons.MapPin size={14} className="text-[#f59e0b] shrink-0 mt-0.5" /> <span className="line-clamp-2">{exam.location}</span></div>
+                                <div className="flex items-center gap-2"><VCT_Icons.Calendar size={14} className="text-(--vct-accent-cyan)" /> {exam.date}</div>
+                                <div className="flex items-start gap-2"><VCT_Icons.MapPin size={14} className="text-(--vct-warning) shrink-0 mt-0.5" /> <span className="line-clamp-2">{exam.location}</span></div>
                                 <div className="flex items-center gap-2 mt-1">
-                                    <VCT_Icons.Layers size={14} className="text-[#8b5cf6]" />
+                                    <VCT_Icons.Layers size={14} className="text-(--vct-info)" />
                                     <div className="flex flex-wrap gap-1">
                                         {exam.levels.map(l => (
                                             <span key={l} className="bg-(--vct-bg-base) border border-(--vct-border-subtle) px-1.5 py-0.5 rounded text-[10px] font-bold text-(--vct-text-primary) uppercase">{l}</span>

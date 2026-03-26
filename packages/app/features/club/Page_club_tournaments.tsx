@@ -16,10 +16,10 @@ import {
   VCT_StatusPipeline,
   VCT_Table,
   VCT_Toast,
-} from '../components/vct-ui'
-import { VCT_PageContainer, VCT_StatRow } from '../components/vct-ui'
-import type { StatItem } from '../components/VCT_StatRow'
-import { VCT_Icons } from '../components/vct-icons'
+} from '@vct/ui'
+import { VCT_PageContainer, VCT_StatRow } from '@vct/ui'
+import type { StatItem } from '@vct/ui'
+import { VCT_Icons } from '@vct/ui'
 import { useRouteActionGuard } from '../hooks/use-route-action-guard'
 import {
   TOURNAMENT_SEED,
@@ -405,7 +405,7 @@ export const Page_club_tournaments = () => {
       label: 'Tong giai dau',
       value: tournaments.length,
       icon: <VCT_Icons.Trophy size={18} />,
-      color: '#0ea5e9',
+      color: 'var(--vct-accent-cyan)',
     },
     {
       label: 'Dang mo/chu bi',
@@ -413,19 +413,19 @@ export const Page_club_tournaments = () => {
         (item) => item.status === 'registration' || item.status === 'upcoming'
       ).length,
       icon: <VCT_Icons.Calendar size={18} />,
-      color: '#10b981',
+      color: 'var(--vct-success)',
     },
     {
       label: 'Tong VDV dang ky',
       value: totalRegisteredAthletes,
       icon: <VCT_Icons.Users size={18} />,
-      color: '#f59e0b',
+      color: 'var(--vct-warning)',
     },
     {
       label: 'Tong huy chuong',
       value: medalSummary.gold + medalSummary.silver + medalSummary.bronze,
       icon: <VCT_Icons.Medal size={18} />,
-      color: '#8b5cf6',
+      color: 'var(--vct-info)',
       sub: `G:${medalSummary.gold} S:${medalSummary.silver} B:${medalSummary.bronze}`,
     },
   ]
@@ -474,25 +474,25 @@ export const Page_club_tournaments = () => {
           {
             key: 'registration',
             label: 'Dang ky',
-            color: '#f59e0b',
+            color: 'var(--vct-warning)',
             count: tournaments.filter((item) => item.status === 'registration').length,
           },
           {
             key: 'upcoming',
             label: 'Sap toi',
-            color: '#0ea5e9',
+            color: 'var(--vct-accent-cyan)',
             count: tournaments.filter((item) => item.status === 'upcoming').length,
           },
           {
             key: 'ongoing',
             label: 'Dang thi',
-            color: '#10b981',
+            color: 'var(--vct-success)',
             count: tournaments.filter((item) => item.status === 'ongoing').length,
           },
           {
             key: 'completed',
             label: 'Da xong',
-            color: '#94a3b8',
+            color: 'var(--vct-text-tertiary)',
             count: tournaments.filter((item) => item.status === 'completed').length,
           },
         ]}

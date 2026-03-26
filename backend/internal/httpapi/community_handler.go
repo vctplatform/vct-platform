@@ -28,7 +28,7 @@ func (s *Server) handleClubRoutes(w http.ResponseWriter, r *http.Request) {
 			}
 			list, fetchErr := s.Core.Community.ListClubs(r.Context())
 			if fetchErr != nil {
-				internalError(w, fetchErr)
+				apiInternal(w, fetchErr)
 				return
 			}
 			success(w, http.StatusOK, list)
@@ -39,19 +39,19 @@ func (s *Server) handleClubRoutes(w http.ResponseWriter, r *http.Request) {
 			}
 			var payload community.Club
 			if err := decodeJSON(r, &payload); err != nil {
-				badRequest(w, err.Error())
+				apiError(w, http.StatusBadRequest, CodeBadRequest, err.Error())
 				return
 			}
 			created, err := s.Core.Community.CreateClub(r.Context(), payload)
 			if err != nil {
-				badRequest(w, err.Error())
+				apiError(w, http.StatusBadRequest, CodeBadRequest, err.Error())
 				return
 			}
 			raw, _ := toMap(created)
 			s.broadcastEntityChange("clubs", "created", created.ID, raw, nil)
 			success(w, http.StatusCreated, created)
 		default:
-			methodNotAllowed(w)
+			apiMethodNotAllowed(w)
 		}
 		return
 	}
@@ -65,7 +65,7 @@ func (s *Server) handleClubRoutes(w http.ResponseWriter, r *http.Request) {
 		}
 		club, err := s.Core.Community.GetClub(r.Context(), id)
 		if err != nil {
-			notFound(w)
+			apiError(w, http.StatusNotFound, CodeNotFound, "Không tìm thấy tài nguyên")
 			return
 		}
 		success(w, http.StatusOK, club)
@@ -76,12 +76,12 @@ func (s *Server) handleClubRoutes(w http.ResponseWriter, r *http.Request) {
 		}
 		patch := map[string]interface{}{}
 		if err := decodeJSON(r, &patch); err != nil {
-			badRequest(w, err.Error())
+			apiError(w, http.StatusBadRequest, CodeBadRequest, err.Error())
 			return
 		}
 		updated, err := s.Core.Community.UpdateClub(r.Context(), id, patch)
 		if err != nil {
-			badRequest(w, err.Error())
+			apiError(w, http.StatusBadRequest, CodeBadRequest, err.Error())
 			return
 		}
 		raw, _ := toMap(updated)
@@ -93,13 +93,13 @@ func (s *Server) handleClubRoutes(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		if err := s.Core.Community.DeleteClub(r.Context(), id); err != nil {
-			internalError(w, err)
+			apiInternal(w, err)
 			return
 		}
 		s.broadcastEntityChange("clubs", "deleted", id, nil, nil)
 		success(w, http.StatusOK, map[string]any{"message": "deleted"})
 	default:
-		methodNotAllowed(w)
+		apiMethodNotAllowed(w)
 	}
 }
 
@@ -125,7 +125,7 @@ func (s *Server) handleMemberRoutes(w http.ResponseWriter, r *http.Request) {
 			if clubID != "" {
 				list, fetchErr := s.Core.Community.ListMembersByClub(r.Context(), clubID)
 				if fetchErr != nil {
-					internalError(w, fetchErr)
+					apiInternal(w, fetchErr)
 					return
 				}
 				success(w, http.StatusOK, list)
@@ -133,7 +133,7 @@ func (s *Server) handleMemberRoutes(w http.ResponseWriter, r *http.Request) {
 			}
 			list, fetchErr := s.Core.Community.ListMembers(r.Context())
 			if fetchErr != nil {
-				internalError(w, fetchErr)
+				apiInternal(w, fetchErr)
 				return
 			}
 			success(w, http.StatusOK, list)
@@ -144,24 +144,24 @@ func (s *Server) handleMemberRoutes(w http.ResponseWriter, r *http.Request) {
 			}
 			var payload community.Member
 			if err := decodeJSON(r, &payload); err != nil {
-				badRequest(w, err.Error())
+				apiError(w, http.StatusBadRequest, CodeBadRequest, err.Error())
 				return
 			}
 			created, err := s.Core.Community.CreateMember(r.Context(), payload)
 			if err != nil {
-				badRequest(w, err.Error())
+				apiError(w, http.StatusBadRequest, CodeBadRequest, err.Error())
 				return
 			}
 			raw, _ := toMap(created)
 			s.broadcastEntityChange("members", "created", created.ID, raw, nil)
 			success(w, http.StatusCreated, created)
 		default:
-			methodNotAllowed(w)
+			apiMethodNotAllowed(w)
 		}
 		return
 	}
 
-	notFound(w)
+	apiError(w, http.StatusNotFound, CodeNotFound, "Không tìm thấy tài nguyên")
 }
 
 // handleCommunityEventRoutes handles /api/v1/community-events
@@ -184,7 +184,7 @@ func (s *Server) handleCommunityEventRoutes(w http.ResponseWriter, r *http.Reque
 			}
 			list, fetchErr := s.Core.Community.ListEvents(r.Context())
 			if fetchErr != nil {
-				internalError(w, fetchErr)
+				apiInternal(w, fetchErr)
 				return
 			}
 			success(w, http.StatusOK, list)
@@ -195,22 +195,22 @@ func (s *Server) handleCommunityEventRoutes(w http.ResponseWriter, r *http.Reque
 			}
 			var payload community.Event
 			if err := decodeJSON(r, &payload); err != nil {
-				badRequest(w, err.Error())
+				apiError(w, http.StatusBadRequest, CodeBadRequest, err.Error())
 				return
 			}
 			created, err := s.Core.Community.CreateEvent(r.Context(), payload)
 			if err != nil {
-				badRequest(w, err.Error())
+				apiError(w, http.StatusBadRequest, CodeBadRequest, err.Error())
 				return
 			}
 			raw, _ := toMap(created)
 			s.broadcastEntityChange("community_events", "created", created.ID, raw, nil)
 			success(w, http.StatusCreated, created)
 		default:
-			methodNotAllowed(w)
+			apiMethodNotAllowed(w)
 		}
 		return
 	}
 
-	notFound(w)
+	apiError(w, http.StatusNotFound, CodeNotFound, "Không tìm thấy tài nguyên")
 }

@@ -80,7 +80,7 @@ func (r *sqlProvinceRepo) GetByCode(ctx context.Context, code string) (*federati
 func (r *sqlProvinceRepo) Create(ctx context.Context, p federation.Province) (*federation.Province, error) {
 	q := `INSERT INTO federation_provinces (id, code, name, region, has_fed, fed_unit_id, club_count, coach_count, vdv_count, created_at, updated_at) 
 	      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)`
-	
+
 	var fedUnitID *string
 	if p.FedUnitID != "" {
 		fedUnitID = &p.FedUnitID
@@ -154,15 +154,33 @@ func (r *sqlUnitRepo) List(ctx context.Context) ([]federation.FederationUnit, er
 		if err != nil {
 			return nil, err
 		}
-		if parentID != nil { u.ParentID = *parentID }
-		if provinceID != nil { u.ProvinceID = *provinceID }
-		if address != nil { u.Address = *address }
-		if phone != nil { u.Phone = *phone }
-		if email != nil { u.Email = *email }
-		if website != nil { u.Website = *website }
-		if founded != nil { u.FoundedDate = *founded }
-		if lName != nil { u.LeaderName = *lName }
-		if lTitle != nil { u.LeaderTitle = *lTitle }
+		if parentID != nil {
+			u.ParentID = *parentID
+		}
+		if provinceID != nil {
+			u.ProvinceID = *provinceID
+		}
+		if address != nil {
+			u.Address = *address
+		}
+		if phone != nil {
+			u.Phone = *phone
+		}
+		if email != nil {
+			u.Email = *email
+		}
+		if website != nil {
+			u.Website = *website
+		}
+		if founded != nil {
+			u.FoundedDate = *founded
+		}
+		if lName != nil {
+			u.LeaderName = *lName
+		}
+		if lTitle != nil {
+			u.LeaderTitle = *lTitle
+		}
 		out = append(out, u)
 	}
 	return out, rows.Err()
@@ -178,32 +196,68 @@ func (r *sqlUnitRepo) GetByID(ctx context.Context, id string) (*federation.Feder
 	if err != nil {
 		return nil, err
 	}
-	if parentID != nil { u.ParentID = *parentID }
-	if provinceID != nil { u.ProvinceID = *provinceID }
-	if address != nil { u.Address = *address }
-	if phone != nil { u.Phone = *phone }
-	if email != nil { u.Email = *email }
-	if website != nil { u.Website = *website }
-	if founded != nil { u.FoundedDate = *founded }
-	if lName != nil { u.LeaderName = *lName }
-	if lTitle != nil { u.LeaderTitle = *lTitle }
+	if parentID != nil {
+		u.ParentID = *parentID
+	}
+	if provinceID != nil {
+		u.ProvinceID = *provinceID
+	}
+	if address != nil {
+		u.Address = *address
+	}
+	if phone != nil {
+		u.Phone = *phone
+	}
+	if email != nil {
+		u.Email = *email
+	}
+	if website != nil {
+		u.Website = *website
+	}
+	if founded != nil {
+		u.FoundedDate = *founded
+	}
+	if lName != nil {
+		u.LeaderName = *lName
+	}
+	if lTitle != nil {
+		u.LeaderTitle = *lTitle
+	}
 	return &u, nil
 }
 
 func (r *sqlUnitRepo) Create(ctx context.Context, u federation.FederationUnit) (*federation.FederationUnit, error) {
 	q := `INSERT INTO federation_units (id, name, short_name, type, parent_id, province_id, status, address, phone, email, website, founded_date, leader_name, leader_title, club_count, member_count, metadata, created_at, updated_at) 
 	      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19)`
-	
+
 	var parentID, provinceID, address, phone, email, website, founded, lName, lTitle *string
-	if u.ParentID != "" { parentID = &u.ParentID }
-	if u.ProvinceID != "" { provinceID = &u.ProvinceID }
-	if u.Address != "" { address = &u.Address }
-	if u.Phone != "" { phone = &u.Phone }
-	if u.Email != "" { email = &u.Email }
-	if u.Website != "" { website = &u.Website }
-	if u.FoundedDate != "" { founded = &u.FoundedDate }
-	if u.LeaderName != "" { lName = &u.LeaderName }
-	if u.LeaderTitle != "" { lTitle = &u.LeaderTitle }
+	if u.ParentID != "" {
+		parentID = &u.ParentID
+	}
+	if u.ProvinceID != "" {
+		provinceID = &u.ProvinceID
+	}
+	if u.Address != "" {
+		address = &u.Address
+	}
+	if u.Phone != "" {
+		phone = &u.Phone
+	}
+	if u.Email != "" {
+		email = &u.Email
+	}
+	if u.Website != "" {
+		website = &u.Website
+	}
+	if u.FoundedDate != "" {
+		founded = &u.FoundedDate
+	}
+	if u.LeaderName != "" {
+		lName = &u.LeaderName
+	}
+	if u.LeaderTitle != "" {
+		lTitle = &u.LeaderTitle
+	}
 
 	_, err := r.db.Exec(ctx, q, u.ID, u.Name, u.ShortName, u.Type, parentID, provinceID, u.Status,
 		address, phone, email, website, founded, lName, lTitle, u.ClubCount, u.MemberCount, u.Metadata, u.CreatedAt, u.UpdatedAt)
@@ -240,15 +294,33 @@ func (r *sqlUnitRepo) ListByType(ctx context.Context, uType federation.UnitType)
 		if err != nil {
 			return nil, err
 		}
-		if parentID != nil { u.ParentID = *parentID }
-		if provinceID != nil { u.ProvinceID = *provinceID }
-		if address != nil { u.Address = *address }
-		if phone != nil { u.Phone = *phone }
-		if email != nil { u.Email = *email }
-		if website != nil { u.Website = *website }
-		if founded != nil { u.FoundedDate = *founded }
-		if lName != nil { u.LeaderName = *lName }
-		if lTitle != nil { u.LeaderTitle = *lTitle }
+		if parentID != nil {
+			u.ParentID = *parentID
+		}
+		if provinceID != nil {
+			u.ProvinceID = *provinceID
+		}
+		if address != nil {
+			u.Address = *address
+		}
+		if phone != nil {
+			u.Phone = *phone
+		}
+		if email != nil {
+			u.Email = *email
+		}
+		if website != nil {
+			u.Website = *website
+		}
+		if founded != nil {
+			u.FoundedDate = *founded
+		}
+		if lName != nil {
+			u.LeaderName = *lName
+		}
+		if lTitle != nil {
+			u.LeaderTitle = *lTitle
+		}
 		out = append(out, u)
 	}
 	return out, rows.Err()
@@ -273,15 +345,33 @@ func (r *sqlUnitRepo) ListByParent(ctx context.Context, parentID string) ([]fede
 		if err != nil {
 			return nil, err
 		}
-		if parentID != nil { u.ParentID = *parentID }
-		if provinceID != nil { u.ProvinceID = *provinceID }
-		if address != nil { u.Address = *address }
-		if phone != nil { u.Phone = *phone }
-		if email != nil { u.Email = *email }
-		if website != nil { u.Website = *website }
-		if founded != nil { u.FoundedDate = *founded }
-		if lName != nil { u.LeaderName = *lName }
-		if lTitle != nil { u.LeaderTitle = *lTitle }
+		if parentID != nil {
+			u.ParentID = *parentID
+		}
+		if provinceID != nil {
+			u.ProvinceID = *provinceID
+		}
+		if address != nil {
+			u.Address = *address
+		}
+		if phone != nil {
+			u.Phone = *phone
+		}
+		if email != nil {
+			u.Email = *email
+		}
+		if website != nil {
+			u.Website = *website
+		}
+		if founded != nil {
+			u.FoundedDate = *founded
+		}
+		if lName != nil {
+			u.LeaderName = *lName
+		}
+		if lTitle != nil {
+			u.LeaderTitle = *lTitle
+		}
 		out = append(out, u)
 	}
 	return out, rows.Err()
@@ -321,9 +411,15 @@ func (r *sqlPersonnelRepo) List(ctx context.Context, unitID string) ([]federatio
 		if err != nil {
 			return nil, err
 		}
-		if sDate != nil { a.StartDate = *sDate }
-		if eDate != nil { a.EndDate = *eDate }
-		if dNo != nil { a.DecisionNo = *dNo }
+		if sDate != nil {
+			a.StartDate = *sDate
+		}
+		if eDate != nil {
+			a.EndDate = *eDate
+		}
+		if dNo != nil {
+			a.DecisionNo = *dNo
+		}
 		out = append(out, a)
 	}
 	return out, rows.Err()
@@ -333,9 +429,15 @@ func (r *sqlPersonnelRepo) Create(ctx context.Context, a federation.PersonnelAss
 	q := `INSERT INTO federation_personnel (id, user_id, user_name, unit_id, unit_name, position, role_code, start_date, end_date, is_active, decision_no, created_at) 
 	      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)`
 	var sDate, eDate, dNo *string
-	if a.StartDate != "" { sDate = &a.StartDate }
-	if a.EndDate != "" { eDate = &a.EndDate }
-	if a.DecisionNo != "" { dNo = &a.DecisionNo }
+	if a.StartDate != "" {
+		sDate = &a.StartDate
+	}
+	if a.EndDate != "" {
+		eDate = &a.EndDate
+	}
+	if a.DecisionNo != "" {
+		dNo = &a.DecisionNo
+	}
 
 	_, err := r.db.Exec(ctx, q, a.ID, a.UserID, a.UserName, a.UnitID, a.UnitName, a.Position, a.RoleCode, sDate, eDate, a.IsActive, dNo, a.CreatedAt)
 	return err
@@ -359,9 +461,15 @@ func (r *sqlPersonnelRepo) GetByUserAndUnit(ctx context.Context, userID, unitID 
 	if err != nil {
 		return nil, err
 	}
-	if sDate != nil { a.StartDate = *sDate }
-	if eDate != nil { a.EndDate = *eDate }
-	if dNo != nil { a.DecisionNo = *dNo }
+	if sDate != nil {
+		a.StartDate = *sDate
+	}
+	if eDate != nil {
+		a.EndDate = *eDate
+	}
+	if dNo != nil {
+		a.DecisionNo = *dNo
+	}
 	return &a, nil
 }
 
@@ -370,7 +478,7 @@ func UpdateGenericTable(ctx context.Context, db *pgxpool.Pool, table string, id 
 	if len(patch) == 0 {
 		return nil
 	}
-	
+
 	query := fmt.Sprintf("UPDATE %s SET updated_at = CURRENT_TIMESTAMP", table)
 	if table == "federation_personnel" {
 		query = fmt.Sprintf("UPDATE %s SET ", table) // lacks updated_at

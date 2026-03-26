@@ -24,17 +24,17 @@ import (
 type EventType string
 
 const (
-	EventTournamentCreated   EventType = "tournament.created"
-	EventTournamentUpdated   EventType = "tournament.updated"
-	EventTournamentStarted   EventType = "tournament.started"
-	EventTournamentFinished  EventType = "tournament.finished"
-	EventAthleteRegistered   EventType = "athlete.registered"
-	EventAthleteUpdated      EventType = "athlete.updated"
-	EventMatchStarted        EventType = "match.started"
-	EventMatchScored         EventType = "match.scored"
-	EventMatchFinished       EventType = "match.finished"
-	EventBracketGenerated    EventType = "bracket.generated"
-	EventResultPublished     EventType = "result.published"
+	EventTournamentCreated  EventType = "tournament.created"
+	EventTournamentUpdated  EventType = "tournament.updated"
+	EventTournamentStarted  EventType = "tournament.started"
+	EventTournamentFinished EventType = "tournament.finished"
+	EventAthleteRegistered  EventType = "athlete.registered"
+	EventAthleteUpdated     EventType = "athlete.updated"
+	EventMatchStarted       EventType = "match.started"
+	EventMatchScored        EventType = "match.scored"
+	EventMatchFinished      EventType = "match.finished"
+	EventBracketGenerated   EventType = "bracket.generated"
+	EventResultPublished    EventType = "result.published"
 )
 
 // Event is a webhook payload.
@@ -51,11 +51,11 @@ type Event struct {
 
 // Subscription defines a webhook endpoint.
 type Subscription struct {
-	ID       string      `json:"id"`
-	URL      string      `json:"url"`
-	Secret   string      `json:"secret"` // HMAC signing key
-	Events   []EventType `json:"events"` // subscribed event types
-	Active   bool        `json:"active"`
+	ID     string      `json:"id"`
+	URL    string      `json:"url"`
+	Secret string      `json:"secret"` // HMAC signing key
+	Events []EventType `json:"events"` // subscribed event types
+	Active bool        `json:"active"`
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -113,16 +113,16 @@ func DefaultConfig() Config {
 
 // Service manages webhook subscriptions and delivery.
 type Service struct {
-	cfg           Config
-	subs          map[string]*Subscription
-	deliveries    []Delivery
-	client        *http.Client
-	logger        *slog.Logger
-	idFunc        func() string
-	queue         chan deliveryTask
-	mu            sync.RWMutex
-	wg            sync.WaitGroup
-	cancel        context.CancelFunc
+	cfg        Config
+	subs       map[string]*Subscription
+	deliveries []Delivery
+	client     *http.Client
+	logger     *slog.Logger
+	idFunc     func() string
+	queue      chan deliveryTask
+	mu         sync.RWMutex
+	wg         sync.WaitGroup
+	cancel     context.CancelFunc
 }
 
 type deliveryTask struct {

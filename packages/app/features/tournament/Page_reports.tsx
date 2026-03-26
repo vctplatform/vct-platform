@@ -8,8 +8,8 @@ import {
   VCT_Stack,
   VCT_Tabs,
   VCT_Toast,
-} from '../components/vct-ui'
-import { VCT_Icons } from '../components/vct-icons'
+} from '@vct/ui'
+import { VCT_Icons } from '@vct/ui'
 import { CAN_KYS, LUOT_THI_QUYENS, TRAN_DAUS } from '../data/mock-data'
 import { TOURNAMENT_CONFIG } from '../data/tournament-config'
 import { repositories, useEntityCollection } from '../data/repository'
@@ -225,7 +225,7 @@ export const Page_reports = () => {
             borderRadius: 12,
             border: '1px solid rgba(239,68,68,0.25)',
             background: 'rgba(239,68,68,0.08)',
-            color: '#ef4444',
+            color: 'var(--vct-danger)',
             fontSize: 13,
             fontWeight: 700,
           }}
@@ -300,15 +300,15 @@ export const Page_reports = () => {
           }}
         >
           {[
-            { label: 'Đoàn đăng ký', v: stats.doan, max: 60, icon: <VCT_Icons.Building2 size={20} />, c: '#0ea5e9' },
-            { label: 'VĐV', v: stats.vdv, max: 500, icon: <VCT_Icons.Users size={20} />, c: '#f59e0b' },
-            { label: 'ND Đăng ký', v: stats.dk, max: 300, icon: <VCT_Icons.FileText size={20} />, c: '#a78bfa' },
-            { label: 'Trọng tài', v: stats.tt, max: 50, icon: <VCT_Icons.Shield size={20} />, c: '#10b981' },
-            { label: 'Sàn đấu', v: stats.san, max: 12, icon: <VCT_Icons.Layout size={20} />, c: '#22d3ee' },
-            { label: 'Trận ĐK', v: stats.tran, max: 300, icon: <VCT_Icons.Swords size={20} />, c: '#ef4444' },
-            { label: 'Lượt Quyền', v: stats.quyen, max: 300, icon: <VCT_Icons.Award size={20} />, c: '#22d3ee' },
-            { label: 'Cân ký', v: stats.canky, max: 300, icon: <VCT_Icons.Activity size={20} />, c: '#f59e0b' },
-            { label: 'Khiếu nại', v: stats.kn, max: 100, icon: <VCT_Icons.Alert size={20} />, c: '#ef4444' },
+            { label: 'Đoàn đăng ký', v: stats.doan, max: 60, icon: <VCT_Icons.Building2 size={20} />, c: 'var(--vct-accent-cyan)' },
+            { label: 'VĐV', v: stats.vdv, max: 500, icon: <VCT_Icons.Users size={20} />, c: 'var(--vct-warning)' },
+            { label: 'ND Đăng ký', v: stats.dk, max: 300, icon: <VCT_Icons.FileText size={20} />, c: 'var(--vct-info)' },
+            { label: 'Trọng tài', v: stats.tt, max: 50, icon: <VCT_Icons.Shield size={20} />, c: 'var(--vct-success)' },
+            { label: 'Sàn đấu', v: stats.san, max: 12, icon: <VCT_Icons.Layout size={20} />, c: 'var(--vct-accent-cyan)' },
+            { label: 'Trận ĐK', v: stats.tran, max: 300, icon: <VCT_Icons.Swords size={20} />, c: 'var(--vct-danger)' },
+            { label: 'Lượt Quyền', v: stats.quyen, max: 300, icon: <VCT_Icons.Award size={20} />, c: 'var(--vct-accent-cyan)' },
+            { label: 'Cân ký', v: stats.canky, max: 300, icon: <VCT_Icons.Activity size={20} />, c: 'var(--vct-warning)' },
+            { label: 'Khiếu nại', v: stats.kn, max: 100, icon: <VCT_Icons.Alert size={20} />, c: 'var(--vct-danger)' },
           ].map((item, index) => (
             <motion.div
               key={item.label}
@@ -342,11 +342,11 @@ export const Page_reports = () => {
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                 <span>Đã xác nhận</span>
-                <span style={{ fontWeight: 900, color: '#10b981' }}>{stats.doan_xn}</span>
+                <span style={{ fontWeight: 900, color: 'var(--vct-success)' }}>{stats.doan_xn}</span>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                 <span>Tỷ lệ xác nhận</span>
-                <span style={{ fontWeight: 900, color: '#22d3ee' }}>
+                <span style={{ fontWeight: 900, color: 'var(--vct-accent-cyan)' }}>
                   {Math.round((stats.doan_xn / Math.max(1, stats.doan)) * 100)}%
                 </span>
               </div>
@@ -357,12 +357,12 @@ export const Page_reports = () => {
             <div style={{ fontWeight: 800, fontSize: 14, marginBottom: 16 }}>VĐV theo giới tính</div>
             <div style={{ display: 'flex', gap: 24, textAlign: 'center', justifyContent: 'center' }}>
               <div>
-                <div style={{ fontSize: 32, fontWeight: 900, color: '#3b82f6' }}>{stats.vdv_nam}</div>
+                <div style={{ fontSize: 32, fontWeight: 900, color: 'var(--vct-info)' }}>{stats.vdv_nam}</div>
                 <div style={{ fontSize: 12, opacity: 0.5 }}>Nam</div>
               </div>
               <div style={{ width: 2, background: 'var(--vct-border-subtle)' }} />
               <div>
-                <div style={{ fontSize: 32, fontWeight: 900, color: '#ec4899' }}>{stats.vdv_nu}</div>
+                <div style={{ fontSize: 32, fontWeight: 900, color: 'var(--vct-accent-pink)' }}>{stats.vdv_nu}</div>
                 <div style={{ fontSize: 12, opacity: 0.5 }}>Nữ</div>
               </div>
             </div>
@@ -381,7 +381,7 @@ export const Page_reports = () => {
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                 <span>Đã kết thúc</span>
-                <span style={{ fontWeight: 900, color: '#10b981' }}>{stats.tran_xong}</span>
+                <span style={{ fontWeight: 900, color: 'var(--vct-success)' }}>{stats.tran_xong}</span>
               </div>
               <VCT_ProgressBar value={stats.tran_xong} max={Math.max(1, stats.tran)} showLabel />
             </div>
@@ -395,11 +395,11 @@ export const Page_reports = () => {
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                 <span>Đạt cân</span>
-                <span style={{ fontWeight: 900, color: '#10b981' }}>{stats.can_dat}</span>
+                <span style={{ fontWeight: 900, color: 'var(--vct-success)' }}>{stats.can_dat}</span>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                 <span>Tỷ lệ đạt</span>
-                <span style={{ fontWeight: 900, color: '#22d3ee' }}>
+                <span style={{ fontWeight: 900, color: 'var(--vct-accent-cyan)' }}>
                   {Math.round((stats.can_dat / Math.max(1, stats.canky)) * 100)}%
                 </span>
               </div>
@@ -425,7 +425,7 @@ export const Page_reports = () => {
                     display: 'flex',
                     borderRadius: 6,
                     overflow: 'hidden',
-                    background: '#f1f5f9',
+                    background: 'var(--vct-text-primary)',
                   }}
                 >
                   <motion.div
@@ -434,14 +434,14 @@ export const Page_reports = () => {
                     transition={{ delay: 0.2 }}
                     style={{
                       height: '100%',
-                      background: '#3b82f6',
+                      background: 'var(--vct-info)',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
                     }}
                   >
                     {value.nam > 0 && (
-                      <span style={{ fontSize: 10, fontWeight: 800, color: '#fff' }}>
+                      <span style={{ fontSize: 10, fontWeight: 800, color: 'var(--vct-bg-elevated)' }}>
                         {value.nam}
                       </span>
                     )}
@@ -452,14 +452,14 @@ export const Page_reports = () => {
                     transition={{ delay: 0.3 }}
                     style={{
                       height: '100%',
-                      background: '#ec4899',
+                      background: 'var(--vct-accent-pink)',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
                     }}
                   >
                     {value.nu > 0 && (
-                      <span style={{ fontSize: 10, fontWeight: 800, color: '#fff' }}>
+                      <span style={{ fontSize: 10, fontWeight: 800, color: 'var(--vct-bg-elevated)' }}>
                         {value.nu}
                       </span>
                     )}
@@ -495,7 +495,7 @@ export const Page_reports = () => {
                   width: 10,
                   height: 10,
                   borderRadius: 3,
-                  background: '#3b82f6',
+                  background: 'var(--vct-info)',
                   marginRight: 4,
                 }}
               />
@@ -508,7 +508,7 @@ export const Page_reports = () => {
                   width: 10,
                   height: 10,
                   borderRadius: 3,
-                  background: '#ec4899',
+                  background: 'var(--vct-accent-pink)',
                   marginRight: 4,
                 }}
               />

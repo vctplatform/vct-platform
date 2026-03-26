@@ -2,10 +2,10 @@
 
 import * as React from 'react'
 import { useState, useEffect, useMemo, useCallback } from 'react'
-import { VCT_Badge, VCT_Button, VCT_Stack, VCT_Toast, VCT_SearchInput, VCT_EmptyState, VCT_AvatarLetter } from '../components/vct-ui'
-import { VCT_PageContainer, VCT_StatRow } from '../components/vct-ui'
-import type { StatItem } from '../components/VCT_StatRow'
-import { VCT_Icons } from '../components/vct-icons'
+import { VCT_Badge, VCT_Button, VCT_Stack, VCT_Toast, VCT_SearchInput, VCT_EmptyState, VCT_AvatarLetter } from '@vct/ui'
+import { VCT_PageContainer, VCT_StatRow } from '@vct/ui'
+import type { StatItem } from '@vct/ui'
+import { VCT_Icons } from '@vct/ui'
 
 const API = '/api/v1/provincial'
 
@@ -51,8 +51,8 @@ export const Page_provincial_personnel = () => {
             </div>
 
             <VCT_StatRow items={[
-                { label: 'Thành viên BCH', value: members.length, icon: <VCT_Icons.Users size={18} />, color: '#06b6d4' },
-                { label: 'Đang hoạt động', value: members.filter(m => m.is_active).length, icon: <VCT_Icons.Activity size={18} />, color: '#10b981' },
+                { label: 'Thành viên BCH', value: members.length, icon: <VCT_Icons.Users size={18} />, color: 'var(--vct-accent-cyan)' },
+                { label: 'Đang hoạt động', value: members.filter(m => m.is_active).length, icon: <VCT_Icons.Activity size={18} />, color: 'var(--vct-success)' },
             ] as StatItem[]} className="mb-6" />
 
             <VCT_Stack direction="row" gap={16} align="center" justify="space-between" className="mb-5">

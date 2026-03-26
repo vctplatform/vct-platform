@@ -41,7 +41,7 @@ func (s *Server) handleRegistrationRoutes(w http.ResponseWriter, r *http.Request
 			}
 
 			if fetchErr != nil {
-				internalError(w, fetchErr)
+				apiInternal(w, fetchErr)
 				return
 			}
 			success(w, http.StatusOK, list)
@@ -54,12 +54,12 @@ func (s *Server) handleRegistrationRoutes(w http.ResponseWriter, r *http.Request
 			}
 			var payload domain.Registration
 			if err := decodeJSON(r, &payload); err != nil {
-				badRequest(w, err.Error())
+				apiError(w, http.StatusBadRequest, CodeBadRequest, err.Error())
 				return
 			}
 			created, err := s.Core.Registration.CreateRegistration(r.Context(), payload)
 			if err != nil {
-				badRequest(w, err.Error())
+				apiError(w, http.StatusBadRequest, CodeBadRequest, err.Error())
 				return
 			}
 			raw, _ := toMap(created)
@@ -67,7 +67,7 @@ func (s *Server) handleRegistrationRoutes(w http.ResponseWriter, r *http.Request
 			success(w, http.StatusCreated, created)
 			return
 		default:
-			methodNotAllowed(w)
+			apiMethodNotAllowed(w)
 			return
 		}
 	}
@@ -85,7 +85,7 @@ func (s *Server) handleRegistrationRoutes(w http.ResponseWriter, r *http.Request
 			}
 			reg, err := s.Core.Registration.GetRegistration(r.Context(), id)
 			if err != nil {
-				notFound(w)
+				apiError(w, http.StatusNotFound, CodeNotFound, "Không tìm thấy tài nguyên")
 				return
 			}
 			success(w, http.StatusOK, reg)
@@ -98,12 +98,12 @@ func (s *Server) handleRegistrationRoutes(w http.ResponseWriter, r *http.Request
 			}
 			var patch map[string]interface{}
 			if err := json.NewDecoder(r.Body).Decode(&patch); err != nil {
-				badRequest(w, "invalid json")
+				apiError(w, http.StatusBadRequest, CodeBadRequest, "invalid json")
 				return
 			}
 			updated, err := s.Core.Registration.UpdateRegistration(r.Context(), id, patch)
 			if err != nil {
-				badRequest(w, err.Error())
+				apiError(w, http.StatusBadRequest, CodeBadRequest, err.Error())
 				return
 			}
 			raw, _ := toMap(updated)
@@ -117,18 +117,18 @@ func (s *Server) handleRegistrationRoutes(w http.ResponseWriter, r *http.Request
 				return
 			}
 			if err := s.Core.Registration.DeleteRegistration(r.Context(), id); err != nil {
-				badRequest(w, err.Error())
+				apiError(w, http.StatusBadRequest, CodeBadRequest, err.Error())
 				return
 			}
 			s.broadcastEntityChange("registration", "deleted", id, nil, nil)
 			w.WriteHeader(http.StatusNoContent)
 			return
 		default:
-			methodNotAllowed(w)
+			apiMethodNotAllowed(w)
 			return
 		}
 	default:
-		notFound(w)
+		apiError(w, http.StatusNotFound, CodeNotFound, "Không tìm thấy tài nguyên")
 		return
 	}
 }

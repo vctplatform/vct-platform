@@ -6,10 +6,10 @@ import {
     VCT_Card, VCT_Badge, VCT_Button, VCT_Text, VCT_Stack,
     VCT_Toast, VCT_Modal, VCT_SearchInput, VCT_Table, VCT_AvatarLetter,
     VCT_ConfirmDialog, VCT_EmptyState
-} from '../components/vct-ui';
-import { VCT_PageContainer, VCT_PageHero, VCT_SectionCard, VCT_StatRow } from '../components/vct-ui';
-import type { StatItem } from '../components/VCT_StatRow';
-import { VCT_Icons } from '../components/vct-icons';
+} from '@vct/ui';
+import { VCT_PageContainer, VCT_PageHero, VCT_SectionCard, VCT_StatRow } from '@vct/ui';
+import type { StatItem } from '@vct/ui';
+import { VCT_Icons } from '@vct/ui';
 import { NOI_DUNG_QUYENS, HANG_CANS, genId } from '../data/mock-data';
 import { TOURNAMENT_CONFIG } from '../data/tournament-config';
 import type { DangKy, TrangThaiDK, VanDongVien, HangCan, DonVi } from '../data/types';
@@ -129,7 +129,7 @@ const RegistrationModal = ({
             <VCT_Stack gap={24}>
                 {/* Info Header */}
                 <div style={{ display: 'flex', alignItems: 'center', gap: 16, padding: '20px', background: 'var(--vct-bg-input)', borderRadius: '16px' }}>
-                    <VCT_AvatarLetter name={vdv.ho_ten} size={56} color={vdv.gioi === 'nam' ? '#60a5fa' : '#f472b6'} />
+                    <VCT_AvatarLetter name={vdv.ho_ten} size={56} color={vdv.gioi === 'nam' ? 'var(--vct-info)' : '#f472b6'} />
                     <div>
                         <VCT_Text variant="h2" style={{ fontSize: 18 }}>{vdv.ho_ten}</VCT_Text>
                         <VCT_Text variant="small" style={{ opacity: 0.7, fontWeight: 500, marginTop: 4 }}>{vdv.gioi === 'nam' ? '♂ Nam' : '♀ Nữ'} • {tuoi} tuổi ({lt}) • {vdv.can_nang}kg • Mã VĐV: {vdv.id}</VCT_Text>
@@ -140,7 +140,7 @@ const RegistrationModal = ({
                 <AnimatePresence>
                     {overQuota && (
                         <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }}>
-                            <div style={{ padding: '12px 16px', background: 'rgba(239, 68, 68, 0.1)', border: '1px solid rgba(239, 68, 68, 0.3)', borderRadius: '12px', color: '#ef4444', fontWeight: 600, fontSize: '13px' }}>
+                            <div style={{ padding: '12px 16px', background: 'rgba(239, 68, 68, 0.1)', border: '1px solid rgba(239, 68, 68, 0.3)', borderRadius: '12px', color: 'var(--vct-danger)', fontWeight: 600, fontSize: '13px' }}>
                                 ⚠️ Vượt quá giới hạn {maxNd} nội dung/VĐV (Cấu hình Đoàn). Vui lòng bỏ bớt để được duyệt.
                             </div>
                         </motion.div>
@@ -151,8 +151,8 @@ const RegistrationModal = ({
                     {/* CỘT QUYỀN */}
                     <div style={{ border: '1px solid rgba(34, 211, 238, 0.2)', background: 'rgba(34, 211, 238, 0.02)', borderRadius: '16px', padding: '16px' }}>
                         <VCT_Stack direction="row" justify="space-between" align="center" className="mb-4">
-                            <VCT_Text style={{ fontWeight: 800, color: '#22d3ee' }}>🥋 NỘI DUNG QUYỀN</VCT_Text>
-                            <div style={{ fontSize: '11px', padding: '2px 8px', borderRadius: '8px', background: 'rgba(34, 211, 238, 0.1)', color: '#22d3ee', fontWeight: 800 }}>{newQCount} ĐÃ CHỌN</div>
+                            <VCT_Text style={{ fontWeight: 800, color: 'var(--vct-accent-cyan)' }}>🥋 NỘI DUNG QUYỀN</VCT_Text>
+                            <div style={{ fontSize: '11px', padding: '2px 8px', borderRadius: '8px', background: 'rgba(34, 211, 238, 0.1)', color: 'var(--vct-accent-cyan)', fontWeight: 800 }}>{newQCount} ĐÃ CHỌN</div>
                         </VCT_Stack>
 
                         <VCT_Stack gap={10}>
@@ -160,8 +160,8 @@ const RegistrationModal = ({
                             {availQ.map(q => {
                                 const isChecked = !!checkedQ[q.id];
                                 return (
-                                    <label key={q.id} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '12px', borderRadius: '12px', border: `1.5px solid ${isChecked ? '#22d3ee' : 'var(--vct-border-subtle)'}`, background: isChecked ? 'rgba(34, 211, 238, 0.08)' : 'var(--vct-bg-card)', cursor: 'pointer', transition: 'all 0.2s' }}>
-                                        <input type="checkbox" checked={isChecked} onChange={() => setCheckedQ(p => ({ ...p, [q.id]: !p[q.id] }))} style={{ width: 18, height: 18, accentColor: '#22d3ee' }} />
+                                    <label key={q.id} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '12px', borderRadius: '12px', border: `1.5px solid ${isChecked ? 'var(--vct-accent-cyan)' : 'var(--vct-border-subtle)'}`, background: isChecked ? 'rgba(34, 211, 238, 0.08)' : 'var(--vct-bg-card)', cursor: 'pointer', transition: 'all 0.2s' }}>
+                                        <input type="checkbox" checked={isChecked} onChange={() => setCheckedQ(p => ({ ...p, [q.id]: !p[q.id] }))} style={{ width: 18, height: 18, accentColor: 'var(--vct-accent-cyan)' }} />
                                         <div className="flex-1">
                                             <VCT_Text style={{ fontSize: '13px', fontWeight: isChecked ? 700 : 500 }}>{q.ten}</VCT_Text>
                                         </div>
@@ -174,8 +174,8 @@ const RegistrationModal = ({
                     {/* CỘT ĐỐI KHÁNG */}
                     <div style={{ border: '1px solid rgba(245, 158, 11, 0.2)', background: 'rgba(245, 158, 11, 0.02)', borderRadius: '16px', padding: '16px' }}>
                         <VCT_Stack direction="row" justify="space-between" align="center" className="mb-4">
-                            <VCT_Text style={{ fontWeight: 800, color: '#f59e0b' }}>🥊 HẠNG CÂN ĐỐI KHÁNG</VCT_Text>
-                            {checkedDK && <div onClick={() => setCheckedDK('')} style={{ fontSize: '11px', padding: '2px 8px', borderRadius: '8px', background: 'rgba(245, 158, 11, 0.1)', color: '#f59e0b', fontWeight: 800, cursor: 'pointer' }}>✕ BỎ CHỌN</div>}
+                            <VCT_Text style={{ fontWeight: 800, color: 'var(--vct-warning)' }}>🥊 HẠNG CÂN ĐỐI KHÁNG</VCT_Text>
+                            {checkedDK && <div onClick={() => setCheckedDK('')} style={{ fontSize: '11px', padding: '2px 8px', borderRadius: '8px', background: 'rgba(245, 158, 11, 0.1)', color: 'var(--vct-warning)', fontWeight: 800, cursor: 'pointer' }}>✕ BỎ CHỌN</div>}
                         </VCT_Stack>
 
                         <VCT_Stack gap={10}>
@@ -184,11 +184,11 @@ const RegistrationModal = ({
                                 const isChecked = checkedDK === d.id;
                                 const isBestMatch = d.id === bestId;
                                 return (
-                                    <label key={d.id} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '12px', borderRadius: '12px', border: `1.5px solid ${isChecked ? '#f59e0b' : isBestMatch ? 'rgba(245, 158, 11, 0.4)' : 'var(--vct-border-subtle)'}`, background: isChecked ? 'rgba(245, 158, 11, 0.12)' : isBestMatch ? 'rgba(245, 158, 11, 0.04)' : 'var(--vct-bg-card)', cursor: 'pointer', transition: 'all 0.2s', position: 'relative' }}>
-                                        <input type="radio" name="dk_sel" checked={isChecked} onChange={() => setCheckedDK(d.id)} style={{ width: 18, height: 18, accentColor: '#f59e0b' }} />
+                                    <label key={d.id} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '12px', borderRadius: '12px', border: `1.5px solid ${isChecked ? 'var(--vct-warning)' : isBestMatch ? 'rgba(245, 158, 11, 0.4)' : 'var(--vct-border-subtle)'}`, background: isChecked ? 'rgba(245, 158, 11, 0.12)' : isBestMatch ? 'rgba(245, 158, 11, 0.04)' : 'var(--vct-bg-card)', cursor: 'pointer', transition: 'all 0.2s', position: 'relative' }}>
+                                        <input type="radio" name="dk_sel" checked={isChecked} onChange={() => setCheckedDK(d.id)} style={{ width: 18, height: 18, accentColor: 'var(--vct-warning)' }} />
                                         <div style={{ flex: 1, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                                             <VCT_Text style={{ fontSize: '13px', fontWeight: isChecked ? 700 : 500 }}>{fmtDK(d)}</VCT_Text>
-                                            {isBestMatch && <span style={{ fontSize: '10px', padding: '2px 8px', borderRadius: '6px', background: '#f59e0b', color: '#000', fontWeight: 900 }}>GỢI Ý ({distToBest(vdv.can_nang, d)}kg)</span>}
+                                            {isBestMatch && <span style={{ fontSize: '10px', padding: '2px 8px', borderRadius: '6px', background: 'var(--vct-warning)', color: '#000', fontWeight: 900 }}>GỢI Ý ({distToBest(vdv.can_nang, d)}kg)</span>}
                                         </div>
                                     </label>
                                 )
@@ -321,18 +321,18 @@ export const Page_registration = () => {
     }, [canManageCard, requireAction]);
 
     const pipeline = [
-        { k: '', l: 'Tất cả ĐK', c: '#22d3ee', i: <VCT_Icons.List size={14} /> },
-        { k: 'quyen', l: 'Quyền', c: '#22d3ee', i: '🥋' },
-        { k: 'doi_khang', l: 'Đối kháng', c: '#f59e0b', i: '🥊' },
-        { k: 'cho_duyet', l: 'Chờ duyệt', c: '#f59e0b', i: <VCT_Icons.Clock size={14} /> },
-        { k: 'da_duyet', l: 'Đã duyệt', c: '#10b981', i: <VCT_Icons.Check size={14} /> },
+        { k: '', l: 'Tất cả ĐK', c: 'var(--vct-accent-cyan)', i: <VCT_Icons.List size={14} /> },
+        { k: 'quyen', l: 'Quyền', c: 'var(--vct-accent-cyan)', i: '🥋' },
+        { k: 'doi_khang', l: 'Đối kháng', c: 'var(--vct-warning)', i: '🥊' },
+        { k: 'cho_duyet', l: 'Chờ duyệt', c: 'var(--vct-warning)', i: <VCT_Icons.Clock size={14} /> },
+        { k: 'da_duyet', l: 'Đã duyệt', c: 'var(--vct-success)', i: <VCT_Icons.Check size={14} /> },
     ];
 
     const kpis: StatItem[] = [
-        { label: 'Tổng Lượt ĐK', value: data.length, icon: <VCT_Icons.List size={18} />, color: '#22d3ee', sub: `${data.filter(r => r.loai === 'quyen').length} Quyền - ${data.filter(r => r.loai === 'doi_khang').length} Đối kháng` },
-        { label: 'Số VĐV có thẻ', value: new Set(data.map(d => d.vdv_id)).size, icon: <VCT_Icons.Users size={18} />, color: '#a78bfa', sub: `Max ${TOURNAMENT_CONFIG.quota.max_nd_per_vdv} thẻ / VĐV` },
-        { label: 'Quota lấp đầy', value: `${Math.round((new Set(data.map(d => d.doan_id)).size / Math.max(1, teams.length)) * 100)}%`, icon: <VCT_Icons.Activity size={18} />, color: '#f59e0b', sub: 'Đoàn đã đăng ký' },
-        { label: 'Tỷ lệ duyệt', value: `${Math.round((data.filter(r => r.trang_thai === 'da_duyet').length / Math.max(1, data.length)) * 100)}%`, icon: <VCT_Icons.Check size={18} />, color: '#10b981', sub: `${data.filter(r => r.trang_thai === 'cho_duyet').length} chờ duyệt` },
+        { label: 'Tổng Lượt ĐK', value: data.length, icon: <VCT_Icons.List size={18} />, color: 'var(--vct-accent-cyan)', sub: `${data.filter(r => r.loai === 'quyen').length} Quyền - ${data.filter(r => r.loai === 'doi_khang').length} Đối kháng` },
+        { label: 'Số VĐV có thẻ', value: new Set(data.map(d => d.vdv_id)).size, icon: <VCT_Icons.Users size={18} />, color: 'var(--vct-info)', sub: `Max ${TOURNAMENT_CONFIG.quota.max_nd_per_vdv} thẻ / VĐV` },
+        { label: 'Quota lấp đầy', value: `${Math.round((new Set(data.map(d => d.doan_id)).size / Math.max(1, teams.length)) * 100)}%`, icon: <VCT_Icons.Activity size={18} />, color: 'var(--vct-warning)', sub: 'Đoàn đã đăng ký' },
+        { label: 'Tỷ lệ duyệt', value: `${Math.round((data.filter(r => r.trang_thai === 'da_duyet').length / Math.max(1, data.length)) * 100)}%`, icon: <VCT_Icons.Check size={18} />, color: 'var(--vct-success)', sub: `${data.filter(r => r.trang_thai === 'cho_duyet').length} chờ duyệt` },
     ];
 
     return (
@@ -350,12 +350,12 @@ export const Page_registration = () => {
 
             {/* DEADLINE WARNING */}
             <div style={{ padding: '16px 20px', background: 'rgba(239, 68, 68, 0.1)', border: '1px dashed #ef4444', borderRadius: '12px', display: 'flex', alignItems: 'center', gap: 16, marginBottom: 24 }}>
-                <div style={{ width: 40, height: 40, background: '#ef4444', color: '#fff', borderRadius: 10, display: 'flex', alignItems: 'center', justifyContent: 'center' }}><VCT_Icons.Alert size={20} /></div>
+                <div style={{ width: 40, height: 40, background: 'var(--vct-danger)', color: 'var(--vct-bg-elevated)', borderRadius: 10, display: 'flex', alignItems: 'center', justifyContent: 'center' }}><VCT_Icons.Alert size={20} /></div>
                 <div>
-                    <VCT_Text style={{ fontWeight: 800, color: '#ef4444' }}>Cổng Đăng Ký Đang Mở</VCT_Text>
-                    <VCT_Text variant="small" style={{ color: '#ef4444', opacity: 0.8 }}>Hạn chót đăng ký: <strong>{TOURNAMENT_CONFIG.ngay_dk_cuoi}</strong>. Các Đoàn vẫn có thể thêm/rút VĐV khỏi nội dung.</VCT_Text>
+                    <VCT_Text style={{ fontWeight: 800, color: 'var(--vct-danger)' }}>Cổng Đăng Ký Đang Mở</VCT_Text>
+                    <VCT_Text variant="small" style={{ color: 'var(--vct-danger)', opacity: 0.8 }}>Hạn chót đăng ký: <strong>{TOURNAMENT_CONFIG.ngay_dk_cuoi}</strong>. Các Đoàn vẫn có thể thêm/rút VĐV khỏi nội dung.</VCT_Text>
                 </div>
-                <VCT_Button variant="secondary" style={{ marginLeft: 'auto', background: 'var(--vct-bg-card)', borderColor: '#ef4444', color: '#ef4444' }}>Đóng cổng ĐK</VCT_Button>
+                <VCT_Button variant="secondary" style={{ marginLeft: 'auto', background: 'var(--vct-bg-card)', borderColor: 'var(--vct-danger)', color: 'var(--vct-danger)' }}>Đóng cổng ĐK</VCT_Button>
             </div>
 
             {/* PIPELINE & TOOLBAR */}
@@ -373,7 +373,7 @@ export const Page_registration = () => {
                 </div>
                 <VCT_Stack direction="row" gap={12}>
                     <div style={{ width: 280 }}><VCT_SearchInput value={search} onChange={setSearch} onClear={() => setSearch('')} placeholder="Tìm VĐV, nội dung thi..." /></div>
-                    <VCT_Button icon={<VCT_Icons.Check size={16} />} variant="secondary" onClick={approveAll} style={{ color: '#10b981', borderColor: 'rgba(16, 185, 129, 0.3)' }} disabled={!permissions.canApprove}>Duyệt loạt</VCT_Button>
+                    <VCT_Button icon={<VCT_Icons.Check size={16} />} variant="secondary" onClick={approveAll} style={{ color: 'var(--vct-success)', borderColor: 'rgba(16, 185, 129, 0.3)' }} disabled={!permissions.canApprove}>Duyệt loạt</VCT_Button>
                     <VCT_Button icon={<VCT_Icons.Plus size={16} />} onClick={openRegistrationPicker} disabled={!canManageCard}>Quản lý Thẻ (In-card)</VCT_Button>
                 </VCT_Stack>
             </VCT_Stack>
@@ -393,7 +393,7 @@ export const Page_registration = () => {
                             },
                             {
                                 key: 'loai_noi_dung', label: 'Phân loại', render: (r: (typeof enrichedData)[number]) => (
-                                    <span style={{ padding: '6px 12px', borderRadius: '8px', fontSize: '11px', fontWeight: 800, background: r.loai === 'quyen' ? 'rgba(34,211,238,0.1)' : 'rgba(245,158,11,0.1)', color: r.loai === 'quyen' ? '#22d3ee' : '#f59e0b', display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+                                    <span style={{ padding: '6px 12px', borderRadius: '8px', fontSize: '11px', fontWeight: 800, background: r.loai === 'quyen' ? 'rgba(34,211,238,0.1)' : 'rgba(245,158,11,0.1)', color: r.loai === 'quyen' ? 'var(--vct-accent-cyan)' : 'var(--vct-warning)', display: 'inline-flex', alignItems: 'center', gap: 6 }}>
                                         {r.loai === 'quyen' ? '🥋 Quyền' : '🥊 Đối kháng'}
                                     </span>
                                 )
@@ -430,14 +430,14 @@ export const Page_registration = () => {
                                     }}
                                     onMouseEnter={e => e.currentTarget.style.borderColor = 'var(--vct-accent-cyan)'} onMouseLeave={e => e.currentTarget.style.borderColor = 'var(--vct-border-subtle)'}>
                                     <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-                                        <VCT_AvatarLetter name={v.ho_ten} size={44} color={v.gioi === 'nam' ? '#60a5fa' : '#f472b6'} />
+                                        <VCT_AvatarLetter name={v.ho_ten} size={44} color={v.gioi === 'nam' ? 'var(--vct-info)' : '#f472b6'} />
                                         <div>
                                             <VCT_Text style={{ fontWeight: 800, fontSize: 15 }}>{v.ho_ten}</VCT_Text>
                                             <VCT_Text variant="small" style={{ marginTop: 4 }}>{v.gioi === 'nam' ? 'Nam' : 'Nữ'} • {v.can_nang}kg • {teams.find(d => d.id === v.doan_id)?.ten}</VCT_Text>
                                         </div>
                                     </div>
                                     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 4 }}>
-                                        <div style={{ fontSize: '11px', fontWeight: 800, padding: '4px 8px', borderRadius: 8, background: isMax ? 'rgba(239, 68, 68, 0.1)' : 'rgba(16, 185, 129, 0.1)', color: isMax ? '#ef4444' : '#10b981' }}>
+                                        <div style={{ fontSize: '11px', fontWeight: 800, padding: '4px 8px', borderRadius: 8, background: isMax ? 'rgba(239, 68, 68, 0.1)' : 'rgba(16, 185, 129, 0.1)', color: isMax ? 'var(--vct-danger)' : 'var(--vct-success)' }}>
                                             {curCount}/{TOURNAMENT_CONFIG.quota.max_nd_per_vdv} NỘI DUNG
                                         </div>
                                         <VCT_Text variant="small" style={{ color: 'var(--vct-text-tertiary)', fontWeight: 600 }}>Tùy chỉnh »</VCT_Text>

@@ -4,9 +4,9 @@ import * as React from 'react'
 import { useState, useMemo } from 'react'
 import {
     VCT_Badge, VCT_Stack, VCT_PageContainer, VCT_StatRow
-} from '../components/vct-ui'
-import type { StatItem } from '../components/VCT_StatRow'
-import { VCT_Icons } from '../components/vct-icons'
+} from '@vct/ui'
+import type { StatItem } from '@vct/ui'
+import { VCT_Icons } from '@vct/ui'
 import { useWorkflowDefs, type WorkflowDefinition } from '../hooks/useFederationAPI'
 
 // ════════════════════════════════════════
@@ -15,8 +15,8 @@ import { useWorkflowDefs, type WorkflowDefinition } from '../hooks/useFederation
 // ════════════════════════════════════════
 
 const CATEGORY_COLORS: Record<string, string> = {
-    'CLB': '#10b981', 'Đai': '#f59e0b', 'HLV': '#8b5cf6',
-    'Trọng tài': '#0ea5e9', 'Giải đấu': '#ef4444', 'Kỷ luật': '#f97316', 'Văn bản': '#6366f1',
+    'CLB': 'var(--vct-success)', 'Đai': 'var(--vct-warning)', 'HLV': 'var(--vct-info)',
+    'Trọng tài': 'var(--vct-accent-cyan)', 'Giải đấu': 'var(--vct-danger)', 'Kỷ luật': 'var(--vct-warning)', 'Văn bản': 'var(--vct-info)',
 }
 
 export function Page_federation_workflow_config() {
@@ -47,10 +47,10 @@ export function Page_federation_workflow_config() {
             </div>
 
             <VCT_StatRow items={[
-                { label: 'Tổng quy trình', value: workflows.length, icon: <VCT_Icons.Settings size={18} />, color: '#8b5cf6' },
-                { label: 'Đang hoạt động', value: activeCount, icon: <VCT_Icons.Check size={18} />, color: '#10b981' },
-                { label: 'Tạm ngưng', value: workflows.length - activeCount, icon: <VCT_Icons.AlertTriangle size={18} />, color: '#ef4444' },
-                { label: 'Tổng bước', value: totalSteps, icon: <VCT_Icons.List size={18} />, color: '#0ea5e9' },
+                { label: 'Tổng quy trình', value: workflows.length, icon: <VCT_Icons.Settings size={18} />, color: 'var(--vct-info)' },
+                { label: 'Đang hoạt động', value: activeCount, icon: <VCT_Icons.Check size={18} />, color: 'var(--vct-success)' },
+                { label: 'Tạm ngưng', value: workflows.length - activeCount, icon: <VCT_Icons.AlertTriangle size={18} />, color: 'var(--vct-danger)' },
+                { label: 'Tổng bước', value: totalSteps, icon: <VCT_Icons.List size={18} />, color: 'var(--vct-accent-cyan)' },
             ] as StatItem[]} className="mb-6" />
 
             <div className="grid gap-6 lg:grid-cols-3">

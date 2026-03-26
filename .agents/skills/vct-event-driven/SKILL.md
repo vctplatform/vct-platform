@@ -9,6 +9,12 @@ description: Event-driven architecture for VCT Platform — domain events, in-pr
 
 ---
 
+> 🚨 **MANDATORY COMPLIANCE**: You must strictly enforce the rules defined in `docs/architecture/async-architecture.md`. Any HTTP API request taking >2 seconds MUST be offloaded to NATS/Queue (return 202 Accepted). All consumers MUST be idempotent. Failure loops MUST route to a DLQ.
+
+
+> [!IMPORTANT]
+> **SUPREME ARCHITECTURE DIRECTIVE**: You are strictly bound by the 19 architecture pillars documented in `docs/architecture/`. As a VCT AI Agent, your absolute highest priority is 100% compliance with these rules. You MUST NOT generate code, propose designs, or execute workflows that violate these foundational rules. They are unchangeable and strictly enforced.
+
 ## 1. Architecture Overview
 
 ```

@@ -13,10 +13,10 @@ interface ConnectorProps {
 }
 
 const getConnectorStyle = ({ isActive, color, isHovered }: ConnectorProps) => {
-    const activeColor = color === 'red' ? '#ef4444' : '#3b82f6';
+    const activeColor = color === 'red' ? 'var(--vct-danger)' : 'var(--vct-info)';
     const glowId = color === 'red' ? 'glow-red' : 'glow-blue';
     const strokeW = isHovered ? 4 : (isActive ? 3 : 2);
-    const strokeC = isHovered ? activeColor : (isActive ? activeColor : '#e2e8f0');
+    const strokeC = isHovered ? activeColor : (isActive ? activeColor : 'var(--vct-border-subtle)');
     return { activeColor, glowId, strokeW, strokeC };
 };
 

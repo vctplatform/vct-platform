@@ -6,12 +6,12 @@ import {
     VCT_Badge, VCT_Button, VCT_Stack,
     VCT_SearchInput, VCT_Modal, VCT_Input, VCT_Field, VCT_Select,
     VCT_ConfirmDialog,
-} from '../components/vct-ui'
-import type { StatItem } from '../components/VCT_StatRow'
-import { VCT_Icons } from '../components/vct-icons'
-import { VCT_Drawer } from '../components/VCT_Drawer'
-import { VCT_Timeline } from '../components/VCT_Timeline'
-import type { TimelineEvent } from '../components/VCT_Timeline'
+} from '@vct/ui'
+import type { StatItem } from '@vct/ui'
+import { VCT_Icons } from '@vct/ui'
+import { VCT_Drawer } from '@vct/ui'
+import { VCT_Timeline } from '@vct/ui'
+import type { TimelineEvent } from '@vct/ui'
 import { AdminDataTable } from './components/AdminDataTable'
 
 // ════════════════════════════════════════
@@ -65,10 +65,10 @@ const MOCK_EVENTS = [
 ]
 
 const TOURNAMENT_TIMELINE: TimelineEvent[] = [
-    { time: '10:30', title: 'Tạo bảng thi đấu Đối kháng Nam 54kg', description: 'admin@vct.vn · 16 VĐV', icon: <VCT_Icons.Layers size={14} />, color: '#0ea5e9' },
-    { time: '09:45', title: 'Duyệt đăng ký 12 VĐV mới', description: 'btc@vct.vn · CLB Bình Định', icon: <VCT_Icons.CheckCircle size={14} />, color: '#10b981' },
-    { time: '09:15', title: 'Mở đăng ký Giải VCT Mở rộng', description: 'admin@vct.vn · Deadline: 05/07/2024', icon: <VCT_Icons.Flag size={14} />, color: '#f59e0b' },
-    { time: 'Hôm qua', title: 'Cập nhật ngân sách giải Quốc gia', description: 'finance@vct.vn · +500 triệu', icon: <VCT_Icons.DollarSign size={14} />, color: '#8b5cf6' },
+    { time: '10:30', title: 'Tạo bảng thi đấu Đối kháng Nam 54kg', description: 'admin@vct.vn · 16 VĐV', icon: <VCT_Icons.Layers size={14} />, color: 'var(--vct-accent-cyan)' },
+    { time: '09:45', title: 'Duyệt đăng ký 12 VĐV mới', description: 'btc@vct.vn · CLB Bình Định', icon: <VCT_Icons.CheckCircle size={14} />, color: 'var(--vct-success)' },
+    { time: '09:15', title: 'Mở đăng ký Giải VCT Mở rộng', description: 'admin@vct.vn · Deadline: 05/07/2024', icon: <VCT_Icons.Flag size={14} />, color: 'var(--vct-warning)' },
+    { time: 'Hôm qua', title: 'Cập nhật ngân sách giải Quốc gia', description: 'finance@vct.vn · +500 triệu', icon: <VCT_Icons.DollarSign size={14} />, color: 'var(--vct-info)' },
 ]
 
 
@@ -126,10 +126,10 @@ const Page_admin_tournaments_Content = () => {
     }, [tournaments, search, filterStatus, filterType, sortCol, sortDir])
 
     const stats: StatItem[] = [
-        { icon: <VCT_Icons.Trophy size={20} />, label: 'Tổng giải đấu', value: tournaments.length, color: '#0ea5e9' },
-        { icon: <VCT_Icons.Activity size={20} />, label: 'Đang diễn ra', value: tournaments.filter(t => t.status === 'in_progress').length, color: '#f59e0b' },
-        { icon: <VCT_Icons.Users size={20} />, label: 'Tổng VĐV', value: tournaments.reduce((a, t) => a + t.athletes_count, 0), color: '#10b981' },
-        { icon: <VCT_Icons.Layers size={20} />, label: 'Nội dung', value: tournaments.reduce((a, t) => a + t.events_count, 0), color: '#8b5cf6' },
+        { icon: <VCT_Icons.Trophy size={20} />, label: 'Tổng giải đấu', value: tournaments.length, color: 'var(--vct-accent-cyan)' },
+        { icon: <VCT_Icons.Activity size={20} />, label: 'Đang diễn ra', value: tournaments.filter(t => t.status === 'in_progress').length, color: 'var(--vct-warning)' },
+        { icon: <VCT_Icons.Users size={20} />, label: 'Tổng VĐV', value: tournaments.reduce((a, t) => a + t.athletes_count, 0), color: 'var(--vct-success)' },
+        { icon: <VCT_Icons.Layers size={20} />, label: 'Nội dung', value: tournaments.reduce((a, t) => a + t.events_count, 0), color: 'var(--vct-info)' },
     ]
 
     const handleSort = (key: string) => {
@@ -157,7 +157,7 @@ const Page_admin_tournaments_Content = () => {
         <AdminPageShell
             title={t('admin.tournaments.title')}
             subtitle="Tạo, theo dõi và điều hành toàn bộ giải đấu VCT"
-            icon={<VCT_Icons.Trophy size={28} className="text-[#f59e0b]" />}
+            icon={<VCT_Icons.Trophy size={28} className="text-(--vct-warning)" />}
             stats={stats}
             actions={
                 <VCT_Button variant="primary" onClick={() => setShowCreateModal(true)} icon={<VCT_Icons.Plus size={16} />}>Tạo giải đấu</VCT_Button>
@@ -257,7 +257,7 @@ const Page_admin_tournaments_Content = () => {
             {/* ── Hoạt động gần đây ── */}
             <div className="bg-(--vct-bg-elevated) border border-(--vct-border-strong) rounded-2xl p-5">
                 <h3 className="font-bold text-(--vct-text-primary) mb-4 flex items-center gap-2">
-                    <VCT_Icons.Activity size={18} className="text-[#f59e0b]" /> Hoạt động giải đấu gần đây
+                    <VCT_Icons.Activity size={18} className="text-(--vct-warning)" /> Hoạt động giải đấu gần đây
                 </h3>
                 <VCT_Timeline events={TOURNAMENT_TIMELINE} />
             </div>
@@ -293,7 +293,7 @@ const Page_admin_tournaments_Content = () => {
                         {/* Nội dung thi đấu */}
                         <div>
                             <h4 className="font-bold text-(--vct-text-primary) mb-3 flex items-center gap-2">
-                                <VCT_Icons.Layers size={16} className="text-[#8b5cf6]" /> Nội dung thi đấu
+                                <VCT_Icons.Layers size={16} className="text-(--vct-info)" /> Nội dung thi đấu
                             </h4>
                             <div className="space-y-2">
                                 {MOCK_EVENTS.map(ev => (

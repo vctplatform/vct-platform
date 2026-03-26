@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
     VCT_Text, VCT_Button, VCT_Card, VCT_Badge,
-} from 'app/features/components/vct-ui'
+} from '@vct/ui'
 import { useChannel, useRealtimeStatus } from 'app/features/data/repository/realtime-client'
 
 /* ── Types ──────────────────────────────────────────────────── */
@@ -191,12 +191,12 @@ export function Page_RefereeScoringPortal() {
             <div className="grid grid-cols-2 gap-3 mb-4">
                 {/* RED Corner */}
                 <VCT_Card style={{ border: '3px solid #ef4444', textAlign: 'center' }}>
-                    <div className="px-3 py-2 rounded-t-lg" style={{ background: '#ef4444', color: '#fff' }}>
-                        <VCT_Text variant="h3" style={{ color: '#fff', margin: 0 }}>{match.athleteRed}</VCT_Text>
+                    <div className="px-3 py-2 rounded-t-lg" style={{ background: 'var(--vct-danger)', color: 'var(--vct-bg-elevated)' }}>
+                        <VCT_Text variant="h3" style={{ color: 'var(--vct-bg-elevated)', margin: 0 }}>{match.athleteRed}</VCT_Text>
                         <VCT_Text variant="small" style={{ color: 'rgba(255,255,255,0.8)' }}>{match.teamRed}</VCT_Text>
                     </div>
                     <div className="py-4">
-                        <div style={{ fontSize: '4rem', fontWeight: 800, color: '#ef4444', lineHeight: 1 }}>
+                        <div style={{ fontSize: '4rem', fontWeight: 800, color: 'var(--vct-danger)', lineHeight: 1 }}>
                             {redScore}
                         </div>
                         <VCT_Text variant="small" style={{ color: 'var(--vct-text-tertiary)' }}>
@@ -217,12 +217,12 @@ export function Page_RefereeScoringPortal() {
 
                 {/* BLUE Corner */}
                 <VCT_Card style={{ border: '3px solid #3b82f6', textAlign: 'center' }}>
-                    <div className="px-3 py-2 rounded-t-lg" style={{ background: '#3b82f6', color: '#fff' }}>
-                        <VCT_Text variant="h3" style={{ color: '#fff', margin: 0 }}>{match.athleteBlue}</VCT_Text>
+                    <div className="px-3 py-2 rounded-t-lg" style={{ background: 'var(--vct-info)', color: 'var(--vct-bg-elevated)' }}>
+                        <VCT_Text variant="h3" style={{ color: 'var(--vct-bg-elevated)', margin: 0 }}>{match.athleteBlue}</VCT_Text>
                         <VCT_Text variant="small" style={{ color: 'rgba(255,255,255,0.8)' }}>{match.teamBlue}</VCT_Text>
                     </div>
                     <div className="py-4">
-                        <div style={{ fontSize: '4rem', fontWeight: 800, color: '#3b82f6', lineHeight: 1 }}>
+                        <div style={{ fontSize: '4rem', fontWeight: 800, color: 'var(--vct-info)', lineHeight: 1 }}>
                             {blueScore}
                         </div>
                         <VCT_Text variant="small" style={{ color: 'var(--vct-text-tertiary)' }}>
@@ -253,9 +253,9 @@ export function Page_RefereeScoringPortal() {
                             <div key={r.round} className="flex items-center justify-between py-1">
                                 <VCT_Text variant="small">Hiệp {r.round}</VCT_Text>
                                 <div className="flex items-center gap-4">
-                                    <span style={{ color: '#ef4444', fontWeight: 700 }}>{r.red}</span>
+                                    <span style={{ color: 'var(--vct-danger)', fontWeight: 700 }}>{r.red}</span>
                                     <span style={{ color: 'var(--vct-text-tertiary)' }}>-</span>
-                                    <span style={{ color: '#3b82f6', fontWeight: 700 }}>{r.blue}</span>
+                                    <span style={{ color: 'var(--vct-info)', fontWeight: 700 }}>{r.blue}</span>
                                 </div>
                             </div>
                         ))}
@@ -294,9 +294,9 @@ export function Page_RefereeScoringPortal() {
                         >
                             <VCT_Text variant="h2">Xác nhận kết thúc trận?</VCT_Text>
                             <div className="my-4 text-center">
-                                <span style={{ color: '#ef4444', fontSize: '2rem', fontWeight: 800 }}>{totalRed}</span>
+                                <span style={{ color: 'var(--vct-danger)', fontSize: '2rem', fontWeight: 800 }}>{totalRed}</span>
                                 <span style={{ margin: '0 1rem', color: 'var(--vct-text-tertiary)', fontSize: '1.5rem' }}>—</span>
-                                <span style={{ color: '#3b82f6', fontSize: '2rem', fontWeight: 800 }}>{totalBlue}</span>
+                                <span style={{ color: 'var(--vct-info)', fontSize: '2rem', fontWeight: 800 }}>{totalBlue}</span>
                             </div>
                             <VCT_Text variant="body" style={{ textAlign: 'center', color: 'var(--vct-text-secondary)', marginBottom: '1rem' }}>
                                 Kết quả: {totalRed > totalBlue ? match.athleteRed : totalBlue > totalRed ? match.athleteBlue : 'Hòa'} thắng

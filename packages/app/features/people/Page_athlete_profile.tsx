@@ -4,9 +4,9 @@ import React, { useState } from 'react'
 import {
     VCT_PageContainer, VCT_PageHero, VCT_SectionCard,
     VCT_EmptyState, VCT_StatRow, VCT_Badge,
-} from 'app/features/components/vct-ui'
-import type { StatItem } from 'app/features/components/vct-ui'
-import { VCT_Icons } from '../components/vct-icons'
+} from '@vct/ui'
+import type { StatItem } from '@vct/ui'
+import { VCT_Icons } from '@vct/ui'
 
 // ── Types ────────────────────────────────────────────────────
 
@@ -45,7 +45,7 @@ const MOCK_ATHLETE: AthleteProfile = {
     doan_ten: 'Bình Định',
     tinh: 'Bình Định',
     dai: 'Đai đen',
-    dai_color: '#000000',
+    dai_color: 'var(--vct-text-primary)',
     so_nam_tap: 12,
     trang_thai: 'du_dieu_kien',
     total_matches: 45,
@@ -61,11 +61,11 @@ const MOCK_ATHLETE: AthleteProfile = {
         { year: 2022, event: 'Giải Trẻ Quốc gia', result: 'HCV Đối kháng 60kg' },
     ],
     belt_history: [
-        { date: '2025-01', belt: 'Đai đen', color: '#000000' },
-        { date: '2023-06', belt: 'Đai đỏ', color: '#dc2626' },
-        { date: '2021-03', belt: 'Đai xanh dương', color: '#2563eb' },
-        { date: '2019-09', belt: 'Đai xanh lá', color: '#16a34a' },
-        { date: '2017-01', belt: 'Đai vàng', color: '#eab308' },
+        { date: '2025-01', belt: 'Đai đen', color: 'var(--vct-text-primary)' },
+        { date: '2023-06', belt: 'Đai đỏ', color: 'var(--vct-danger)' },
+        { date: '2021-03', belt: 'Đai xanh dương', color: 'var(--vct-info)' },
+        { date: '2019-09', belt: 'Đai xanh lá', color: 'var(--vct-success)' },
+        { date: '2017-01', belt: 'Đai vàng', color: 'var(--vct-gold)' },
         { date: '2014-06', belt: 'Đai trắng', color: '#d1d5db' },
     ]
 }
@@ -90,9 +90,9 @@ export default function Page_athlete_profile() {
     const winRate = athlete.total_matches > 0 ? Math.round((athlete.wins / athlete.total_matches) * 100) : 0
 
     const heroStats: StatItem[] = [
-        { label: 'ELO', value: athlete.elo_rating, color: '#ef4444' },
-        { label: 'Tỉ lệ thắng', value: `${winRate}%`, color: '#22c55e' },
-        { label: 'Huy chương', value: `🥇${athlete.medals.gold} 🥈${athlete.medals.silver} 🥉${athlete.medals.bronze}`, color: '#f59e0b' },
+        { label: 'ELO', value: athlete.elo_rating, color: 'var(--vct-danger)' },
+        { label: 'Tỉ lệ thắng', value: `${winRate}%`, color: 'var(--vct-success)' },
+        { label: 'Huy chương', value: `🥇${athlete.medals.gold} 🥈${athlete.medals.silver} 🥉${athlete.medals.bronze}`, color: 'var(--vct-warning)' },
     ]
 
     return (

@@ -13,8 +13,8 @@ import {
   VCT_PageContainer,
   VCT_Textarea,
   VCT_Toast,
-} from '../components/vct-ui'
-import { VCT_Icons } from '../components/vct-icons'
+} from '@vct/ui'
+import { VCT_Icons } from '@vct/ui'
 import {
   useCreateMarketplaceOrder,
   useMarketplaceCatalog,

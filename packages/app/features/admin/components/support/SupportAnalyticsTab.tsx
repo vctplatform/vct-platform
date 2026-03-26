@@ -1,6 +1,6 @@
 import * as React from 'react'
-import { VCT_Badge, VCT_AvatarLetter } from '../../../components/vct-ui'
-import { VCT_Icons } from '../../../components/vct-icons'
+import { VCT_Badge, VCT_AvatarLetter } from '@vct/ui'
+import { VCT_Icons } from '@vct/ui'
 import type { SupportTicket } from './support.data'
 import { TYPE_BADGE, PRIORITY_BADGE } from './support.data'
 import {
@@ -28,7 +28,7 @@ export function SupportAnalyticsTab({ tickets }: SupportAnalyticsTabProps) {
     const pieChartData = types.map(([key, badge]) => ({
         name: badge.label,
         value: tickets.filter(t => t.loai === key).length,
-        color: key === 'bug' ? '#ef4444' : key === 'account' ? '#10b981' : key === 'payment' ? '#f59e0b' : key === 'feature' ? '#0ea5e9' : '#8b5cf6'
+        color: key === 'bug' ? 'var(--vct-danger)' : key === 'account' ? 'var(--vct-success)' : key === 'payment' ? 'var(--vct-warning)' : key === 'feature' ? 'var(--vct-accent-cyan)' : 'var(--vct-info)'
     })).filter(d => d.value > 0);
 
     return (
@@ -38,7 +38,7 @@ export function SupportAnalyticsTab({ tickets }: SupportAnalyticsTabProps) {
                 {/* Bar chart */}
                 <div className="bg-(--vct-bg-elevated) border border-(--vct-border-strong) rounded-2xl p-5">
                     <div className="text-sm font-bold text-(--vct-text-primary) mb-4 flex items-center gap-2">
-                        <VCT_Icons.Activity size={16} className="text-[#0ea5e9]" /> Tickets theo ngày (7 ngày)
+                        <VCT_Icons.Activity size={16} className="text-(--vct-accent-cyan)" /> Tickets theo ngày (7 ngày)
                     </div>
                     <div className="h-[200px] w-full">
                         <ResponsiveContainer width="100%" height="100%">
@@ -51,7 +51,7 @@ export function SupportAnalyticsTab({ tickets }: SupportAnalyticsTabProps) {
                                     itemStyle={{ color: 'var(--vct-text-primary)' }}
                                     cursor={{ fill: 'var(--vct-bg-base)', opacity: 0.5 }}
                                 />
-                                <Bar name="Tickets" dataKey="count" fill="#0ea5e9" radius={[4, 4, 0, 0]} />
+                                <Bar name="Tickets" dataKey="count" fill="var(--vct-accent-cyan)" radius={[4, 4, 0, 0]} />
                             </BarChart>
                         </ResponsiveContainer>
                     </div>
@@ -60,7 +60,7 @@ export function SupportAnalyticsTab({ tickets }: SupportAnalyticsTabProps) {
                 {/* Donut chart */}
                 <div className="bg-(--vct-bg-elevated) border border-(--vct-border-strong) rounded-2xl p-5">
                     <div className="text-sm font-bold text-(--vct-text-primary) mb-4 flex items-center gap-2">
-                        <VCT_Icons.Target size={16} className="text-[#8b5cf6]" /> Phân bổ theo loại
+                        <VCT_Icons.Target size={16} className="text-(--vct-info)" /> Phân bổ theo loại
                     </div>
                     <div className="h-[200px] w-full flex items-center justify-center relative">
                         {pieChartData.length > 0 ? (
@@ -106,13 +106,13 @@ export function SupportAnalyticsTab({ tickets }: SupportAnalyticsTabProps) {
                 {/* SLA Compliance */}
                 <div className="bg-(--vct-bg-elevated) border border-(--vct-border-strong) rounded-2xl p-5">
                     <div className="text-sm font-bold text-(--vct-text-primary) mb-4 flex items-center gap-2">
-                        <VCT_Icons.Shield size={16} className="text-[#10b981]" /> SLA Compliance
+                        <VCT_Icons.Shield size={16} className="text-(--vct-success)" /> SLA Compliance
                     </div>
                     <div className="space-y-4">
                         {[
-                            { label: 'Phản hồi lần đầu < 2h', value: 85, color: '#10b981' },
-                            { label: 'Giải quyết < 24h', value: 72, color: '#f59e0b' },
-                            { label: 'CSAT >= 4/5', value: 91, color: '#0ea5e9' },
+                            { label: 'Phản hồi lần đầu < 2h', value: 85, color: 'var(--vct-success)' },
+                            { label: 'Giải quyết < 24h', value: 72, color: 'var(--vct-warning)' },
+                            { label: 'CSAT >= 4/5', value: 91, color: 'var(--vct-accent-cyan)' },
                         ].map(item => (
                             <div key={item.label}>
                                 <div className="flex items-center justify-between mb-1">
@@ -130,7 +130,7 @@ export function SupportAnalyticsTab({ tickets }: SupportAnalyticsTabProps) {
                 {/* Top Agents */}
                 <div className="bg-(--vct-bg-elevated) border border-(--vct-border-strong) rounded-2xl p-5">
                     <div className="text-sm font-bold text-(--vct-text-primary) mb-4 flex items-center gap-2">
-                        <VCT_Icons.Trophy size={16} className="text-[#f59e0b]" /> Top Agents
+                        <VCT_Icons.Trophy size={16} className="text-(--vct-warning)" /> Top Agents
                     </div>
                     <div className="space-y-3">
                         {[
@@ -139,13 +139,13 @@ export function SupportAnalyticsTab({ tickets }: SupportAnalyticsTabProps) {
                             { name: 'Support Team', resolved: 15, avgTime: '2.1h', rating: 4.8 },
                         ].map((agent, i) => (
                             <div key={agent.name} className="flex items-center gap-3 p-2 rounded-lg hover:bg-white/5 transition-colors">
-                                <div className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold text-white ${i === 0 ? 'bg-[#f59e0b]' : i === 1 ? 'bg-[#94a3b8]' : 'bg-[#cd7f32]'}`}>{i + 1}</div>
+                                <div className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold text-white ${i === 0 ? 'bg-(--vct-warning)' : i === 1 ? 'bg-(--vct-text-tertiary)' : 'bg-[#cd7f32]'}`}>{i + 1}</div>
                                 <VCT_AvatarLetter name={agent.name} size={28} />
                                 <div className="flex-1 min-w-0">
                                     <div className="text-xs font-bold text-(--vct-text-primary)">{agent.name}</div>
                                     <div className="text-[10px] text-(--vct-text-tertiary)">{agent.resolved} đã giải quyết · TB {agent.avgTime}</div>
                                 </div>
-                                <div className="text-xs font-bold text-[#f59e0b]">⭐ {agent.rating}</div>
+                                <div className="text-xs font-bold text-(--vct-warning)">⭐ {agent.rating}</div>
                             </div>
                         ))}
                     </div>
@@ -155,7 +155,7 @@ export function SupportAnalyticsTab({ tickets }: SupportAnalyticsTabProps) {
             {/* Row 3: Priority breakdown */}
             <div className="bg-(--vct-bg-elevated) border border-(--vct-border-strong) rounded-2xl p-5">
                 <div className="text-sm font-bold text-(--vct-text-primary) mb-4 flex items-center gap-2">
-                    <VCT_Icons.AlertTriangle size={16} className="text-[#ef4444]" /> Phân bổ theo mức ưu tiên
+                    <VCT_Icons.AlertTriangle size={16} className="text-(--vct-danger)" /> Phân bổ theo mức ưu tiên
                 </div>
                 <div className="grid grid-cols-4 gap-3">
                     {Object.entries(PRIORITY_BADGE).map(([key, badge]) => {

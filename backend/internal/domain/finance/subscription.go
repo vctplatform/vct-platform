@@ -61,15 +61,15 @@ const (
 type Subscription struct {
 	ID                 string             `json:"id"`
 	PlanID             string             `json:"plan_id"`
-	PlanCode           string             `json:"plan_code,omitempty"`   // denormalized for display
-	PlanName           string             `json:"plan_name,omitempty"`   // denormalized for display
-	EntityType         string             `json:"entity_type"`           // "federation", "organization", "tournament"
-	EntityID           string             `json:"entity_id"`             // ID of the federation/org/tournament
-	EntityName         string             `json:"entity_name"`           // Tên hiển thị
+	PlanCode           string             `json:"plan_code,omitempty"` // denormalized for display
+	PlanName           string             `json:"plan_name,omitempty"` // denormalized for display
+	EntityType         string             `json:"entity_type"`         // "federation", "organization", "tournament"
+	EntityID           string             `json:"entity_id"`           // ID of the federation/org/tournament
+	EntityName         string             `json:"entity_name"`         // Tên hiển thị
 	Status             SubscriptionStatus `json:"status"`
-	BillingCycleType   string             `json:"billing_cycle_type"`    // "monthly", "yearly"
-	CurrentPeriodStart string             `json:"current_period_start"`  // YYYY-MM-DD
-	CurrentPeriodEnd   string             `json:"current_period_end"`    // YYYY-MM-DD
+	BillingCycleType   string             `json:"billing_cycle_type"`   // "monthly", "yearly"
+	CurrentPeriodStart string             `json:"current_period_start"` // YYYY-MM-DD
+	CurrentPeriodEnd   string             `json:"current_period_end"`   // YYYY-MM-DD
 	TrialEndDate       *string            `json:"trial_end_date,omitempty"`
 	CancelledAt        *time.Time         `json:"cancelled_at,omitempty"`
 	CancelReason       string             `json:"cancel_reason,omitempty"`
@@ -115,13 +115,13 @@ type BillingCycle struct {
 type RenewalAction string
 
 const (
-	RenewalAutoRenew   RenewalAction = "auto_renew"
-	RenewalManual      RenewalAction = "manual_renew"
-	RenewalUpgrade     RenewalAction = "upgrade"
-	RenewalDowngrade   RenewalAction = "downgrade"
-	RenewalCancel      RenewalAction = "cancel"
-	RenewalSuspend     RenewalAction = "suspend"
-	RenewalReactivate  RenewalAction = "reactivate"
+	RenewalAutoRenew  RenewalAction = "auto_renew"
+	RenewalManual     RenewalAction = "manual_renew"
+	RenewalUpgrade    RenewalAction = "upgrade"
+	RenewalDowngrade  RenewalAction = "downgrade"
+	RenewalCancel     RenewalAction = "cancel"
+	RenewalSuspend    RenewalAction = "suspend"
+	RenewalReactivate RenewalAction = "reactivate"
 )
 
 // RenewalLog records every change to a subscription for audit purposes.
@@ -229,7 +229,7 @@ var validSubscriptionTransitions = map[SubscriptionStatus][]SubscriptionStatus{
 	SubStatusActive:    {SubStatusPastDue, SubStatusSuspended, SubStatusCancelled, SubStatusExpired},
 	SubStatusPastDue:   {SubStatusActive, SubStatusSuspended, SubStatusCancelled},
 	SubStatusSuspended: {SubStatusActive, SubStatusCancelled},
-	SubStatusCancelled: {}, // terminal state
+	SubStatusCancelled: {},                // terminal state
 	SubStatusExpired:   {SubStatusActive}, // can reactivate
 }
 

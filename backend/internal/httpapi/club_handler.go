@@ -25,7 +25,7 @@ func (s *Server) handleClubInternalRoutes(mux *http.ServeMux) {
 
 func (s *Server) handleClubDashboard(w http.ResponseWriter, r *http.Request, p auth.Principal) {
 	if r.Method != http.MethodGet {
-		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+		apiMethodNotAllowed(w)
 		return
 	}
 	if !requireClubRead(w, p) {
@@ -37,7 +37,7 @@ func (s *Server) handleClubDashboard(w http.ResponseWriter, r *http.Request, p a
 	}
 	stats, err := s.Provincial.Main.GetClubDashboard(r.Context(), clubID)
 	if err != nil {
-		internalError(w, err)
+		apiInternal(w, err)
 		return
 	}
 	success(w, http.StatusOK, map[string]any{"data": stats})
@@ -58,7 +58,7 @@ func (s *Server) handleClubMembers(w http.ResponseWriter, r *http.Request, p aut
 		}
 		members, err := s.Provincial.Main.ListClubMembers(r.Context(), clubID)
 		if err != nil {
-			internalError(w, err)
+			apiInternal(w, err)
 			return
 		}
 		success(w, http.StatusOK, map[string]any{"data": map[string]any{"members": members, "total": len(members)}})
@@ -69,7 +69,7 @@ func (s *Server) handleClubMembers(w http.ResponseWriter, r *http.Request, p aut
 		}
 		var m provincial.ClubMember
 		if err := json.NewDecoder(r.Body).Decode(&m); err != nil {
-			badRequest(w, "invalid request body")
+			apiError(w, http.StatusBadRequest, CodeBadRequest, "invalid request body")
 			return
 		}
 		if m.ClubID == "" {
@@ -77,13 +77,13 @@ func (s *Server) handleClubMembers(w http.ResponseWriter, r *http.Request, p aut
 		}
 		created, err := s.Provincial.Main.CreateClubMember(r.Context(), m)
 		if err != nil {
-			internalError(w, err)
+			apiInternal(w, err)
 			return
 		}
 		success(w, http.StatusCreated, map[string]any{"data": created})
 
 	default:
-		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+		apiMethodNotAllowed(w)
 	}
 }
 
@@ -95,7 +95,7 @@ func (s *Server) handleClubMemberAction(w http.ResponseWriter, r *http.Request, 
 	if len(parts) == 2 {
 		action := parts[1]
 		if r.Method != http.MethodPost {
-			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+			apiMethodNotAllowed(w)
 			return
 		}
 		if !requireClubWrite(w, p) {
@@ -104,18 +104,18 @@ func (s *Server) handleClubMemberAction(w http.ResponseWriter, r *http.Request, 
 		switch action {
 		case "approve":
 			if err := s.Provincial.Main.ApproveClubMember(r.Context(), id); err != nil {
-				internalError(w, err)
+				apiInternal(w, err)
 				return
 			}
 			success(w, http.StatusOK, map[string]any{"message": "member approved"})
 		case "reject":
 			if err := s.Provincial.Main.RejectClubMember(r.Context(), id); err != nil {
-				internalError(w, err)
+				apiInternal(w, err)
 				return
 			}
 			success(w, http.StatusOK, map[string]any{"message": "member rejected"})
 		default:
-			http.Error(w, "unknown action", http.StatusBadRequest)
+			apiValidation(w, "Hành động không hợp lệ")
 		}
 		return
 	}
@@ -127,7 +127,7 @@ func (s *Server) handleClubMemberAction(w http.ResponseWriter, r *http.Request, 
 		}
 		m, err := s.Provincial.Main.GetClubMember(r.Context(), id)
 		if err != nil {
-			notFound(w)
+			apiError(w, http.StatusNotFound, CodeNotFound, "Không tìm thấy tài nguyên")
 			return
 		}
 		success(w, http.StatusOK, map[string]any{"data": m})
@@ -138,11 +138,11 @@ func (s *Server) handleClubMemberAction(w http.ResponseWriter, r *http.Request, 
 		}
 		var patch map[string]interface{}
 		if err := json.NewDecoder(r.Body).Decode(&patch); err != nil {
-			badRequest(w, "invalid body")
+			apiError(w, http.StatusBadRequest, CodeBadRequest, "invalid body")
 			return
 		}
 		if err := s.Provincial.Main.UpdateClubMember(r.Context(), id, patch); err != nil {
-			internalError(w, err)
+			apiInternal(w, err)
 			return
 		}
 		success(w, http.StatusOK, map[string]any{"message": "updated"})
@@ -152,13 +152,13 @@ func (s *Server) handleClubMemberAction(w http.ResponseWriter, r *http.Request, 
 			return
 		}
 		if err := s.Provincial.Main.DeleteClubMember(r.Context(), id); err != nil {
-			internalError(w, err)
+			apiInternal(w, err)
 			return
 		}
 		success(w, http.StatusOK, map[string]any{"message": "deleted"})
 
 	default:
-		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+		apiMethodNotAllowed(w)
 	}
 }
 
@@ -177,7 +177,7 @@ func (s *Server) handleClubClasses(w http.ResponseWriter, r *http.Request, p aut
 		}
 		classes, err := s.Provincial.Main.ListClubClasses(r.Context(), clubID)
 		if err != nil {
-			internalError(w, err)
+			apiInternal(w, err)
 			return
 		}
 		success(w, http.StatusOK, map[string]any{"data": map[string]any{"classes": classes, "total": len(classes)}})
@@ -188,7 +188,7 @@ func (s *Server) handleClubClasses(w http.ResponseWriter, r *http.Request, p aut
 		}
 		var c provincial.ClubClass
 		if err := json.NewDecoder(r.Body).Decode(&c); err != nil {
-			badRequest(w, "invalid request body")
+			apiError(w, http.StatusBadRequest, CodeBadRequest, "invalid request body")
 			return
 		}
 		if c.ClubID == "" {
@@ -196,13 +196,13 @@ func (s *Server) handleClubClasses(w http.ResponseWriter, r *http.Request, p aut
 		}
 		created, err := s.Provincial.Main.CreateClubClass(r.Context(), c)
 		if err != nil {
-			internalError(w, err)
+			apiInternal(w, err)
 			return
 		}
 		success(w, http.StatusCreated, map[string]any{"data": created})
 
 	default:
-		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+		apiMethodNotAllowed(w)
 	}
 }
 
@@ -216,7 +216,7 @@ func (s *Server) handleClubClassAction(w http.ResponseWriter, r *http.Request, p
 		}
 		c, err := s.Provincial.Main.GetClubClass(r.Context(), id)
 		if err != nil {
-			notFound(w)
+			apiError(w, http.StatusNotFound, CodeNotFound, "Không tìm thấy tài nguyên")
 			return
 		}
 		success(w, http.StatusOK, map[string]any{"data": c})
@@ -227,11 +227,11 @@ func (s *Server) handleClubClassAction(w http.ResponseWriter, r *http.Request, p
 		}
 		var patch map[string]interface{}
 		if err := json.NewDecoder(r.Body).Decode(&patch); err != nil {
-			badRequest(w, "invalid body")
+			apiError(w, http.StatusBadRequest, CodeBadRequest, "invalid body")
 			return
 		}
 		if err := s.Provincial.Main.UpdateClubClass(r.Context(), id, patch); err != nil {
-			internalError(w, err)
+			apiInternal(w, err)
 			return
 		}
 		success(w, http.StatusOK, map[string]any{"message": "updated"})
@@ -241,13 +241,13 @@ func (s *Server) handleClubClassAction(w http.ResponseWriter, r *http.Request, p
 			return
 		}
 		if err := s.Provincial.Main.DeleteClubClass(r.Context(), id); err != nil {
-			internalError(w, err)
+			apiInternal(w, err)
 			return
 		}
 		success(w, http.StatusOK, map[string]any{"message": "deleted"})
 
 	default:
-		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+		apiMethodNotAllowed(w)
 	}
 }
 
@@ -266,7 +266,7 @@ func (s *Server) handleClubFinance(w http.ResponseWriter, r *http.Request, p aut
 		}
 		entries, err := s.Provincial.Main.ListClubFinance(r.Context(), clubID)
 		if err != nil {
-			internalError(w, err)
+			apiInternal(w, err)
 			return
 		}
 		success(w, http.StatusOK, map[string]any{"data": map[string]any{"entries": entries, "total": len(entries)}})
@@ -277,7 +277,7 @@ func (s *Server) handleClubFinance(w http.ResponseWriter, r *http.Request, p aut
 		}
 		var f provincial.ClubFinanceEntry
 		if err := json.NewDecoder(r.Body).Decode(&f); err != nil {
-			badRequest(w, "invalid request body")
+			apiError(w, http.StatusBadRequest, CodeBadRequest, "invalid request body")
 			return
 		}
 		if f.ClubID == "" {
@@ -285,19 +285,19 @@ func (s *Server) handleClubFinance(w http.ResponseWriter, r *http.Request, p aut
 		}
 		created, err := s.Provincial.Main.CreateClubFinanceEntry(r.Context(), f)
 		if err != nil {
-			internalError(w, err)
+			apiInternal(w, err)
 			return
 		}
 		success(w, http.StatusCreated, map[string]any{"data": created})
 
 	default:
-		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+		apiMethodNotAllowed(w)
 	}
 }
 
 func (s *Server) handleClubFinanceSummary(w http.ResponseWriter, r *http.Request, p auth.Principal) {
 	if r.Method != http.MethodGet {
-		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+		apiMethodNotAllowed(w)
 		return
 	}
 	if !requireClubRead(w, p) {
@@ -309,7 +309,7 @@ func (s *Server) handleClubFinanceSummary(w http.ResponseWriter, r *http.Request
 	}
 	summary, err := s.Provincial.Main.GetClubFinanceSummary(r.Context(), clubID)
 	if err != nil {
-		internalError(w, err)
+		apiInternal(w, err)
 		return
 	}
 	success(w, http.StatusOK, map[string]any{"data": summary})
@@ -330,12 +330,12 @@ func (s *Server) handleClubSettings(w http.ResponseWriter, r *http.Request, p au
 	case http.MethodGet:
 		club, err := s.Provincial.Main.GetClub(r.Context(), clubID)
 		if err != nil {
-			notFound(w)
+			apiError(w, http.StatusNotFound, CodeNotFound, "Không tìm thấy tài nguyên")
 			return
 		}
 		success(w, http.StatusOK, map[string]any{"data": club})
 
 	default:
-		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+		apiMethodNotAllowed(w)
 	}
 }

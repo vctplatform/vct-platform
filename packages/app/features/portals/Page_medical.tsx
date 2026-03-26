@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
     VCT_Text, VCT_Card, VCT_Badge, VCT_Button,
-} from 'app/features/components/vct-ui'
+} from '@vct/ui'
 import { useChannel, useRealtimeStatus } from 'app/features/data/repository/realtime-client'
 
 /* ── Types ──────────────────────────────────────────────────── */
@@ -72,7 +72,7 @@ export function Page_MedicalPortal() {
             {/* ── Header ──────────────────────────────────────────── */}
             <div className="px-4 py-4 flex items-center justify-between" style={{ background: 'linear-gradient(135deg, #059669, #10b981)' }}>
                 <div>
-                    <VCT_Text variant="h2" style={{ color: '#fff', margin: 0 }}>🏥 Y Tế Giải Đấu</VCT_Text>
+                    <VCT_Text variant="h2" style={{ color: 'var(--vct-bg-elevated)', margin: 0 }}>🏥 Y Tế Giải Đấu</VCT_Text>
                     <VCT_Text variant="small" style={{ color: 'rgba(255,255,255,0.8)' }}>
                         Giải Vovinam Toàn Quốc 2026
                     </VCT_Text>
@@ -108,7 +108,7 @@ export function Page_MedicalPortal() {
                         onClick={() => setActiveTab(tab.id)}
                         className="flex-1 py-2 rounded-lg text-xs font-medium transition-all"
                         style={{
-                            background: activeTab === tab.id ? '#059669' : 'transparent',
+                            background: activeTab === tab.id ? 'var(--vct-success)' : 'transparent',
                             color: activeTab === tab.id ? '#fff' : 'var(--vct-text-secondary)',
                             border: 'none',
                             cursor: 'pointer',
@@ -146,7 +146,7 @@ export function Page_MedicalPortal() {
                             exit={{ scale: 0.9, y: 20 }}
                             onClick={(e) => e.stopPropagation()}
                         >
-                            <VCT_Text variant="h2" style={{ color: '#ef4444' }}>🚨 Xác nhận dừng trận?</VCT_Text>
+                            <VCT_Text variant="h2" style={{ color: 'var(--vct-danger)' }}>🚨 Xác nhận dừng trận?</VCT_Text>
                             <VCT_Text variant="body" style={{ color: 'var(--vct-text-secondary)', margin: '1rem 0' }}>
                                 Hành động này sẽ gửi tín hiệu dừng trận đến trọng tài qua WebSocket.
                                 Timer sẽ bị tạm dừng ngay lập tức.
@@ -203,19 +203,19 @@ function DashboardTab() {
             <div className="grid grid-cols-3 gap-3">
                 <VCT_Card>
                     <div className="p-3 text-center">
-                        <div style={{ fontSize: '2rem', fontWeight: 800, color: '#ef4444' }}>{treating}</div>
+                        <div style={{ fontSize: '2rem', fontWeight: 800, color: 'var(--vct-danger)' }}>{treating}</div>
                         <VCT_Text variant="small" style={{ color: 'var(--vct-text-tertiary)' }}>Đang điều trị</VCT_Text>
                     </div>
                 </VCT_Card>
                 <VCT_Card>
                     <div className="p-3 text-center">
-                        <div style={{ fontSize: '2rem', fontWeight: 800, color: '#f59e0b' }}>{today}</div>
+                        <div style={{ fontSize: '2rem', fontWeight: 800, color: 'var(--vct-warning)' }}>{today}</div>
                         <VCT_Text variant="small" style={{ color: 'var(--vct-text-tertiary)' }}>Ca hôm nay</VCT_Text>
                     </div>
                 </VCT_Card>
                 <VCT_Card>
                     <div className="p-3 text-center">
-                        <div style={{ fontSize: '2rem', fontWeight: 800, color: '#3b82f6' }}>{unchecked}</div>
+                        <div style={{ fontSize: '2rem', fontWeight: 800, color: 'var(--vct-info)' }}>{unchecked}</div>
                         <VCT_Text variant="small" style={{ color: 'var(--vct-text-tertiary)' }}>Chưa khám</VCT_Text>
                     </div>
                 </VCT_Card>
@@ -278,7 +278,7 @@ function PreCheckTab() {
                                 onClick={() => toggleCheck(i)}
                                 className="w-8 h-8 rounded-lg flex items-center justify-center text-lg"
                                 style={{
-                                    background: item.checked ? '#059669' : 'var(--vct-bg-input)',
+                                    background: item.checked ? 'var(--vct-success)' : 'var(--vct-bg-input)',
                                     color: item.checked ? '#fff' : 'var(--vct-text-tertiary)',
                                     border: item.checked ? 'none' : '2px solid var(--vct-border-subtle)',
                                     cursor: 'pointer',
@@ -399,7 +399,7 @@ function FirstAidTab() {
                                 className="rounded-lg px-3 py-2 text-center min-w-[3.5rem]"
                                 style={{ background: 'rgba(5,150,105,0.1)' }}
                             >
-                                <div style={{ fontFamily: 'monospace', fontWeight: 700, color: '#059669' }}>{entry.time}</div>
+                                <div style={{ fontFamily: 'monospace', fontWeight: 700, color: 'var(--vct-success)' }}>{entry.time}</div>
                             </div>
                             <div className="flex-1">
                                 <VCT_Text variant="body" style={{ fontWeight: 600 }}>{entry.athlete}</VCT_Text>

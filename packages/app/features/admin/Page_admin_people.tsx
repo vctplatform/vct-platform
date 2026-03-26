@@ -5,10 +5,10 @@ import { useState, useMemo } from 'react'
 import {
     VCT_Badge, VCT_Button, VCT_Stack,
     VCT_SearchInput, VCT_Select, VCT_ConfirmDialog, VCT_AvatarLetter, VCT_Tabs,
-} from '../components/vct-ui'
-import type { StatItem } from '../components/VCT_StatRow'
-import { VCT_Icons } from '../components/vct-icons'
-import { VCT_Drawer } from '../components/VCT_Drawer'
+} from '@vct/ui'
+import type { StatItem } from '@vct/ui'
+import { VCT_Icons } from '@vct/ui'
+import { VCT_Drawer } from '@vct/ui'
 import { AdminDataTable } from './components/AdminDataTable'
 import { AdminPageShell, useShellToast } from './components/AdminPageShell'
 import { useAdminFetch } from './hooks/useAdminAPI'
@@ -108,10 +108,10 @@ const Page_admin_people_Content = () => {
     const countPending = people.filter(p => p.status === 'pending').length
 
     const stats: StatItem[] = [
-        { icon: <VCT_Icons.Users size={20} />, label: 'VĐV', value: countByType('athlete'), color: '#0ea5e9' },
-        { icon: <VCT_Icons.Award size={20} />, label: 'HLV', value: countByType('coach'), color: '#10b981' },
-        { icon: <VCT_Icons.Shield size={20} />, label: 'Trọng tài', value: countByType('referee'), color: '#8b5cf6' },
-        { icon: <VCT_Icons.Clock size={20} />, label: 'Chờ duyệt', value: countPending, color: '#f59e0b' },
+        { icon: <VCT_Icons.Users size={20} />, label: 'VĐV', value: countByType('athlete'), color: 'var(--vct-accent-cyan)' },
+        { icon: <VCT_Icons.Award size={20} />, label: 'HLV', value: countByType('coach'), color: 'var(--vct-success)' },
+        { icon: <VCT_Icons.Shield size={20} />, label: 'Trọng tài', value: countByType('referee'), color: 'var(--vct-info)' },
+        { icon: <VCT_Icons.Clock size={20} />, label: 'Chờ duyệt', value: countPending, color: 'var(--vct-warning)' },
     ]
 
     const handleApprove = (id: string) => {
@@ -140,7 +140,7 @@ const Page_admin_people_Content = () => {
         <AdminPageShell
             title={t('admin.people.title')}
             subtitle="VĐV, Huấn luyện viên, và Trọng tài toàn hệ thống"
-            icon={<VCT_Icons.Users size={28} className="text-[#0ea5e9]" />}
+            icon={<VCT_Icons.Users size={28} className="text-(--vct-accent-cyan)" />}
             stats={stats}
         >
             {/* ── Tabs ── */}

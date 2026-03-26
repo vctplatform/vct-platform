@@ -48,7 +48,7 @@ export function Page_federation_regulations() {
             subtitle: 'Belt & Rank System',
             count: stats.belts,
             unit: 'cấp đai',
-            color: '#f59e0b',
+            color: 'var(--vct-warning)',
             bg: 'linear-gradient(135deg, rgba(245,158,11,0.15) 0%, rgba(245,158,11,0.05) 100%)',
             tab: 'belt',
         },
@@ -58,7 +58,7 @@ export function Page_federation_regulations() {
             subtitle: 'Weight Classes',
             count: stats.weights,
             unit: 'hạng',
-            color: '#3b82f6',
+            color: 'var(--vct-info)',
             bg: 'linear-gradient(135deg, rgba(59,130,246,0.15) 0%, rgba(59,130,246,0.05) 100%)',
             tab: 'weight',
         },
@@ -68,7 +68,7 @@ export function Page_federation_regulations() {
             subtitle: 'Age Groups',
             count: stats.ages,
             unit: 'nhóm',
-            color: '#10b981',
+            color: 'var(--vct-success)',
             bg: 'linear-gradient(135deg, rgba(16,185,129,0.15) 0%, rgba(16,185,129,0.05) 100%)',
             tab: 'age',
         },
@@ -209,7 +209,7 @@ export function Page_federation_regulations() {
                 }}>
                     <span style={{
                         padding: '0.2rem 0.6rem', borderRadius: 6,
-                        background: 'rgba(239,68,68,0.1)', color: '#ef4444',
+                        background: 'rgba(239,68,68,0.1)', color: 'var(--vct-danger)',
                         fontSize: '0.75rem', fontWeight: 600,
                     }}>NATIONAL</span>
                     <span style={{

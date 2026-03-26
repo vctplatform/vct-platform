@@ -258,4 +258,3 @@ func (c *TTLCache) evictIfNeededLocked() {
 		c.evictions.Add(1)
 	}
 }
-

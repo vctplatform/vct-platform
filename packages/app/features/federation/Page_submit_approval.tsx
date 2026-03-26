@@ -5,8 +5,8 @@
 'use client';
 import React, { useState, useMemo } from 'react';
 import { useApiQuery, useApiMutation } from '../hooks/useApiQuery';
-import { VCT_PageContainer, VCT_PageHero } from '../components/VCT_PageContainer';
-import { VCT_Icons } from '../components/vct-icons';
+import { VCT_PageContainer, VCT_PageHero } from '@vct/ui';
+import { VCT_Icons } from '@vct/ui';
 
 // ── Types ────────────────────────────────────────────────────
 
@@ -28,11 +28,11 @@ interface SubmitPayload {
 // ── Group Metadata ───────────────────────────────────────────
 
 const GROUP_META: Record<string, { label: string; icon: string; color: string }> = {
-    administration: { label: 'Hành chính', icon: '🏛️', color: '#3b82f6' },
-    tournament: { label: 'Giải đấu', icon: '🏆', color: '#f59e0b' },
-    finance: { label: 'Tài chính', icon: '💰', color: '#10b981' },
-    training: { label: 'Đào tạo', icon: '🥋', color: '#8b5cf6' },
-    content: { label: 'Nội dung', icon: '📢', color: '#ec4899' },
+    administration: { label: 'Hành chính', icon: '🏛️', color: 'var(--vct-info)' },
+    tournament: { label: 'Giải đấu', icon: '🏆', color: 'var(--vct-warning)' },
+    finance: { label: 'Tài chính', icon: '💰', color: 'var(--vct-success)' },
+    training: { label: 'Đào tạo', icon: '🥋', color: 'var(--vct-info)' },
+    content: { label: 'Nội dung', icon: '📢', color: 'var(--vct-accent-pink)' },
 };
 
 function inferGroup(entityType: string): string {
@@ -125,8 +125,8 @@ export function Page_submit_approval() {
                                 <div
                                     className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all"
                                     style={{
-                                        background: isDone ? '#10b981' : isActive ? '#3b82f6' : 'rgba(148,163,184,0.1)',
-                                        color: isDone || isActive ? '#fff' : '#64748b',
+                                        background: isDone ? 'var(--vct-success)' : isActive ? 'var(--vct-info)' : 'rgba(148,163,184,0.1)',
+                                        color: isDone || isActive ? '#fff' : 'var(--vct-text-tertiary)',
                                     }}
                                 >
                                     {isDone ? '✓' : i + 1}
@@ -135,7 +135,7 @@ export function Page_submit_approval() {
                                     {labels[i]}
                                 </span>
                             </div>
-                            {i < 3 && <div className="flex-1 h-0.5 rounded" style={{ background: isDone ? '#10b981' : 'rgba(148,163,184,0.1)' }} />}
+                            {i < 3 && <div className="flex-1 h-0.5 rounded" style={{ background: isDone ? 'var(--vct-success)' : 'rgba(148,163,184,0.1)' }} />}
                         </React.Fragment>
                     );
                 })}
@@ -150,7 +150,7 @@ export function Page_submit_approval() {
                         </div>
                     ) : (
                         Object.entries(grouped).map(([group, wfs]) => {
-                            const defaultMeta = { label: 'Khác', icon: '📋', color: '#3b82f6' };
+                            const defaultMeta = { label: 'Khác', icon: '📋', color: 'var(--vct-info)' };
                             const meta = GROUP_META[group] ?? defaultMeta;
                             return (
                                 <div key={group}>

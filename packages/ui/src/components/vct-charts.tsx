@@ -9,7 +9,7 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { VCT_Text } from 'app/features/components/vct-ui'
+import { VCT_Text } from '..'
 
 /* ═══════════════════════════════════════════════════════════════
    TYPES

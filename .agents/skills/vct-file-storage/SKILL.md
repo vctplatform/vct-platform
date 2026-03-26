@@ -11,6 +11,12 @@ description: S3-compatible file storage for VCT Platform using MinIO — file up
 
 ---
 
+> 🚨 **MANDATORY COMPLIANCE**: You must strictly enforce the rules defined in `docs/architecture/file-storage-architecture.md`. Base64 payloads are banned. Large binary streams must bypass the Go Backend using **Presigned URLs** directly to MinIO.
+
+
+> [!IMPORTANT]
+> **SUPREME ARCHITECTURE DIRECTIVE**: You are strictly bound by the 19 architecture pillars documented in `docs/architecture/`. As a VCT AI Agent, your absolute highest priority is 100% compliance with these rules. You MUST NOT generate code, propose designs, or execute workflows that violate these foundational rules. They are unchangeable and strictly enforced.
+
 ## 1. Architecture
 
 ```

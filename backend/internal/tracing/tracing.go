@@ -31,17 +31,17 @@ func (s SpanID) String() string { return hex.EncodeToString(s[:]) }
 
 // Span represents a single operation in a trace.
 type Span struct {
-	TraceID    TraceID                `json:"trace_id"`
-	SpanID     SpanID                 `json:"span_id"`
-	ParentID   SpanID                 `json:"parent_id,omitempty"`
-	Name       string                 `json:"name"`
-	Service    string                 `json:"service"`
-	StartTime  time.Time              `json:"start_time"`
-	EndTime    time.Time              `json:"end_time,omitempty"`
-	Duration   time.Duration          `json:"duration,omitempty"`
-	Status     SpanStatus             `json:"status"`
-	Attributes map[string]string      `json:"attributes,omitempty"`
-	Events     []SpanEvent            `json:"events,omitempty"`
+	TraceID    TraceID           `json:"trace_id"`
+	SpanID     SpanID            `json:"span_id"`
+	ParentID   SpanID            `json:"parent_id,omitempty"`
+	Name       string            `json:"name"`
+	Service    string            `json:"service"`
+	StartTime  time.Time         `json:"start_time"`
+	EndTime    time.Time         `json:"end_time,omitempty"`
+	Duration   time.Duration     `json:"duration,omitempty"`
+	Status     SpanStatus        `json:"status"`
+	Attributes map[string]string `json:"attributes,omitempty"`
+	Events     []SpanEvent       `json:"events,omitempty"`
 	mu         sync.Mutex
 }
 

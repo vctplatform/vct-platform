@@ -1,12 +1,12 @@
 import * as React from 'react'
 import Link from 'next/link'
-import { VCT_Icons } from 'app/features/components/vct-icons'
-import { UI_Logo } from 'app/features/components/ui-logo'
+import { VCT_Icons } from '@vct/ui'
+import { UI_Logo } from '@vct/ui'
 
 export default function PublicLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="min-h-screen bg-[#0b1120] text-slate-200 flex flex-col font-sans">
-      <header className="sticky top-0 z-50 bg-[#0f172a]/90 backdrop-blur-md border-b border-slate-800 px-6 py-4 flex items-center justify-between shadow-xl">
+    <div className="min-h-screen bg-(--vct-bg-base) text-slate-200 flex flex-col font-sans">
+      <header className="sticky top-0 z-50 bg-(--vct-bg-glass-heavy)/90 backdrop-blur-md border-b border-slate-800 px-6 py-4 flex items-center justify-between shadow-xl">
         <Link href="/" className="flex items-center gap-3">
           <UI_Logo size={32} />
           <span className="font-black text-lg tracking-tight text-white">VCT PORTAL</span>
@@ -20,7 +20,7 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
         </div>
       </header>
       <main className="flex-1 w-full max-w-6xl mx-auto p-6 lg:p-12 relative">
-        <div className="absolute top-0 inset-x-0 h-64 bg-gradient-to-b from-emerald-500/5 to-transparent -z-10 pointer-events-none" />
+        <div className="absolute top-0 inset-x-0 h-64 bg-linear-to-b from-emerald-500/5 to-transparent -z-10 pointer-events-none" />
         {children}
       </main>
     </div>

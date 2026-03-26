@@ -1,8 +1,8 @@
 'use client'
 
 import * as React from 'react'
-import { VCT_Icons } from '../../components/vct-icons'
-import { VCT_EmptyState } from '../../components/vct-ui'
+import { VCT_Icons } from '@vct/ui'
+import { VCT_EmptyState } from '@vct/ui'
 
 // ════════════════════════════════════════
 // AdminDataTable — Generic reusable admin table

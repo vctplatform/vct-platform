@@ -37,10 +37,18 @@ func (s *sqlMasterDataStore) ListMasterBelts(ctx context.Context) ([]federation.
 		if err != nil {
 			return nil, err
 		}
-		if desc != nil { b.Description = *desc }
-		if scope != nil { b.Scope = federation.BeltSystemScope(*scope) }
-		if scopeID != nil { b.ScopeID = *scopeID }
-		if inherits != nil { b.InheritsFrom = *inherits }
+		if desc != nil {
+			b.Description = *desc
+		}
+		if scope != nil {
+			b.Scope = federation.BeltSystemScope(*scope)
+		}
+		if scopeID != nil {
+			b.ScopeID = *scopeID
+		}
+		if inherits != nil {
+			b.InheritsFrom = *inherits
+		}
 		out = append(out, b)
 	}
 	return out, rows.Err()
@@ -55,22 +63,39 @@ func (s *sqlMasterDataStore) GetMasterBelt(ctx context.Context, level string) (*
 	if err != nil {
 		return nil, err
 	}
-	if desc != nil { b.Description = *desc }
-	if scope != nil { b.Scope = federation.BeltSystemScope(*scope) }
-	if scopeID != nil { b.ScopeID = *scopeID }
-	if inherits != nil { b.InheritsFrom = *inherits }
+	if desc != nil {
+		b.Description = *desc
+	}
+	if scope != nil {
+		b.Scope = federation.BeltSystemScope(*scope)
+	}
+	if scopeID != nil {
+		b.ScopeID = *scopeID
+	}
+	if inherits != nil {
+		b.InheritsFrom = *inherits
+	}
 	return &b, nil
 }
 
 func (s *sqlMasterDataStore) CreateMasterBelt(ctx context.Context, b federation.MasterBelt) error {
 	q := `INSERT INTO federation_master_belts (level, name, color_hex, required_time_min, is_dan_level, description, scope, scope_id, inherits_from, created_at, updated_at) 
 	      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)`
-	
+
 	var desc, scope, scopeID, inherits *string
-	if b.Description != "" { desc = &b.Description }
-	if b.Scope != "" { scopeStr := string(b.Scope); scope = &scopeStr }
-	if b.ScopeID != "" { scopeID = &b.ScopeID }
-	if b.InheritsFrom != "" { inherits = &b.InheritsFrom }
+	if b.Description != "" {
+		desc = &b.Description
+	}
+	if b.Scope != "" {
+		scopeStr := string(b.Scope)
+		scope = &scopeStr
+	}
+	if b.ScopeID != "" {
+		scopeID = &b.ScopeID
+	}
+	if b.InheritsFrom != "" {
+		inherits = &b.InheritsFrom
+	}
 
 	now := time.Now()
 	_, err := s.db.Exec(ctx, q, b.Level, b.Name, b.ColorHex, b.RequiredTimeMin, b.IsDanLevel, desc, scope, scopeID, inherits, now, now)
@@ -101,13 +126,22 @@ func (s *sqlMasterDataStore) DeleteMasterBelt(ctx context.Context, level string)
 // We overwrite the method to avoid 'id' column assumption
 func (s *sqlMasterDataStore) doUpdateMasterBelt(ctx context.Context, b federation.MasterBelt) error {
 	q := `UPDATE federation_master_belts SET name=$2, color_hex=$3, required_time_min=$4, is_dan_level=$5, description=$6, scope=$7, scope_id=$8, inherits_from=$9, updated_at=$10 WHERE level=$1`
-	
+
 	var desc, scope, scopeID, inherits *string
-	if b.Description != "" { desc = &b.Description }
-	if b.Scope != "" { scopeStr := string(b.Scope); scope = &scopeStr }
-	if b.ScopeID != "" { scopeID = &b.ScopeID }
-	if b.InheritsFrom != "" { inherits = &b.InheritsFrom }
-	
+	if b.Description != "" {
+		desc = &b.Description
+	}
+	if b.Scope != "" {
+		scopeStr := string(b.Scope)
+		scope = &scopeStr
+	}
+	if b.ScopeID != "" {
+		scopeID = &b.ScopeID
+	}
+	if b.InheritsFrom != "" {
+		inherits = &b.InheritsFrom
+	}
+
 	_, err := s.db.Exec(ctx, q, b.Level, b.Name, b.ColorHex, b.RequiredTimeMin, b.IsDanLevel, desc, scope, scopeID, inherits, time.Now())
 	return err
 }
@@ -131,9 +165,15 @@ func (s *sqlMasterDataStore) ListMasterWeights(ctx context.Context) ([]federatio
 		if err != nil {
 			return nil, err
 		}
-		if scope != nil { w.Scope = federation.BeltSystemScope(*scope) }
-		if scopeID != nil { w.ScopeID = *scopeID }
-		if inherits != nil { w.InheritsFrom = *inherits }
+		if scope != nil {
+			w.Scope = federation.BeltSystemScope(*scope)
+		}
+		if scopeID != nil {
+			w.ScopeID = *scopeID
+		}
+		if inherits != nil {
+			w.InheritsFrom = *inherits
+		}
 		out = append(out, w)
 	}
 	return out, rows.Err()
@@ -148,20 +188,33 @@ func (s *sqlMasterDataStore) GetMasterWeight(ctx context.Context, id string) (*f
 	if err != nil {
 		return nil, err
 	}
-	if scope != nil { w.Scope = federation.BeltSystemScope(*scope) }
-	if scopeID != nil { w.ScopeID = *scopeID }
-	if inherits != nil { w.InheritsFrom = *inherits }
+	if scope != nil {
+		w.Scope = federation.BeltSystemScope(*scope)
+	}
+	if scopeID != nil {
+		w.ScopeID = *scopeID
+	}
+	if inherits != nil {
+		w.InheritsFrom = *inherits
+	}
 	return &w, nil
 }
 
 func (s *sqlMasterDataStore) CreateMasterWeight(ctx context.Context, w federation.MasterWeightClass) error {
 	q := `INSERT INTO federation_master_weights (id, gender, category, max_weight, is_heavy, scope, scope_id, inherits_from, created_at, updated_at) 
 	      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)`
-	
+
 	var scope, scopeID, inherits *string
-	if w.Scope != "" { scopeStr := string(w.Scope); scope = &scopeStr }
-	if w.ScopeID != "" { scopeID = &w.ScopeID }
-	if w.InheritsFrom != "" { inherits = &w.InheritsFrom }
+	if w.Scope != "" {
+		scopeStr := string(w.Scope)
+		scope = &scopeStr
+	}
+	if w.ScopeID != "" {
+		scopeID = &w.ScopeID
+	}
+	if w.InheritsFrom != "" {
+		inherits = &w.InheritsFrom
+	}
 
 	now := time.Now()
 	_, err := s.db.Exec(ctx, q, w.ID, w.Gender, w.Category, w.MaxWeight, w.IsHeavy, scope, scopeID, inherits, now, now)
@@ -205,9 +258,15 @@ func (s *sqlMasterDataStore) ListMasterAges(ctx context.Context) ([]federation.M
 		if err != nil {
 			return nil, err
 		}
-		if scope != nil { a.Scope = federation.BeltSystemScope(*scope) }
-		if scopeID != nil { a.ScopeID = *scopeID }
-		if inherits != nil { a.InheritsFrom = *inherits }
+		if scope != nil {
+			a.Scope = federation.BeltSystemScope(*scope)
+		}
+		if scopeID != nil {
+			a.ScopeID = *scopeID
+		}
+		if inherits != nil {
+			a.InheritsFrom = *inherits
+		}
 		out = append(out, a)
 	}
 	return out, rows.Err()
@@ -222,20 +281,33 @@ func (s *sqlMasterDataStore) GetMasterAge(ctx context.Context, id string) (*fede
 	if err != nil {
 		return nil, err
 	}
-	if scope != nil { a.Scope = federation.BeltSystemScope(*scope) }
-	if scopeID != nil { a.ScopeID = *scopeID }
-	if inherits != nil { a.InheritsFrom = *inherits }
+	if scope != nil {
+		a.Scope = federation.BeltSystemScope(*scope)
+	}
+	if scopeID != nil {
+		a.ScopeID = *scopeID
+	}
+	if inherits != nil {
+		a.InheritsFrom = *inherits
+	}
 	return &a, nil
 }
 
 func (s *sqlMasterDataStore) CreateMasterAge(ctx context.Context, a federation.MasterAgeGroup) error {
 	q := `INSERT INTO federation_master_ages (id, name, min_age, max_age, scope, scope_id, inherits_from, created_at, updated_at) 
 	      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`
-	
+
 	var scope, scopeID, inherits *string
-	if a.Scope != "" { scopeStr := string(a.Scope); scope = &scopeStr }
-	if a.ScopeID != "" { scopeID = &a.ScopeID }
-	if a.InheritsFrom != "" { inherits = &a.InheritsFrom }
+	if a.Scope != "" {
+		scopeStr := string(a.Scope)
+		scope = &scopeStr
+	}
+	if a.ScopeID != "" {
+		scopeID = &a.ScopeID
+	}
+	if a.InheritsFrom != "" {
+		inherits = &a.InheritsFrom
+	}
 
 	now := time.Now()
 	_, err := s.db.Exec(ctx, q, a.ID, a.Name, a.MinAge, a.MaxAge, scope, scopeID, inherits, now, now)
@@ -278,9 +350,15 @@ func (s *sqlMasterDataStore) ListMasterContents(ctx context.Context) ([]federati
 		if err != nil {
 			return nil, err
 		}
-		if desc != nil { c.Description = *desc }
-		if scope != nil { c.Scope = federation.BeltSystemScope(*scope) }
-		if scopeID != nil { c.ScopeID = *scopeID }
+		if desc != nil {
+			c.Description = *desc
+		}
+		if scope != nil {
+			c.Scope = federation.BeltSystemScope(*scope)
+		}
+		if scopeID != nil {
+			c.ScopeID = *scopeID
+		}
 		out = append(out, c)
 	}
 	return out, rows.Err()
@@ -295,20 +373,33 @@ func (s *sqlMasterDataStore) GetMasterContent(ctx context.Context, id string) (*
 	if err != nil {
 		return nil, err
 	}
-	if desc != nil { c.Description = *desc }
-	if scope != nil { c.Scope = federation.BeltSystemScope(*scope) }
-	if scopeID != nil { c.ScopeID = *scopeID }
+	if desc != nil {
+		c.Description = *desc
+	}
+	if scope != nil {
+		c.Scope = federation.BeltSystemScope(*scope)
+	}
+	if scopeID != nil {
+		c.ScopeID = *scopeID
+	}
 	return &c, nil
 }
 
 func (s *sqlMasterDataStore) CreateMasterContent(ctx context.Context, c federation.MasterCompetitionContent) error {
 	q := `INSERT INTO federation_master_contents (id, code, name, description, requires_weight, is_team_event, min_athletes, max_athletes, has_weapon, scope, scope_id, created_at, updated_at) 
 	      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)`
-	
+
 	var desc, scope, scopeID *string
-	if c.Description != "" { desc = &c.Description }
-	if c.Scope != "" { scopeStr := string(c.Scope); scope = &scopeStr }
-	if c.ScopeID != "" { scopeID = &c.ScopeID }
+	if c.Description != "" {
+		desc = &c.Description
+	}
+	if c.Scope != "" {
+		scopeStr := string(c.Scope)
+		scope = &scopeStr
+	}
+	if c.ScopeID != "" {
+		scopeID = &c.ScopeID
+	}
 
 	now := time.Now()
 	_, err := s.db.Exec(ctx, q, c.ID, c.Code, c.Name, desc, c.RequiresWeight, c.IsTeamEvent, c.MinAthletes, c.MaxAthletes, c.HasWeapon, scope, scopeID, now, now)

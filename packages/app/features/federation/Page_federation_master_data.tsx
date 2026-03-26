@@ -104,7 +104,7 @@ const inputStyle: React.CSSProperties = {
 
 const btnPrimary: React.CSSProperties = {
     padding: '0.6rem 1.25rem', borderRadius: 10, border: 'none',
-    background: 'linear-gradient(135deg, #7c3aed, #6d28d9)', color: '#fff',
+    background: 'linear-gradient(135deg, #7c3aed, #6d28d9)', color: 'var(--vct-bg-elevated)',
     fontWeight: 600, fontSize: '0.85rem', cursor: 'pointer',
 };
 
@@ -130,8 +130,8 @@ function Toast({ message, type, onClose }: { message: string; type: 'success' | 
             style={{
                 position: 'fixed', bottom: 24, right: 24, zIndex: 10000,
                 padding: '0.8rem 1.25rem', borderRadius: 12,
-                background: type === 'success' ? '#059669' : '#dc2626',
-                color: '#fff', fontWeight: 600, fontSize: '0.85rem',
+                background: type === 'success' ? 'var(--vct-success)' : 'var(--vct-danger)',
+                color: 'var(--vct-bg-elevated)', fontWeight: 600, fontSize: '0.85rem',
                 boxShadow: '0 8px 24px rgba(0,0,0,0.2)',
             }}
         >
@@ -158,7 +158,7 @@ export function Page_federation_master_data() {
     // Belt modal
     const [beltModal, setBeltModal] = useState<ModalMode>(null);
     const [editBelt, setEditBelt] = useState<MasterBelt | null>(null);
-    const [beltForm, setBeltForm] = useState({ name: '', color_hex: '#ffffff', required_time_min: 3, is_dan_level: false, description: '' });
+    const [beltForm, setBeltForm] = useState({ name: '', color_hex: 'var(--vct-bg-elevated)', required_time_min: 3, is_dan_level: false, description: '' });
 
     // Weight modal
     const [weightModal, setWeightModal] = useState<ModalMode>(null);
@@ -197,7 +197,7 @@ export function Page_federation_master_data() {
     // ── Belt CRUD ──────────────────────────────────────────────
 
     const openCreateBelt = () => {
-        setBeltForm({ name: '', color_hex: '#fbbf24', required_time_min: 3, is_dan_level: false, description: '' });
+        setBeltForm({ name: '', color_hex: 'var(--vct-warning)', required_time_min: 3, is_dan_level: false, description: '' });
         setEditBelt(null);
         setBeltModal('create');
     };
@@ -389,7 +389,7 @@ export function Page_federation_master_data() {
                 <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                     {belts.length === 0 && <EmptyState label="Chưa có đai nào" />}
                     {belts.sort((a, b) => a.level - b.level).map(b => {
-                        const isLight = b.color_hex === '#ffffff' || b.color_hex === '#fbbf24';
+                        const isLight = b.color_hex === 'var(--vct-bg-elevated)' || b.color_hex === 'var(--vct-warning)';
                         return (
                             <motion.div key={b.level}
                                 initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }}
@@ -405,9 +405,9 @@ export function Page_federation_master_data() {
                                     width: 44, height: 44, borderRadius: 10, display: 'flex',
                                     alignItems: 'center', justifyContent: 'center', fontWeight: 800,
                                     fontSize: '0.9rem', flexShrink: 0,
-                                    background: b.color_hex === '#ffffff' ? 'rgba(255,255,255,0.9)' : b.color_hex,
-                                    border: b.color_hex === '#ffffff' ? '2px solid var(--vct-border, #ddd)' : 'none',
-                                    color: isLight ? '#1e293b' : '#fff',
+                                    background: b.color_hex === 'var(--vct-bg-elevated)' ? 'rgba(255,255,255,0.9)' : b.color_hex,
+                                    border: b.color_hex === 'var(--vct-bg-elevated)' ? '2px solid var(--vct-border, #ddd)' : 'none',
+                                    color: isLight ? 'var(--vct-bg-input)' : '#fff',
                                 }}>{b.level}</div>
                                 <div style={{ flex: 1, minWidth: 0 }}>
                                     <div style={{ fontSize: '0.92rem', fontWeight: 700, color: 'var(--vct-text, #1e293b)' }}>{b.name}</div>
@@ -418,7 +418,7 @@ export function Page_federation_master_data() {
                                 {b.is_dan_level && (
                                     <span style={{
                                         padding: '0.2rem 0.6rem', borderRadius: 6,
-                                        background: 'rgba(245,158,11,0.12)', color: '#f59e0b',
+                                        background: 'rgba(245,158,11,0.12)', color: 'var(--vct-warning)',
                                         fontSize: '0.7rem', fontWeight: 700, whiteSpace: 'nowrap',
                                     }}>ĐẲNG CẤP</span>
                                 )}
@@ -449,7 +449,7 @@ export function Page_federation_master_data() {
                         >
                             <div style={{
                                 fontSize: '1.75rem', fontWeight: 800,
-                                color: w.gender === 'MALE' ? '#3b82f6' : '#ec4899',
+                                color: w.gender === 'MALE' ? 'var(--vct-info)' : 'var(--vct-accent-pink)',
                             }}>
                                 {w.is_heavy ? '80+' : `U${w.max_weight}`}
                             </div>
@@ -484,7 +484,7 @@ export function Page_federation_master_data() {
                         >
                             <div style={{
                                 width: 48, height: 48, borderRadius: 10,
-                                background: 'rgba(16,185,129,0.08)', color: '#10b981',
+                                background: 'rgba(16,185,129,0.08)', color: 'var(--vct-success)',
                                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                                 fontWeight: 700, fontSize: '0.8rem', flexShrink: 0,
                             }}>{a.id.toUpperCase()}</div>

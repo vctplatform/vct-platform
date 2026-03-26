@@ -9,10 +9,10 @@ import {
   VCT_Input,
   VCT_Select,
   VCT_Toast,
-} from '../components/vct-ui'
-import { VCT_PageContainer, VCT_StatRow } from '../components/vct-ui'
-import type { StatItem } from '../components/VCT_StatRow'
-import { VCT_Icons } from '../components/vct-icons'
+} from '@vct/ui'
+import { VCT_PageContainer, VCT_StatRow } from '@vct/ui'
+import type { StatItem } from '@vct/ui'
+import { VCT_Icons } from '@vct/ui'
 import { useRouteActionGuard } from '../hooks/use-route-action-guard'
 import {
   CLUB_SETTINGS_SEED,
@@ -78,26 +78,26 @@ export const Page_club_settings = () => {
       label: 'Ma CLB',
       value: draft.code,
       icon: <VCT_Icons.FileText size={18} />,
-      color: '#0ea5e9',
+      color: 'var(--vct-accent-cyan)',
     },
     {
       label: 'Cong suat hien tai',
       value: `${members.length}/${draft.maxCapacity}`,
       icon: <VCT_Icons.Users size={18} />,
-      color: utilizationRate > 90 ? '#ef4444' : '#10b981',
+      color: utilizationRate > 90 ? 'var(--vct-danger)' : 'var(--vct-success)',
       sub: `${utilizationRate}% suc chua`,
     },
     {
       label: 'Khung gio mo cua',
       value: `${draft.openTime} - ${draft.closeTime}`,
       icon: <VCT_Icons.Clock size={18} />,
-      color: '#f59e0b',
+      color: 'var(--vct-warning)',
     },
     {
       label: 'Trang thai CLB',
       value: draft.status === 'active' ? 'Hoat dong' : 'Tam dung',
       icon: <VCT_Icons.Activity size={18} />,
-      color: draft.status === 'active' ? '#10b981' : '#94a3b8',
+      color: draft.status === 'active' ? 'var(--vct-success)' : 'var(--vct-text-tertiary)',
     },
   ]
 

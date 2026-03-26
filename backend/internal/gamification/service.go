@@ -24,10 +24,10 @@ const (
 type BadgeTier string
 
 const (
-	TierBronze   BadgeTier = "bronze"
-	TierSilver   BadgeTier = "silver"
-	TierGold     BadgeTier = "gold"
-	TierDiamond  BadgeTier = "diamond"
+	TierBronze  BadgeTier = "bronze"
+	TierSilver  BadgeTier = "silver"
+	TierGold    BadgeTier = "gold"
+	TierDiamond BadgeTier = "diamond"
 )
 
 // BadgeDefinition is a blueprint for an achievement.
@@ -44,35 +44,35 @@ type BadgeDefinition struct {
 
 // UserBadge is an earned badge.
 type UserBadge struct {
-	BadgeID   string    `json:"badge_id"`
-	UserID    string    `json:"user_id"`
-	EarnedAt  time.Time `json:"earned_at"`
-	Badge     BadgeDefinition `json:"badge"`
+	BadgeID  string          `json:"badge_id"`
+	UserID   string          `json:"user_id"`
+	EarnedAt time.Time       `json:"earned_at"`
+	Badge    BadgeDefinition `json:"badge"`
 }
 
 // ── Seasonal Leaderboard ────────────────────────────────────
 
 // Season groups rankings by time period.
 type Season struct {
-	ID        string    `json:"id"`
-	Name      string    `json:"name"`      // e.g. "Mùa giải 2026"
-	StartDate string    `json:"start_date"`
-	EndDate   string    `json:"end_date"`
-	IsActive  bool      `json:"is_active"`
+	ID        string `json:"id"`
+	Name      string `json:"name"` // e.g. "Mùa giải 2026"
+	StartDate string `json:"start_date"`
+	EndDate   string `json:"end_date"`
+	IsActive  bool   `json:"is_active"`
 }
 
 // SeasonRanking is a per-season ranking entry.
 type SeasonRanking struct {
-	UserID     string  `json:"user_id"`
-	UserName   string  `json:"user_name"`
-	Province   string  `json:"province"`
-	Category   string  `json:"category"`   // doi_khang, quyen_thuat
-	SeasonID   string  `json:"season_id"`
-	Points     int     `json:"points"`
-	Wins       int     `json:"wins"`
-	Losses     int     `json:"losses"`
-	Rank       int     `json:"rank"`
-	EloRating  float64 `json:"elo_rating"`
+	UserID    string  `json:"user_id"`
+	UserName  string  `json:"user_name"`
+	Province  string  `json:"province"`
+	Category  string  `json:"category"` // doi_khang, quyen_thuat
+	SeasonID  string  `json:"season_id"`
+	Points    int     `json:"points"`
+	Wins      int     `json:"wins"`
+	Losses    int     `json:"losses"`
+	Rank      int     `json:"rank"`
+	EloRating float64 `json:"elo_rating"`
 }
 
 // ── Fan Following ───────────────────────────────────────────
@@ -80,8 +80,8 @@ type SeasonRanking struct {
 type Follow struct {
 	ID         string    `json:"id"`
 	FollowerID string    `json:"follower_id"`
-	TargetID   string    `json:"target_id"`    // athlete or club ID
-	TargetType string    `json:"target_type"`   // athlete, club
+	TargetID   string    `json:"target_id"`   // athlete or club ID
+	TargetType string    `json:"target_type"` // athlete, club
 	CreatedAt  time.Time `json:"created_at"`
 }
 

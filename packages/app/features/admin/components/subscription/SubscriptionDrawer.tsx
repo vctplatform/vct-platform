@@ -1,9 +1,9 @@
 'use client'
 
 import * as React from 'react'
-import { VCT_Badge, VCT_Button, VCT_Stack, VCT_EmptyState } from '../../../components/vct-ui'
-import { VCT_Icons } from '../../../components/vct-icons'
-import { VCT_Drawer } from '../../../components/VCT_Drawer'
+import { VCT_Badge, VCT_Button, VCT_Stack, VCT_EmptyState } from '@vct/ui'
+import { VCT_Icons } from '@vct/ui'
+import { VCT_Drawer } from '@vct/ui'
 
 // ════════════════════════════════════════
 // Types
@@ -64,7 +64,7 @@ export const SubscriptionDrawer = ({
                         role="tab"
                         aria-selected={drawerTab === 'info'}
                         aria-label="Thông tin subscription"
-                        className={`flex-1 px-4 py-2 text-sm font-semibold transition-colors ${drawerTab === 'info' ? 'bg-[#8b5cf6] text-white' : 'bg-(--vct-bg-elevated) text-(--vct-text-secondary) hover:bg-(--vct-bg-base)'}`}
+                        className={`flex-1 px-4 py-2 text-sm font-semibold transition-colors ${drawerTab === 'info' ? 'bg-(--vct-info) text-white' : 'bg-(--vct-bg-elevated) text-(--vct-text-secondary) hover:bg-(--vct-bg-base)'}`}
                     >
                         Thông tin
                     </button>
@@ -72,7 +72,7 @@ export const SubscriptionDrawer = ({
                         role="tab"
                         aria-selected={drawerTab === 'billing'}
                         aria-label="Lịch sử thanh toán"
-                        className={`flex-1 px-4 py-2 text-sm font-semibold transition-colors ${drawerTab === 'billing' ? 'bg-[#8b5cf6] text-white' : 'bg-(--vct-bg-elevated) text-(--vct-text-secondary) hover:bg-(--vct-bg-base)'}`}
+                        className={`flex-1 px-4 py-2 text-sm font-semibold transition-colors ${drawerTab === 'billing' ? 'bg-(--vct-info) text-white' : 'bg-(--vct-bg-elevated) text-(--vct-text-secondary) hover:bg-(--vct-bg-base)'}`}
                     >
                         Thanh toán
                     </button>
@@ -92,11 +92,11 @@ export const SubscriptionDrawer = ({
                             return (
                             <div className="p-3 bg-[#8b5cf610] border border-[#8b5cf640] rounded-xl">
                                 <div className="flex items-center justify-between text-xs mb-2">
-                                    <span className="text-[#8b5cf6] font-bold">Trial Period</span>
+                                    <span className="text-(--vct-info) font-bold">Trial Period</span>
                                     <span className="text-(--vct-text-tertiary)">{Math.max(0, daysUntil(selected.current_period_end))} / {Math.ceil((new Date(selected.current_period_end).getTime() - new Date(selected.current_period_start).getTime()) / (1000 * 60 * 60 * 24))} ngày</span>
                                 </div>
                                 <div className="w-full h-2 bg-[#8b5cf620] rounded-full overflow-hidden">
-                                    <div className="admin-progress-width bg-linear-to-r from-[#8b5cf6] to-[#a855f7]"
+                                    <div className="admin-progress-width bg-linear-to-r from-(--vct-info) to-[#a855f7]"
                                         {...{ style: trialProgressStyle }}
                                     />
                                 </div>
@@ -145,7 +145,7 @@ export const SubscriptionDrawer = ({
                 {drawerTab === 'billing' && (
                     <div>
                         <h4 className="font-bold text-(--vct-text-primary) text-sm mb-3 flex items-center gap-2">
-                            <VCT_Icons.FileText size={16} className="text-[#0ea5e9]" /> Lịch sử thanh toán
+                            <VCT_Icons.FileText size={16} className="text-(--vct-accent-cyan)" /> Lịch sử thanh toán
                         </h4>
                         {(billingHistory[selected.id] || []).length === 0 ? (
                             <VCT_EmptyState icon={<VCT_Icons.FileText size={32} />} title="Chưa có kỳ thanh toán" />
@@ -161,7 +161,7 @@ export const SubscriptionDrawer = ({
                                             <div className="font-bold text-sm text-(--vct-text-primary)">{fmt(bc.amount)}</div>
                                             <VCT_Badge type={bc.status === 'paid' ? 'success' : bc.status === 'pending' ? 'warning' : 'danger'} text={bc.status === 'paid' ? 'Đã TT' : bc.status === 'pending' ? 'Chờ TT' : 'Quá hạn'} />
                                             {bc.status !== 'paid' && (
-                                                <button onClick={() => onMarkPaid(selected.id, bc.id)} className="text-[10px] text-[#8b5cf6] hover:underline font-bold mt-1" aria-label="Đánh dấu đã thanh toán">Đánh dấu đã thu</button>
+                                                <button onClick={() => onMarkPaid(selected.id, bc.id)} className="text-[10px] text-(--vct-info) hover:underline font-bold mt-1" aria-label="Đánh dấu đã thanh toán">Đánh dấu đã thu</button>
                                             )}
                                         </div>
                                     </div>

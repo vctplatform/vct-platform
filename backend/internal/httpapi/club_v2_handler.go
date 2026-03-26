@@ -43,7 +43,7 @@ func clubIDFromQuery(r *http.Request) string {
 
 func (s *Server) handleClubDashboardV2(w http.ResponseWriter, r *http.Request, p auth.Principal) {
 	if r.Method != http.MethodGet {
-		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+		apiMethodNotAllowed(w)
 		return
 	}
 	if !requireRole(w, p, clubReadRoles...) {
@@ -51,7 +51,7 @@ func (s *Server) handleClubDashboardV2(w http.ResponseWriter, r *http.Request, p
 	}
 	d, err := s.Core.Club.GetDashboard(r.Context(), clubIDFromQuery(r))
 	if err != nil {
-		internalError(w, err)
+		apiInternal(w, err)
 		return
 	}
 	success(w, http.StatusOK, map[string]any{"data": d})
@@ -80,7 +80,7 @@ func (s *Server) handleClubAttendance(w http.ResponseWriter, r *http.Request, p 
 			records, err = s.Core.Club.ListAttendance(r.Context(), clubID)
 		}
 		if err != nil {
-			internalError(w, err)
+			apiInternal(w, err)
 			return
 		}
 		success(w, http.StatusOK, map[string]any{"data": map[string]any{"records": records, "total": len(records)}})
@@ -91,7 +91,7 @@ func (s *Server) handleClubAttendance(w http.ResponseWriter, r *http.Request, p 
 		}
 		var a club.Attendance
 		if err := json.NewDecoder(r.Body).Decode(&a); err != nil {
-			badRequest(w, "invalid request body")
+			apiError(w, http.StatusBadRequest, CodeBadRequest, "invalid request body")
 			return
 		}
 		if a.ClubID == "" {
@@ -99,13 +99,13 @@ func (s *Server) handleClubAttendance(w http.ResponseWriter, r *http.Request, p 
 		}
 		created, err := s.Core.Club.RecordAttendance(r.Context(), a)
 		if err != nil {
-			badRequest(w, err.Error())
+			apiError(w, http.StatusBadRequest, CodeBadRequest, err.Error())
 			return
 		}
 		success(w, http.StatusCreated, map[string]any{"data": created})
 
 	default:
-		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+		apiMethodNotAllowed(w)
 	}
 }
 
@@ -118,18 +118,18 @@ func (s *Server) handleClubAttendanceAction(w http.ResponseWriter, r *http.Reque
 	switch r.Method {
 	case http.MethodDelete:
 		if err := s.Core.Club.DeleteAttendance(r.Context(), id); err != nil {
-			internalError(w, err)
+			apiInternal(w, err)
 			return
 		}
 		success(w, http.StatusOK, map[string]any{"message": "deleted"})
 	default:
-		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+		apiMethodNotAllowed(w)
 	}
 }
 
 func (s *Server) handleClubAttendanceSummary(w http.ResponseWriter, r *http.Request, p auth.Principal) {
 	if r.Method != http.MethodGet {
-		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+		apiMethodNotAllowed(w)
 		return
 	}
 	if !requireRole(w, p, clubReadRoles...) {
@@ -137,7 +137,7 @@ func (s *Server) handleClubAttendanceSummary(w http.ResponseWriter, r *http.Requ
 	}
 	summary, err := s.Core.Club.GetAttendanceSummary(r.Context(), clubIDFromQuery(r))
 	if err != nil {
-		internalError(w, err)
+		apiInternal(w, err)
 		return
 	}
 	success(w, http.StatusOK, map[string]any{"data": summary})
@@ -145,7 +145,7 @@ func (s *Server) handleClubAttendanceSummary(w http.ResponseWriter, r *http.Requ
 
 func (s *Server) handleClubAttendanceBulk(w http.ResponseWriter, r *http.Request, p auth.Principal) {
 	if r.Method != http.MethodPost {
-		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+		apiMethodNotAllowed(w)
 		return
 	}
 	if !requireRole(w, p, clubWriteRoles...) {
@@ -155,7 +155,7 @@ func (s *Server) handleClubAttendanceBulk(w http.ResponseWriter, r *http.Request
 		Records []club.Attendance `json:"records"`
 	}
 	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
-		badRequest(w, "invalid request body")
+		apiError(w, http.StatusBadRequest, CodeBadRequest, "invalid request body")
 		return
 	}
 	clubID := clubIDFromQuery(r)
@@ -166,7 +166,7 @@ func (s *Server) handleClubAttendanceBulk(w http.ResponseWriter, r *http.Request
 	}
 	created, err := s.Core.Club.BulkRecordAttendance(r.Context(), body.Records)
 	if err != nil {
-		badRequest(w, err.Error())
+		apiError(w, http.StatusBadRequest, CodeBadRequest, err.Error())
 		return
 	}
 	success(w, http.StatusCreated, map[string]any{"data": map[string]any{"created": len(created), "records": created}})
@@ -174,7 +174,7 @@ func (s *Server) handleClubAttendanceBulk(w http.ResponseWriter, r *http.Request
 
 func (s *Server) handleClubAttendanceExport(w http.ResponseWriter, r *http.Request, p auth.Principal) {
 	if r.Method != http.MethodGet {
-		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+		apiMethodNotAllowed(w)
 		return
 	}
 	if !requireRole(w, p, clubReadRoles...) {
@@ -182,7 +182,7 @@ func (s *Server) handleClubAttendanceExport(w http.ResponseWriter, r *http.Reque
 	}
 	csv, err := s.Core.Club.ExportAttendanceCSV(r.Context(), clubIDFromQuery(r))
 	if err != nil {
-		internalError(w, err)
+		apiInternal(w, err)
 		return
 	}
 	w.Header().Set("Content-Type", "text/csv; charset=utf-8")
@@ -203,7 +203,7 @@ func (s *Server) handleClubEquipment(w http.ResponseWriter, r *http.Request, p a
 		}
 		items, err := s.Core.Club.ListEquipment(r.Context(), clubID)
 		if err != nil {
-			internalError(w, err)
+			apiInternal(w, err)
 			return
 		}
 		success(w, http.StatusOK, map[string]any{"data": map[string]any{"items": items, "total": len(items)}})
@@ -214,7 +214,7 @@ func (s *Server) handleClubEquipment(w http.ResponseWriter, r *http.Request, p a
 		}
 		var e club.Equipment
 		if err := json.NewDecoder(r.Body).Decode(&e); err != nil {
-			badRequest(w, "invalid request body")
+			apiError(w, http.StatusBadRequest, CodeBadRequest, "invalid request body")
 			return
 		}
 		if e.ClubID == "" {
@@ -222,13 +222,13 @@ func (s *Server) handleClubEquipment(w http.ResponseWriter, r *http.Request, p a
 		}
 		created, err := s.Core.Club.CreateEquipment(r.Context(), e)
 		if err != nil {
-			badRequest(w, err.Error())
+			apiError(w, http.StatusBadRequest, CodeBadRequest, err.Error())
 			return
 		}
 		success(w, http.StatusCreated, map[string]any{"data": created})
 
 	default:
-		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+		apiMethodNotAllowed(w)
 	}
 }
 
@@ -242,7 +242,7 @@ func (s *Server) handleClubEquipmentAction(w http.ResponseWriter, r *http.Reques
 	case http.MethodGet:
 		e, err := s.Core.Club.GetEquipment(r.Context(), id)
 		if err != nil {
-			notFound(w)
+			apiError(w, http.StatusNotFound, CodeNotFound, "Không tìm thấy tài nguyên")
 			return
 		}
 		success(w, http.StatusOK, map[string]any{"data": e})
@@ -250,30 +250,30 @@ func (s *Server) handleClubEquipmentAction(w http.ResponseWriter, r *http.Reques
 	case http.MethodPut:
 		var patch map[string]interface{}
 		if err := json.NewDecoder(r.Body).Decode(&patch); err != nil {
-			badRequest(w, "invalid body")
+			apiError(w, http.StatusBadRequest, CodeBadRequest, "invalid body")
 			return
 		}
 		if err := s.Core.Club.UpdateEquipment(r.Context(), id, patch); err != nil {
-			internalError(w, err)
+			apiInternal(w, err)
 			return
 		}
 		success(w, http.StatusOK, map[string]any{"message": "updated"})
 
 	case http.MethodDelete:
 		if err := s.Core.Club.DeleteEquipment(r.Context(), id); err != nil {
-			internalError(w, err)
+			apiInternal(w, err)
 			return
 		}
 		success(w, http.StatusOK, map[string]any{"message": "deleted"})
 
 	default:
-		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+		apiMethodNotAllowed(w)
 	}
 }
 
 func (s *Server) handleClubEquipmentSummary(w http.ResponseWriter, r *http.Request, p auth.Principal) {
 	if r.Method != http.MethodGet {
-		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+		apiMethodNotAllowed(w)
 		return
 	}
 	if !requireRole(w, p, clubReadRoles...) {
@@ -281,7 +281,7 @@ func (s *Server) handleClubEquipmentSummary(w http.ResponseWriter, r *http.Reque
 	}
 	summary, err := s.Core.Club.GetEquipmentSummary(r.Context(), clubIDFromQuery(r))
 	if err != nil {
-		internalError(w, err)
+		apiInternal(w, err)
 		return
 	}
 	success(w, http.StatusOK, map[string]any{"data": summary})
@@ -289,7 +289,7 @@ func (s *Server) handleClubEquipmentSummary(w http.ResponseWriter, r *http.Reque
 
 func (s *Server) handleClubEquipmentExport(w http.ResponseWriter, r *http.Request, p auth.Principal) {
 	if r.Method != http.MethodGet {
-		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+		apiMethodNotAllowed(w)
 		return
 	}
 	if !requireRole(w, p, clubReadRoles...) {
@@ -297,7 +297,7 @@ func (s *Server) handleClubEquipmentExport(w http.ResponseWriter, r *http.Reques
 	}
 	csv, err := s.Core.Club.ExportEquipmentCSV(r.Context(), clubIDFromQuery(r))
 	if err != nil {
-		internalError(w, err)
+		apiInternal(w, err)
 		return
 	}
 	w.Header().Set("Content-Type", "text/csv; charset=utf-8")
@@ -318,7 +318,7 @@ func (s *Server) handleClubFacilities(w http.ResponseWriter, r *http.Request, p 
 		}
 		items, err := s.Core.Club.ListFacilities(r.Context(), clubID)
 		if err != nil {
-			internalError(w, err)
+			apiInternal(w, err)
 			return
 		}
 		success(w, http.StatusOK, map[string]any{"data": map[string]any{"items": items, "total": len(items)}})
@@ -329,7 +329,7 @@ func (s *Server) handleClubFacilities(w http.ResponseWriter, r *http.Request, p 
 		}
 		var f club.Facility
 		if err := json.NewDecoder(r.Body).Decode(&f); err != nil {
-			badRequest(w, "invalid request body")
+			apiError(w, http.StatusBadRequest, CodeBadRequest, "invalid request body")
 			return
 		}
 		if f.ClubID == "" {
@@ -337,13 +337,13 @@ func (s *Server) handleClubFacilities(w http.ResponseWriter, r *http.Request, p 
 		}
 		created, err := s.Core.Club.CreateFacility(r.Context(), f)
 		if err != nil {
-			badRequest(w, err.Error())
+			apiError(w, http.StatusBadRequest, CodeBadRequest, err.Error())
 			return
 		}
 		success(w, http.StatusCreated, map[string]any{"data": created})
 
 	default:
-		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+		apiMethodNotAllowed(w)
 	}
 }
 
@@ -357,7 +357,7 @@ func (s *Server) handleClubFacilityAction(w http.ResponseWriter, r *http.Request
 	case http.MethodGet:
 		f, err := s.Core.Club.GetFacility(r.Context(), id)
 		if err != nil {
-			notFound(w)
+			apiError(w, http.StatusNotFound, CodeNotFound, "Không tìm thấy tài nguyên")
 			return
 		}
 		success(w, http.StatusOK, map[string]any{"data": f})
@@ -365,30 +365,30 @@ func (s *Server) handleClubFacilityAction(w http.ResponseWriter, r *http.Request
 	case http.MethodPut:
 		var patch map[string]interface{}
 		if err := json.NewDecoder(r.Body).Decode(&patch); err != nil {
-			badRequest(w, "invalid body")
+			apiError(w, http.StatusBadRequest, CodeBadRequest, "invalid body")
 			return
 		}
 		if err := s.Core.Club.UpdateFacility(r.Context(), id, patch); err != nil {
-			internalError(w, err)
+			apiInternal(w, err)
 			return
 		}
 		success(w, http.StatusOK, map[string]any{"message": "updated"})
 
 	case http.MethodDelete:
 		if err := s.Core.Club.DeleteFacility(r.Context(), id); err != nil {
-			internalError(w, err)
+			apiInternal(w, err)
 			return
 		}
 		success(w, http.StatusOK, map[string]any{"message": "deleted"})
 
 	default:
-		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+		apiMethodNotAllowed(w)
 	}
 }
 
 func (s *Server) handleClubFacilitySummary(w http.ResponseWriter, r *http.Request, p auth.Principal) {
 	if r.Method != http.MethodGet {
-		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+		apiMethodNotAllowed(w)
 		return
 	}
 	if !requireRole(w, p, clubReadRoles...) {
@@ -396,7 +396,7 @@ func (s *Server) handleClubFacilitySummary(w http.ResponseWriter, r *http.Reques
 	}
 	summary, err := s.Core.Club.GetFacilitySummary(r.Context(), clubIDFromQuery(r))
 	if err != nil {
-		internalError(w, err)
+		apiInternal(w, err)
 		return
 	}
 	success(w, http.StatusOK, map[string]any{"data": summary})
@@ -404,7 +404,7 @@ func (s *Server) handleClubFacilitySummary(w http.ResponseWriter, r *http.Reques
 
 func (s *Server) handleClubFacilitiesExport(w http.ResponseWriter, r *http.Request, p auth.Principal) {
 	if r.Method != http.MethodGet {
-		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+		apiMethodNotAllowed(w)
 		return
 	}
 	if !requireRole(w, p, clubReadRoles...) {
@@ -412,7 +412,7 @@ func (s *Server) handleClubFacilitiesExport(w http.ResponseWriter, r *http.Reque
 	}
 	csv, err := s.Core.Club.ExportFacilitiesCSV(r.Context(), clubIDFromQuery(r))
 	if err != nil {
-		internalError(w, err)
+		apiInternal(w, err)
 		return
 	}
 	w.Header().Set("Content-Type", "text/csv; charset=utf-8")

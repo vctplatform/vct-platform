@@ -6,7 +6,7 @@
 'use client';
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { VCT_PageContainer } from '../components/vct-ui';
+import { VCT_PageContainer } from '@vct/ui';
 
 // ── Types ────────────────────────────────────────────────────
 
@@ -141,11 +141,11 @@ const WORKFLOW_DEFS: WorkflowDefinition[] = [
 ];
 
 const GROUP_META: Record<string, { label: string; icon: string; color: string }> = {
-    administration: { label: 'Hành chính — Tổ chức', icon: '🏛️', color: '#3b82f6' },
-    tournament: { label: 'Giải đấu', icon: '🏆', color: '#f59e0b' },
-    finance: { label: 'Tài chính', icon: '💰', color: '#10b981' },
-    training: { label: 'Đào tạo & Di sản', icon: '🥋', color: '#8b5cf6' },
-    content: { label: 'Nội dung & Cộng đồng', icon: '📢', color: '#ec4899' },
+    administration: { label: 'Hành chính — Tổ chức', icon: '🏛️', color: 'var(--vct-info)' },
+    tournament: { label: 'Giải đấu', icon: '🏆', color: 'var(--vct-warning)' },
+    finance: { label: 'Tài chính', icon: '💰', color: 'var(--vct-success)' },
+    training: { label: 'Đào tạo & Di sản', icon: '🥋', color: 'var(--vct-info)' },
+    content: { label: 'Nội dung & Cộng đồng', icon: '📢', color: 'var(--vct-accent-pink)' },
 };
 
 const ROLE_LABELS: Record<string, string> = {
@@ -190,7 +190,7 @@ export function Page_workflow_config() {
 
             {/* Filter Tabs */}
             <div className="relative flex gap-2 mb-6 flex-wrap">
-                <FilterPill active={filterGroup === 'all'} onClick={() => setFilterGroup('all')} color="#60a5fa">
+                <FilterPill active={filterGroup === 'all'} onClick={() => setFilterGroup('all')} color="var(--vct-info)">
                     Tất cả ({WORKFLOW_DEFS.length})
                 </FilterPill>
                 {groups.map(g => {
@@ -328,7 +328,7 @@ function FilterPill({ active, color, onClick, children }: { active: boolean; col
             className="px-3.5 py-1.5 rounded-lg text-[13px] font-medium border-none cursor-pointer transition-colors"
             style={{
                 background: active ? `${color}20` : 'rgba(148,163,184,0.08)',
-                color: active ? color : '#94a3b8',
+                color: active ? color: 'var(--vct-text-tertiary)',
             }}
         >{children}</motion.button>
     );

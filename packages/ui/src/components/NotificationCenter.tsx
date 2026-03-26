@@ -9,7 +9,7 @@
 
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { VCT_Text, VCT_Card, VCT_Button, VCT_Badge } from 'app/features/components/vct-ui'
+import { VCT_Text, VCT_Card, VCT_Button, VCT_Badge } from '..'
 
 /* ── Types ──────────────────────────────────────────────────── */
 

@@ -46,14 +46,14 @@ const (
 // SupportTicket represents a customer support / technical assistance request.
 type SupportTicket struct {
 	ID            string     `json:"id"`
-	MaTicket      string     `json:"ma_ticket"`      // e.g. TK-001
-	TieuDe        string     `json:"tieu_de"`         // title
-	NoiDung       string     `json:"noi_dung"`        // description body
-	Loai          TicketType `json:"loai"`            // type
-	MucUuTien     Priority   `json:"muc_uu_tien"`     // priority
-	TrangThai     Status     `json:"trang_thai"`      // status
-	DanhMucID     string     `json:"danh_muc_id"`     // category id
-	NguoiTaoID    string     `json:"nguoi_tao_id"`    // reporter user id
+	MaTicket      string     `json:"ma_ticket"`    // e.g. TK-001
+	TieuDe        string     `json:"tieu_de"`      // title
+	NoiDung       string     `json:"noi_dung"`     // description body
+	Loai          TicketType `json:"loai"`         // type
+	MucUuTien     Priority   `json:"muc_uu_tien"`  // priority
+	TrangThai     Status     `json:"trang_thai"`   // status
+	DanhMucID     string     `json:"danh_muc_id"`  // category id
+	NguoiTaoID    string     `json:"nguoi_tao_id"` // reporter user id
 	NguoiTaoTen   string     `json:"nguoi_tao_ten"`
 	NguoiTaoEmail string     `json:"nguoi_tao_email"`
 	NguoiXuLyID   string     `json:"nguoi_xu_ly_id,omitempty"` // assignee
@@ -96,7 +96,7 @@ type SupportCategory struct {
 type FAQ struct {
 	ID        string    `json:"id"`
 	CauHoi    string    `json:"cau_hoi"`     // question
-	TraLoi    string    `json:"tra_loi"`      // answer
+	TraLoi    string    `json:"tra_loi"`     // answer
 	DanhMucID string    `json:"danh_muc_id"` // category id
 	DanhMuc   string    `json:"danh_muc"`    // category name
 	LuotXem   int       `json:"luot_xem"`    // view count
@@ -766,7 +766,7 @@ func isValidTransition(from Status, to Status) bool {
 		StatusInProgress: {StatusWaiting, StatusResolved, StatusClosed},
 		StatusWaiting:    {StatusInProgress, StatusResolved, StatusClosed},
 		StatusResolved:   {StatusOpen, StatusClosed}, // reopen or close
-		StatusClosed:     {StatusOpen},                // reopen only
+		StatusClosed:     {StatusOpen},               // reopen only
 	}
 	for _, s := range allowed[from] {
 		if s == to {

@@ -26,13 +26,13 @@ export const SVG_Card = ({
 }: SVGCardProps) => {
     const isRed = colorClass === 'red';
     const accentColor = isHovered
-        ? (isRed ? '#f43f5e' : '#3b82f6')
-        : (isRed ? '#e11d48' : '#2563eb');
+        ? (isRed ? '#f43f5e' : 'var(--vct-info)')
+        : (isRed ? '#e11d48' : 'var(--vct-info)');
     const bgTint = isHovered
-        ? (isRed ? '#ffe4e6' : '#dbeafe')
+        ? (isRed ? '#ffe4e6' : 'var(--vct-info-muted)')
         : (isRed ? '#fff1f2' : '#eff6ff');
-    const nameColor = '#0f172a';
-    const unitColor = '#1e293b';
+    const nameColor = 'var(--vct-text-primary)';
+    const unitColor = 'var(--vct-bg-input)';
     const loserOpacity = isLoser ? 0.4 : 1;
 
     return (
@@ -76,13 +76,13 @@ export const SVG_Card = ({
 
                     {winnerId && winnerId === player.id && (
                         <g transform={`translate(${CW - 24}, ${CH / 2})`}>
-                            <circle r={10} fill="#fef3c7" stroke="#fbbf24" strokeWidth={1} />
+                            <circle r={10} fill="#fef3c7" stroke="var(--vct-warning)" strokeWidth={1} />
                             <text textAnchor="middle" y={4} fontSize={12}>🏆</text>
                         </g>
                     )}
                 </>
             ) : (
-                <text x={SIDE_W + 12} y={35} fill="#64748b" fontSize={11}
+                <text x={SIDE_W + 12} y={35} fill="var(--vct-text-tertiary)" fontSize={11}
                     fontStyle="italic" opacity={0.6}>
                     {placeholderText || 'CHỜ KẾT QUẢ...'}
                 </text>
@@ -90,7 +90,7 @@ export const SVG_Card = ({
 
             {isLoser && (
                 <line x1={SIDE_W + 5} y1={CH / 2} x2={CW - 5} y2={CH / 2}
-                    stroke="#94a3b8" strokeWidth={1.5} strokeDasharray="4,4" opacity={0.4} />
+                    stroke="var(--vct-text-tertiary)" strokeWidth={1.5} strokeDasharray="4,4" opacity={0.4} />
             )}
         </g>
     );
@@ -108,8 +108,8 @@ interface MatchNodeProps {
 export const BracketMatchNode = ({ x, y, matchNo, onClick, isDone }: MatchNodeProps) => (
     <g onClick={onClick} style={{ cursor: 'pointer' }}>
         <circle cx={x} cy={y} r={18}
-            fill={isDone ? 'url(#node-active-grad)' : '#1e293b'}
-            stroke={isDone ? '#10b981' : '#475569'} strokeWidth={2}
+            fill={isDone ? 'url(#node-active-grad)' : 'var(--vct-bg-input)'}
+            stroke={isDone ? 'var(--vct-success)' : 'var(--vct-text-secondary)'} strokeWidth={2}
             filter="url(#card-shadow)" />
         <text x={x} y={y + 5} textAnchor="middle" fill="white"
             fontSize={11} fontWeight={800}>
@@ -131,12 +131,12 @@ export const BracketChampionBox = ({ x, y, winner, isHovered, onHover }: Champio
     <g transform={`translate(${x}, ${y})`}>
         <rect width={CW} height={CH + 10} rx={18}
             fill={isHovered ? "rgba(245,158,11,0.15)" : "rgba(245,158,11,0.05)"}
-            stroke="#f59e0b" strokeWidth={isHovered ? 3.5 : 2.5}
+            stroke="var(--vct-warning)" strokeWidth={isHovered ? 3.5 : 2.5}
             strokeDasharray={winner ? '0' : '8,5'}
             filter={winner || isHovered ? 'url(#glow-gold)' : 'none'}
             style={{ transition: 'all 0.2s' }}
         />
-        <text x={CW / 2} y={-12} textAnchor="middle" fill="#f59e0b"
+        <text x={CW / 2} y={-12} textAnchor="middle" fill="var(--vct-warning)"
             fontSize={12} fontWeight={900} style={{ letterSpacing: '0.1em' }}>
             NHÀ VÔ ĐỊCH
         </text>
@@ -145,7 +145,7 @@ export const BracketChampionBox = ({ x, y, winner, isHovered, onHover }: Champio
                 winnerId={winner.id} isHovered={isHovered} onHover={onHover} />
         ) : (
             <text x={CW / 2} y={(CH + 10) / 2 + 5} textAnchor="middle"
-                fill="#d97706" fontSize={13} fontStyle="italic" opacity={0.6}>
+                fill="var(--vct-warning)" fontSize={13} fontStyle="italic" opacity={0.6}>
                 Đang chờ...
             </text>
         )}

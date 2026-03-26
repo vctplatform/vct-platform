@@ -2,10 +2,10 @@
 
 import * as React from 'react'
 import { useState } from 'react'
-import { VCT_Badge, VCT_Button, VCT_Stack, VCT_Tabs, VCT_Input, VCT_Field } from '../components/vct-ui'
-import { VCT_PageContainer, VCT_PageHero, VCT_StatRow } from '../components/vct-ui'
-import type { StatItem } from '../components/VCT_StatRow'
-import { VCT_Icons } from '../components/vct-icons'
+import { VCT_Badge, VCT_Button, VCT_Stack, VCT_Tabs, VCT_Input, VCT_Field } from '@vct/ui'
+import { VCT_PageContainer, VCT_PageHero, VCT_StatRow } from '@vct/ui'
+import type { StatItem } from '@vct/ui'
+import { VCT_Icons } from '@vct/ui'
 
 // ════════════════════════════════════════
 // MOCK DATA
@@ -72,10 +72,10 @@ export const Page_tournament_config = () => {
             />
 
             <VCT_StatRow items={[
-                { label: 'Nội dung thi', value: CONTENT_CATEGORIES.length, icon: <VCT_Icons.Swords size={18} />, color: '#8b5cf6' },
-                { label: 'VĐV đăng ký', value: `${g.registered}/${g.max_athletes}`, icon: <VCT_Icons.Users size={18} />, color: '#0ea5e9' },
-                { label: 'Sàn đấu', value: g.arenas, icon: <VCT_Icons.LayoutGrid size={18} />, color: '#10b981' },
-                { label: 'Ngày thi đấu', value: '6 ngày', icon: <VCT_Icons.Calendar size={18} />, color: '#f59e0b' },
+                { label: 'Nội dung thi', value: CONTENT_CATEGORIES.length, icon: <VCT_Icons.Swords size={18} />, color: 'var(--vct-info)' },
+                { label: 'VĐV đăng ký', value: `${g.registered}/${g.max_athletes}`, icon: <VCT_Icons.Users size={18} />, color: 'var(--vct-accent-cyan)' },
+                { label: 'Sàn đấu', value: g.arenas, icon: <VCT_Icons.LayoutGrid size={18} />, color: 'var(--vct-success)' },
+                { label: 'Ngày thi đấu', value: '6 ngày', icon: <VCT_Icons.Calendar size={18} />, color: 'var(--vct-warning)' },
             ] as StatItem[]} className="mb-8" />
 
             <div className="mb-6"><VCT_Tabs tabs={[{ key: 'general', label: 'Thông tin chung' }, { key: 'categories', label: 'Nội dung thi' }, { key: 'scoring', label: 'Cấu hình chấm điểm' }, { key: 'arenas', label: 'Sàn đấu' }]} activeTab={activeTab} onChange={setActiveTab} /></div>

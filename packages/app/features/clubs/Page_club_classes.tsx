@@ -5,8 +5,8 @@
 // ════════════════════════════════════════════════════════════════
 
 import React, { useState } from 'react'
-import { VCT_Text, VCT_Badge, VCT_Button, VCT_Card } from '../components/vct-ui'
-import { VCT_Icons } from '../components/vct-icons'
+import { VCT_Text, VCT_Badge, VCT_Button, VCT_Card } from '@vct/ui'
+import { VCT_Icons } from '@vct/ui'
 
 interface ClassSession {
     id: string; name: string; instructor: string; day: string; time: string
@@ -53,10 +53,10 @@ export function Page_club_classes() {
             {/* Stats */}
             <div className="grid grid-cols-2 tablet:grid-cols-4 gap-3">
                 {[
-                    { label: 'Tổng lớp', value: MOCK_CLASSES.length, icon: '📚', color: '#3b82f6' },
-                    { label: 'HLV', value: new Set(MOCK_CLASSES.map(c => c.instructor)).size, icon: '👨‍🏫', color: '#8b5cf6' },
-                    { label: 'Tổng sĩ số', value: MOCK_CLASSES.reduce((s, c) => s + c.enrolled, 0), icon: '👥', color: '#10b981' },
-                    { label: 'Tỷ lệ lấp đầy', value: Math.round(MOCK_CLASSES.reduce((s, c) => s + c.enrolled, 0) / MOCK_CLASSES.reduce((s, c) => s + c.capacity, 0) * 100) + '%', icon: '📊', color: '#f59e0b' },
+                    { label: 'Tổng lớp', value: MOCK_CLASSES.length, icon: '📚', color: 'var(--vct-info)' },
+                    { label: 'HLV', value: new Set(MOCK_CLASSES.map(c => c.instructor)).size, icon: '👨‍🏫', color: 'var(--vct-info)' },
+                    { label: 'Tổng sĩ số', value: MOCK_CLASSES.reduce((s, c) => s + c.enrolled, 0), icon: '👥', color: 'var(--vct-success)' },
+                    { label: 'Tỷ lệ lấp đầy', value: Math.round(MOCK_CLASSES.reduce((s, c) => s + c.enrolled, 0) / MOCK_CLASSES.reduce((s, c) => s + c.capacity, 0) * 100) + '%', icon: '📊', color: 'var(--vct-warning)' },
                 ].map(s => (
                     <div key={s.label} className="rounded-xl border border-vct-border bg-vct-elevated p-4">
                         <div className="text-xl mb-1">{s.icon}</div>
@@ -74,7 +74,7 @@ export function Page_club_classes() {
                         const fillPct = Math.round(cls.enrolled / cls.capacity * 100)
                         return (
                             <div key={cls.id} className="rounded-xl border border-vct-border bg-vct-elevated overflow-hidden hover:shadow-lg hover:border-vct-accent/50 transition cursor-pointer">
-                                <div className="h-1.5" style={{ background: st.variant === 'success' ? '#10b981' : st.variant === 'danger' ? '#ef4444' : '#f59e0b' }} />
+                                <div className="h-1.5" style={{ background: st.variant === 'success' ? 'var(--vct-success)' : st.variant === 'danger' ? 'var(--vct-danger)' : 'var(--vct-warning)' }} />
                                 <div className="p-4">
                                     <div className="flex items-start justify-between mb-2">
                                         <div>
@@ -102,7 +102,7 @@ export function Page_club_classes() {
                                         <div className="h-2 rounded-full bg-vct-input overflow-hidden">
                                             <div className="h-full rounded-full transition-all" style={{
                                                 width: `${fillPct}%`,
-                                                background: fillPct >= 100 ? '#ef4444' : fillPct >= 80 ? '#f59e0b' : '#10b981'
+                                                background: fillPct >= 100 ? 'var(--vct-danger)' : fillPct >= 80 ? 'var(--vct-warning)' : 'var(--vct-success)'
                                             }} />
                                         </div>
                                     </div>

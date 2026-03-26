@@ -6,8 +6,8 @@
 
 import React, { useState, useMemo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { VCT_Text, VCT_Card, VCT_Badge, VCT_Button, VCT_Tabs } from '../components/vct-ui'
-import { VCT_Icons } from '../components/vct-icons'
+import { VCT_Text, VCT_Card, VCT_Badge, VCT_Button, VCT_Tabs } from '@vct/ui'
+import { VCT_Icons } from '@vct/ui'
 
 interface LineageNode {
     id: string
@@ -35,10 +35,10 @@ const LINEAGE_DATA: LineageNode[] = [
 ]
 
 const GENERATION_COLORS: Record<number, string> = {
-    1: '#8b5cf6',
-    2: '#3b82f6',
-    3: '#10b981',
-    4: '#f59e0b',
+    1: 'var(--vct-info)',
+    2: 'var(--vct-info)',
+    3: 'var(--vct-success)',
+    4: 'var(--vct-warning)',
 }
 
 export function Page_heritage_lineage() {
@@ -87,10 +87,10 @@ export function Page_heritage_lineage() {
             {/* Stats */}
             <div className="grid grid-cols-2 tablet:grid-cols-4 gap-3">
                 {[
-                    { label: 'Thế hệ', value: generations.length, icon: '🏛️', color: '#8b5cf6' },
-                    { label: 'Võ sư / Bậc thầy', value: LINEAGE_DATA.length, icon: '🥋', color: '#3b82f6' },
-                    { label: 'Chi phái', value: 3, icon: '🌿', color: '#10b981' },
-                    { label: 'Năm lập phái', value: '1952', icon: '📜', color: '#f59e0b' },
+                    { label: 'Thế hệ', value: generations.length, icon: '🏛️', color: 'var(--vct-info)' },
+                    { label: 'Võ sư / Bậc thầy', value: LINEAGE_DATA.length, icon: '🥋', color: 'var(--vct-info)' },
+                    { label: 'Chi phái', value: 3, icon: '🌿', color: 'var(--vct-success)' },
+                    { label: 'Năm lập phái', value: '1952', icon: '📜', color: 'var(--vct-warning)' },
                 ].map(s => (
                     <div key={s.label} className="rounded-xl border border-vct-border bg-vct-elevated p-4">
                         <div className="text-2xl mb-1">{s.icon}</div>
@@ -107,7 +107,7 @@ export function Page_heritage_lineage() {
                         <div key={gen}>
                             <button onClick={() => setExpandedGen(prev => { const s = new Set(prev); s.has(gen) ? s.delete(gen) : s.add(gen); return s })}
                                 className="flex items-center gap-2 mb-3 text-sm font-bold text-vct-text-muted hover:text-vct-text transition">
-                                <span className="h-6 w-6 rounded-full text-white text-xs flex items-center justify-center font-bold" style={{ background: GENERATION_COLORS[gen] || '#64748b' }}>{gen}</span>
+                                <span className="h-6 w-6 rounded-full text-white text-xs flex items-center justify-center font-bold" style={{ background: GENERATION_COLORS[gen] || 'var(--vct-text-tertiary)' }}>{gen}</span>
                                 Thế hệ {gen} ({nodes.length} người)
                                 <VCT_Icons.ExpandMore size={16} className={`transition-transform ${expandedGen.has(gen) ? 'rotate-180' : ''}`} />
                             </button>

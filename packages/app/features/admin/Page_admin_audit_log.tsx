@@ -2,9 +2,9 @@
 
 import * as React from 'react'
 import { useState, useMemo, useCallback } from 'react'
-import { VCT_Badge, VCT_Button, VCT_SearchInput, VCT_Select } from '../components/vct-ui'
-import type { StatItem } from '../components/VCT_StatRow'
-import { VCT_Icons } from '../components/vct-icons'
+import { VCT_Badge, VCT_Button, VCT_SearchInput, VCT_Select } from '@vct/ui'
+import type { StatItem } from '@vct/ui'
+import { VCT_Icons } from '@vct/ui'
 import { AdminPageShell } from './components/AdminPageShell'
 import { AdminDataTable } from './components/AdminDataTable'
 import { AdminGuard } from './components/AdminGuard'
@@ -97,10 +97,10 @@ const Page_admin_audit_log_Content = () => {
     }, [logs, debouncedSearch, entityFilter, actionFilter])
 
     const stats: StatItem[] = [
-        { icon: <VCT_Icons.Activity size={20} />, label: 'Tổng sự kiện', value: logs.length, color: '#8b5cf6' },
-        { icon: <VCT_Icons.AlertTriangle size={20} />, label: 'Thay đổi hôm nay', value: logs.filter(l => isToday(l.timestamp)).length, color: '#0ea5e9' },
-        { icon: <VCT_Icons.Users size={20} />, label: 'Người dùng tham gia', value: new Set(logs.map(l => l.user_id)).size, color: '#10b981' },
-        { icon: <VCT_Icons.Shield size={20} />, label: 'Hành động nguy hiểm', value: logs.filter(l => l.action === 'DELETE' || l.action === 'SUSPEND').length, color: '#ef4444' },
+        { icon: <VCT_Icons.Activity size={20} />, label: 'Tổng sự kiện', value: logs.length, color: 'var(--vct-info)' },
+        { icon: <VCT_Icons.AlertTriangle size={20} />, label: 'Thay đổi hôm nay', value: logs.filter(l => isToday(l.timestamp)).length, color: 'var(--vct-accent-cyan)' },
+        { icon: <VCT_Icons.Users size={20} />, label: 'Người dùng tham gia', value: new Set(logs.map(l => l.user_id)).size, color: 'var(--vct-success)' },
+        { icon: <VCT_Icons.Shield size={20} />, label: 'Hành động nguy hiểm', value: logs.filter(l => l.action === 'DELETE' || l.action === 'SUSPEND').length, color: 'var(--vct-danger)' },
     ]
 
     const handleExport = useCallback(() => {
@@ -119,7 +119,7 @@ const Page_admin_audit_log_Content = () => {
         <AdminPageShell
             title={t('admin.audit.title')}
             subtitle={t('admin.audit.subtitle')}
-            icon={<VCT_Icons.FileText size={28} className="text-[#8b5cf6]" />}
+            icon={<VCT_Icons.FileText size={28} className="text-(--vct-info)" />}
             breadcrumbs={[
                 { label: 'Admin', href: '/admin', icon: <VCT_Icons.Home size={14} /> },
                 { label: 'Audit Log' },
@@ -198,7 +198,7 @@ const Page_admin_audit_log_Content = () => {
                             return changeCount > 0 ? (
                                 <button
                                     onClick={(e) => { e.stopPropagation(); setExpandedId(expandedId === log.id ? null : log.id) }}
-                                    className="text-[10px] text-[#8b5cf6] font-bold hover:underline admin-focus-ring"
+                                    className="text-[10px] text-(--vct-info) font-bold hover:underline admin-focus-ring"
                                     aria-label={`Xem ${changeCount} thay đổi`}
                                 >
                                     {changeCount} thay đổi
@@ -217,16 +217,16 @@ const Page_admin_audit_log_Content = () => {
                 return (
                     <div className="mt-4 p-4 bg-(--vct-bg-elevated) border border-(--vct-border-strong) rounded-2xl" role="region" aria-label="Chi tiết thay đổi">
                         <h4 className="text-sm font-bold text-(--vct-text-primary) mb-3 flex items-center gap-2">
-                            <VCT_Icons.FileText size={14} className="text-[#8b5cf6]" />
+                            <VCT_Icons.FileText size={14} className="text-(--vct-info)" />
                             Chi tiết thay đổi — {log.entity_name}
                         </h4>
                         <div className="space-y-2">
                             {Object.entries(log.changes).map(([field, { old: oldVal, new: newVal }]) => (
                                 <div key={field} className="flex items-center gap-3 text-xs p-2 bg-(--vct-bg-base) rounded-lg border border-(--vct-border-subtle)">
                                     <span className="font-bold text-(--vct-text-secondary) min-w-[100px]">{field}</span>
-                                    <span className="text-[#ef4444] line-through">{String(oldVal)}</span>
+                                    <span className="text-(--vct-danger) line-through">{String(oldVal)}</span>
                                     <VCT_Icons.ArrowRight size={12} className="text-(--vct-text-tertiary)" />
-                                    <span className="text-[#10b981] font-bold">{String(newVal)}</span>
+                                    <span className="text-(--vct-success) font-bold">{String(newVal)}</span>
                                 </div>
                             ))}
                         </div>

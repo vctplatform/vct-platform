@@ -6,10 +6,10 @@
 'use client';
 import React, { useState } from 'react';
 import { useApiQuery } from '../hooks/useApiQuery';
-import { VCT_PageContainer, VCT_PageHero } from '../components/VCT_PageContainer';
-import { VCT_Icons } from '../components/vct-icons';
-import { VCT_Button } from '../components/vct-ui';
-import { VCT_Timeline } from '../components/VCT_Timeline';
+import { VCT_PageContainer, VCT_PageHero } from '@vct/ui';
+import { VCT_Icons } from '@vct/ui';
+import { VCT_Button } from '@vct/ui';
+import { VCT_Timeline } from '@vct/ui';
 import { exportToExcel } from '../../utils/exportUtils';
 
 // ── Types ────────────────────────────────────────────────────
@@ -41,10 +41,10 @@ const SEED_ROWS: FinRow[] = [
 ];
 
 const FINANCE_AUDIT_LOGS = [
-    { time: '10:30 Hôm nay', title: 'Xuất báo cáo tài chính', description: 'Kế toán trưởng Nguyễn Văn A xuất báo cáo Quý 1/2026', color: '#3b82f6', icon: '📊' },
-    { time: '15:45 Hôm qua', title: 'Phê duyệt chi', description: 'Chủ tịch phê duyệt khoản chi 120,000,000đ cho Đào tạo', color: '#10b981', icon: '✅' },
-    { time: '09:00 Hôm qua', title: 'Nhận tài trợ', description: 'Ghi nhận khoản tài trợ 500,000,000đ từ Công ty XYZ', color: '#8b5cf6', icon: '💰' },
-    { time: '14:20 10/03/2026', title: 'Cập nhật ngân sách', description: 'Hệ thống tự động kết chuyển số dư đầu kỳ', color: '#64748b', icon: '⚙️' }
+    { time: '10:30 Hôm nay', title: 'Xuất báo cáo tài chính', description: 'Kế toán trưởng Nguyễn Văn A xuất báo cáo Quý 1/2026', color: 'var(--vct-info)', icon: '📊' },
+    { time: '15:45 Hôm qua', title: 'Phê duyệt chi', description: 'Chủ tịch phê duyệt khoản chi 120,000,000đ cho Đào tạo', color: 'var(--vct-success)', icon: '✅' },
+    { time: '09:00 Hôm qua', title: 'Nhận tài trợ', description: 'Ghi nhận khoản tài trợ 500,000,000đ từ Công ty XYZ', color: 'var(--vct-info)', icon: '💰' },
+    { time: '14:20 10/03/2026', title: 'Cập nhật ngân sách', description: 'Hệ thống tự động kết chuyển số dư đầu kỳ', color: 'var(--vct-text-tertiary)', icon: '⚙️' }
 ];
 
 // ── Helpers ──────────────────────────────────────────────────
@@ -92,9 +92,9 @@ export function Page_federation_finance() {
     };
 
     const kpis = [
-        { label: 'Tổng Thu', value: fmt(totalIncome), color: '#10b981', icon: <VCT_Icons.TrendingUp size={18} /> },
-        { label: 'Tổng Chi', value: fmt(totalExpense), color: '#ef4444', icon: <VCT_Icons.TrendingDown size={18} /> },
-        { label: 'Kết dư', value: fmt(balance), color: balance >= 0 ? '#3b82f6' : '#ef4444', icon: <VCT_Icons.DollarSign size={18} /> },
+        { label: 'Tổng Thu', value: fmt(totalIncome), color: 'var(--vct-success)', icon: <VCT_Icons.TrendingUp size={18} /> },
+        { label: 'Tổng Chi', value: fmt(totalExpense), color: 'var(--vct-danger)', icon: <VCT_Icons.TrendingDown size={18} /> },
+        { label: 'Kết dư', value: fmt(balance), color: balance >= 0 ? 'var(--vct-info)' : 'var(--vct-danger)', icon: <VCT_Icons.DollarSign size={18} /> },
     ];
 
     return (
@@ -194,7 +194,7 @@ export function Page_federation_finance() {
                                     <td className="px-5 py-3 text-sm text-right font-semibold text-red-400">
                                         {row.expense > 0 ? fmt(row.expense) : '—'}
                                     </td>
-                                    <td className="px-5 py-3 text-sm text-right font-bold" style={{ color: net >= 0 ? '#3b82f6' : '#ef4444' }}>
+                                    <td className="px-5 py-3 text-sm text-right font-bold" style={{ color: net >= 0 ? 'var(--vct-info)' : 'var(--vct-danger)' }}>
                                         {net >= 0 ? '+' : ''}{fmt(net)}
                                     </td>
                                 </tr>
@@ -205,7 +205,7 @@ export function Page_federation_finance() {
                             <td className="px-5 py-3.5 text-sm font-bold text-vct-text">TỔNG CỘNG</td>
                             <td className="px-5 py-3.5 text-sm text-right font-extrabold text-emerald-400">{fmt(totalIncome)}</td>
                             <td className="px-5 py-3.5 text-sm text-right font-extrabold text-red-400">{fmt(totalExpense)}</td>
-                            <td className="px-5 py-3.5 text-sm text-right font-extrabold" style={{ color: balance >= 0 ? '#3b82f6' : '#ef4444' }}>
+                            <td className="px-5 py-3.5 text-sm text-right font-extrabold" style={{ color: balance >= 0 ? 'var(--vct-info)' : 'var(--vct-danger)' }}>
                                 {balance >= 0 ? '+' : ''}{fmt(balance)}
                             </td>
                         </tr>

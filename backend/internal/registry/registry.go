@@ -157,8 +157,8 @@ func (r *Registry) StopAll(ctx context.Context) error {
 
 // HealthStatus represents the health report of all services.
 type HealthStatus struct {
-	Healthy  bool                `json:"healthy"`
-	Services map[string]string   `json:"services"`
+	Healthy  bool              `json:"healthy"`
+	Services map[string]string `json:"services"`
 }
 
 // HealthCheckAll runs health checks on all initialized services.

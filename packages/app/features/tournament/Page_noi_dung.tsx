@@ -6,8 +6,8 @@ import {
     VCT_Card, VCT_Badge, VCT_Button, VCT_Text, VCT_Field, VCT_Input,
     VCT_Select, VCT_Stack, VCT_Toast, VCT_Modal, VCT_Table,
     VCT_SegmentedControl, VCT_SearchInput, VCT_ConfirmDialog, VCT_EmptyState
-} from '../components/vct-ui';
-import { VCT_Icons } from '../components/vct-icons';
+} from '@vct/ui';
+import { VCT_Icons } from '@vct/ui';
 import { genId } from '../hooks/useTournamentAPI';
 import type { NoiDungQuyen, HangCan, LuaTuoi, HinhThucQuyen, TrangThaiND } from '../data/types';
 import { repositories, useEntityCollection } from '../data/repository';
@@ -18,9 +18,9 @@ import { useRouteActionGuard } from '../hooks/use-route-action-guard';
 // ════════════════════════════════════════
 const HT_MAP: Record<string, string> = { ca_nhan: 'Cá nhân', doi: 'Đôi', dong_doi: 'Đồng đội' };
 const GIOI_MAP: Record<string, any> = {
-    nam: { l: 'Nam', c: '#60a5fa' },
+    nam: { l: 'Nam', c: 'var(--vct-info)' },
     nu: { l: 'Nữ', c: '#f472b6' },
-    nam_nu: { l: 'Nam Nữ', c: '#a78bfa' }
+    nam_nu: { l: 'Nam Nữ', c: 'var(--vct-info)' }
 };
 const ST_MAP: Record<string, any> = {
     active: { l: 'Hoạt động', t: 'success' },

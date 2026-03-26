@@ -63,6 +63,9 @@ interface WorkspaceState {
     /** Toggle pin state */
     togglePin: (id: string) => void
 
+    /** Reorder pinned workspaces (for drag and drop) */
+    reorderPinnedWorkspaces: (newOrder: string[]) => void
+
     /** Track workspace access (updates lastAccessedMap) */
     trackAccess: (id: string) => void
 
@@ -143,6 +146,10 @@ export const useWorkspaceStore = create<WorkspaceState>()(
                 } else {
                     set({ pinnedWorkspaceIds: [...pinnedWorkspaceIds, id] })
                 }
+            },
+
+            reorderPinnedWorkspaces: (newOrder) => {
+                set({ pinnedWorkspaceIds: newOrder })
             },
 
             trackAccess: (id) => {

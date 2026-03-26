@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react'
 import { motion } from 'framer-motion'
-import { VCT_Icons } from '../components/vct-icons'
+import { VCT_Icons } from '@vct/ui'
 
 // ════════════════════════════════════════
 // MOCK DATA
@@ -32,10 +32,10 @@ const MATCH_STATS = {
 }
 
 const CONTENT_STATS = [
-    { name: 'Đối kháng', athletes: 280, matches: 186, color: '#ef4444' },
-    { name: 'Quyền thuật', athletes: 120, matches: 0, color: '#8b5cf6' },
-    { name: 'Biểu diễn', athletes: 45, matches: 0, color: '#f59e0b' },
-    { name: 'Đồng đội', athletes: 60, matches: 24, color: '#3b82f6' },
+    { name: 'Đối kháng', athletes: 280, matches: 186, color: 'var(--vct-danger)' },
+    { name: 'Quyền thuật', athletes: 120, matches: 0, color: 'var(--vct-info)' },
+    { name: 'Biểu diễn', athletes: 45, matches: 0, color: 'var(--vct-warning)' },
+    { name: 'Đồng đội', athletes: 60, matches: 24, color: 'var(--vct-info)' },
 ]
 
 type Tab = 'overview' | 'teams' | 'matches' | 'comparison'
@@ -66,10 +66,10 @@ export function Page_tournament_statistics() {
 
             {/* KPI */}
             <div className="grid grid-cols-2 tablet:grid-cols-4 gap-3">
-                {[{ l: 'Tổng VĐV', v: '486', i: '👥', c: '#0ea5e9' },
-                { l: 'Tổng trận', v: MATCH_STATS.totalMatches, i: '⚔️', c: '#ef4444' },
-                { l: 'Đoàn tham gia', v: '42', i: '🏛️', c: '#8b5cf6' },
-                { l: 'Huy chương phát', v: '124', i: '🏅', c: '#f59e0b' },
+                {[{ l: 'Tổng VĐV', v: '486', i: '👥', c: 'var(--vct-accent-cyan)' },
+                { l: 'Tổng trận', v: MATCH_STATS.totalMatches, i: '⚔️', c: 'var(--vct-danger)' },
+                { l: 'Đoàn tham gia', v: '42', i: '🏛️', c: 'var(--vct-info)' },
+                { l: 'Huy chương phát', v: '124', i: '🏅', c: 'var(--vct-warning)' },
                 ].map(s => (
                     <div key={s.l} className="rounded-xl border border-vct-border bg-vct-elevated p-4 text-center">
                         <div className="text-xl mb-1">{s.i}</div><div className="text-xl font-black" style={{ color: s.c }}>{s.v}</div>
@@ -160,9 +160,9 @@ export function Page_tournament_statistics() {
                     <div className="rounded-xl border border-vct-border bg-vct-elevated p-5">
                         <h3 className="font-bold text-sm mb-4">Kết quả trận đấu</h3>
                         <div className="grid gap-3">
-                            {[{ l: 'Thắng KO/TKO', v: MATCH_STATS.koFinishes, c: '#ef4444', pct: Math.round(MATCH_STATS.koFinishes / MATCH_STATS.totalMatches * 100) },
-                            { l: 'Thắng điểm', v: MATCH_STATS.pointFinishes, c: '#3b82f6', pct: Math.round(MATCH_STATS.pointFinishes / MATCH_STATS.totalMatches * 100) },
-                            { l: 'Hòa', v: MATCH_STATS.draws, c: '#94a3b8', pct: Math.round(MATCH_STATS.draws / MATCH_STATS.totalMatches * 100) },
+                            {[{ l: 'Thắng KO/TKO', v: MATCH_STATS.koFinishes, c: 'var(--vct-danger)', pct: Math.round(MATCH_STATS.koFinishes / MATCH_STATS.totalMatches * 100) },
+                            { l: 'Thắng điểm', v: MATCH_STATS.pointFinishes, c: 'var(--vct-info)', pct: Math.round(MATCH_STATS.pointFinishes / MATCH_STATS.totalMatches * 100) },
+                            { l: 'Hòa', v: MATCH_STATS.draws, c: 'var(--vct-text-tertiary)', pct: Math.round(MATCH_STATS.draws / MATCH_STATS.totalMatches * 100) },
                             ].map(s => (
                                 <div key={s.l}>
                                     <div className="flex justify-between text-sm mb-1"><span className="text-vct-text-muted">{s.l}</span><span className="font-bold">{s.v} ({s.pct}%)</span></div>
@@ -174,10 +174,10 @@ export function Page_tournament_statistics() {
                     <div className="rounded-xl border border-vct-border bg-vct-elevated p-5">
                         <h3 className="font-bold text-sm mb-4">Số liệu trận đấu</h3>
                         <div className="grid grid-cols-2 gap-3">
-                            {[{ l: 'Điểm TB/trận', v: MATCH_STATS.avgScore, c: '#0ea5e9' },
-                            { l: 'Thời gian TB', v: MATCH_STATS.avgDuration, c: '#8b5cf6' },
-                            { l: 'Trận dài nhất', v: MATCH_STATS.longestMatch, c: '#f59e0b' },
-                            { l: 'Trận ngắn nhất', v: MATCH_STATS.shortestMatch, c: '#ef4444' },
+                            {[{ l: 'Điểm TB/trận', v: MATCH_STATS.avgScore, c: 'var(--vct-accent-cyan)' },
+                            { l: 'Thời gian TB', v: MATCH_STATS.avgDuration, c: 'var(--vct-info)' },
+                            { l: 'Trận dài nhất', v: MATCH_STATS.longestMatch, c: 'var(--vct-warning)' },
+                            { l: 'Trận ngắn nhất', v: MATCH_STATS.shortestMatch, c: 'var(--vct-danger)' },
                             ].map(s => (
                                 <div key={s.l} className="p-4 rounded-xl bg-vct-input text-center">
                                     <div className="text-xl font-black" style={{ color: s.c }}>{s.v}</div>

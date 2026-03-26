@@ -19,19 +19,19 @@ import (
 type ChannelType string
 
 const (
-	ChannelEmail  ChannelType = "email"
-	ChannelSMS    ChannelType = "sms"
-	ChannelPush   ChannelType = "push"
-	ChannelInApp  ChannelType = "in_app"
+	ChannelEmail ChannelType = "email"
+	ChannelSMS   ChannelType = "sms"
+	ChannelPush  ChannelType = "push"
+	ChannelInApp ChannelType = "in_app"
 )
 
 // Priority defines notification urgency.
 type Priority int
 
 const (
-	PriorityLow    Priority = 0
-	PriorityNormal Priority = 1
-	PriorityHigh   Priority = 2
+	PriorityLow      Priority = 0
+	PriorityNormal   Priority = 1
+	PriorityHigh     Priority = 2
 	PriorityCritical Priority = 3
 )
 
@@ -42,13 +42,13 @@ const (
 // Message is a notification to be dispatched.
 type Message struct {
 	ID        string            `json:"id"`
-	Type      string            `json:"type"`       // e.g., "match.started", "registration.approved"
-	Recipient string            `json:"recipient"`  // User ID
+	Type      string            `json:"type"`      // e.g., "match.started", "registration.approved"
+	Recipient string            `json:"recipient"` // User ID
 	Title     string            `json:"title"`
 	Body      string            `json:"body"`
 	Data      map[string]string `json:"data,omitempty"`
 	Priority  Priority          `json:"priority"`
-	Channels  []ChannelType     `json:"channels"`   // Desired channels
+	Channels  []ChannelType     `json:"channels"` // Desired channels
 	CreatedAt time.Time         `json:"created_at"`
 }
 
@@ -76,9 +76,9 @@ type Channel interface {
 
 // UserPreferences controls which channels a user wants.
 type UserPreferences struct {
-	UserID          string                 `json:"user_id"`
-	EnabledChannels map[ChannelType]bool   `json:"enabled_channels"`
-	Quiet           bool                   `json:"quiet"`          // Mute all except critical
+	UserID          string               `json:"user_id"`
+	EnabledChannels map[ChannelType]bool `json:"enabled_channels"`
+	Quiet           bool                 `json:"quiet"` // Mute all except critical
 }
 
 // PreferenceStore resolves user notification preferences.
@@ -196,10 +196,10 @@ func (d *Dispatcher) resolveChannels(ctx context.Context, msg *Message) []Channe
 
 // Stats returns dispatcher statistics.
 type Stats struct {
-	Sent       int64 `json:"sent"`
-	Failed     int64 `json:"failed"`
-	Filtered   int64 `json:"filtered"`
-	Channels   int   `json:"channels"`
+	Sent     int64 `json:"sent"`
+	Failed   int64 `json:"failed"`
+	Filtered int64 `json:"filtered"`
+	Channels int   `json:"channels"`
 }
 
 func (d *Dispatcher) Stats() Stats {

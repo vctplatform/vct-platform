@@ -4,7 +4,7 @@
 // ════════════════════════════════════════════════════════════════
 
 import * as React from 'react'
-import { VCT_Icons } from '../../components/vct-icons'
+import { VCT_Icons } from '@vct/ui'
 import { useI18n } from '../../i18n'
 import { useWorkspaceStore } from '../../layout/workspace-store'
 import type { WorkspaceCard } from '../../layout/workspace-types'
@@ -34,25 +34,34 @@ export const PortalWorkspaceRow = ({ card, onClick }: Props) => {
     const statusColor = status === 'active' ? 'bg-emerald-500' : status === 'upcoming' ? 'bg-blue-500' : 'bg-vct-text-muted/40'
 
     return (
-        <button
-            type="button"
-            onClick={() => onClick(card)}
-            className="group flex w-full items-center gap-3 rounded-xl border border-transparent px-4 py-3 text-left transition-all duration-150 hover:border-vct-border hover:bg-[var(--vct-bg-elevated)] focus:outline-none focus:ring-2 focus:ring-vct-accent/30"
-        >
+        <div className="group relative flex w-full items-center gap-3 rounded-xl border border-transparent px-4 py-3 text-left transition-all duration-150 hover:border-vct-border hover:bg-(--vct-bg-elevated) focus-within:ring-2 focus-within:ring-vct-accent/30">
+            {/* Accessible stretched button for row click */}
+            <button
+                type="button"
+                aria-label={`${displayName} - ${typeName}`}
+                onClick={() => onClick(card)}
+                className="absolute inset-0 z-0 rounded-xl focus:outline-none"
+            />
+
             {/* Status dot */}
-            <span className={`h-2 w-2 shrink-0 rounded-full ${statusColor}`} />
+            <span className={`relative z-10 h-2 w-2 shrink-0 rounded-full ${statusColor}`} />
 
             {/* Icon */}
-            {card.logoUrl ? (
-                <img src={card.logoUrl} alt="" className="h-8 w-8 rounded-lg object-cover" />
-            ) : (
-                <div
-                    className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg"
-                    style={{ backgroundColor: `${card.color}18` }}
-                >
-                    <CardIcon size={16} color={card.color} />
-                </div>
-            )}
+            <div className="relative z-10">
+                {card.logoUrl ? (
+                    <img src={card.logoUrl} alt="" className="h-8 w-8 rounded-lg object-cover" />
+                ) : (
+                    <div
+                        className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-(--card-bg) text-(--card-color)"
+                        style={{ 
+                            '--card-bg': `${card.color}18`,
+                            '--card-color': card.color
+                        } as React.CSSProperties}
+                    >
+                        <CardIcon size={16} />
+                    </div>
+                )}
+            </div>
 
             {/* Name + type */}
             <div className="min-w-0 flex-1">
@@ -74,10 +83,18 @@ export const PortalWorkspaceRow = ({ card, onClick }: Props) => {
                 </span>
             )}
 
-            {/* Last access */}
-            {lastAccess && (
+            {/* Last access or New Badge */}
+            {lastAccess ? (
                 <span className="hidden shrink-0 text-[11px] text-vct-text-muted/60 sm:block">
                     {new Date(lastAccess).toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit' })}
+                </span>
+            ) : (
+                <span className="hidden shrink-0 items-center gap-1.5 rounded-full bg-vct-primary/10 px-2 py-0.5 text-[10px] font-bold text-vct-primary ring-1 ring-vct-primary/20 sm:flex">
+                    <span className="relative flex h-1.5 w-1.5">
+                        <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-vct-primary opacity-75"></span>
+                        <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-vct-primary"></span>
+                    </span>
+                    {t('portal.newWorkspace') || 'Mới'}
                 </span>
             )}
 
@@ -86,13 +103,13 @@ export const PortalWorkspaceRow = ({ card, onClick }: Props) => {
                 type="button"
                 onClick={(e) => { e.stopPropagation(); togglePin(card.id) }}
                 title={pinned ? t('portal.unpin') : t('portal.pin')}
-                className={`shrink-0 rounded p-1 transition-colors ${pinned ? 'text-amber-500' : 'text-vct-text-muted/30 opacity-0 group-hover:opacity-100'} hover:text-amber-500`}
+                className={`relative z-10 shrink-0 rounded p-1 transition-colors ${pinned ? 'text-amber-500' : 'text-vct-text-muted/30 opacity-0 group-hover:opacity-100'} hover:text-amber-500`}
             >
                 <VCT_Icons.Star size={12} />
             </button>
 
             {/* Arrow */}
             <VCT_Icons.ChevronRight size={14} className="shrink-0 text-vct-text-muted/40 transition-transform group-hover:translate-x-0.5" />
-        </button>
+        </div>
     )
 }

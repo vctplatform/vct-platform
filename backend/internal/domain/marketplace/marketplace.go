@@ -22,9 +22,9 @@ const (
 type ProductCondition string
 
 const (
-	ConditionNew      ProductCondition = "new"
-	ConditionLikeNew  ProductCondition = "like_new"
-	ConditionUsed     ProductCondition = "used"
+	ConditionNew       ProductCondition = "new"
+	ConditionLikeNew   ProductCondition = "like_new"
+	ConditionUsed      ProductCondition = "used"
 	ConditionCollector ProductCondition = "collector"
 )
 
@@ -107,24 +107,24 @@ type OrderItem struct {
 }
 
 type Order struct {
-	ID            string        `json:"id"`
-	OrderCode     string        `json:"order_code"`
-	SellerID      string        `json:"seller_id"`
-	SellerName    string        `json:"seller_name"`
-	BuyerName     string        `json:"buyer_name"`
-	BuyerPhone    string        `json:"buyer_phone"`
-	BuyerEmail    string        `json:"buyer_email"`
-	BuyerAddress  string        `json:"buyer_address"`
-	Notes         string        `json:"notes"`
-	Status        OrderStatus   `json:"status"`
-	PaymentStatus PaymentStatus `json:"payment_status"`
-	Items         []OrderItem   `json:"items"`
-	SubtotalVND   int64         `json:"subtotal_vnd"`
-	ShippingFeeVND int64        `json:"shipping_fee_vnd"`
-	DiscountVND   int64         `json:"discount_vnd"`
-	TotalVND      int64         `json:"total_vnd"`
-	CreatedAt     time.Time     `json:"created_at"`
-	UpdatedAt     time.Time     `json:"updated_at"`
+	ID             string        `json:"id"`
+	OrderCode      string        `json:"order_code"`
+	SellerID       string        `json:"seller_id"`
+	SellerName     string        `json:"seller_name"`
+	BuyerName      string        `json:"buyer_name"`
+	BuyerPhone     string        `json:"buyer_phone"`
+	BuyerEmail     string        `json:"buyer_email"`
+	BuyerAddress   string        `json:"buyer_address"`
+	Notes          string        `json:"notes"`
+	Status         OrderStatus   `json:"status"`
+	PaymentStatus  PaymentStatus `json:"payment_status"`
+	Items          []OrderItem   `json:"items"`
+	SubtotalVND    int64         `json:"subtotal_vnd"`
+	ShippingFeeVND int64         `json:"shipping_fee_vnd"`
+	DiscountVND    int64         `json:"discount_vnd"`
+	TotalVND       int64         `json:"total_vnd"`
+	CreatedAt      time.Time     `json:"created_at"`
+	UpdatedAt      time.Time     `json:"updated_at"`
 }
 
 type CatalogFilter struct {
@@ -147,11 +147,11 @@ type CatalogFacets struct {
 }
 
 type CatalogStats struct {
-	TotalProducts       int   `json:"total_products"`
-	FeaturedProducts    int   `json:"featured_products"`
-	ActiveSellers       int   `json:"active_sellers"`
-	CompletedOrders     int   `json:"completed_orders"`
-	TotalInventoryVND   int64 `json:"total_inventory_vnd"`
+	TotalProducts     int   `json:"total_products"`
+	FeaturedProducts  int   `json:"featured_products"`
+	ActiveSellers     int   `json:"active_sellers"`
+	CompletedOrders   int   `json:"completed_orders"`
+	TotalInventoryVND int64 `json:"total_inventory_vnd"`
 }
 
 type CatalogResult struct {
@@ -163,11 +163,11 @@ type CatalogResult struct {
 }
 
 type SellerSummary struct {
-	ActiveProducts     int   `json:"active_products"`
-	PendingOrders      int   `json:"pending_orders"`
-	CompletedOrders    int   `json:"completed_orders"`
-	LowStockProducts   int   `json:"low_stock_products"`
-	GrossRevenueVND    int64 `json:"gross_revenue_vnd"`
+	ActiveProducts   int   `json:"active_products"`
+	PendingOrders    int   `json:"pending_orders"`
+	CompletedOrders  int   `json:"completed_orders"`
+	LowStockProducts int   `json:"low_stock_products"`
+	GrossRevenueVND  int64 `json:"gross_revenue_vnd"`
 }
 
 type SellerDashboard struct {

@@ -5,10 +5,10 @@ import { useState, useEffect, useMemo } from 'react'
 import {
     VCT_Badge, VCT_Stack, VCT_Toast,
     VCT_SearchInput, VCT_EmptyState, VCT_FilterChips,
-} from '../components/vct-ui'
-import { VCT_PageContainer, VCT_StatRow } from '../components/vct-ui'
-import type { StatItem } from '../components/VCT_StatRow'
-import { VCT_Icons } from '../components/vct-icons'
+} from '@vct/ui'
+import { VCT_PageContainer, VCT_StatRow } from '@vct/ui'
+import type { StatItem } from '@vct/ui'
+import { VCT_Icons } from '@vct/ui'
 
 // ════════════════════════════════════════
 // PROVINCIAL DASHBOARD — Tổng quan LĐ Tỉnh
@@ -91,19 +91,19 @@ export const Page_provincial_dashboard = () => {
     }, [])
 
     const kpiItems: StatItem[] = stats ? [
-        { label: 'Hội Q/H', value: stats.total_associations || 0, icon: <VCT_Icons.Building2 size={18} />, color: '#0ea5e9' },
-        { label: 'Chi hội P/X', value: stats.total_sub_associations || 0, icon: <VCT_Icons.MapPin size={18} />, color: '#06b6d4' },
-        { label: 'Tổng CLB', value: stats.total_clubs, icon: <VCT_Icons.Home size={18} />, color: '#10b981' },
-        { label: 'CLB hoạt động', value: stats.active_clubs, icon: <VCT_Icons.Activity size={18} />, color: '#22c55e' },
-        { label: 'Vận động viên', value: stats.total_athletes, icon: <VCT_Icons.Users size={18} />, color: '#f59e0b' },
-        { label: 'HLV', value: stats.total_coaches, icon: <VCT_Icons.Award size={18} />, color: '#8b5cf6' },
-        { label: 'Trọng tài', value: stats.total_referees, icon: <VCT_Icons.Shield size={18} />, color: '#ef4444' },
-        { label: 'BCH', value: stats.total_committee, icon: <VCT_Icons.Star size={18} />, color: '#ec4899' },
+        { label: 'Hội Q/H', value: stats.total_associations || 0, icon: <VCT_Icons.Building2 size={18} />, color: 'var(--vct-accent-cyan)' },
+        { label: 'Chi hội P/X', value: stats.total_sub_associations || 0, icon: <VCT_Icons.MapPin size={18} />, color: 'var(--vct-accent-cyan)' },
+        { label: 'Tổng CLB', value: stats.total_clubs, icon: <VCT_Icons.Home size={18} />, color: 'var(--vct-success)' },
+        { label: 'CLB hoạt động', value: stats.active_clubs, icon: <VCT_Icons.Activity size={18} />, color: 'var(--vct-success)' },
+        { label: 'Vận động viên', value: stats.total_athletes, icon: <VCT_Icons.Users size={18} />, color: 'var(--vct-warning)' },
+        { label: 'HLV', value: stats.total_coaches, icon: <VCT_Icons.Award size={18} />, color: 'var(--vct-info)' },
+        { label: 'Trọng tài', value: stats.total_referees, icon: <VCT_Icons.Shield size={18} />, color: 'var(--vct-danger)' },
+        { label: 'BCH', value: stats.total_committee, icon: <VCT_Icons.Star size={18} />, color: 'var(--vct-accent-pink)' },
     ] : [
-        { label: 'Hội Q/H', value: '—', icon: <VCT_Icons.Building2 size={18} />, color: '#0ea5e9' },
-        { label: 'Chi hội P/X', value: '—', icon: <VCT_Icons.MapPin size={18} />, color: '#06b6d4' },
-        { label: 'Tổng CLB', value: '—', icon: <VCT_Icons.Home size={18} />, color: '#10b981' },
-        { label: 'Vận động viên', value: '—', icon: <VCT_Icons.Users size={18} />, color: '#f59e0b' },
+        { label: 'Hội Q/H', value: '—', icon: <VCT_Icons.Building2 size={18} />, color: 'var(--vct-accent-cyan)' },
+        { label: 'Chi hội P/X', value: '—', icon: <VCT_Icons.MapPin size={18} />, color: 'var(--vct-accent-cyan)' },
+        { label: 'Tổng CLB', value: '—', icon: <VCT_Icons.Home size={18} />, color: 'var(--vct-success)' },
+        { label: 'Vận động viên', value: '—', icon: <VCT_Icons.Users size={18} />, color: 'var(--vct-warning)' },
     ]
 
     return (
@@ -126,7 +126,7 @@ export const Page_provincial_dashboard = () => {
             {stats && (stats.pending_clubs > 0 || stats.pending_transfers > 0) && (
                 <div className="mb-6 p-4 rounded-2xl border border-amber-500/20 bg-amber-500/5">
                     <VCT_Stack direction="row" gap={24} align="center">
-                        <VCT_Icons.Alert size={20} color="#f59e0b" />
+                        <VCT_Icons.Alert size={20} color="var(--vct-warning)" />
                         <VCT_Stack gap={4}>
                             <span className="text-sm font-semibold text-(--vct-text-primary)">
                                 Cần xử lý
@@ -176,8 +176,8 @@ export const Page_provincial_dashboard = () => {
                                         </td>
                                         <td className="px-4 py-3 text-sm">{c.district}</td>
                                         <td className="px-4 py-3 text-sm">{c.leader_name}</td>
-                                        <td className="px-4 py-3 text-sm font-bold text-center" style={{ color: '#22d3ee' }}>{c.athlete_count}</td>
-                                        <td className="px-4 py-3 text-sm font-bold text-center" style={{ color: '#8b5cf6' }}>{c.coach_count}</td>
+                                        <td className="px-4 py-3 text-sm font-bold text-center" style={{ color: 'var(--vct-accent-cyan)' }}>{c.athlete_count}</td>
+                                        <td className="px-4 py-3 text-sm font-bold text-center" style={{ color: 'var(--vct-info)' }}>{c.coach_count}</td>
                                         <td className="px-4 py-3 text-center">
                                             <VCT_Badge text={st.label} type={st.type} />
                                         </td>

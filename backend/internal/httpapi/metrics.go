@@ -14,12 +14,12 @@ import (
 
 // Metrics collects simple metrics in-memory.
 type Metrics struct {
-	totalRequests   int64
-	totalErrors     int64
-	latencySum      float64
-	latencyCount    int64
-	statusCounts    map[int]int64
-	pathCounts      map[string]int64
+	totalRequests int64
+	totalErrors   int64
+	latencySum    float64
+	latencyCount  int64
+	statusCounts  map[int]int64
+	pathCounts    map[string]int64
 }
 
 // NewMetrics creates a new metrics collector.

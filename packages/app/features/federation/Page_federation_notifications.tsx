@@ -1,9 +1,9 @@
 'use client'
 
 import React, { useState, useMemo } from 'react'
-import { VCT_PageContainer, VCT_PageHero } from '../components/VCT_PageContainer'
-import { VCT_Icons } from '../components/vct-icons'
-import { VCT_Badge, VCT_Button, VCT_EmptyState } from '../components/vct-ui'
+import { VCT_PageContainer, VCT_PageHero } from '@vct/ui'
+import { VCT_Icons } from '@vct/ui'
+import { VCT_Badge, VCT_Button, VCT_EmptyState } from '@vct/ui'
 
 // ════════════════════════════════════════
 // FEDERATION — CÀI ĐẶT THÔNG BÁO
@@ -63,10 +63,10 @@ export function Page_federation_notifications() {
 
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
                 {[
-                    { label: 'Kênh thông báo', value: channels.length, color: '#8b5cf6' },
-                    { label: 'Kênh hoạt động', value: activeChannels, color: '#10b981' },
-                    { label: 'Quy tắc', value: rules.length, color: '#3b82f6' },
-                    { label: 'Quy tắc bật', value: activeRules, color: '#f59e0b' },
+                    { label: 'Kênh thông báo', value: channels.length, color: 'var(--vct-info)' },
+                    { label: 'Kênh hoạt động', value: activeChannels, color: 'var(--vct-success)' },
+                    { label: 'Quy tắc', value: rules.length, color: 'var(--vct-info)' },
+                    { label: 'Quy tắc bật', value: activeRules, color: 'var(--vct-warning)' },
                 ].map(kpi => (
                     <div key={kpi.label} className="rounded-2xl border border-vct-border bg-vct-elevated px-4 py-4">
                         <div className="text-xs text-vct-text-muted mb-1">{kpi.label}</div>

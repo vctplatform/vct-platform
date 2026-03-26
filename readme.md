@@ -86,6 +86,7 @@ make typecheck       # TypeScript checks
 
 ## 📖 Documentation
 
+- [Architecture Guard Rails 👑 (Platinum Standard)](docs/architecture/architecture-guard-rails.md)
 - [Architecture Overview](docs/architecture/overview.md)
 - [API Design](docs/architecture/api-design.md)
 - [Setup Guide](docs/guides/setup.md)

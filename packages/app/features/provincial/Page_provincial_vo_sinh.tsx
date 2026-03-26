@@ -2,10 +2,10 @@
 
 import * as React from 'react'
 import { useState, useEffect, useMemo, useCallback } from 'react'
-import { VCT_Badge, VCT_Button, VCT_Stack, VCT_Toast, VCT_SearchInput, VCT_EmptyState, VCT_FilterChips, VCT_AvatarLetter } from '../components/vct-ui'
-import { VCT_PageContainer, VCT_StatRow } from '../components/vct-ui'
-import type { StatItem } from '../components/VCT_StatRow'
-import { VCT_Icons } from '../components/vct-icons'
+import { VCT_Badge, VCT_Button, VCT_Stack, VCT_Toast, VCT_SearchInput, VCT_EmptyState, VCT_FilterChips, VCT_AvatarLetter } from '@vct/ui'
+import { VCT_PageContainer, VCT_StatRow } from '@vct/ui'
+import type { StatItem } from '@vct/ui'
+import { VCT_Icons } from '@vct/ui'
 
 const API = '/api/v1/provincial'
 
@@ -44,11 +44,11 @@ const STATUS_MAP: Record<string, { label: string; type: any }> = {
 }
 const GENDER_MAP: Record<string, string> = { nam: 'Nam', nu: 'Nữ' }
 const BELT_COLORS: Record<string, string> = {
-    khong_dai: '#94a3b8', dai_vang: '#eab308', dai_xanh: '#22c55e',
-    dai_lam: '#3b82f6', dai_do: '#ef4444', so_dang: '#1e293b',
-    nhat_dang: '#1e293b', nhi_dang: '#1e293b', tam_dang: '#1e293b',
-    tu_dang: '#1e293b', ngu_dang: '#1e293b', luc_dang: '#1e293b',
-    that_dang: '#1e293b', bat_dang: '#1e293b', cuu_dang: '#1e293b', thap_dang: '#1e293b',
+    khong_dai: 'var(--vct-text-tertiary)', dai_vang: 'var(--vct-gold)', dai_xanh: 'var(--vct-success)',
+    dai_lam: 'var(--vct-info)', dai_do: 'var(--vct-danger)', so_dang: 'var(--vct-bg-input)',
+    nhat_dang: 'var(--vct-bg-input)', nhi_dang: 'var(--vct-bg-input)', tam_dang: 'var(--vct-bg-input)',
+    tu_dang: 'var(--vct-bg-input)', ngu_dang: 'var(--vct-bg-input)', luc_dang: 'var(--vct-bg-input)',
+    that_dang: 'var(--vct-bg-input)', bat_dang: 'var(--vct-bg-input)', cuu_dang: 'var(--vct-bg-input)', thap_dang: 'var(--vct-bg-input)',
 }
 const AGE_LABELS: Record<string, string> = {
     thieu_nhi: 'Thiếu nhi (5-12)', thieu_nien: 'Thiếu niên (13-17)',
@@ -408,7 +408,7 @@ export const Page_provincial_vo_sinh = () => {
             <div className="relative pl-6">
                 <div className="absolute left-[11px] top-2 bottom-2 w-0.5 bg-(--vct-border-subtle)" />
                 {sorted.map((h) => {
-                    const toColor = BELT_COLORS[h.to_belt] || '#6b7280'
+                    const toColor = BELT_COLORS[h.to_belt] || 'var(--vct-text-tertiary)'
                     return (
                         <div key={h.id} className="relative mb-6 last:mb-0">
                             <div className="absolute -left-6 top-1 w-4 h-4 rounded-full border-2 border-(--vct-bg-card)"
@@ -470,11 +470,11 @@ export const Page_provincial_vo_sinh = () => {
 
             {/* ── KPI Stats ────────────────────────────── */}
             <VCT_StatRow items={[
-                { label: 'Tổng võ sinh', value: stats?.total ?? voSinh.length, icon: <VCT_Icons.Users size={18} />, color: '#8b5cf6' },
-                { label: 'Nam', value: stats?.by_gender?.nam ?? 0, icon: <VCT_Icons.User size={18} />, color: '#3b82f6' },
-                { label: 'Nữ', value: stats?.by_gender?.nu ?? 0, icon: <VCT_Icons.User size={18} />, color: '#ec4899' },
-                { label: 'Đang tập', value: stats?.active_count ?? 0, icon: <VCT_Icons.Activity size={18} />, color: '#10b981' },
-                { label: 'Chờ duyệt', value: stats?.pending_count ?? 0, icon: <VCT_Icons.Clock size={18} />, color: '#f59e0b' },
+                { label: 'Tổng võ sinh', value: stats?.total ?? voSinh.length, icon: <VCT_Icons.Users size={18} />, color: 'var(--vct-info)' },
+                { label: 'Nam', value: stats?.by_gender?.nam ?? 0, icon: <VCT_Icons.User size={18} />, color: 'var(--vct-info)' },
+                { label: 'Nữ', value: stats?.by_gender?.nu ?? 0, icon: <VCT_Icons.User size={18} />, color: 'var(--vct-accent-pink)' },
+                { label: 'Đang tập', value: stats?.active_count ?? 0, icon: <VCT_Icons.Activity size={18} />, color: 'var(--vct-success)' },
+                { label: 'Chờ duyệt', value: stats?.pending_count ?? 0, icon: <VCT_Icons.Clock size={18} />, color: 'var(--vct-warning)' },
             ] as StatItem[]} className="mb-6" />
 
             {/* ── Belt Distribution ────────────────────── */}
@@ -484,7 +484,7 @@ export const Page_provincial_vo_sinh = () => {
                     <div className="flex gap-2 flex-wrap">
                         {Object.entries(stats.by_belt).map(([belt, count]) => {
                             const label = voSinh.find(v => v.belt_rank === belt)?.belt_label || belt
-                            const color = BELT_COLORS[belt] || '#6b7280'
+                            const color = BELT_COLORS[belt] || 'var(--vct-text-tertiary)'
                             return (
                                 <div key={belt} className="flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold cursor-pointer transition-transform hover:scale-105"
                                     style={{ background: `${color}18`, color, border: `1px solid ${color}30` }}
@@ -607,7 +607,7 @@ export const Page_provincial_vo_sinh = () => {
                         <tbody>
                             {filtered.map(v => {
                                 const st = STATUS_MAP[v.status] || { label: v.status, type: 'neutral' }
-                                const beltColor = BELT_COLORS[v.belt_rank] || '#64748b'
+                                const beltColor = BELT_COLORS[v.belt_rank] || 'var(--vct-text-tertiary)'
                                 return (
                                     <tr key={v.id} className="border-b border-(--vct-border-subtle) hover:bg-(--vct-bg-hover) transition-colors cursor-pointer"
                                         onClick={() => openDetail(v)}>

@@ -6,9 +6,9 @@ import {
     VCT_Badge, VCT_Button, VCT_Stack,
     VCT_SearchInput, VCT_EmptyState,
     VCT_PageContainer, VCT_StatRow
-} from '../components/vct-ui'
-import type { StatItem } from '../components/VCT_StatRow'
-import { VCT_Icons } from '../components/vct-icons'
+} from '@vct/ui'
+import type { StatItem } from '@vct/ui'
+import { VCT_Icons } from '@vct/ui'
 import { useFederationStats } from '../hooks/useFederationAPI'
 import { useRealtimeNotifications } from '../hooks/useRealtimeNotifications'
 
@@ -27,24 +27,24 @@ const FALLBACK_STATS = {
 }
 
 const REGION_LABELS: Record<string, { name: string; color: string }> = {
-    north: { name: 'Miền Bắc', color: '#818cf8' },
-    central: { name: 'Miền Trung', color: '#34d399' },
-    south: { name: 'Miền Nam', color: '#f59e0b' },
+    north: { name: 'Miền Bắc', color: 'var(--vct-info)' },
+    central: { name: 'Miền Trung', color: 'var(--vct-success)' },
+    south: { name: 'Miền Nam', color: 'var(--vct-warning)' },
 }
 
 const RECENT_ACTIVITY = [
-    { id: '1', label: 'Giải VCT Toàn quốc 2024', type: 'Giải đấu', status: 'Đang diễn ra', color: '#10b981', time: '2 giờ trước' },
-    { id: '2', label: 'CLB Lý Thường Kiệt — TP.HCM', type: 'Đăng ký CLB', status: 'Chờ duyệt', color: '#f59e0b', time: '5 giờ trước' },
-    { id: '3', label: 'Thi thăng đai Đợt 3/2024', type: 'Thăng đai', status: 'Hoàn thành', color: '#8b5cf6', time: '1 ngày trước' },
-    { id: '4', label: 'Bình Định — Bổ nhiệm Phó CT', type: 'Nhân sự', status: 'Đã duyệt', color: '#0ea5e9', time: '2 ngày trước' },
-    { id: '5', label: 'Luật 128/2024 — Sửa đổi bổ sung', type: 'Quy chế', status: 'Có hiệu lực', color: '#ef4444', time: '3 ngày trước' },
+    { id: '1', label: 'Giải VCT Toàn quốc 2024', type: 'Giải đấu', status: 'Đang diễn ra', color: 'var(--vct-success)', time: '2 giờ trước' },
+    { id: '2', label: 'CLB Lý Thường Kiệt — TP.HCM', type: 'Đăng ký CLB', status: 'Chờ duyệt', color: 'var(--vct-warning)', time: '5 giờ trước' },
+    { id: '3', label: 'Thi thăng đai Đợt 3/2024', type: 'Thăng đai', status: 'Hoàn thành', color: 'var(--vct-info)', time: '1 ngày trước' },
+    { id: '4', label: 'Bình Định — Bổ nhiệm Phó CT', type: 'Nhân sự', status: 'Đã duyệt', color: 'var(--vct-accent-cyan)', time: '2 ngày trước' },
+    { id: '5', label: 'Luật 128/2024 — Sửa đổi bổ sung', type: 'Quy chế', status: 'Có hiệu lực', color: 'var(--vct-danger)', time: '3 ngày trước' },
 ]
 
 const QUICK_ACTIONS = [
-    { label: 'Duyệt hồ sơ', icon: '✅', count: 3, color: '#10b981' },
-    { label: 'CLB chờ xét', icon: '🏢', count: 7, color: '#f59e0b' },
-    { label: 'Thẻ sắp hết hạn', icon: '⚠️', count: 12, color: '#ef4444' },
-    { label: 'Báo cáo mới', icon: '📊', count: 2, color: '#0ea5e9' },
+    { label: 'Duyệt hồ sơ', icon: '✅', count: 3, color: 'var(--vct-success)' },
+    { label: 'CLB chờ xét', icon: '🏢', count: 7, color: 'var(--vct-warning)' },
+    { label: 'Thẻ sắp hết hạn', icon: '⚠️', count: 12, color: 'var(--vct-danger)' },
+    { label: 'Báo cáo mới', icon: '📊', count: 2, color: 'var(--vct-accent-cyan)' },
 ]
 
 export function Page_federation_dashboard() {
@@ -74,10 +74,10 @@ export function Page_federation_dashboard() {
 
             {/* ── KPI Row ── */}
             <VCT_StatRow items={[
-                { label: 'Tỉnh/TP', value: stats.total_provinces, icon: <VCT_Icons.MapPin size={18} />, color: '#8b5cf6' },
-                { label: 'Có Liên đoàn', value: stats.active_provinces, icon: <VCT_Icons.Building2 size={18} />, color: '#10b981' },
-                { label: 'Tổng CLB', value: stats.total_clubs, icon: <VCT_Icons.Home size={18} />, color: '#f59e0b' },
-                { label: 'Tổng VĐV', value: (stats.total_athletes || 0).toLocaleString('vi-VN'), icon: <VCT_Icons.Users size={18} />, color: '#0ea5e9' },
+                { label: 'Tỉnh/TP', value: stats.total_provinces, icon: <VCT_Icons.MapPin size={18} />, color: 'var(--vct-info)' },
+                { label: 'Có Liên đoàn', value: stats.active_provinces, icon: <VCT_Icons.Building2 size={18} />, color: 'var(--vct-success)' },
+                { label: 'Tổng CLB', value: stats.total_clubs, icon: <VCT_Icons.Home size={18} />, color: 'var(--vct-warning)' },
+                { label: 'Tổng VĐV', value: (stats.total_athletes || 0).toLocaleString('vi-VN'), icon: <VCT_Icons.Users size={18} />, color: 'var(--vct-accent-cyan)' },
             ] as StatItem[]} className="mb-6" />
 
             <div className="grid gap-6 lg:grid-cols-3 mb-6">
@@ -111,15 +111,15 @@ export function Page_federation_dashboard() {
                     {/* ── Extra Stats ── */}
                     <div className="grid grid-cols-3 gap-4 mt-6 pt-4 border-t border-(--vct-border-subtle)">
                         <div className="text-center">
-                            <div className="text-2xl font-bold text-[#f59e0b]">{stats.total_coaches}</div>
+                            <div className="text-2xl font-bold text-(--vct-warning)">{stats.total_coaches}</div>
                             <div className="text-[10px] opacity-50 uppercase font-bold">Huấn luyện viên</div>
                         </div>
                         <div className="text-center">
-                            <div className="text-2xl font-bold text-[#8b5cf6]">{stats.total_referees}</div>
+                            <div className="text-2xl font-bold text-(--vct-info)">{stats.total_referees}</div>
                             <div className="text-[10px] opacity-50 uppercase font-bold">Trọng tài</div>
                         </div>
                         <div className="text-center">
-                            <div className="text-2xl font-bold text-[#10b981]">{stats.total_tournaments_ytd}</div>
+                            <div className="text-2xl font-bold text-(--vct-success)">{stats.total_tournaments_ytd}</div>
                             <div className="text-[10px] opacity-50 uppercase font-bold">Giải đấu năm nay</div>
                         </div>
                     </div>

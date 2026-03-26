@@ -27,7 +27,7 @@ func (s *Server) handleTournamentMgmt(w http.ResponseWriter, r *http.Request, p 
 	parts := strings.Split(strings.TrimRight(path, "/"), "/")
 
 	if len(parts) < 1 || parts[0] == "" {
-		badRequest(w, "tournament ID required")
+		apiError(w, http.StatusBadRequest, CodeBadRequest, "tournament ID required")
 		return
 	}
 
@@ -66,7 +66,7 @@ func (s *Server) handleTournamentMgmt(w http.ResponseWriter, r *http.Request, p 
 	case "batch":
 		s.handleTournamentBatch(w, r, p, tournamentID, subID)
 	default:
-		notFoundError(w, "unknown resource: "+resource)
+		apiError(w, http.StatusNotFound, CodeNotFound, "unknown resource: "+resource)
 	}
 }
 
@@ -80,7 +80,7 @@ func (s *Server) handleTournamentCategories(w http.ResponseWriter, r *http.Reque
 		}
 		cats, err := s.Extended.TournamentMgmt.ListCategories(r.Context(), tournamentID)
 		if err != nil {
-			internalError(w, err)
+			apiInternal(w, err)
 			return
 		}
 		if cats == nil {
@@ -94,13 +94,13 @@ func (s *Server) handleTournamentCategories(w http.ResponseWriter, r *http.Reque
 		}
 		var cat tournament.Category
 		if err := json.NewDecoder(r.Body).Decode(&cat); err != nil {
-			badRequest(w, "invalid JSON: "+err.Error())
+			apiError(w, http.StatusBadRequest, CodeBadRequest, "invalid JSON: "+err.Error())
 			return
 		}
 		cat.TournamentID = tournamentID
 		created, err := s.Extended.TournamentMgmt.CreateCategory(r.Context(), &cat)
 		if err != nil {
-			badRequest(w, err.Error())
+			apiError(w, http.StatusBadRequest, CodeBadRequest, err.Error())
 			return
 		}
 		success(w, http.StatusCreated, created)
@@ -111,7 +111,7 @@ func (s *Server) handleTournamentCategories(w http.ResponseWriter, r *http.Reque
 		}
 		cat, err := s.Extended.TournamentMgmt.GetCategory(r.Context(), catID)
 		if err != nil {
-			notFoundError(w, "category not found")
+			apiError(w, http.StatusNotFound, CodeNotFound, "category not found")
 			return
 		}
 		success(w, http.StatusOK, cat)
@@ -122,13 +122,13 @@ func (s *Server) handleTournamentCategories(w http.ResponseWriter, r *http.Reque
 		}
 		var cat tournament.Category
 		if err := json.NewDecoder(r.Body).Decode(&cat); err != nil {
-			badRequest(w, "invalid JSON: "+err.Error())
+			apiError(w, http.StatusBadRequest, CodeBadRequest, "invalid JSON: "+err.Error())
 			return
 		}
 		cat.ID = catID
 		updated, err := s.Extended.TournamentMgmt.UpdateCategory(r.Context(), &cat)
 		if err != nil {
-			badRequest(w, err.Error())
+			apiError(w, http.StatusBadRequest, CodeBadRequest, err.Error())
 			return
 		}
 		success(w, http.StatusOK, updated)
@@ -138,13 +138,13 @@ func (s *Server) handleTournamentCategories(w http.ResponseWriter, r *http.Reque
 			return
 		}
 		if err := s.Extended.TournamentMgmt.DeleteCategory(r.Context(), catID); err != nil {
-			badRequest(w, err.Error())
+			apiError(w, http.StatusBadRequest, CodeBadRequest, err.Error())
 			return
 		}
 		w.WriteHeader(http.StatusNoContent)
 
 	default:
-		methodNotAllowed(w)
+		apiMethodNotAllowed(w)
 	}
 }
 
@@ -158,7 +158,7 @@ func (s *Server) handleTournamentRegistrations(w http.ResponseWriter, r *http.Re
 		}
 		regs, err := s.Extended.TournamentMgmt.ListRegistrations(r.Context(), tournamentID)
 		if err != nil {
-			internalError(w, err)
+			apiInternal(w, err)
 			return
 		}
 		if regs == nil {
@@ -172,13 +172,13 @@ func (s *Server) handleTournamentRegistrations(w http.ResponseWriter, r *http.Re
 		}
 		var reg tournament.Registration
 		if err := json.NewDecoder(r.Body).Decode(&reg); err != nil {
-			badRequest(w, "invalid JSON: "+err.Error())
+			apiError(w, http.StatusBadRequest, CodeBadRequest, "invalid JSON: "+err.Error())
 			return
 		}
 		reg.TournamentID = tournamentID
 		created, err := s.Extended.TournamentMgmt.RegisterTeam(r.Context(), &reg)
 		if err != nil {
-			badRequest(w, err.Error())
+			apiError(w, http.StatusBadRequest, CodeBadRequest, err.Error())
 			return
 		}
 		success(w, http.StatusCreated, created)
@@ -189,7 +189,7 @@ func (s *Server) handleTournamentRegistrations(w http.ResponseWriter, r *http.Re
 		}
 		reg, err := s.Extended.TournamentMgmt.GetRegistration(r.Context(), regID)
 		if err != nil {
-			notFoundError(w, "registration not found")
+			apiError(w, http.StatusNotFound, CodeNotFound, "registration not found")
 			return
 		}
 		success(w, http.StatusOK, reg)
@@ -200,7 +200,7 @@ func (s *Server) handleTournamentRegistrations(w http.ResponseWriter, r *http.Re
 		}
 		athletes, err := s.Extended.TournamentMgmt.ListRegistrationAthletes(r.Context(), regID)
 		if err != nil {
-			internalError(w, err)
+			apiInternal(w, err)
 			return
 		}
 		if athletes == nil {
@@ -214,13 +214,13 @@ func (s *Server) handleTournamentRegistrations(w http.ResponseWriter, r *http.Re
 		}
 		var athlete tournament.RegistrationAthlete
 		if err := json.NewDecoder(r.Body).Decode(&athlete); err != nil {
-			badRequest(w, "invalid JSON: "+err.Error())
+			apiError(w, http.StatusBadRequest, CodeBadRequest, "invalid JSON: "+err.Error())
 			return
 		}
 		athlete.RegistrationID = regID
 		created, err := s.Extended.TournamentMgmt.AddAthleteToRegistration(r.Context(), &athlete)
 		if err != nil {
-			badRequest(w, err.Error())
+			apiError(w, http.StatusBadRequest, CodeBadRequest, err.Error())
 			return
 		}
 		success(w, http.StatusCreated, created)
@@ -230,7 +230,7 @@ func (s *Server) handleTournamentRegistrations(w http.ResponseWriter, r *http.Re
 			return
 		}
 		if err := s.Extended.TournamentMgmt.SubmitRegistration(r.Context(), regID); err != nil {
-			badRequest(w, err.Error())
+			apiError(w, http.StatusBadRequest, CodeBadRequest, err.Error())
 			return
 		}
 		success(w, http.StatusOK, map[string]string{"status": "submitted"})
@@ -240,7 +240,7 @@ func (s *Server) handleTournamentRegistrations(w http.ResponseWriter, r *http.Re
 			return
 		}
 		if err := s.Extended.TournamentMgmt.ApproveRegistration(r.Context(), regID, p.User.ID); err != nil {
-			badRequest(w, err.Error())
+			apiError(w, http.StatusBadRequest, CodeBadRequest, err.Error())
 			return
 		}
 		success(w, http.StatusOK, map[string]string{"status": "approved"})
@@ -254,13 +254,13 @@ func (s *Server) handleTournamentRegistrations(w http.ResponseWriter, r *http.Re
 		}
 		_ = json.NewDecoder(r.Body).Decode(&body)
 		if err := s.Extended.TournamentMgmt.RejectRegistration(r.Context(), regID, p.User.ID, body.Reason); err != nil {
-			badRequest(w, err.Error())
+			apiError(w, http.StatusBadRequest, CodeBadRequest, err.Error())
 			return
 		}
 		success(w, http.StatusOK, map[string]string{"status": "rejected"})
 
 	default:
-		methodNotAllowed(w)
+		apiMethodNotAllowed(w)
 	}
 }
 
@@ -274,7 +274,7 @@ func (s *Server) handleTournamentSchedule(w http.ResponseWriter, r *http.Request
 		}
 		slots, err := s.Extended.TournamentMgmt.ListScheduleSlots(r.Context(), tournamentID)
 		if err != nil {
-			internalError(w, err)
+			apiInternal(w, err)
 			return
 		}
 		if slots == nil {
@@ -288,13 +288,13 @@ func (s *Server) handleTournamentSchedule(w http.ResponseWriter, r *http.Request
 		}
 		var slot tournament.ScheduleSlot
 		if err := json.NewDecoder(r.Body).Decode(&slot); err != nil {
-			badRequest(w, "invalid JSON: "+err.Error())
+			apiError(w, http.StatusBadRequest, CodeBadRequest, "invalid JSON: "+err.Error())
 			return
 		}
 		slot.TournamentID = tournamentID
 		created, err := s.Extended.TournamentMgmt.CreateScheduleSlot(r.Context(), &slot)
 		if err != nil {
-			badRequest(w, err.Error())
+			apiError(w, http.StatusBadRequest, CodeBadRequest, err.Error())
 			return
 		}
 		success(w, http.StatusCreated, created)
@@ -305,7 +305,7 @@ func (s *Server) handleTournamentSchedule(w http.ResponseWriter, r *http.Request
 		}
 		slot, err := s.Extended.TournamentMgmt.GetScheduleSlot(r.Context(), slotID)
 		if err != nil {
-			notFoundError(w, "schedule slot not found")
+			apiError(w, http.StatusNotFound, CodeNotFound, "schedule slot not found")
 			return
 		}
 		success(w, http.StatusOK, slot)
@@ -316,13 +316,13 @@ func (s *Server) handleTournamentSchedule(w http.ResponseWriter, r *http.Request
 		}
 		var slot tournament.ScheduleSlot
 		if err := json.NewDecoder(r.Body).Decode(&slot); err != nil {
-			badRequest(w, "invalid JSON: "+err.Error())
+			apiError(w, http.StatusBadRequest, CodeBadRequest, "invalid JSON: "+err.Error())
 			return
 		}
 		slot.ID = slotID
 		updated, err := s.Extended.TournamentMgmt.UpdateScheduleSlot(r.Context(), &slot)
 		if err != nil {
-			badRequest(w, err.Error())
+			apiError(w, http.StatusBadRequest, CodeBadRequest, err.Error())
 			return
 		}
 		success(w, http.StatusOK, updated)
@@ -332,13 +332,13 @@ func (s *Server) handleTournamentSchedule(w http.ResponseWriter, r *http.Request
 			return
 		}
 		if err := s.Extended.TournamentMgmt.DeleteScheduleSlot(r.Context(), slotID); err != nil {
-			badRequest(w, err.Error())
+			apiError(w, http.StatusBadRequest, CodeBadRequest, err.Error())
 			return
 		}
 		w.WriteHeader(http.StatusNoContent)
 
 	default:
-		methodNotAllowed(w)
+		apiMethodNotAllowed(w)
 	}
 }
 
@@ -352,7 +352,7 @@ func (s *Server) handleTournamentArenas(w http.ResponseWriter, r *http.Request, 
 		}
 		assigns, err := s.Extended.TournamentMgmt.ListArenaAssignments(r.Context(), tournamentID)
 		if err != nil {
-			internalError(w, err)
+			apiInternal(w, err)
 			return
 		}
 		if assigns == nil {
@@ -366,13 +366,13 @@ func (s *Server) handleTournamentArenas(w http.ResponseWriter, r *http.Request, 
 		}
 		var assign tournament.ArenaAssignment
 		if err := json.NewDecoder(r.Body).Decode(&assign); err != nil {
-			badRequest(w, "invalid JSON: "+err.Error())
+			apiError(w, http.StatusBadRequest, CodeBadRequest, "invalid JSON: "+err.Error())
 			return
 		}
 		assign.TournamentID = tournamentID
 		created, err := s.Extended.TournamentMgmt.AssignArena(r.Context(), &assign)
 		if err != nil {
-			badRequest(w, err.Error())
+			apiError(w, http.StatusBadRequest, CodeBadRequest, err.Error())
 			return
 		}
 		success(w, http.StatusCreated, created)
@@ -382,13 +382,13 @@ func (s *Server) handleTournamentArenas(w http.ResponseWriter, r *http.Request, 
 			return
 		}
 		if err := s.Extended.TournamentMgmt.RemoveArenaAssignment(r.Context(), assignID); err != nil {
-			badRequest(w, err.Error())
+			apiError(w, http.StatusBadRequest, CodeBadRequest, err.Error())
 			return
 		}
 		w.WriteHeader(http.StatusNoContent)
 
 	default:
-		methodNotAllowed(w)
+		apiMethodNotAllowed(w)
 	}
 }
 
@@ -402,7 +402,7 @@ func (s *Server) handleTournamentResults(w http.ResponseWriter, r *http.Request,
 		}
 		results, err := s.Extended.TournamentMgmt.ListResults(r.Context(), tournamentID)
 		if err != nil {
-			internalError(w, err)
+			apiInternal(w, err)
 			return
 		}
 		if results == nil {
@@ -416,13 +416,13 @@ func (s *Server) handleTournamentResults(w http.ResponseWriter, r *http.Request,
 		}
 		var result tournament.TournamentResult
 		if err := json.NewDecoder(r.Body).Decode(&result); err != nil {
-			badRequest(w, "invalid JSON: "+err.Error())
+			apiError(w, http.StatusBadRequest, CodeBadRequest, "invalid JSON: "+err.Error())
 			return
 		}
 		result.TournamentID = tournamentID
 		created, err := s.Extended.TournamentMgmt.RecordResult(r.Context(), &result)
 		if err != nil {
-			badRequest(w, err.Error())
+			apiError(w, http.StatusBadRequest, CodeBadRequest, err.Error())
 			return
 		}
 		success(w, http.StatusCreated, created)
@@ -432,13 +432,13 @@ func (s *Server) handleTournamentResults(w http.ResponseWriter, r *http.Request,
 			return
 		}
 		if err := s.Extended.TournamentMgmt.FinalizeResult(r.Context(), resultID, p.User.ID); err != nil {
-			badRequest(w, err.Error())
+			apiError(w, http.StatusBadRequest, CodeBadRequest, err.Error())
 			return
 		}
 		success(w, http.StatusOK, map[string]string{"status": "finalized"})
 
 	default:
-		methodNotAllowed(w)
+		apiMethodNotAllowed(w)
 	}
 }
 
@@ -452,7 +452,7 @@ func (s *Server) handleTournamentStandings(w http.ResponseWriter, r *http.Reques
 		}
 		standings, err := s.Extended.TournamentMgmt.GetTeamStandings(r.Context(), tournamentID)
 		if err != nil {
-			internalError(w, err)
+			apiInternal(w, err)
 			return
 		}
 		if standings == nil {
@@ -466,19 +466,19 @@ func (s *Server) handleTournamentStandings(w http.ResponseWriter, r *http.Reques
 		}
 		var ts tournament.TeamStanding
 		if err := json.NewDecoder(r.Body).Decode(&ts); err != nil {
-			badRequest(w, "invalid JSON: "+err.Error())
+			apiError(w, http.StatusBadRequest, CodeBadRequest, "invalid JSON: "+err.Error())
 			return
 		}
 		ts.TournamentID = tournamentID
 		updated, err := s.Extended.TournamentMgmt.UpdateTeamStanding(r.Context(), &ts)
 		if err != nil {
-			badRequest(w, err.Error())
+			apiError(w, http.StatusBadRequest, CodeBadRequest, err.Error())
 			return
 		}
 		success(w, http.StatusOK, updated)
 
 	default:
-		methodNotAllowed(w)
+		apiMethodNotAllowed(w)
 	}
 }
 
@@ -486,7 +486,7 @@ func (s *Server) handleTournamentStandings(w http.ResponseWriter, r *http.Reques
 
 func (s *Server) handleTournamentStats(w http.ResponseWriter, r *http.Request, p auth.Principal, tournamentID string) {
 	if r.Method != "GET" {
-		methodNotAllowed(w)
+		apiMethodNotAllowed(w)
 		return
 	}
 	if !requireRole(w, p, tournamentReadRoles...) {
@@ -494,7 +494,7 @@ func (s *Server) handleTournamentStats(w http.ResponseWriter, r *http.Request, p
 	}
 	stats, err := s.Extended.TournamentMgmt.GetStats(r.Context(), tournamentID)
 	if err != nil {
-		internalError(w, err)
+		apiInternal(w, err)
 		return
 	}
 	success(w, http.StatusOK, stats)
@@ -504,7 +504,7 @@ func (s *Server) handleTournamentStats(w http.ResponseWriter, r *http.Request, p
 
 func (s *Server) handleTournamentExport(w http.ResponseWriter, r *http.Request, p auth.Principal, tournamentID, entity string) {
 	if r.Method != "GET" {
-		methodNotAllowed(w)
+		apiMethodNotAllowed(w)
 		return
 	}
 	if !requireRole(w, p, tournamentReadRoles...) {
@@ -518,7 +518,7 @@ func (s *Server) handleTournamentExport(w http.ResponseWriter, r *http.Request, 
 	case "categories":
 		cats, err := s.Extended.TournamentMgmt.ListCategories(r.Context(), tournamentID)
 		if err != nil {
-			internalError(w, err)
+			apiInternal(w, err)
 			return
 		}
 		csvContent = tournament.ExportCategoriesToCSV(cats)
@@ -527,7 +527,7 @@ func (s *Server) handleTournamentExport(w http.ResponseWriter, r *http.Request, 
 	case "registrations":
 		regs, err := s.Extended.TournamentMgmt.ListRegistrations(r.Context(), tournamentID)
 		if err != nil {
-			internalError(w, err)
+			apiInternal(w, err)
 			return
 		}
 		csvContent = tournament.ExportRegistrationsToCSV(regs)
@@ -536,7 +536,7 @@ func (s *Server) handleTournamentExport(w http.ResponseWriter, r *http.Request, 
 	case "schedule":
 		slots, err := s.Extended.TournamentMgmt.ListScheduleSlots(r.Context(), tournamentID)
 		if err != nil {
-			internalError(w, err)
+			apiInternal(w, err)
 			return
 		}
 		csvContent = tournament.ExportScheduleToCSV(slots)
@@ -545,7 +545,7 @@ func (s *Server) handleTournamentExport(w http.ResponseWriter, r *http.Request, 
 	case "results":
 		results, err := s.Extended.TournamentMgmt.ListResults(r.Context(), tournamentID)
 		if err != nil {
-			internalError(w, err)
+			apiInternal(w, err)
 			return
 		}
 		csvContent = tournament.ExportResultsToCSV(results)
@@ -554,14 +554,14 @@ func (s *Server) handleTournamentExport(w http.ResponseWriter, r *http.Request, 
 	case "standings":
 		standings, err := s.Extended.TournamentMgmt.GetTeamStandings(r.Context(), tournamentID)
 		if err != nil {
-			internalError(w, err)
+			apiInternal(w, err)
 			return
 		}
 		csvContent = tournament.ExportStandingsToCSV(standings)
 		filename = "toan_doan_" + tournamentID + ".csv"
 
 	default:
-		badRequest(w, "unknown export entity: "+entity)
+		apiError(w, http.StatusBadRequest, CodeBadRequest, "unknown export entity: "+entity)
 		return
 	}
 
@@ -576,7 +576,7 @@ func (s *Server) handleTournamentExport(w http.ResponseWriter, r *http.Request, 
 
 func (s *Server) handleTournamentBatch(w http.ResponseWriter, r *http.Request, p auth.Principal, tournamentID, action string) {
 	if r.Method != "POST" {
-		methodNotAllowed(w)
+		apiMethodNotAllowed(w)
 		return
 	}
 	if !requireRole(w, p, tournamentWriteRoles...) {
@@ -589,12 +589,12 @@ func (s *Server) handleTournamentBatch(w http.ResponseWriter, r *http.Request, p
 			IDs []string `json:"ids"`
 		}
 		if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
-			badRequest(w, "invalid JSON")
+			apiError(w, http.StatusBadRequest, CodeBadRequest, "invalid JSON")
 			return
 		}
 		result, err := s.Extended.TournamentMgmt.BatchApproveRegistrations(r.Context(), tournamentID, body.IDs, p.User.ID)
 		if err != nil {
-			internalError(w, err)
+			apiInternal(w, err)
 			return
 		}
 		success(w, http.StatusOK, result)
@@ -605,12 +605,12 @@ func (s *Server) handleTournamentBatch(w http.ResponseWriter, r *http.Request, p
 			Reason string   `json:"reason"`
 		}
 		if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
-			badRequest(w, "invalid JSON")
+			apiError(w, http.StatusBadRequest, CodeBadRequest, "invalid JSON")
 			return
 		}
 		result, err := s.Extended.TournamentMgmt.BatchRejectRegistrations(r.Context(), tournamentID, body.IDs, p.User.ID, body.Reason)
 		if err != nil {
-			internalError(w, err)
+			apiInternal(w, err)
 			return
 		}
 		success(w, http.StatusOK, result)
@@ -620,12 +620,12 @@ func (s *Server) handleTournamentBatch(w http.ResponseWriter, r *http.Request, p
 			IDs []string `json:"ids"`
 		}
 		if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
-			badRequest(w, "invalid JSON")
+			apiError(w, http.StatusBadRequest, CodeBadRequest, "invalid JSON")
 			return
 		}
 		result, err := s.Extended.TournamentMgmt.BatchFinalizeResults(r.Context(), tournamentID, body.IDs, p.User.ID)
 		if err != nil {
-			internalError(w, err)
+			apiInternal(w, err)
 			return
 		}
 		success(w, http.StatusOK, result)
@@ -633,12 +633,12 @@ func (s *Server) handleTournamentBatch(w http.ResponseWriter, r *http.Request, p
 	case "recalculate-standings":
 		standings, err := s.Extended.TournamentMgmt.RecalculateTeamStandings(r.Context(), tournamentID)
 		if err != nil {
-			internalError(w, err)
+			apiInternal(w, err)
 			return
 		}
 		success(w, http.StatusOK, map[string]any{"standings": standings, "total": len(standings)})
 
 	default:
-		badRequest(w, "unknown batch action: "+action)
+		apiError(w, http.StatusBadRequest, CodeBadRequest, "unknown batch action: "+action)
 	}
 }

@@ -2,8 +2,8 @@
 
 import { useState } from 'react'
 import { motion } from 'framer-motion'
-import { VCT_Tabs, VCT_Badge, VCT_Text, VCT_Table, VCT_Input } from 'app/features/components/vct-ui'
-import { VCT_PageTemplate_Dashboard } from 'app/features/components/vct-page-templates'
+import { VCT_Tabs, VCT_Badge, VCT_Text, VCT_Table, VCT_Input } from '@vct/ui'
+import { VCT_PageTemplate_Dashboard } from '@vct/ui'
 
 const DEMO_MEDALS = [
     { rank: 1, team: 'TP.HCM', gold: 12, silver: 8, bronze: 5, total: 25 },

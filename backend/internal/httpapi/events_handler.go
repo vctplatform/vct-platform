@@ -10,7 +10,7 @@ import (
 // handleRecentEvents returns recent domain events for the dashboard.
 func (s *Server) handleRecentEvents(w http.ResponseWriter, r *http.Request, _ auth.Principal) {
 	if r.Method != http.MethodGet {
-		methodNotAllowed(w)
+		apiMethodNotAllowed(w)
 		return
 	}
 

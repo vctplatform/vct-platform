@@ -14,10 +14,10 @@ import {
   VCT_Select,
   VCT_Table,
   VCT_Toast,
-} from '../components/vct-ui'
-import { VCT_PageContainer, VCT_StatRow } from '../components/vct-ui'
-import type { StatItem } from '../components/VCT_StatRow'
-import { VCT_Icons } from '../components/vct-icons'
+} from '@vct/ui'
+import { VCT_PageContainer, VCT_StatRow } from '@vct/ui'
+import type { StatItem } from '@vct/ui'
+import { VCT_Icons } from '@vct/ui'
 import { useRouteActionGuard } from '../hooks/use-route-action-guard'
 import {
   EQUIPMENT_CATEGORY_LABEL,
@@ -43,7 +43,7 @@ const EquipmentCategoryChart = ({ items }: { items: ClubEquipment[] }) => {
   }, [items])
 
   const max = Math.max(...data.map(d => d.value), 1)
-  const colors = ['#0ea5e9', '#10b981', '#8b5cf6', '#f59e0b', '#ef4444', '#ec4899']
+  const colors = ['var(--vct-accent-cyan)', 'var(--vct-success)', 'var(--vct-info)', 'var(--vct-warning)', 'var(--vct-danger)', 'var(--vct-accent-pink)']
 
   return (
     <div className="rounded-2xl border border-(--vct-border-subtle) bg-(--vct-bg-glass) p-4">
@@ -74,7 +74,7 @@ const EquipmentConditionChart = ({ items }: { items: ClubEquipment[] }) => {
       key,
       label: EQUIPMENT_CONDITION_LABEL[key as EquipmentCondition] || key,
       value,
-      color: EQUIPMENT_CONDITION_COLOR[key as EquipmentCondition] || '#94a3b8',
+      color: EQUIPMENT_CONDITION_COLOR[key as EquipmentCondition] || 'var(--vct-text-tertiary)',
     }))
   }, [items])
 
@@ -293,10 +293,10 @@ export const Page_club_equipment = () => {
   }
 
   const stats: StatItem[] = [
-    { label: 'Tổng số lượng', value: totalQty, icon: <VCT_Icons.Layers size={18} />, color: '#0ea5e9' },
-    { label: 'Tổng giá trị', value: formatVND(totalValue), icon: <VCT_Icons.DollarSign size={18} />, color: '#10b981' },
-    { label: 'Loại thiết bị', value: items.length, icon: <VCT_Icons.List size={18} />, color: '#8b5cf6' },
-    { label: 'Cần thay thế', value: needReplacement, icon: <VCT_Icons.AlertTriangle size={18} />, color: needReplacement > 0 ? '#ef4444' : '#94a3b8' },
+    { label: 'Tổng số lượng', value: totalQty, icon: <VCT_Icons.Layers size={18} />, color: 'var(--vct-accent-cyan)' },
+    { label: 'Tổng giá trị', value: formatVND(totalValue), icon: <VCT_Icons.DollarSign size={18} />, color: 'var(--vct-success)' },
+    { label: 'Loại thiết bị', value: items.length, icon: <VCT_Icons.List size={18} />, color: 'var(--vct-info)' },
+    { label: 'Cần thay thế', value: needReplacement, icon: <VCT_Icons.AlertTriangle size={18} />, color: needReplacement > 0 ? 'var(--vct-danger)' : 'var(--vct-text-tertiary)' },
   ]
 
   const columns = [

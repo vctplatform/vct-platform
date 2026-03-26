@@ -2,7 +2,7 @@
 import * as React from 'react';
 import { motion } from 'framer-motion';
 import type { BracketMatch } from './BracketTypes';
-import { VCT_Stack, VCT_Badge } from '../../components/vct-ui';
+import { VCT_Stack, VCT_Badge } from '@vct/ui';
 
 // ════════════════════════════════════════════════════════════════
 // VCT PLATFORM — BRACKET MATCH DETAIL PANEL
@@ -49,7 +49,7 @@ export const BracketMatchDetail = ({ match, onClose }: BracketMatchDetailProps) 
             }}>
                 <div style={{
                     width: 10, height: 10, borderRadius: '50%',
-                    background: '#ef4444', margin: '0 auto 6px',
+                    background: 'var(--vct-danger)', margin: '0 auto 6px',
                 }} />
                 <div style={{ fontSize: 13, fontWeight: 700 }}>
                     {match.red_athlete?.ten || '—'}
@@ -75,7 +75,7 @@ export const BracketMatchDetail = ({ match, onClose }: BracketMatchDetailProps) 
             }}>
                 <div style={{
                     width: 10, height: 10, borderRadius: '50%',
-                    background: '#3b82f6', margin: '0 auto 6px',
+                    background: 'var(--vct-info)', margin: '0 auto 6px',
                 }} />
                 <div style={{ fontSize: 13, fontWeight: 700 }}>
                     {match.blue_athlete?.ten || '—'}

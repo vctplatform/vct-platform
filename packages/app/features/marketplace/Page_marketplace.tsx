@@ -12,8 +12,8 @@ import {
   VCT_Select,
   VCT_StatRow,
   VCT_Toast,
-} from '../components/vct-ui'
-import { VCT_Icons } from '../components/vct-icons'
+} from '@vct/ui'
+import { VCT_Icons } from '@vct/ui'
 import { useMarketplaceCatalog } from '../hooks/useMarketplaceAPI'
 import { MarketplaceProductCard } from './MarketplaceProductCard'
 import {
@@ -47,25 +47,25 @@ export const Page_marketplace = () => {
           label: 'San pham dang ban',
           value: data.stats.total_products,
           icon: <VCT_Icons.ShoppingBag size={18} />,
-          color: '#0ea5e9',
+          color: 'var(--vct-accent-cyan)',
         },
         {
           label: 'Nha ban dang hoat dong',
           value: data.stats.active_sellers,
           icon: <VCT_Icons.Users size={18} />,
-          color: '#10b981',
+          color: 'var(--vct-success)',
         },
         {
           label: 'Don da chot',
           value: data.stats.completed_orders,
           icon: <VCT_Icons.CheckCircle size={18} />,
-          color: '#f97316',
+          color: 'var(--vct-warning)',
         },
         {
           label: 'Gia tri ton kho',
           value: formatCompactVND(data.stats.total_inventory_vnd),
           icon: <VCT_Icons.DollarSign size={18} />,
-          color: '#eab308',
+          color: 'var(--vct-gold)',
         },
       ]
     : []
