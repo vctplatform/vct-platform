@@ -27,6 +27,7 @@ type Config struct {
 	AuditLimit         int
 	StorageDriver      string
 	PostgresURL        string
+	PostgresReplicaURL string
 	PostgresProvider   string
 	DBAutoMigrate      bool
 	CacheTTL           time.Duration
@@ -34,6 +35,8 @@ type Config struct {
 	PGPoolMaxConns     int
 	PGPoolMinConns     int
 	PGPoolMaxIdleTime  time.Duration
+	RedisURL           string
+	NatsURL            string
 	ResendAPIKey       string
 	ResendFromEmail    string
 }
@@ -54,6 +57,9 @@ func Load() Config {
 	auditLimit := parseInt(getEnv("VCT_AUDIT_LIMIT", "5000"), 5000)
 	storageDriver := strings.ToLower(getEnv("VCT_STORAGE_DRIVER", "memory"))
 	postgresURL := getEnv("VCT_POSTGRES_URL", "")
+	postgresReplicaURL := getEnv("VCT_POSTGRES_REPLICA_URL", "")
+	redisURL := getEnv("VCT_REDIS_URL", "")
+	natsURL := getEnv("VCT_NATS_URL", "")
 	postgresProvider := strings.ToLower(getEnv("VCT_POSTGRES_PROVIDER", "selfhost"))
 	dbAutoMigrate := parseBool(getEnv("VCT_DB_AUTO_MIGRATE", "true"), true)
 	cacheTTL := parseDuration(getEnv("VCT_CACHE_TTL", "30s"), 30*time.Second)
@@ -78,6 +84,7 @@ func Load() Config {
 		AuditLimit:         auditLimit,
 		StorageDriver:      storageDriver,
 		PostgresURL:        postgresURL,
+		PostgresReplicaURL: postgresReplicaURL,
 		PostgresProvider:   postgresProvider,
 		DBAutoMigrate:      dbAutoMigrate,
 		CacheTTL:           cacheTTL,
@@ -85,6 +92,8 @@ func Load() Config {
 		PGPoolMaxConns:     pgPoolMaxConns,
 		PGPoolMinConns:     pgPoolMinConns,
 		PGPoolMaxIdleTime:  pgPoolMaxIdleTime,
+		RedisURL:           redisURL,
+		NatsURL:            natsURL,
 		ResendAPIKey:       resendAPIKey,
 		ResendFromEmail:    resendFromEmail,
 	}

@@ -6,6 +6,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"strings"
+
+	"vct-platform/backend/internal/apierror"
 )
 
 // SystemTenantID is the root tenant used for auth-level user records.
@@ -45,7 +47,7 @@ func (s *PgUserStore) FindByUsername(ctx context.Context, username string) (*Sto
 		return nil, nil // not found — not an error
 	}
 	if err != nil {
-		return nil, fmt.Errorf("pg_user_store.FindByUsername: %w", err)
+		return nil, apierror.Wrap(err, "AUTH_500_DB", "lỗi truy vấn người dùng")
 	}
 
 	// Parse roles from metadata JSON array
@@ -91,12 +93,12 @@ func (s *PgUserStore) Create(ctx context.Context, user *StoredUser) error {
 		metadata,
 	)
 	if err != nil {
-		return fmt.Errorf("pg_user_store.Create: %w", err)
+		return apierror.Wrap(err, "AUTH_500_DB", "lỗi tạo người dùng")
 	}
 
 	rows, _ := result.RowsAffected()
 	if rows == 0 {
-		return fmt.Errorf("pg_user_store.Create: username already exists")
+		return apierror.New("AUTH_409_EXISTS", "tên đăng nhập đã tồn tại")
 	}
 	return nil
 }
@@ -106,7 +108,7 @@ func (s *PgUserStore) UpdateLastLogin(ctx context.Context, userID string) error 
 	const query = `UPDATE core.users SET last_login_at = NOW() WHERE id = $1`
 	_, err := s.db.ExecContext(ctx, query, userID)
 	if err != nil {
-		return fmt.Errorf("pg_user_store.UpdateLastLogin: %w", err)
+		return apierror.Wrap(err, "AUTH_500_DB", "lỗi cập nhật thời gian đăng nhập")
 	}
 	return nil
 }

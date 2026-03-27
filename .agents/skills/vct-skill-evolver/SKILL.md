@@ -217,6 +217,7 @@ Requires: CTO approval
 | vct-tech-lead | 2026-03-11 | ✅ Current | 🟢 |
 | vct-tech-writer | 2026-03-11 | ✅ Current | 🟢 |
 | vct-data-analyst | 2026-03-11 | ✅ Current | 🟢 |
+| vct-design-patterns | 2026-03-26 | ✅ New | 🟢 |
 | vct-scrum-master | 2026-03-11 | ✅ Current | 🟢 |
 | vct-release-manager | 2026-03-11 | ✅ Current | 🟢 |
 | vct-auditor | 2026-03-11 | ✅ Current | 🟢 |

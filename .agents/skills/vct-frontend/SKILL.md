@@ -37,6 +37,24 @@ This skill covers **HOW THINGS ARE BUILT** — the Engineering Architecture:
 | Engineering Checklist | **§B** |
 | New Feature Workflow | **§C** |
 
+## Micro Frontend (MFE) Domain Awareness
+
+> **📖 MFE Reference**: [`vct-micro-frontend` SKILL](file:///d:/VCT%20PLATFORM/vct-platform/.agents/skills/vct-micro-frontend/SKILL.md) · [`micro-frontend-architecture.md`](file:///d:/VCT%20PLATFORM/vct-platform/docs/architecture/micro-frontend-architecture.md)
+
+**TRƯỚC KHI CODE bất kỳ feature frontend nào**, xác định domain ownership:
+
+| Domain | Modules | Rule |
+|--------|---------|------|
+| D1: Tournament | `tournament`, `calendar`, `rankings`, `pwa` | Scoring, brackets, live |
+| D2: Athlete | `athletes`, `people`, `training`, `parent` | Profile, training flow |
+| D3: Organization | `federation`, `provincial`, `club`, `clubs`, `organizations` | Hierarchy, approvals |
+| D4: Admin | `admin`, `settings`, `reporting`, `data` | Admin workspace |
+| D5: Finance | `finance`, `marketplace`, `notifications` | Billing, payments |
+| D6: Heritage | `heritage`, `community`, `public` | Cultural, belt ranking |
+| D7: Platform | `layout`, `auth`, `theme`, `i18n`, `hooks`, `components`, `home`, `dashboard`, `portals`, `user`, `mobile` | Shared Shell |
+
+**Import Rules**: ❌ Domain-to-domain import CẤM → ✅ Dùng shared hooks, URL navigation, `shared-types`
+
 ## NOT in scope
 
 Design tokens, colors, typography, component catalog, animations → see `vct-ui-ux` SKILL / `docs/architecture/ui-architecture.md`
@@ -67,6 +85,8 @@ import { VCT_Icons } from '../components/vct-icons'
 import { useI18n } from '../i18n'
 import { useTheme } from '../theme/ThemeProvider'
 ```
+
+> **DIP Rule (Dependency Inversion)**: UI Components MUST NOT know *how* data is fetched. Never hardcode `fetch` or `axios` inside a UI Component. Always inject data and actions via Custom Hooks or Context. The UI is completely decoupled from the data layer.
 
 ## Quick Access — Custom Hooks (20)
 

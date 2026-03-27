@@ -40,7 +40,7 @@ export function Page_athlete_clubs() {
         <VCT_PageContainer size="wide" animated>
             <div className="mb-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div className="flex items-center gap-4">
-                    <button onClick={() => router.back()} className="rounded-xl border border-vct-border p-2.5 text-vct-text-muted hover:bg-vct-input hover:text-vct-text transition-colors bg-vct-bg">
+                    <button onClick={() => router.back()} title="Quay lại" className="rounded-xl border border-vct-border p-2.5 text-vct-text-muted hover:bg-vct-input hover:text-vct-text transition-colors bg-vct-bg">
                         <VCT_Icons.ChevronLeft size={18} />
                     </button>
                     <div>
@@ -71,7 +71,7 @@ export function Page_athlete_clubs() {
                     {clubs.map(c => (
                         <div key={c.id} className="relative rounded-3xl border border-vct-border bg-vct-elevated overflow-hidden group hover:border-(--vct-info)/50 hover:shadow-lg transition-all duration-300 flex flex-col">
                             {/* Card Header Background */}
-                            <div className="h-24 bg-gradient-to-br from-(--vct-info)/20 via-[#a855f7]/10 to-transparent relative">
+                            <div className="h-24 bg-linear-to-br from-(--vct-info)/20 via-[#a855f7]/10 to-transparent relative">
                                 <div className="absolute -bottom-8 left-6 w-16 h-16 rounded-2xl bg-vct-bg border-4 border-vct-elevated shadow-sm flex items-center justify-center text-(--vct-info)">
                                     <VCT_Icons.Building size={28} />
                                 </div>
@@ -118,7 +118,7 @@ export function Page_athlete_clubs() {
                     <div className="bg-vct-elevated rounded-3xl w-full max-w-md overflow-hidden shadow-2xl border border-vct-border">
                         <div className="p-6 border-b border-vct-border flex justify-between items-center bg-vct-bg/50">
                             <h2 className="text-xl font-black text-vct-text">Xin gia nhập CLB mới</h2>
-                            <button onClick={() => setShowJoinModal(false)} className="text-vct-text-muted hover:text-vct-text p-1 bg-vct-input rounded-lg"><VCT_Icons.X size={20} /></button>
+                            <button onClick={() => setShowJoinModal(false)} title="Đóng" className="text-vct-text-muted hover:text-vct-text p-1 bg-vct-input rounded-lg"><VCT_Icons.X size={20} /></button>
                         </div>
                         <div className="p-6">
                             <label className="block text-sm font-bold text-vct-text-muted mb-2">Tìm kiếm Câu lạc bộ</label>

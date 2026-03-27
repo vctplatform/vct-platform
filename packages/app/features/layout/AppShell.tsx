@@ -83,9 +83,9 @@ const ThemeToggle = () => {
       aria-label={isDark ? t('shell.toLight') : t('shell.toDark')}
       onClick={toggleTheme}
       title={isDark ? t('shell.toLight') : t('shell.toDark')}
-      className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-vct-border bg-vct-elevated text-vct-text-muted transition hover:border-vct-accent hover:text-vct-text"
+      className="inline-flex h-8 w-8 items-center justify-center rounded-lg text-vct-text-muted transition-all duration-200 hover:bg-white/8 hover:text-vct-text active:scale-95"
     >
-      {isDark ? <VCT_Icons.Moon size={16} /> : <VCT_Icons.Sun size={16} />}
+      {isDark ? <VCT_Icons.Moon size={15} /> : <VCT_Icons.Sun size={15} />}
     </button>
   )
 }
@@ -99,15 +99,15 @@ const LangToggle = () => {
       aria-label={t('shell.toggleLang')}
       onClick={() => setLang(lang === 'vi' ? 'en' : 'vi')}
       title={t('shell.toggleLang')}
-      className="inline-flex h-9 items-center rounded-full border border-vct-border bg-vct-elevated p-0.5 text-[11px] font-bold transition hover:border-vct-accent"
+      className="relative inline-flex h-8 items-center gap-0.5 rounded-lg p-0.5 text-[10px] font-extrabold tracking-wider transition-all duration-200 hover:bg-white/8 active:scale-95"
     >
       <span
-        className={`flex h-full min-w-[32px] items-center justify-center rounded-full px-2 transition-colors ${lang === 'vi' ? 'bg-vct-accent/15 text-vct-accent' : 'text-vct-text-muted hover:text-vct-text'}`}
+        className={`flex h-full items-center justify-center rounded-md px-1.5 transition-all duration-200 ${lang === 'vi' ? 'bg-vct-accent/20 text-vct-accent shadow-sm shadow-vct-accent/10' : 'text-vct-text-muted'}`}
       >
         VI
       </span>
       <span
-        className={`flex h-full min-w-[32px] items-center justify-center rounded-full px-2 transition-colors ${lang === 'en' ? 'bg-vct-accent/15 text-vct-accent' : 'text-vct-text-muted hover:text-vct-text'}`}
+        className={`flex h-full items-center justify-center rounded-md px-1.5 transition-all duration-200 ${lang === 'en' ? 'bg-vct-accent/20 text-vct-accent shadow-sm shadow-vct-accent/10' : 'text-vct-text-muted'}`}
       >
         EN
       </span>
@@ -183,9 +183,9 @@ function PrivacyToggle() {
       aria-label="Toggle Privacy Mode"
       onClick={togglePrivacyMode}
       title="Toggle Privacy Mode"
-      className={`inline-flex h-9 w-9 items-center justify-center rounded-full border border-vct-border bg-vct-elevated transition hover:border-vct-accent ${isPrivacyMode ? 'text-vct-accent' : 'text-vct-text-muted hover:text-vct-text'}`}
+      className={`inline-flex h-8 w-8 items-center justify-center rounded-lg transition-all duration-200 hover:bg-white/8 active:scale-95 ${isPrivacyMode ? 'text-vct-accent' : 'text-vct-text-muted hover:text-vct-text'}`}
     >
-      {isPrivacyMode ? <VCT_Icons.EyeOff size={16} /> : <VCT_Icons.Eye size={16} />}
+      {isPrivacyMode ? <VCT_Icons.EyeOff size={15} /> : <VCT_Icons.Eye size={15} />}
     </button>
   )
 }
@@ -207,6 +207,10 @@ const ShellLayout = ({ children }: { children: React.ReactNode }) => {
   const [viewportMode, setViewportMode] = useState<ViewportMode>('desktop')
   const [mobileNavOpen, setMobileNavOpen] = useState(false)
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false)
+  const [isNotifOpen, setIsNotifOpen] = useState(false)
+
+  // Notification badge count (mock — will be replaced with real API later)
+  const notifCount = 2
 
   const compactNavigation = viewportMode !== 'desktop'
   const isDesktop = viewportMode === 'desktop'
@@ -389,26 +393,30 @@ const ShellLayout = ({ children }: { children: React.ReactNode }) => {
   const renderHeader = (showHamburger: boolean) => (
     <header
       role="banner"
-      className={`relative z-50 vct-glass flex shrink-0 items-center justify-between border-b border-vct-border shadow-(--vct-shadow-sm) ${isMobile ? 'h-14 gap-2 px-4' : 'h-14 gap-4 px-6'}`}
+      className={`relative z-50 flex shrink-0 items-center justify-between backdrop-blur-xl bg-vct-bg/80 border-b border-white/6 ${isMobile ? 'h-14 gap-2 px-4' : 'h-14 gap-4 px-5'}`}
     >
-      {/* ── Left: mobile hamburger + breadcrumbs ── */}
+      {/* ── Accent bottom glow line ── */}
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-px bg-linear-to-r from-transparent via-vct-accent/20 to-transparent" />
+
+      {/* ── Left: mobile hamburger + logo/breadcrumbs ── */}
       <div className="flex min-w-0 items-center gap-3">
         {showHamburger && compactNavigation && (
-          <VCT_IconButton
-            ariaLabel={t('shell.openMobileNav')}
+          <button
+            type="button"
             aria-label={t('shell.openMobileNav')}
             aria-controls={SHELL_SIDEBAR_ID}
             aria-expanded={mobileNavOpen}
             onClick={() => setMobileNavOpen((prev) => !prev)}
-            icon={<VCT_Icons.List size={18} />}
-            className="shrink-0"
-          />
+            className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-xl text-vct-text-muted transition-all duration-200 hover:bg-white/8 hover:text-vct-text active:scale-95"
+          >
+            <VCT_Icons.List size={18} />
+          </button>
         )}
 
         {isPortalRoute ? (
-          <div className="flex items-center gap-2 px-1">
-            <UI_Logo size={24} />
-            <span className="hidden text-xs font-black tracking-widest text-[#00b2ff] sm:block">
+          <div className="flex items-center gap-2.5 px-1">
+            <UI_Logo size={22} />
+            <span className="hidden text-[11px] font-black tracking-[0.2em] text-vct-accent sm:block">
               VCT PLATFORM
             </span>
           </div>
@@ -424,37 +432,70 @@ const ShellLayout = ({ children }: { children: React.ReactNode }) => {
         )}
       </div>
 
-      {/* ── Right: search, controls, avatar ── */}
+      {/* ── Right: search + grouped controls + notification + avatar ── */}
       <div className="flex shrink-0 items-center gap-2">
+        {/* Search pill */}
         {isDesktop && (
           <button
             type="button"
             onClick={() => {
               window.dispatchEvent(new KeyboardEvent('keydown', { key: 'k', metaKey: true, ctrlKey: true }))
             }}
-            className="group flex h-9 w-64 items-center gap-2 overflow-hidden rounded-full border border-vct-border bg-vct-elevated px-3 text-xs text-vct-text-muted transition hover:border-vct-accent hover:text-vct-text"
+            className="group flex h-9 w-56 items-center gap-2 rounded-xl border border-white/8 bg-white/4 px-3 text-xs text-vct-text-muted transition-all duration-200 hover:border-vct-accent/30 hover:bg-white/6 hover:text-vct-text focus:outline-none"
           >
-            <VCT_Icons.Search size={14} className="shrink-0" />
+            <VCT_Icons.Search size={13} className="shrink-0 opacity-50 group-hover:opacity-80 transition-opacity" />
             <span className="flex-1 truncate text-left">{t('shell.searchPlaceholder')}</span>
-            <kbd className="shrink-0 rounded border border-vct-border bg-vct-input px-1.5 py-0.5 text-[10px] font-bold text-vct-text-muted">⌘K</kbd>
+            <kbd className="shrink-0 rounded-md border border-white/10 bg-white/5 px-1.5 py-0.5 text-[10px] font-semibold text-vct-text-muted/60">⌘K</kbd>
           </button>
         )}
 
-        <PrivacyToggle />
-        <LangToggle />
-        <ThemeToggle />
-        <NotificationCenter />
+        {/* ── Glass divider ── */}
+        {isDesktop && (
+          <div className="mx-1 h-5 w-px bg-white/8" />
+        )}
 
+        {/* ── Control capsule: Lang + Theme ── */}
+        <div className="flex items-center gap-0.5 rounded-xl border border-white/6 bg-white/3 p-1">
+          <LangToggle />
+          {/* Internal divider */}
+          <div className="h-4 w-px bg-white/8" />
+          <ThemeToggle />
+        </div>
+
+        {/* ── Glass divider ── */}
+        <div className="mx-0.5 h-5 w-px bg-white/8" />
+
+        {/* ── Notification bell with badge ── */}
+        <button
+          type="button"
+          aria-label={t('shell.notifications')}
+          onClick={() => setIsNotifOpen(true)}
+          className="relative inline-flex h-9 w-9 items-center justify-center rounded-xl text-vct-text-muted transition-all duration-200 hover:bg-white/8 hover:text-vct-text active:scale-95"
+        >
+          <VCT_Icons.Bell size={16} />
+          {/* Notification badge — dynamic count */}
+          {notifCount > 0 && (
+            <span className="absolute right-1 top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-red-500 px-1 text-[9px] font-black text-white shadow-lg shadow-red-500/30 animate-pulse">
+              {notifCount > 9 ? '9+' : notifCount}
+            </span>
+          )}
+        </button>
+
+        {/* ── User avatar with online dot ── */}
         <VCT_Dropdown
           trigger={
-            <span
-              className={`inline-flex h-9 w-9 cursor-pointer items-center justify-center rounded-full text-xs font-black text-white shadow-sm ring-1 ring-vct-border transition hover:ring-vct-accent ${currentWorkspaceMeta
-                ? `bg-linear-to-br ${currentWorkspaceMeta.gradient}`
-                : 'bg-linear-to-br from-red-700 to-emerald-700'
-                }`}
-              title={`${currentUser.name} — ${roleLabel}`}
-            >
-              {userInitials}
+            <span className="relative">
+              <span
+                className={`inline-flex h-9 w-9 cursor-pointer items-center justify-center rounded-xl text-[11px] font-black text-white ring-1 ring-white/10 transition-all duration-200 hover:ring-vct-accent/50 hover:scale-105 active:scale-95 ${currentWorkspaceMeta
+                  ? `bg-linear-to-br ${currentWorkspaceMeta.gradient}`
+                  : 'bg-linear-to-br from-red-700 to-emerald-700'
+                  }`}
+                title={`${currentUser.name} — ${roleLabel}`}
+              >
+                {userInitials}
+              </span>
+              {/* Online status dot */}
+              <span className="absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full border-2 border-vct-bg bg-emerald-500 shadow-sm shadow-emerald-500/40" />
             </span>
           }
           items={[
@@ -499,6 +540,7 @@ const ShellLayout = ({ children }: { children: React.ReactNode }) => {
             </motion.div>
           </main>
         </div>
+        <NotificationCenter isOpen={isNotifOpen} onClose={() => setIsNotifOpen(false)} />
         <VCT_CommandPalette />
         <VCT_ShortcutsPanel />
       </VCT_Provider>
@@ -571,6 +613,7 @@ const ShellLayout = ({ children }: { children: React.ReactNode }) => {
           </main>
         </div>
       </div>
+      <NotificationCenter isOpen={isNotifOpen} onClose={() => setIsNotifOpen(false)} />
       <VCT_CommandPalette />
       <VCT_ShortcutsPanel />
     </VCT_Provider>

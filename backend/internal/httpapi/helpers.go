@@ -8,6 +8,7 @@ import (
 	"sort"
 	"strings"
 
+	"vct-platform/backend/internal/apierror"
 	"vct-platform/backend/internal/auth"
 )
 
@@ -56,7 +57,43 @@ func requireRole(w http.ResponseWriter, p auth.Principal, roles ...auth.UserRole
 	return false // access denied
 }
 
+func writeError(w http.ResponseWriter, err error) {
+	var apiErr *apierror.Error
+	if errors.As(err, &apiErr) {
+		status := http.StatusInternalServerError
+		// Basic status mapping based on Code prefix or specific codes
+		switch {
+		case strings.HasPrefix(apiErr.Code, "AUTH_401"), strings.HasPrefix(apiErr.Code, "AUTH_ERR"):
+			status = http.StatusUnauthorized
+		case strings.HasPrefix(apiErr.Code, "AUTH_403"), strings.HasPrefix(apiErr.Code, "FORBIDDEN"):
+			status = http.StatusForbidden
+		case strings.HasPrefix(apiErr.Code, "STORE_404"), strings.HasPrefix(apiErr.Code, "TENANT_404"), strings.HasPrefix(apiErr.Code, "TEMPLATE_404"):
+			status = http.StatusNotFound
+		case strings.HasPrefix(apiErr.Code, "STORE_409"), strings.HasPrefix(apiErr.Code, "BIZ_409"), strings.HasPrefix(apiErr.Code, "AUTH_409"):
+			status = http.StatusConflict
+		case strings.HasPrefix(apiErr.Code, "VAL_400"), strings.HasPrefix(apiErr.Code, "STORE_400"), strings.HasPrefix(apiErr.Code, "BIZ_400"), strings.HasPrefix(apiErr.Code, "WORKER_ERR"), strings.HasPrefix(apiErr.Code, "AUTH_400"):
+			status = http.StatusBadRequest
+		case strings.HasPrefix(apiErr.Code, "BIZ_429"), strings.HasPrefix(apiErr.Code, "AUTH_429"):
+			status = http.StatusTooManyRequests
+		case strings.HasPrefix(apiErr.Code, "WEBHOOK_ERR"):
+			status = http.StatusBadGateway
+		}
+		apiError(w, status, apiErr.Code, apiErr.Message)
+		return
+	}
+
+	// Fallback for non-structured errors
+	apiInternal(w, err)
+}
+
 func writeAuthError(w http.ResponseWriter, err error) {
+	// If it's already a structured error, use the generic writer
+	var apiErr *apierror.Error
+	if errors.As(err, &apiErr) {
+		writeError(w, err)
+		return
+	}
+
 	status := http.StatusUnauthorized
 	code := CodeUnauthorized
 
@@ -79,13 +116,14 @@ func writeAuthError(w http.ResponseWriter, err error) {
 	}
 
 	msg := err.Error()
+	// Legacy parsing for "CODE: message"
 	parts := strings.SplitN(err.Error(), ":", 2)
 	if len(parts) >= 2 {
 		potentialCode := strings.TrimSpace(parts[0])
-		if strings.HasPrefix(potentialCode, "ERR_") {
+		if strings.HasPrefix(potentialCode, "ERR_") || strings.Contains(potentialCode, "_") {
 			code = potentialCode
+			msg = strings.TrimSpace(parts[1])
 		}
-		msg = strings.TrimSpace(parts[1])
 	}
 
 	apiError(w, status, code, msg)

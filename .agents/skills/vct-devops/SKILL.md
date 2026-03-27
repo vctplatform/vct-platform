@@ -402,3 +402,23 @@ if s.cfg.FeatureEnabled("REALTIME_SCORING") {
     mux.HandleFunc("/api/v1/scoring/", s.handleScoringRoutes)
 }
 ```
+
+---
+
+## 14. Enterprise Kubernetes (K8s) Architecture
+
+You hold full mastery over Kubernetes primitives and are responsible for deploying the VCT Platform on clustered environments (EKS, GKE, or bare-metal K3s).
+
+### Resources Blueprint
+Your K8s deployments MUST adhere to these strict primitives:
+1. **Deployments**: Used purely for stateless workloads (Next.js Frontend, Go Backend API). Must be paired with `HorizontalPodAutoscaler` (HPA) targeting 70% CPU/Memory.
+2. **StatefulSets**: Used exclusively for stateful workloads (Self-hosted PostgreSQL, Redis, MinIO) requiring stable network identities and persistent `VolumeClaimTemplates`.
+3. **Services**: Expose Deployments internally via `ClusterIP`. Only Ingress Controllers should use `LoadBalancer` or `NodePort`.
+4. **Ingress Controllers**: Nginx or Traefik mapped to `vct-platform.com` and `api.vct-platform.com`, handling TLS termination via Cert-Manager.
+5. **ConfigMaps & Secrets**: Implement the 12-Factor App methodology. Code must never contain hardcoded configurations. Inject ConfigMaps for environment variables and Secrets for JWT keys and DB passwords.
+6. **Helm Charts / Kustomize**: Never duplicate YAML. Use Helm values or Kustomize overlays to manage configurations across `staging` and `production` namespaces.
+
+### K8s Defensive Rules
+* **Resource Quotas**: Every container MUST define `requests` and `limits` for CPU/Memory to prevent noisy neighbors from crashing the node.
+* **Liveness & Readiness Probes**: The Go API's `/healthz` and `/readyz` endpoints MUST map exactly to the pod's Liveness and Readiness probes.
+* **PodDisruptionBudgets (PDB)**: Enforced to ensure a minimum number of API replicas are always alive during voluntary node drains.

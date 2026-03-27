@@ -1,164 +1,164 @@
 /**
- * VCT Notification Center
+ * VCT Notification Center (Pure UI)
  * 
- * In-app notification center for all user roles.
- * Listens to WebSocket channel `notifications:{userId}` for real-time updates.
+ * A high-performance, animated drawer for notifications.
+ * Accepts any content via children and supports categorized tabs.
  */
 
 'use client'
 
-import { useState } from 'react'
+import React from 'react'
+import { createPortal } from 'react-dom'
 import { motion, AnimatePresence } from 'framer-motion'
-import { VCT_Text, VCT_Card, VCT_Button, VCT_Badge } from '..'
+import { VCT_Text, VCT_Button } from './vct-ui-layout'
+import { VCT_Badge } from './vct-ui-data-display'
 
 /* ── Types ──────────────────────────────────────────────────── */
 
-interface Notification {
+export interface NotificationTab {
     id: string
-    type: 'info' | 'warning' | 'success' | 'danger'
-    title: string
-    body: string
-    time: string
-    read: boolean
-    link?: string
+    label: string
+    count?: number
 }
 
-/* ── Demo Data ──────────────────────────────────────────────── */
-
-const DEMO_NOTIFICATIONS: Notification[] = [
-    { id: '1', type: 'danger', title: 'Dừng trận khẩn cấp', body: 'Y tế yêu cầu dừng trận tại Sân A1 — VĐV Trần Văn D chấn thương', time: '5 phút trước', read: false },
-    { id: '2', type: 'warning', title: 'Cân ký sắp đến', body: 'Lịch cân ký hạng 56-60kg bắt đầu lúc 14:00 hôm nay', time: '30 phút trước', read: false },
-    { id: '3', type: 'success', title: 'Kết quả trận đấu', body: 'Nguyễn Văn A thắng Lê Văn C (12-8) ở vòng loại Đối kháng Nam 56-60kg', time: '1 giờ trước', read: true },
-    { id: '4', type: 'info', title: 'Lịch thi đấu cập nhật', body: 'Trận Bán kết Quyền Nam đã được chuyển sang Sân B1 lúc 15:00', time: '2 giờ trước', read: true },
-    { id: '5', type: 'info', title: 'Đoàn mới đăng ký', body: 'Đoàn Bình Dương đã gửi hồ sơ đăng ký (12 VĐV)', time: '3 giờ trước', read: true },
-]
+export interface NotificationCenterProps {
+    /** Whether the drawer is open */
+    isOpen: boolean
+    /** Called when the drawer should close */
+    onClose: () => void
+    /** Total number of unread notifications */
+    unreadCount?: number
+    /** Label for the "Mark all as read" button */
+    markAllReadLabel?: string
+    /** Called when "Mark all as read" is clicked */
+    onMarkAllRead?: () => void
+    /** List of category tabs */
+    tabs?: NotificationTab[]
+    /** Current active tab ID */
+    activeTabId?: string
+    /** Called when a tab is clicked */
+    onTabChange?: (id: string) => void
+    /** Main content (usually a list of notifications) */
+    children?: React.ReactNode
+    /** Header title */
+    title?: string
+}
 
 /* ── Notification Center Component ──────────────────────────── */
 
-interface NotificationCenterProps {
-    isOpen: boolean
-    onClose: () => void
-}
+export function NotificationCenter({
+    isOpen,
+    onClose,
+    unreadCount = 0,
+    markAllReadLabel = 'Đã đọc tất cả',
+    onMarkAllRead,
+    tabs = [],
+    activeTabId,
+    onTabChange,
+    children,
+    title = 'Thông báo',
+}: NotificationCenterProps) {
+    if (typeof document === 'undefined') return null
 
-export function NotificationCenter({ isOpen, onClose }: NotificationCenterProps) {
-    const [notifications, setNotifications] = useState(DEMO_NOTIFICATIONS)
-
-    const unreadCount = notifications.filter((n) => !n.read).length
-
-    const markAsRead = (id: string) => {
-        setNotifications((prev) => prev.map((n) => n.id === id ? { ...n, read: true } : n))
-    }
-
-    const markAllRead = () => {
-        setNotifications((prev) => prev.map((n) => ({ ...n, read: true })))
-    }
-
-    const iconMap: Record<string, string> = {
-        info: 'ℹ️',
-        warning: '⚠️',
-        success: '✅',
-        danger: '🚨',
-    }
-
-    return (
+    return createPortal(
         <AnimatePresence>
             {isOpen && (
                 <>
                     {/* Backdrop */}
                     <motion.div
-                        className="fixed inset-0 z-40"
-                        style={{ background: 'rgba(0,0,0,0.3)' }}
+                        className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm"
+                        style={{ zIndex: 99999 }}
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
                         onClick={onClose}
+                        aria-hidden="true"
                     />
 
                     {/* Panel */}
                     <motion.div
-                        className="fixed top-0 right-0 z-50 h-full overflow-y-auto"
+                        className="fixed top-0 right-0 h-full flex flex-col border-l border-(--vct-border-subtle) bg-(--vct-bg-elevated) shadow-(--vct-shadow-xl)"
                         style={{
-                            width: '380px',
+                            zIndex: 99999,
+                            width: '420px',
                             maxWidth: '90vw',
-                            background: 'var(--vct-bg-base)',
-                            borderLeft: '1px solid var(--vct-border-subtle)',
-                            boxShadow: '-8px 0 24px rgba(0,0,0,0.2)',
                         }}
                         initial={{ x: '100%' }}
                         animate={{ x: 0 }}
                         exit={{ x: '100%' }}
                         transition={{ type: 'spring', damping: 30, stiffness: 300 }}
+                        role="dialog"
+                        aria-label={title}
+                        aria-modal="true"
                     >
                         {/* Header */}
-                        <div className="sticky top-0 z-10 px-4 py-3 flex items-center justify-between"
-                            style={{ background: 'var(--vct-bg-elevated)', borderBottom: '1px solid var(--vct-border-subtle)' }}>
-                            <div className="flex items-center gap-2">
-                                <VCT_Text variant="h3" style={{ margin: 0 }}>🔔 Thông báo</VCT_Text>
+                        <div className="flex items-center justify-between border-b border-(--vct-border-subtle) px-5 py-4">
+                            <div>
+                                <div className="flex items-center gap-2">
+                                    <h3 className="m-0 text-base font-bold text-(--vct-text-primary)">
+                                        {title}
+                                    </h3>
+                                    {unreadCount > 0 && (
+                                        <VCT_Badge type="danger" text={String(unreadCount)} />
+                                    )}
+                                </div>
                                 {unreadCount > 0 && (
-                                    <VCT_Badge type="danger" text={String(unreadCount)} />
+                                    <p className="mt-0.5 text-xs text-(--vct-text-tertiary)">
+                                        {unreadCount} thông báo chưa đọc
+                                    </p>
                                 )}
                             </div>
                             <div className="flex items-center gap-2">
-                                {unreadCount > 0 && (
-                                    <VCT_Button variant="ghost" size="sm" onClick={markAllRead}>
-                                        Đọc tất cả
-                                    </VCT_Button>
+                                {unreadCount > 0 && onMarkAllRead && (
+                                    <button
+                                        onClick={onMarkAllRead}
+                                        className="rounded-md border-none bg-transparent px-2 py-1 text-xs font-semibold text-(--vct-accent-cyan) transition hover:bg-(--vct-bg-hover)"
+                                    >
+                                        {markAllReadLabel}
+                                    </button>
                                 )}
                                 <button
                                     onClick={onClose}
-                                    style={{
-                                        background: 'none', border: 'none',
-                                        color: 'var(--vct-text-tertiary)', fontSize: '1.25rem',
-                                        cursor: 'pointer', padding: '4px',
-                                    }}
-                                >✕</button>
+                                    aria-label="Đóng"
+                                    className="inline-flex h-8 w-8 items-center justify-center rounded-md border-none bg-transparent text-lg text-(--vct-text-tertiary) transition hover:bg-(--vct-bg-hover) hover:text-(--vct-text-primary)"
+                                >
+                                    ✕
+                                </button>
                             </div>
                         </div>
 
-                        {/* Notification List */}
-                        <div className="p-3 grid gap-2">
-                            {notifications.map((n, i) => (
-                                <motion.div
-                                    key={n.id}
-                                    initial={{ opacity: 0, x: 20 }}
-                                    animate={{ opacity: 1, x: 0 }}
-                                    transition={{ delay: i * 0.05 }}
-                                >
-                                    <div
-                                        className="rounded-xl p-3 cursor-pointer transition-all"
-                                        style={{
-                                            background: n.read ? 'transparent' : 'rgba(0,188,212,0.05)',
-                                            border: `1px solid ${n.read ? 'var(--vct-border-subtle)' : 'rgba(0,188,212,0.2)'}`,
-                                        }}
-                                        onClick={() => markAsRead(n.id)}
+                        {/* Tabs */}
+                        {tabs.length > 0 && (
+                            <div className="flex gap-0.5 border-b border-(--vct-border-subtle) px-5 pt-2">
+                                {tabs.map((tab) => (
+                                    <button
+                                        key={tab.id}
+                                        onClick={() => onTabChange?.(tab.id)}
+                                        className={`-mb-px border-none bg-transparent px-3 py-2 text-xs font-medium transition ${activeTabId === tab.id
+                                            ? 'border-b-2 border-(--vct-accent-cyan) font-bold text-(--vct-accent-cyan)'
+                                            : 'border-b-2 border-transparent text-(--vct-text-tertiary) hover:text-(--vct-text-primary)'
+                                            }`}
                                     >
-                                        <div className="flex items-start gap-2">
-                                            <span className="text-lg">{iconMap[n.type]}</span>
-                                            <div className="flex-1 min-w-0">
-                                                <div className="flex items-center gap-2">
-                                                    <VCT_Text variant="body" style={{ fontWeight: n.read ? 400 : 700, margin: 0 }}>
-                                                        {n.title}
-                                                    </VCT_Text>
-                                                    {!n.read && (
-                                                        <div className="w-2 h-2 rounded-full" style={{ background: 'var(--vct-accent-cyan)', flexShrink: 0 }} />
-                                                    )}
-                                                </div>
-                                                <VCT_Text variant="small" style={{ color: 'var(--vct-text-secondary)', margin: '2px 0' }}>
-                                                    {n.body}
-                                                </VCT_Text>
-                                                <VCT_Text variant="small" style={{ color: 'var(--vct-text-tertiary)' }}>
-                                                    {n.time}
-                                                </VCT_Text>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </motion.div>
-                            ))}
+                                        {tab.label}
+                                        {tab.count !== undefined && tab.count > 0 && (
+                                            <span className="ml-1.5 inline-flex min-w-[16px] items-center justify-center rounded-full bg-(--vct-danger) px-1 text-[9px] font-bold leading-none text-white">
+                                                {tab.count}
+                                            </span>
+                                        )}
+                                    </button>
+                                ))}
+                            </div>
+                        )}
+
+                        {/* Content */}
+                        <div className="vct-hide-scrollbar flex-1 overflow-y-auto">
+                            {children}
                         </div>
                     </motion.div>
                 </>
             )}
-        </AnimatePresence>
+        </AnimatePresence>,
+        document.body
     )
 }
 
@@ -169,38 +169,3 @@ interface NotificationBellProps {
     onClick: () => void
 }
 
-export function VCT_NotificationBell({ count, onClick }: NotificationBellProps) {
-    return (
-        <button
-            onClick={onClick}
-            className="relative"
-            style={{
-                background: 'none',
-                border: 'none',
-                cursor: 'pointer',
-                fontSize: '1.25rem',
-                padding: '8px',
-                color: 'var(--vct-text-secondary)',
-            }}
-            aria-label={`${count} thông báo chưa đọc`}
-        >
-            🔔
-            {count > 0 && (
-                <motion.span
-                    className="absolute -top-0.5 -right-0.5 flex items-center justify-center text-[10px] font-bold text-white rounded-full"
-                    style={{
-                        background: '#ef4444',
-                        minWidth: '18px',
-                        height: '18px',
-                        padding: '0 4px',
-                    }}
-                    initial={{ scale: 0 }}
-                    animate={{ scale: 1 }}
-                    transition={{ type: 'spring', stiffness: 500, damping: 20 }}
-                >
-                    {count > 99 ? '99+' : count}
-                </motion.span>
-            )}
-        </button>
-    )
-}

@@ -2,23 +2,31 @@ package worker
 
 import (
 	"context"
-	"fmt"
+	"database/sql"
 	"log/slog"
 	"time"
+
+	"vct-platform/backend/internal/apierror"
 )
 
 // ═══════════════════════════════════════════════════════════════
 // VCT PLATFORM — Concrete Task Handlers (Stubs)
 //
-// Each handler implements TaskHandler and processes a specific
-// type of background work. Currently stubs — wire real services
-// as dependencies when ready.
+// Refactored to accept Database dependencies. Analytical workloads
+// (like Exporting) are expected to receive a Read-Replica connection
+// to honor OLTP/OLAP workload separation.
 // ═══════════════════════════════════════════════════════════════
 
 // ── Send Notification ────────────────────────────────────────
 
 // NotificationHandler sends email/push notifications.
-type NotificationHandler struct{}
+type NotificationHandler struct {
+	db *sql.DB
+}
+
+func NewNotificationHandler(db *sql.DB) *NotificationHandler {
+	return &NotificationHandler{db: db}
+}
 
 func (h *NotificationHandler) TaskType() string { return "send_notification" }
 
@@ -28,7 +36,7 @@ func (h *NotificationHandler) Handle(ctx context.Context, payload map[string]any
 	template, _ := payload["template"].(string) // template name
 
 	if recipientID == "" || template == "" {
-		return fmt.Errorf("missing recipient_id or template")
+		return apierror.New("VAL_400_NOTIFICATION", "thiếu người nhận hoặc mẫu thông báo")
 	}
 
 	slog.Info("sending notification", slog.String("channel", channel), slog.String("recipient", recipientID), slog.String("template", template))
@@ -46,7 +54,13 @@ func (h *NotificationHandler) Handle(ctx context.Context, payload map[string]any
 // ── Export Tournament Report ─────────────────────────────────
 
 // ExportReportHandler generates CSV/PDF tournament reports.
-type ExportReportHandler struct{}
+type ExportReportHandler struct {
+	db *sql.DB // Enforced: Must be OLAP Read-Replica
+}
+
+func NewExportReportHandler(db *sql.DB) *ExportReportHandler {
+	return &ExportReportHandler{db: db}
+}
 
 func (h *ExportReportHandler) TaskType() string { return "export_tournament_report" }
 
@@ -56,7 +70,7 @@ func (h *ExportReportHandler) Handle(ctx context.Context, payload map[string]any
 	requestedBy, _ := payload["requested_by"].(string)
 
 	if tournamentID == "" {
-		return fmt.Errorf("missing tournament_id")
+		return apierror.New("VAL_400_TOURNAMENT", "thiếu mã định danh giải đấu")
 	}
 	if format == "" {
 		format = "csv"
@@ -78,7 +92,13 @@ func (h *ExportReportHandler) Handle(ctx context.Context, payload map[string]any
 // ── Sync Elo Ratings ─────────────────────────────────────────
 
 // SyncEloHandler recalculates Elo ratings in batch.
-type SyncEloHandler struct{}
+type SyncEloHandler struct {
+	db *sql.DB
+}
+
+func NewSyncEloHandler(db *sql.DB) *SyncEloHandler {
+	return &SyncEloHandler{db: db}
+}
 
 func (h *SyncEloHandler) TaskType() string { return "sync_elo_ratings" }
 
@@ -105,7 +125,13 @@ func (h *SyncEloHandler) Handle(ctx context.Context, payload map[string]any) err
 // ── Cleanup Expired Tokens ───────────────────────────────────
 
 // CleanupTokensHandler removes expired auth tokens.
-type CleanupTokensHandler struct{}
+type CleanupTokensHandler struct {
+	db *sql.DB
+}
+
+func NewCleanupTokensHandler(db *sql.DB) *CleanupTokensHandler {
+	return &CleanupTokensHandler{db: db}
+}
 
 func (h *CleanupTokensHandler) TaskType() string { return "cleanup_expired_tokens" }
 
@@ -130,10 +156,10 @@ func (h *CleanupTokensHandler) Handle(ctx context.Context, payload map[string]an
 
 // ── Register All ─────────────────────────────────────────────
 
-// RegisterAll registers all built-in task handlers with the dispatcher.
-func RegisterAll(d *Dispatcher) {
-	d.Register(&NotificationHandler{})
-	d.Register(&ExportReportHandler{})
-	d.Register(&SyncEloHandler{})
-	d.Register(&CleanupTokensHandler{})
+// RegisterCoreHandlers registers all built-in task handlers with dependencies.
+func RegisterCoreHandlers(d *Dispatcher, db *sql.DB) {
+	d.Register(NewNotificationHandler(db))
+	d.Register(NewExportReportHandler(db)) // OLAP Read-Replica expected
+	d.Register(NewSyncEloHandler(db))
+	d.Register(NewCleanupTokensHandler(db))
 }

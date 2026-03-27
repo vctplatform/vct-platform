@@ -3,11 +3,13 @@ package auth
 import (
 	"context"
 	"crypto/rand"
+	"encoding/json"
 	"fmt"
 	"log/slog"
 	"math/big"
-	"sync"
 	"time"
+
+	"vct-platform/backend/internal/apierror"
 )
 
 // ── OTP Verification ──────────────────────────────────────────
@@ -24,60 +26,77 @@ type OTPEntry struct {
 	Attempts    int
 }
 
-// OTPStore manages pending OTP codes in memory.
+// OTPStore manages pending OTP codes in cache.
 type OTPStore struct {
-	mu      sync.Mutex
-	entries map[string]*OTPEntry // keyed by email
+	cache CacheClient
 }
 
-func NewOTPStore() *OTPStore {
-	return &OTPStore{entries: make(map[string]*OTPEntry)}
+func NewOTPStore(cache CacheClient) *OTPStore {
+	return &OTPStore{cache: cache}
+}
+
+func otpKey(email string) string {
+	return "auth:otp:" + email
 }
 
 // Set stores an OTP for the given email, replacing any existing one.
-func (s *OTPStore) Set(entry *OTPEntry) {
-	s.mu.Lock()
-	defer s.mu.Unlock()
-	s.entries[entry.Email] = entry
+func (s *OTPStore) Set(ctx context.Context, entry *OTPEntry) error {
+	if s.cache == nil {
+		slog.Warn("OTPStore invoked without cache configured - storing locally is not supported")
+		return nil
+	}
+	data, err := json.Marshal(entry)
+	if err != nil {
+		return err
+	}
+	ttl := time.Until(entry.ExpiresAt)
+	if ttl <= 0 {
+		return nil
+	}
+	return s.cache.Set(ctx, otpKey(entry.Email), string(data), ttl)
 }
 
 // Verify checks the code for the given email. Returns the entry on success.
 // Deletes the entry after successful verification or too many attempts.
-func (s *OTPStore) Verify(emailAddr, code string) (*OTPEntry, error) {
-	s.mu.Lock()
-	defer s.mu.Unlock()
+func (s *OTPStore) Verify(ctx context.Context, emailAddr, code string) (*OTPEntry, error) {
+	if s.cache == nil {
+		return nil, apierror.New("AUTH_500_NO_CACHE", "hệ thống không cấu hình cache")
+	}
 
-	entry, ok := s.entries[emailAddr]
-	if !ok {
-		return nil, fmt.Errorf("không tìm thấy mã OTP cho email này")
+	dataStr, err := s.cache.Get(ctx, otpKey(emailAddr))
+	if err != nil || dataStr == "" {
+		return nil, apierror.New("AUTH_401_OTP_MISSING", "không tìm thấy mã OTP cho email này")
 	}
+
+	var entry OTPEntry
+	if err := json.Unmarshal([]byte(dataStr), &entry); err != nil {
+		return nil, err
+	}
+
 	if time.Now().After(entry.ExpiresAt) {
-		delete(s.entries, emailAddr)
-		return nil, fmt.Errorf("mã OTP đã hết hạn, vui lòng gửi lại")
+		s.cache.Delete(ctx, otpKey(emailAddr))
+		return nil, apierror.New("AUTH_401_OTP_EXPIRED", "mã OTP đã hết hạn, vui lòng gửi lại")
 	}
+
 	entry.Attempts++
-	if entry.Attempts > 5 {
-		delete(s.entries, emailAddr)
-		return nil, fmt.Errorf("vượt quá số lần thử, vui lòng gửi mã mới")
+	if entry.Attempts >= 5 {
+		s.cache.Delete(ctx, otpKey(emailAddr))
+		return nil, apierror.New("AUTH_429_OTP_LOCK", "vượt quá số lần thử, vui lòng gửi mã mới")
 	}
+
 	if entry.Code != code {
-		return nil, fmt.Errorf("mã OTP không chính xác")
+		// Update attempts back to redis
+		s.Set(ctx, &entry)
+		return nil, apierror.New("AUTH_401_OTP_INVALID", "mã OTP không chính xác")
 	}
+
 	// Success — remove entry
-	delete(s.entries, emailAddr)
-	return entry, nil
+	s.cache.Delete(ctx, otpKey(emailAddr))
+	return &entry, nil
 }
 
-// Cleanup removes expired entries.
+// Cleanup removes expired entries (noop for Redis TTL).
 func (s *OTPStore) Cleanup() {
-	s.mu.Lock()
-	defer s.mu.Unlock()
-	now := time.Now()
-	for email, entry := range s.entries {
-		if now.After(entry.ExpiresAt) {
-			delete(s.entries, email)
-		}
-	}
 }
 
 // generateOTP creates a cryptographically random 6-digit code.
@@ -157,7 +176,7 @@ func (svc *Service) SendOTP(input SendOTPRequest, emailService OTPSender) (SendO
 	}
 
 	code := generateOTP()
-	svc.otpStore.Set(&OTPEntry{
+	svc.otpStore.Set(context.Background(), &OTPEntry{
 		Code:        code,
 		Email:       emailAddr,
 		DisplayName: input.DisplayName,
@@ -184,7 +203,7 @@ func (svc *Service) VerifyOTP(input VerifyOTPRequest, requestCtx RequestContext)
 		return LoginResult{}, wrapCodedError(ErrBadRequest, CodeBadRequest, "email và mã OTP là bắt buộc")
 	}
 
-	entry, err := svc.otpStore.Verify(input.Email, input.Code)
+	entry, err := svc.otpStore.Verify(context.Background(), input.Email, input.Code)
 	if err != nil {
 		return LoginResult{}, wrapCodedError(ErrBadRequest, CodeBadRequest, err.Error())
 	}

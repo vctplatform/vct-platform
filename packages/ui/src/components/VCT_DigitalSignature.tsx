@@ -1,6 +1,7 @@
 import React, { useRef } from 'react';
 import SignatureCanvas from 'react-signature-canvas';
-import { VCT_Modal, VCT_Button, VCT_Stack } from './vct-ui';
+import { VCT_Modal } from './vct-ui-overlay';
+import { VCT_Button, VCT_Stack } from './vct-ui-layout';
 
 interface Props {
     isOpen: boolean;

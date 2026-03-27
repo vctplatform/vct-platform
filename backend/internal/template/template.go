@@ -4,11 +4,12 @@ package template
 
 import (
 	"bytes"
-	"fmt"
 	"html/template"
 	"strings"
 	"sync"
 	"time"
+
+	"vct-platform/backend/internal/apierror"
 )
 
 // ═══════════════════════════════════════════════════════════════
@@ -92,7 +93,7 @@ func (e *Engine) Register(name, content string) error {
 
 	tmpl, err := template.New(name).Funcs(e.helpers).Parse(content)
 	if err != nil {
-		return fmt.Errorf("parse template %q: %w", name, err)
+		return apierror.Wrap(err, "TEMPLATE_PARSE_ERR", "lỗi phân tích template")
 	}
 	e.templates[name] = tmpl
 	return nil
@@ -104,7 +105,7 @@ func (e *Engine) RegisterWithLayout(name, layoutName, content string) error {
 	layout, ok := e.layouts[layoutName]
 	e.mu.RUnlock()
 	if !ok {
-		return fmt.Errorf("layout %q not found", layoutName)
+		return apierror.Newf("TEMPLATE_LAYOUT_404", "không tìm thấy layout %q", layoutName)
 	}
 
 	combined := strings.Replace(layout, "{{block \"content\" .}}{{end}}", content, 1)
@@ -114,7 +115,7 @@ func (e *Engine) RegisterWithLayout(name, layoutName, content string) error {
 
 	tmpl, err := template.New(name).Funcs(e.helpers).Parse(combined)
 	if err != nil {
-		return fmt.Errorf("parse template %q with layout: %w", name, err)
+		return apierror.Wrap(err, "TEMPLATE_PARSE_ERR", "lỗi phân tích template cùng layout")
 	}
 	e.templates[name] = tmpl
 	return nil
@@ -158,12 +159,12 @@ func (e *Engine) Render(name string, data any) (string, error) {
 	e.mu.RUnlock()
 
 	if !ok {
-		return "", fmt.Errorf("template %q not found", name)
+		return "", apierror.Newf("TEMPLATE_404", "không tìm thấy template %q", name)
 	}
 
 	var buf bytes.Buffer
 	if err := tmpl.Execute(&buf, data); err != nil {
-		return "", fmt.Errorf("render %q: %w", name, err)
+		return "", apierror.Wrap(err, "TEMPLATE_RENDER_ERR", "lỗi hiển thị template")
 	}
 	return buf.String(), nil
 }

@@ -162,6 +162,9 @@ github.com/resend/resend-go/v3   // Email (Resend)
 
 ## 3. Domain Module Pattern
 
+> **DIP Rule (Dependency Inversion)**: "Accept Interfaces, Return Structs". Domain services MUST accept repository interfaces rather than concrete structs (e.g., `*PgUserRepo`). All dependencies must be manually injected during server wiring.
+> **ISP Supremacy (Microscopic Interfaces)**: Interfaces must be highly segregated. Prefer 1-2 method interfaces. Define interfaces in the consumer package. Do not create massive `Repository` God Interfaces.
+
 Each domain module follows this structure:
 
 ```go
@@ -210,7 +213,17 @@ func (s *Service) Create(input CreateInput) (Entity, error) {
 
 ---
 
-## 4. HTTP Handler Pattern
+## 4. HTTP Handler Pattern & RESTful API Supremacy
+
+> **RESTful Supremacy**: All APIs must strictly adhere to the Richardson Maturity Model (Level 2+).
+> 1. **Resource Nouns (Plural)**: e.g., `POST /tournaments`, NOT `POST /createTournament`.
+> 2. **Strict HTTP Verbs**:
+>    - `GET`: Idempotent read.
+>    - `POST`: Create new resource.
+>    - `PUT`: Complete idempotent replacement.
+>    - `PATCH`: Partial update.
+>    - `DELETE`: Idempotent removal.
+> 3. **Exact HTTP Status Codes**: `200 OK` (read/update success), `201 Created` (inserted), `204 No Content` (deleted/empty), `400 Bad Request` (payload error), `401 Unauthorized`, `403 Forbidden`, `404 Not Found`, `409 Conflict`, `422 Unprocessable Entity` (validation error), `500 Server Error`.
 
 ```go
 // internal/httpapi/{module}_handler.go

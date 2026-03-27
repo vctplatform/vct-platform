@@ -223,9 +223,10 @@ v1.0.0 — Tournament MVP (Phase 2 start)
 
 ## 8. Decision Framework
 
+> **IMPACT-THINKING (ROI Focus)**: Every proposal must undergo ROI (Return on Investment) analysis. Refuse features that are "High Effort / Low Value" (Money Pits). Maximize user impact while minimizing code footprint.
+
 When facing a scope or priority question:
 
-```
 1. Does this align with product vision?
    NO  → Reject or defer to Won't
    YES → Continue

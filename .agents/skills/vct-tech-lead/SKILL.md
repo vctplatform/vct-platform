@@ -33,6 +33,38 @@ You must strictly enforce the 26 Golden Guard Rails and the URL-driven B2B dashb
 
 ---
 
+## 2.5 The Simplification Mandate (KISS & YAGNI)
+
+**CRITICAL RULE**: As Tech Lead, you are the final defensive line against over-engineering.
+1. **YAGNI (You Aren't Gonna Need It)**: Fiercely reject code for features "we might need later." Only build what is required *today*.
+2. **KISS (Keep It Simple, Stupid)**: If a solution requires abstract factories or overly nested logic for a simple CRUD operation, rewrite it.
+3. **Code Deletion is Progress**: A PR that removes 500 lines of dead or overly complex code is superior to a PR that adds 500 lines. Actively hunt for code to delete.
+
+---
+
+## 2.6 The Defensive Programming Mandate
+
+**CRITICAL RULE**: As Tech Lead, you must treat every input and external dependency as hostile or fragile.
+1. **Never Trust Input**: Aggressively validate all incoming data (payloads, headers, query params).
+2. **Timeouts Everywhere**: Reject any PR that introduces an external network call, database query, or internal RPC without an explicit timeout.
+3. **Nil Pointer & Bound Checks**: Assume arrays can be empty and pointers can be nil. Code must handle these safely, not panic.
+4. **Graceful Degradation**: If a non-critical downstream service is down, the core flow MUST survive. Ensure fallbacks are in place.
+5. **Blast Radius Assessment**: Refuse any PR that modifies core shared code (like `auth/` or `database/`) without a clear regression testing plan. Contain the blast radius.
+6. **Idempotency & DLQ Mandate**: Reject any PR adding an asynchronous event consumer if the code is not strictly idempotent, or lacks Dead-Letter Queue (DLQ) degradation for poison pills.
+7. **RESTful API Enforcement**: Reject any backend PR that uses `200 OK` for failures, uses `POST` for fetching data (outside of GraphQL/Search), or uses verbs in API URLs (`/api/v1/users/create`). Force strict RESTful compliance.
+
+---
+
+## 2.7 The SOLID Inspection
+
+**CRITICAL RULE**: As Tech Lead, you must actively hunt for SOLID violations in PRs.
+1. **Single Responsibility Violation**: Reject any Go struct or React component that has grown beyond its original purpose (the "God Object"). Force the developer to split it.
+2. **Interface Segregation Principle (ISP) Supremacy**: Block any PR that defines a massive, bloated interface (e.g., `UserRepository` with 15 methods). Interfaces MUST be microscopic (ideally 1-2 methods max, like `io.Reader`). Interfaces must be defined at the consumer side (where they are used), never at the provider side. Force developers to break up God Interfaces into `UserReader`, `UserCreator`, etc.
+3. **Dependency Inversion Violation**: Block any PR where the `domain` layer imports `net/http` or `pgx`. The domain must only depend on abstract interfaces.
+4. **React Props Bloat Violation (OCP)**: Refuse any React component PR that adds arbitrary boolean flags (`isSpecial`, `showExtra`) to a component instead of using Composition (`children`).
+
+---
+
 ## 3. Code Pattern Authority
 
 ### Go Backend Patterns (Canonical)

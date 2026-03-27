@@ -9,6 +9,8 @@ import (
 	"strings"
 	"sync"
 	"time"
+
+	"vct-platform/backend/internal/apierror"
 )
 
 // ═══════════════════════════════════════════════════════════════
@@ -205,7 +207,7 @@ func (m *MemoryResolver) ByID(_ context.Context, id string) (*Tenant, error) {
 	if t, ok := m.tenants[id]; ok {
 		return t, nil
 	}
-	return nil, fmt.Errorf("tenant %q not found", id)
+	return nil, apierror.Newf("TENANT_404", "không tìm thấy tenant %q", id)
 }
 
 func (m *MemoryResolver) BySlug(_ context.Context, slug string) (*Tenant, error) {
@@ -214,5 +216,5 @@ func (m *MemoryResolver) BySlug(_ context.Context, slug string) (*Tenant, error)
 	if id, ok := m.slugs[slug]; ok {
 		return m.tenants[id], nil
 	}
-	return nil, fmt.Errorf("tenant with slug %q not found", slug)
+	return nil, apierror.Newf("TENANT_404_SLUG", "không tìm thấy tenant với slug %q", slug)
 }

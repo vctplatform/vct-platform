@@ -7,9 +7,10 @@ import (
 	"crypto/sha256"
 	"encoding/base64"
 	"encoding/json"
-	"fmt"
 	"strings"
 	"time"
+
+	"vct-platform/backend/internal/apierror"
 )
 
 // ═══════════════════════════════════════════════════════════════
@@ -31,14 +32,14 @@ type Claims struct {
 // Valid checks if claims are not expired and have required fields.
 func (c *Claims) Valid() error {
 	if c.Subject == "" {
-		return fmt.Errorf("token: missing subject")
+		return apierror.New("AUTH_401_INVALID", "thiếu chủ thể trong token")
 	}
 	now := time.Now().Unix()
 	if c.ExpiresAt > 0 && now > c.ExpiresAt {
-		return fmt.Errorf("token: expired at %s", time.Unix(c.ExpiresAt, 0).Format(time.RFC3339))
+		return apierror.Newf("AUTH_401_EXPIRED", "token đã hết hạn vào lúc %s", time.Unix(c.ExpiresAt, 0).Format(time.RFC3339))
 	}
 	if c.IssuedAt > now+60 { // 60s clock skew tolerance
-		return fmt.Errorf("token: issued in the future")
+		return apierror.New("AUTH_401_FUTURE", "token được cấp phát vào thời điểm trong tương lai")
 	}
 	return nil
 }
@@ -127,7 +128,7 @@ func (s *Service) GeneratePair(subject string, roles []string, extra map[string]
 func (s *Service) Validate(tokenStr string) (*Claims, error) {
 	parts := strings.SplitN(tokenStr, ".", 2)
 	if len(parts) != 2 {
-		return nil, fmt.Errorf("token: invalid format")
+		return nil, apierror.New("AUTH_401_FORMAT", "định dạng token không hợp lệ")
 	}
 
 	payloadB64 := parts[0]
@@ -136,18 +137,18 @@ func (s *Service) Validate(tokenStr string) (*Claims, error) {
 	// Verify signature
 	expectedSig := s.sign(payloadB64)
 	if !hmac.Equal([]byte(signature), []byte(expectedSig)) {
-		return nil, fmt.Errorf("token: invalid signature")
+		return nil, apierror.New("AUTH_401_SIGNATURE", "chữ ký token không hợp lệ")
 	}
 
 	// Decode payload
 	payload, err := base64.RawURLEncoding.DecodeString(payloadB64)
 	if err != nil {
-		return nil, fmt.Errorf("token: decode error: %w", err)
+		return nil, apierror.Wrap(err, "AUTH_401_DECODE", "lỗi giải mã token")
 	}
 
 	var claims Claims
 	if err := json.Unmarshal(payload, &claims); err != nil {
-		return nil, fmt.Errorf("token: unmarshal error: %w", err)
+		return nil, apierror.Wrap(err, "AUTH_401_UNMARSHAL", "lỗi phân tích dữ liệu token")
 	}
 
 	// Validate claims
@@ -157,7 +158,7 @@ func (s *Service) Validate(tokenStr string) (*Claims, error) {
 
 	// Check issuer
 	if s.issuer != "" && claims.Issuer != s.issuer {
-		return nil, fmt.Errorf("token: issuer mismatch (got %q, expected %q)", claims.Issuer, s.issuer)
+		return nil, apierror.Newf("AUTH_401_ISSUER", "mismatch người cấp phát (nhận %q, mong đợi %q)", claims.Issuer, s.issuer)
 	}
 
 	return &claims, nil
@@ -167,10 +168,10 @@ func (s *Service) Validate(tokenStr string) (*Claims, error) {
 func (s *Service) Refresh(refreshToken string, roles []string, extra map[string]string) (*TokenPair, error) {
 	claims, err := s.Validate(refreshToken)
 	if err != nil {
-		return nil, fmt.Errorf("refresh: %w", err)
+		return nil, apierror.Wrap(err, "AUTH_401_REFRESH", "lỗi làm mới token")
 	}
 	if claims.TokenType != "refresh" {
-		return nil, fmt.Errorf("refresh: not a refresh token")
+		return nil, apierror.New("AUTH_401_TYPE", "không phải là refresh token")
 	}
 	return s.GeneratePair(claims.Subject, roles, extra)
 }

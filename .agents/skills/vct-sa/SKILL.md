@@ -73,11 +73,29 @@ When asked to make an architecture decision, follow this process:
 ### Step 3: Design Decision
 ```
 □ Does this fit into an existing module or need a new one?
+□ Are the boundaries between Adapter and Domain explicitly defined via Interfaces (DIP)?
+□ Does this feature require Event-Driven communication (Pub/Sub, Event Sourcing, Outbox)?
+□ Which Message Broker is appropriate: Kafka (Event Streaming), RabbitMQ (Task Routing), or NATS (Low-latency Pub/Sub)?
+□ Which Big Data Pipeline Architecture is required for heavy analytics/scoring? Lambda (Batch + Speed) or Kappa (Stream-only via Kafka)?
 □ What new database tables are needed? (ERD sketch)
 □ What new API endpoints are needed? (REST contract)
 □ What frontend pages/components are needed?
 □ Does this affect authentication/authorization?
 □ What are the cross-cutting concerns? (caching, events, i18n)
+```
+
+### Step 3b: MFE Domain Analysis (Frontend Features)
+
+> **📖 Reference**: [`vct-micro-frontend`](file:///d:/VCT%20PLATFORM/vct-platform/.agents/skills/vct-micro-frontend/SKILL.md) · [`micro-frontend-architecture.md`](file:///d:/VCT%20PLATFORM/vct-platform/docs/architecture/micro-frontend-architecture.md)
+
+```
+□ Feature thuộc MFE domain nào? (D1-D7)
+□ Feature có cross-domain dependencies không? → Define contracts trong shared-types
+□ Feature có import từ domain khác không? → Chuyển sang shared hooks/URL navigation
+□ Blast radius: nếu feature crash, chỉ domain đó bị ảnh hưởng hay cả app?
+□ Bundle impact: feature thêm bao nhiêu KB vào domain bundle?
+□ Error boundary: domain có error.tsx riêng chưa?
+□ Tương thích Phase 2 MFE migration: code có ngăn cản tách domain sau này không?
 ```
 
 ### Step 4: Document Decision
@@ -86,6 +104,8 @@ Produce an **Architecture Decision Record (ADR)** with:
 - **Decision**: What was decided
 - **Consequences**: Positive and negative impacts
 - **Alternatives Considered**: What was rejected and why
+- **Blast Radius**: Explicitly measure the blast radius. If this component fails, does the whole system go down, or just this feature?
+- **FMEA (Failure Mode & Effects Analysis)**: Explicitly state what happens when components fail (e.g., DB replication lag, Redis crash, API timeouts, sudden traffic spikes) and how the system degrades gracefully.
 
 ---
 
@@ -141,7 +161,15 @@ DELETE /api/v1/{module}/{id}      → Delete
 
 ---
 
-## 6. Security Architecture
+## 6. Enterprise Data Architecture (Data Mesh, Columnar & OLTP/OLAP Separation)
+
+1. **Strict OLTP vs OLAP Separation**: You MUST enforce a physical or logical separation between operational transactions (OLTP) and analytical workloads (OLAP). Never permit heavy aggregations (`GROUP BY`, historical reporting) on the primary Master database. Mandate Read Replicas for medium analytics, and external engines (ClickHouse/Kafka Streams) for massive analytics.
+2. **Data Mesh Mindset**: Shift analytical architecture from a monolithic Data Warehouse to a decentralized model. Each Domain (Tournament, Finance, User) owns its Analytical Data Products and serves them via strict data contracts.
+3. **Columnar Storage Mindset**: Explicitly separate OLTP (Row-based, PostgreSQL) from OLAP (Column-based, ClickHouse/Parquet) workloads. Any large-scale aggregation (e.g., Federation-wide year-end analytics) must default to Columnar Storage formats to drastically reduce disk I/O.
+
+---
+
+## 7. Security Architecture
 
 ```
 Request Flow:
@@ -206,7 +234,7 @@ Every SA output must include:
 2. **📊 Data Model** — Entity definitions with relationships
 3. **🔌 API Contract** — Endpoint list with request/response shapes
 4. **📁 File Structure** — Exact files to create/modify
-5. **⚠️ Risk Assessment** — Technical risks and mitigations
+5. **⚠️ Risk & Failure Assessment (FMEA)** — Technical risks, component failure modes (network partitions, DB constraints), and graceful degradation strategies.
 6. **✅ Review Checklist** — Items for CTO to approve
 
 ---

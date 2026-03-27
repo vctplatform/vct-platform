@@ -112,10 +112,12 @@ export const PortalRecentCard = ({ card, onClick }: Props) => {
                     ) : (
                         <div
                             className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg backdrop-blur-md bg-(--card-icon-bg) text-(--card-color) transition-transform duration-300 group-hover:scale-110 group-hover:-rotate-3 shadow-sm ring-1 ring-white/20"
-                            style={{ 
-                                '--card-icon-bg': `${card.color}18`,
-                                '--card-color': card.color
-                            } as React.CSSProperties}
+                            {...{
+                                style: { 
+                                    '--card-icon-bg': `${card.color}18`,
+                                    '--card-color': card.color
+                                } as React.CSSProperties
+                            }}
                         >
                             <CardIcon size={20} />
                         </div>

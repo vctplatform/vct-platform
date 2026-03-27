@@ -40,6 +40,7 @@ import (
 	"vct-platform/backend/internal/metrics"
 	"vct-platform/backend/internal/realtime"
 	"vct-platform/backend/internal/store"
+	"vct-platform/backend/internal/worker"
 )
 
 // Server is the main HTTP server for the VCT backend.
@@ -113,11 +114,13 @@ type Server struct {
 		Subscription    *finance.SubscriptionService
 	}
 
-	// ── Event Bus ─────────────────────────────────────────
-	eventBus *events.InMemoryBus
+	// ── Event Bus & Async Workers ─────────────────────────────
+	eventBus      *events.InMemoryBus
+	taskPublisher worker.Publisher
 
 	// ── SQL DB (for PG adapters when storage driver is postgres) ──
-	sqlDB *sql.DB
+	sqlDB     *sql.DB
+	replicaDB *sql.DB
 
 	// ── Email Service (Resend) ────────────────────────────
 	emailService *email.ResendProvider
@@ -140,6 +143,9 @@ func (s *Server) Close() error {
 	// 3. Close SQL DB (PG adapters)
 	if s.sqlDB != nil {
 		_ = s.sqlDB.Close()
+	}
+	if s.replicaDB != nil && s.replicaDB != s.sqlDB {
+		_ = s.replicaDB.Close()
 	}
 	// 4. Close data store
 	if s.store != nil {

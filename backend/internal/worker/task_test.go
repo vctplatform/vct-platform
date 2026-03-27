@@ -114,7 +114,7 @@ func TestRetryOnFailure(t *testing.T) {
 
 func TestRegisterAll(t *testing.T) {
 	d := NewDispatcher(DefaultConfig())
-	RegisterAll(d)
+	RegisterCoreHandlers(d, nil)
 
 	stats := d.Stats()
 	if stats.Handlers != 4 {
@@ -125,7 +125,7 @@ func TestRegisterAll(t *testing.T) {
 // ── Task Handler Tests ───────────────────────────────────────
 
 func TestNotificationHandlerValidation(t *testing.T) {
-	h := &NotificationHandler{}
+	h := NewNotificationHandler(nil)
 	if h.TaskType() != "send_notification" {
 		t.Errorf("expected task type send_notification")
 	}
@@ -144,7 +144,7 @@ func TestNotificationHandlerValidation(t *testing.T) {
 }
 
 func TestExportReportHandlerValidation(t *testing.T) {
-	h := &ExportReportHandler{}
+	h := NewExportReportHandler(nil)
 	if h.TaskType() != "export_tournament_report" {
 		t.Errorf("expected task type export_tournament_report")
 	}
@@ -159,7 +159,7 @@ func TestExportReportHandlerValidation(t *testing.T) {
 }
 
 func TestSyncEloHandler(t *testing.T) {
-	h := &SyncEloHandler{}
+	h := NewSyncEloHandler(nil)
 	if h.TaskType() != "sync_elo_ratings" {
 		t.Errorf("expected task type sync_elo_ratings")
 	}
@@ -170,7 +170,7 @@ func TestSyncEloHandler(t *testing.T) {
 }
 
 func TestCleanupTokensHandler(t *testing.T) {
-	h := &CleanupTokensHandler{}
+	h := NewCleanupTokensHandler(nil)
 	if h.TaskType() != "cleanup_expired_tokens" {
 		t.Errorf("expected task type cleanup_expired_tokens")
 	}

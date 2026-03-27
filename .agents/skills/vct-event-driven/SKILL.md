@@ -15,22 +15,38 @@ description: Event-driven architecture for VCT Platform — domain events, in-pr
 > [!IMPORTANT]
 > **SUPREME ARCHITECTURE DIRECTIVE**: You are strictly bound by the 19 architecture pillars documented in `docs/architecture/`. As a VCT AI Agent, your absolute highest priority is 100% compliance with these rules. You MUST NOT generate code, propose designs, or execute workflows that violate these foundational rules. They are unchangeable and strictly enforced.
 
-## 1. Architecture Overview
+## 1. Architecture Overview (Kafka / RabbitMQ / NATS)
 
 ```
-Domain Layer                    Infrastructure
-┌───────────┐                  ┌──────────────┐
-│ Service   │──publish──→      │  EventBus    │
-│ Layer     │                  │  (in-process)│
-└───────────┘                  └──────┬───────┘
-                                      │
-                    ┌─────────────────┼─────────────────┐
-                    ↓                 ↓                  ↓
-             ┌──────────┐     ┌──────────┐      ┌──────────┐
-             │Notifier  │     │ReadModel │      │ Audit    │
-             │(email/ws)│     │Updater   │      │ Logger   │
-             └──────────┘     └──────────┘      └──────────┘
+Domain Layer                    Infrastructure (Message Broker Layer)
+┌───────────┐                  ┌─────────────────────────────────────┐
+│ Service   │──Outbox Pattern─→│ Kafka (Event Streaming / Replay)    │
+│ Layer     │                  │ RabbitMQ (Complex Task Routing)     │
+└───────────┘                  │ NATS (Low-Latency Pub/Sub)          │
+                               └───────────────────────┬─────────────┘
+                                                       │
+                     ┌─────────────────────────────────┼─────────────────────────────────┐
+                     ↓                                 ↓                                 ↓
+              ┌──────────────┐                  ┌──────────────┐                  ┌──────────────┐
+              │ Consumer A   │                  │ Consumer B   │                  │ Consumer C   │
+              │ (Idempotent) │                  │ (Idempotent) │                  │ (Idempotent) │
+              └──────────────┘                  └──────────────┘                  └──────────────┘
 ```
+
+---
+
+## 1.5 Big Data Event Processing: Lambda vs. Kappa Architecture
+
+When handling massive event streams (e.g., real-time leaderboard calculations across thousands of matches), you MUST explicitly architect the pipeline using one of two paradigms:
+
+1. **Kappa Architecture (Preferred for VCT)**
+   - **Concept**: Everything is a stream. There is no batch layer.
+   - **Execution**: Events flow through Kafka. To recalculate rankings or fix past scoring bugs, you spin up a new consumer group and **replay the event log** from the beginning of time into a new Read Model.
+   - **Use Case**: Live tournament scoring, real-time ELO updates.
+
+2. **Lambda Architecture**
+   - **Concept**: Dual-layer system. A robust, immutable "Batch Layer" (Hadoop/Spark) calculates precise truth slowly, while a "Speed Layer" (Kafka) provides approximate real-time views. A "Serving Layer" merges them.
+   - **Use Case**: Complex end-of-year federation analytics where absolute accuracy against historical data is more critical than sub-second latency.
 
 ---
 

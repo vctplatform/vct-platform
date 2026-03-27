@@ -2,12 +2,16 @@ package worker
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"log/slog"
 	"runtime/debug"
 	"sync"
 	"sync/atomic"
 	"time"
+
+	"github.com/nats-io/nats.go/jetstream"
+	"vct-platform/backend/internal/apierror"
 )
 
 // ═══════════════════════════════════════════════════════════════
@@ -57,6 +61,68 @@ type TaskHandler interface {
 // Call next(ctx) to continue the chain.
 type TaskMiddleware func(ctx context.Context, task *Task, next func(context.Context) error) error
 
+// ── Task Publisher ───────────────────────────────────────────
+
+// Publisher defines the contract for enqueuing background tasks (ISP compliant).
+type Publisher interface {
+	Submit(ctx context.Context, task *Task) error
+}
+
+// NatsPublisher strictly publishes tasks to NATS JetStream without spinning up workers.
+type NatsPublisher struct {
+	js         jetstream.JetStream
+	streamName string
+}
+
+// NewNatsPublisher creates a new NATS-backed task publisher.
+func NewNatsPublisher(js jetstream.JetStream, streamName string) *NatsPublisher {
+	if streamName == "" {
+		streamName = "vct_worker_tasks"
+	}
+	return &NatsPublisher{js: js, streamName: streamName}
+}
+
+func (p *NatsPublisher) Submit(ctx context.Context, task *Task) error {
+	if task.Status == "" {
+		task.Status = TaskStatusPending
+	}
+	if task.ScheduledAt.IsZero() {
+		task.ScheduledAt = time.Now()
+	}
+
+	payload, err := json.Marshal(task)
+	if err != nil {
+		return apierror.Wrap(err, "WORKER_500_ENCODE", "không thể mã hóa công việc")
+	}
+
+	subject := fmt.Sprintf("%s.%s", p.streamName, task.Type)
+	_, err = p.js.Publish(ctx, subject, payload)
+	if err != nil {
+		return apierror.Wrap(err, "WORKER_500_PUBLISH", "không thể gửi công việc lên hàng đợi NATS")
+	}
+	return nil
+}
+
+// LogPublisher logs tasks instead of enqueuing them (for local dev without NATS).
+type LogPublisher struct {
+	logger *slog.Logger
+}
+
+// NewLogPublisher creates a local fallback publisher.
+func NewLogPublisher(logger *slog.Logger) *LogPublisher {
+	if logger == nil {
+		logger = slog.Default()
+	}
+	return &LogPublisher{logger: logger}
+}
+
+func (p *LogPublisher) Submit(ctx context.Context, task *Task) error {
+	p.logger.Info("Task published locally (NATS disabled)", 
+		"task_type", task.Type, 
+		"status", task.Status)
+	return nil
+}
+
 // ── Dispatcher ───────────────────────────────────────────────
 
 // DispatcherConfig holds dispatcher settings.
@@ -66,6 +132,8 @@ type DispatcherConfig struct {
 	RetryDelay     time.Duration // base delay between retries (default: 5s)
 	MaxRetryDelay  time.Duration // max retry delay cap (default: 5min)
 	DefaultRetries int           // max retries for tasks (default: 3)
+	NatsJS         jetstream.JetStream
+	StreamName     string
 }
 
 // DefaultConfig returns sensible defaults.
@@ -98,7 +166,7 @@ type Dispatcher struct {
 	config     DispatcherConfig
 	handlers   map[string]TaskHandler
 	middleware []TaskMiddleware
-	queue      chan *Task
+	queue      chan taskWrapper
 	wg         sync.WaitGroup
 	ctx        context.Context
 	cancel     context.CancelFunc
@@ -108,6 +176,13 @@ type Dispatcher struct {
 	retried    atomic.Int64
 	panics     atomic.Int64
 	logger     *slog.Logger
+	ns         jetstream.Stream
+	nc         jetstream.ConsumeContext
+}
+
+type taskWrapper struct {
+	task *Task
+	msg  jetstream.Msg
 }
 
 // NewDispatcher creates a new task dispatcher.
@@ -127,12 +202,15 @@ func NewDispatcher(config DispatcherConfig) *Dispatcher {
 	if config.DefaultRetries <= 0 {
 		config.DefaultRetries = 3
 	}
+	if config.StreamName == "" {
+		config.StreamName = "vct_worker_tasks"
+	}
 
 	ctx, cancel := context.WithCancel(context.Background())
 	return &Dispatcher{
 		config:   config,
 		handlers: make(map[string]TaskHandler),
-		queue:    make(chan *Task, config.QueueSize),
+		queue:    make(chan taskWrapper, config.QueueSize),
 		ctx:      ctx,
 		cancel:   cancel,
 		logger:   slog.Default().With("component", "worker"),
@@ -168,6 +246,39 @@ func (d *Dispatcher) Start() {
 		"workers", d.config.WorkerCount,
 		"queue_capacity", d.config.QueueSize,
 	)
+
+	if d.config.NatsJS != nil {
+		stream, err := d.config.NatsJS.CreateOrUpdateStream(d.ctx, jetstream.StreamConfig{
+			Name:      d.config.StreamName,
+			Subjects:  []string{d.config.StreamName + ".*"},
+			Retention: jetstream.WorkQueuePolicy,
+		})
+		if err != nil {
+			d.logger.Error("failed to create NATS stream", "error", err)
+			return
+		}
+		d.ns = stream
+
+		cons, err := stream.CreateOrUpdateConsumer(d.ctx, jetstream.ConsumerConfig{
+			Durable:       "vct_workers_group",
+			AckPolicy:     jetstream.AckExplicitPolicy,
+			MaxAckPending: d.config.QueueSize,
+		})
+		if err != nil {
+			d.logger.Error("failed to create NATS consumer", "error", err)
+			return
+		}
+		d.nc, _ = cons.Consume(func(msg jetstream.Msg) {
+			var t Task
+			if err := json.Unmarshal(msg.Data(), &t); err != nil {
+				d.logger.Error("failed to decode task from NATS", "error", err)
+				msg.Term()
+				return
+			}
+			d.queue <- taskWrapper{task: &t, msg: msg}
+		})
+	}
+
 	for i := 0; i < d.config.WorkerCount; i++ {
 		d.wg.Add(1)
 		go d.worker(i)
@@ -184,6 +295,9 @@ func (d *Dispatcher) Stop() {
 	d.running = false
 	d.mu.Unlock()
 
+	if d.nc != nil {
+		d.nc.Stop()
+	}
 	d.cancel()
 	close(d.queue)
 	d.wg.Wait()
@@ -200,13 +314,13 @@ func (d *Dispatcher) Submit(task *Task) error {
 	d.mu.RLock()
 	if !d.running {
 		d.mu.RUnlock()
-		return fmt.Errorf("dispatcher not running")
+		return apierror.New("WORKER_500_STOPPED", "bộ điều phối công việc không hoạt động")
 	}
 	_, hasHandler := d.handlers[task.Type]
 	d.mu.RUnlock()
 
 	if !hasHandler {
-		return fmt.Errorf("no handler registered for task type: %s", task.Type)
+		return apierror.Newf("WORKER_404_HANDLER", "không tìm thấy bộ xử lý cho loại công việc: %s", task.Type)
 	}
 
 	if task.Status == "" {
@@ -219,11 +333,23 @@ func (d *Dispatcher) Submit(task *Task) error {
 		task.ScheduledAt = time.Now()
 	}
 
+	if d.config.NatsJS != nil {
+		payload, err := json.Marshal(task)
+		if err != nil {
+			return apierror.Wrap(err, "WORKER_500_ENCODE", "không thể mã hóa công việc")
+		}
+		_, err = d.config.NatsJS.Publish(d.ctx, fmt.Sprintf("%s.%s", d.config.StreamName, task.Type), payload)
+		if err != nil {
+			return apierror.Wrap(err, "WORKER_500_PUBLISH", "không thể gửi công việc lên hàng đợi NATS")
+		}
+		return nil
+	}
+
 	select {
-	case d.queue <- task:
+	case d.queue <- taskWrapper{task: task}:
 		return nil
 	default:
-		return fmt.Errorf("task queue full (capacity: %d)", d.config.QueueSize)
+		return apierror.Newf("WORKER_429_FULL", "hàng đợi công việc đã đầy (sức chứa: %d)", d.config.QueueSize)
 	}
 }
 
@@ -251,16 +377,18 @@ func (d *Dispatcher) worker(id int) {
 	log := d.logger.With("worker_id", id)
 	log.Info("worker started")
 
-	for task := range d.queue {
+	for wrapper := range d.queue {
 		if d.ctx.Err() != nil {
 			return
 		}
-		d.process(log, task)
+		d.process(log, wrapper)
 	}
 	log.Info("worker stopped")
 }
 
-func (d *Dispatcher) process(log *slog.Logger, task *Task) {
+func (d *Dispatcher) process(log *slog.Logger, wrapper taskWrapper) {
+	task := wrapper.task
+
 	// Panic recovery
 	defer func() {
 		if r := recover(); r != nil {
@@ -274,6 +402,9 @@ func (d *Dispatcher) process(log *slog.Logger, task *Task) {
 				"panic", r,
 				"stack", string(debug.Stack()),
 			)
+			if wrapper.msg != nil {
+				wrapper.msg.Term()
+			}
 		}
 	}()
 
@@ -346,17 +477,21 @@ func (d *Dispatcher) process(log *slog.Logger, task *Task) {
 			task.Error = ""
 			d.retried.Add(1)
 
-			go func() {
-				select {
-				case <-time.After(delay):
+			if wrapper.msg != nil {
+				wrapper.msg.NakWithDelay(delay)
+			} else {
+				go func() {
 					select {
-					case d.queue <- task:
-					default:
-						log.Warn("retry queue full", "task_id", task.ID)
+					case <-time.After(delay):
+						select {
+						case d.queue <- wrapper:
+						default:
+							log.Warn("retry queue full", "task_id", task.ID)
+						}
+					case <-d.ctx.Done():
 					}
-				case <-d.ctx.Done():
-				}
-			}()
+				}()
+			}
 			return
 		}
 
@@ -368,11 +503,17 @@ func (d *Dispatcher) process(log *slog.Logger, task *Task) {
 			"error", err,
 		)
 		d.failed.Add(1)
+		if wrapper.msg != nil {
+			wrapper.msg.Ack()
+		}
 		return
 	}
 
 	task.Status = TaskStatusDone
 	d.processed.Add(1)
+	if wrapper.msg != nil {
+		wrapper.msg.Ack()
+	}
 	log.Info("task completed",
 		"task_id", task.ID,
 		"task_type", task.Type,

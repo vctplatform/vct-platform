@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"vct-platform/backend/internal/auth"
+	"vct-platform/backend/internal/worker"
 )
 
 // ═══════════════════════════════════════════════════════════════
@@ -24,6 +25,29 @@ func (s *Server) handleBTCExport(w http.ResponseWriter, r *http.Request, p auth.
 		format = "csv"
 	}
 	giaiID := r.URL.Query().Get("giai_id")
+	isAsync := r.URL.Query().Get("async") == "true"
+
+	if isAsync {
+		err := s.taskPublisher.Submit(r.Context(), &worker.Task{
+			ID:   newUUID(),
+			Type: "export_tournament_report",
+			Payload: map[string]any{
+				"export_type":   exportType,
+				"format":        format,
+				"tournament_id": giaiID,
+				"requested_by":  p.User.ID,
+			},
+		})
+		if err != nil {
+			apiInternal(w, err)
+			return
+		}
+		success(w, http.StatusAccepted, map[string]any{
+			"message": "Đã đưa yêu cầu xuất dữ liệu vào hàng đợi xử lý nền",
+			"status":  "processing",
+		})
+		return
+	}
 
 	switch exportType {
 	case "team-results":

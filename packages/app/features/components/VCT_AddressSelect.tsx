@@ -1,13 +1,7 @@
 'use client'
-import { useCallback, useMemo, useState } from 'react'
-import {
-    type AddressValue,
-    type ProvinceInfo,
-    type Ward,
-    emptyAddress,
-    useProvinces,
-    useWards,
-} from '../hooks/useDivisions'
+import { useCallback, useState } from 'react'
+import { VCT_AddressSelect, type AddressValue, emptyAddress } from '@vct/ui'
+import { useProvinces, useWards } from '../hooks/useDivisions'
 
 interface VCTAddressSelectProps {
     /** Current value (controlled mode) */
@@ -23,14 +17,8 @@ interface VCTAddressSelectProps {
 }
 
 /**
- * Cascading address selector for Vietnamese administrative divisions.
- * Step 1: Select Tỉnh/TP → Step 2: Select Xã/Phường
- *
- * @example
- * ```tsx
- * const [address, setAddress] = useState(emptyAddress)
- * <VCTAddressSelect value={address} onChange={setAddress} />
- * ```
+ * Smart wrapper for VCT_AddressSelect (from @vct/ui).
+ * Handles data fetching using useProvinces and useWards hooks.
  */
 export function VCTAddressSelect({
     value,
@@ -41,14 +29,7 @@ export function VCTAddressSelect({
 }: VCTAddressSelectProps) {
     const [internalValue, setInternalValue] = useState<AddressValue>(emptyAddress)
     const currentValue = value ?? internalValue
-    const setValue = useCallback(
-        (v: AddressValue) => {
-            if (onChange) onChange(v)
-            else setInternalValue(v)
-        },
-        [onChange]
-    )
-
+    
     const [provinceSearch, setProvinceSearch] = useState('')
     const [wardSearch, setWardSearch] = useState('')
 
@@ -60,30 +41,35 @@ export function VCTAddressSelect({
         wardSearch.length >= 1 ? wardSearch : undefined
     )
 
+    const setValue = useCallback(
+        (v: AddressValue) => {
+            if (onChange) onChange(v)
+            else setInternalValue(v)
+        },
+        [onChange]
+    )
+
     const handleProvinceChange = useCallback(
-        (e: React.ChangeEvent<HTMLSelectElement>) => {
-            const code = parseInt(e.target.value, 10)
-            if (isNaN(code)) {
+        (code: number | null, name: string) => {
+            if (code === null) {
                 setValue(emptyAddress)
                 setWardSearch('')
                 return
             }
-            const prov = provinces.find((p: ProvinceInfo) => p.code === code)
             setValue({
                 provinceCode: code,
-                provinceName: prov?.name ?? '',
+                provinceName: name,
                 wardCode: null,
                 wardName: '',
             })
             setWardSearch('')
         },
-        [provinces, setValue]
+        [setValue]
     )
 
     const handleWardChange = useCallback(
-        (e: React.ChangeEvent<HTMLSelectElement>) => {
-            const code = parseInt(e.target.value, 10)
-            if (isNaN(code)) {
+        (code: number | null, name: string) => {
+            if (code === null) {
                 setValue({
                     ...currentValue,
                     wardCode: null,
@@ -91,121 +77,32 @@ export function VCTAddressSelect({
                 })
                 return
             }
-            const w = wards.find((ward: Ward) => ward.code === code)
             setValue({
                 ...currentValue,
                 wardCode: code,
-                wardName: w?.name ?? '',
+                wardName: name,
             })
         },
-        [wards, currentValue, setValue]
+        [currentValue, setValue]
     )
 
-    const filteredProvinces = useMemo(() => {
-        if (!provinceSearch) return provinces
-        return provinces
-    }, [provinces, provinceSearch])
-
     return (
-        <div className={`${className}`}>
-            {label && (
-                <label className="block text-sm font-medium mb-2 text-(--vct-text-secondary)">
-                    {label}
-                </label>
-            )}
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                {/* Province Select */}
-                <div className="flex flex-col gap-1">
-                    <label
-                        htmlFor="vct-province-select"
-                        className="text-xs text-(--vct-text-muted)"
-                    >
-                        Tỉnh / Thành phố
-                    </label>
-                    <div className="relative">
-                        <input
-                            type="text"
-                            placeholder="Tìm tỉnh/TP..."
-                            value={provinceSearch}
-                            onChange={(e) => setProvinceSearch(e.target.value)}
-                            disabled={disabled}
-                            className="w-full px-3 py-1.5 text-xs rounded-t-lg border border-b-0 border-(--vct-border) bg-(--vct-bg-secondary) text-(--vct-text-primary) placeholder:text-(--vct-text-muted) focus:outline-none focus:ring-1 focus:ring-(--vct-accent)"
-                        />
-                        <select
-                            id="vct-province-select"
-                            value={currentValue.provinceCode ?? ''}
-                            onChange={handleProvinceChange}
-                            disabled={disabled || loadingProvinces}
-                            className="w-full px-3 py-2 text-sm rounded-b-lg border border-(--vct-border) bg-(--vct-bg-secondary) text-(--vct-text-primary) focus:outline-none focus:ring-2 focus:ring-(--vct-accent) disabled:opacity-50 cursor-pointer"
-                        >
-                            <option value="">
-                                {loadingProvinces
-                                    ? 'Đang tải...'
-                                    : `-- Chọn tỉnh/TP (${filteredProvinces.length}) --`}
-                            </option>
-                            {filteredProvinces.map((p: ProvinceInfo) => (
-                                <option key={p.code} value={p.code}>
-                                    {p.name} ({p.ward_count} xã/phường)
-                                </option>
-                            ))}
-                        </select>
-                    </div>
-                </div>
-
-                {/* Ward Select */}
-                <div className="flex flex-col gap-1">
-                    <label
-                        htmlFor="vct-ward-select"
-                        className="text-xs text-(--vct-text-muted)"
-                    >
-                        Xã / Phường / Thị trấn
-                    </label>
-                    <div className="relative">
-                        <input
-                            type="text"
-                            placeholder="Tìm xã/phường..."
-                            value={wardSearch}
-                            onChange={(e) => setWardSearch(e.target.value)}
-                            disabled={disabled || !currentValue.provinceCode}
-                            className="w-full px-3 py-1.5 text-xs rounded-t-lg border border-b-0 border-(--vct-border) bg-(--vct-bg-secondary) text-(--vct-text-primary) placeholder:text-(--vct-text-muted) focus:outline-none focus:ring-1 focus:ring-(--vct-accent) disabled:opacity-50"
-                        />
-                        <select
-                            id="vct-ward-select"
-                            value={currentValue.wardCode ?? ''}
-                            onChange={handleWardChange}
-                            disabled={
-                                disabled ||
-                                !currentValue.provinceCode ||
-                                loadingWards
-                            }
-                            className="w-full px-3 py-2 text-sm rounded-b-lg border border-(--vct-border) bg-(--vct-bg-secondary) text-(--vct-text-primary) focus:outline-none focus:ring-2 focus:ring-(--vct-accent) disabled:opacity-50 cursor-pointer"
-                        >
-                            <option value="">
-                                {!currentValue.provinceCode
-                                    ? '-- Chọn tỉnh/TP trước --'
-                                    : loadingWards
-                                      ? 'Đang tải...'
-                                      : `-- Chọn xã/phường (${wards.length}) --`}
-                            </option>
-                            {wards.map((w: Ward) => (
-                                <option key={w.code} value={w.code}>
-                                    {w.name}
-                                </option>
-                            ))}
-                        </select>
-                    </div>
-                </div>
-            </div>
-
-            {/* Selected address display */}
-            {currentValue.provinceCode && (
-                <div className="mt-2 px-3 py-1.5 rounded-lg bg-(--vct-bg-tertiary) text-xs text-(--vct-text-secondary)">
-                    📍 {currentValue.wardName ? `${currentValue.wardName}, ` : ''}
-                    {currentValue.provinceName}
-                </div>
-            )}
-        </div>
+        <VCT_AddressSelect
+            value={currentValue}
+            onProvinceChange={handleProvinceChange}
+            onWardChange={handleWardChange}
+            provinces={provinces}
+            wards={wards}
+            loadingProvinces={loadingProvinces}
+            loadingWards={loadingWards}
+            disabled={disabled}
+            provinceSearch={provinceSearch}
+            onProvinceSearchChange={setProvinceSearch}
+            wardSearch={wardSearch}
+            onWardSearchChange={setWardSearch}
+            label={label}
+            className={className}
+        />
     )
 }
 

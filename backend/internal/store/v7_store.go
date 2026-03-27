@@ -4,8 +4,9 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
-	"fmt"
 	"time"
+
+	"vct-platform/backend/internal/apierror"
 
 	"github.com/jackc/pgx/v5"
 )
@@ -36,7 +37,7 @@ func (s *PostgresStore) CheckAuthorization(ctx context.Context, input AuthzCheck
 		)
 	`, input.ObjectType, input.ObjectID, input.Relation, input.SubjectType, input.SubjectID).Scan(&exists)
 	if err != nil {
-		return false, fmt.Errorf("authz check failed: %w", err)
+		return false, apierror.Wrap(err, "STORE_AUTHZ_001", "kiểm tra quyền hạn thất bại")
 	}
 	return exists, nil
 }
@@ -50,7 +51,7 @@ func (s *PostgresStore) GrantAuthorization(ctx context.Context, input AuthzCheck
 		SET revoked_at = NULL, expires_at = NULL
 	`, input.ObjectType, input.ObjectID, input.Relation, input.SubjectType, input.SubjectID, grantedBy)
 	if err != nil {
-		return fmt.Errorf("grant authz failed: %w", err)
+		return apierror.Wrap(err, "STORE_AUTHZ_002", "cấp quyền hạn thất bại")
 	}
 	return nil
 }
@@ -64,7 +65,7 @@ func (s *PostgresStore) RevokeAuthorization(ctx context.Context, input AuthzChec
 		  AND revoked_at IS NULL
 	`, input.ObjectType, input.ObjectID, input.Relation, input.SubjectType, input.SubjectID, revokedBy)
 	if err != nil {
-		return fmt.Errorf("revoke authz failed: %w", err)
+		return apierror.Wrap(err, "STORE_AUTHZ_003", "thu hồi quyền hạn thất bại")
 	}
 	return nil
 }
@@ -89,7 +90,7 @@ func (s *PostgresStore) ListDataQualityScores(ctx context.Context) ([]DataQualit
 		ORDER BY overall_score ASC
 	`)
 	if err != nil {
-		return nil, fmt.Errorf("list dq scores failed: %w", err)
+		return nil, apierror.Wrap(err, "STORE_DQ_001", "liệt kê điểm chất lượng dữ liệu thất bại")
 	}
 	defer rows.Close()
 
@@ -116,7 +117,7 @@ func (s *PostgresStore) UpsertDataQualityScore(ctx context.Context, score DataQu
 	`, score.TableName, score.OverallScore, score.CompletenessScore,
 		score.AccuracyScore, score.ConsistencyScore, score.TimelinessScore)
 	if err != nil {
-		return fmt.Errorf("upsert dq score failed: %w", err)
+		return apierror.Wrap(err, "STORE_DQ_002", "cập nhật điểm chất lượng dữ liệu thất bại")
 	}
 	return nil
 }
@@ -136,7 +137,7 @@ func (s *PostgresStore) GetNotificationPreferences(ctx context.Context, userID s
 		WHERE user_id = $1::UUID
 	`, userID)
 	if err != nil {
-		return nil, fmt.Errorf("get notif prefs failed: %w", err)
+		return nil, apierror.Wrap(err, "STORE_NOTIF_001", "lấy cấu hình thông báo thất bại")
 	}
 	defer rows.Close()
 
@@ -158,7 +159,7 @@ func (s *PostgresStore) UpsertNotificationPreference(ctx context.Context, pref N
 		ON CONFLICT (user_id, category) DO UPDATE SET channels = EXCLUDED.channels, updated_at = now()
 	`, pref.UserID, pref.Category, pref.Channels)
 	if err != nil {
-		return fmt.Errorf("upsert notif pref failed: %w", err)
+		return apierror.Wrap(err, "STORE_NOTIF_002", "cập nhật cấu hình thông báo thất bại")
 	}
 	return nil
 }
@@ -185,7 +186,7 @@ func (s *PostgresStore) CreateNotificationDelivery(ctx context.Context, d Notifi
 		VALUES ($1::UUID, $2, $3, $4, $5, 'PENDING', COALESCE($6, '{}'))
 	`, d.UserID, d.Category, d.Title, d.Body, d.ChannelsAttempted, d.Metadata)
 	if err != nil {
-		return fmt.Errorf("create notification delivery failed: %w", err)
+		return apierror.Wrap(err, "STORE_NOTIF_003", "tạo bản ghi gửi thông báo thất bại")
 	}
 	return nil
 }
@@ -197,7 +198,7 @@ func (s *PostgresStore) MarkNotificationDelivered(ctx context.Context, id string
 		WHERE id = $1::UUID
 	`, id, channels)
 	if err != nil {
-		return fmt.Errorf("mark delivered failed: %w", err)
+		return apierror.Wrap(err, "STORE_NOTIF_004", "đánh dấu đã gửi thông báo thất bại")
 	}
 	return nil
 }
@@ -209,7 +210,7 @@ func (s *PostgresStore) MarkNotificationRead(ctx context.Context, id string) err
 		WHERE id = $1::UUID AND status != 'READ'
 	`, id)
 	if err != nil {
-		return fmt.Errorf("mark read failed: %w", err)
+		return apierror.Wrap(err, "STORE_NOTIF_005", "đánh dấu đã đọc thông báo thất bại")
 	}
 	return nil
 }
@@ -237,7 +238,7 @@ func (s *PostgresStore) CreateIntegrityAlert(ctx context.Context, alert Integrit
 		RETURNING id
 	`, alert.AlertType, alert.Severity, alert.TriggerSource, alert.TriggerData, alert.TournamentID).Scan(&id)
 	if err != nil {
-		return "", fmt.Errorf("create integrity alert failed: %w", err)
+		return "", apierror.Wrap(err, "STORE_ALERT_001", "tạo cảnh báo liêm chính thất bại")
 	}
 	return id, nil
 }
@@ -250,7 +251,7 @@ func (s *PostgresStore) UpdateIntegrityAlertStatus(ctx context.Context, id, stat
 		WHERE id = $1::UUID
 	`, id, status, assignedTo)
 	if err != nil {
-		return fmt.Errorf("update integrity alert failed: %w", err)
+		return apierror.Wrap(err, "STORE_ALERT_002", "cập nhật trạng thái cảnh báo liêm chính thất bại")
 	}
 	return nil
 }
@@ -270,7 +271,7 @@ func (s *PostgresStore) ListActiveIntegrityAlerts(ctx context.Context, tournamen
 		rows, err = s.pool.Query(ctx, query)
 	}
 	if err != nil {
-		return nil, fmt.Errorf("list integrity alerts failed: %w", err)
+		return nil, apierror.Wrap(err, "STORE_ALERT_003", "liệt kê cảnh báo liêm chính thất bại")
 	}
 	defer rows.Close()
 
@@ -311,7 +312,7 @@ func (s *PostgresStore) IssueDocument(ctx context.Context, input IssuedDocumentI
 	`, input.TemplateID, input.RecipientType, input.RecipientID,
 		input.DocumentData, input.DocumentNumber, input.VerificationCode, input.IssuedBy).Scan(&id)
 	if err != nil {
-		return "", fmt.Errorf("issue document failed: %w", err)
+		return "", apierror.Wrap(err, "STORE_DOC_001", "cấp phát tài liệu thất bại")
 	}
 	return id, nil
 }
@@ -330,7 +331,7 @@ func (s *PostgresStore) VerifyDocument(ctx context.Context, verificationCode str
 		return nil, nil
 	}
 	if err != nil {
-		return nil, fmt.Errorf("verify document failed: %w", err)
+		return nil, apierror.Wrap(err, "STORE_DOC_002", "xác minh tài liệu thất bại")
 	}
 
 	return map[string]any{
@@ -355,7 +356,7 @@ func (s *PostgresStore) RecordConfigChange(ctx context.Context, table string, co
 		VALUES ($1, $2::UUID, $3, $4, $5, $6, $7, $8::UUID, $9::UUID)
 	`, table, configID, changeType, prevValue, newValue, diff, reason, changedBy, tournamentID)
 	if err != nil {
-		return fmt.Errorf("record config change failed: %w", err)
+		return apierror.Wrap(err, "STORE_SYS_001", "ghi nhật ký thay đổi cấu hình thất bại")
 	}
 	return nil
 }

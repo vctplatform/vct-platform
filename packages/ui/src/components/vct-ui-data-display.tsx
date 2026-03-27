@@ -183,7 +183,7 @@ export const VCT_Badge = ({
         BADGE_CLASS[tone],
         className ?? ''
       )}
-      style={style}
+      {...{ style }}
     >
       {pulse ? <span className="h-1.5 w-1.5 rounded-full bg-current opacity-80" /> : null}
       {content}
@@ -206,20 +206,20 @@ export const VCT_KpiCard = ({
       'rounded-2xl border border-vct-border bg-vct-elevated p-4 shadow-(--vct-shadow-sm)',
       className ?? ''
     )}
-    style={style}
+    {...{ style }}
   >
     <div className="mb-2 flex items-center justify-between gap-2">
       <VCT_Text variant="small">{label}</VCT_Text>
       {icon ? (
         <span
           className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-vct-border"
-          style={{ color }}
+          {...{ style: { color } }}
         >
           {icon}
         </span>
       ) : null}
     </div>
-    <div className="text-[26px] font-black leading-none" style={{ color }}>
+    <div className="text-[26px] font-black leading-none" {...{ style: { color } }}>
       {value}
     </div>
     {sub ? <div className="mt-1 text-xs text-vct-text-muted">{sub}</div> : null}
@@ -241,7 +241,7 @@ export const VCT_Table = <T extends Record<string, any>>({
           {columns.map((column) => (
             <th
               key={column.key}
-              style={{ width: column.width }}
+              {...{ style: { width: column.width } }}
               className={cn(
                 'px-3 py-2.5 text-xs font-black uppercase tracking-[0.06em] text-vct-text-muted',
                 textAlignClass(column.align)
@@ -310,10 +310,12 @@ export const VCT_AvatarGroup = ({
           key={`${name}-${index}`}
           title={name}
           className="inline-flex items-center justify-center rounded-full border border-vct-border bg-vct-elevated text-xs font-black text-vct-text"
-          style={{
-            width: `${size}px`,
-            height: `${size}px`,
-            marginLeft: index === 0 ? 0 : `${Math.round(size * -0.25)}px`,
+          {...{
+            style: {
+              width: `${size}px`,
+              height: `${size}px`,
+              marginLeft: index === 0 ? 0 : `${Math.round(size * -0.25)}px`,
+            }
           }}
         >
           {name
@@ -327,10 +329,12 @@ export const VCT_AvatarGroup = ({
       {remain > 0 ? (
         <div
           className="inline-flex items-center justify-center rounded-full border border-vct-border bg-vct-input text-xs font-black text-vct-text-muted"
-          style={{
-            width: `${size}px`,
-            height: `${size}px`,
-            marginLeft: `${Math.round(size * -0.25)}px`,
+          {...{
+            style: {
+              width: `${size}px`,
+              height: `${size}px`,
+              marginLeft: `${Math.round(size * -0.25)}px`,
+            }
           }}
         >
           +{remain}
@@ -340,25 +344,6 @@ export const VCT_AvatarGroup = ({
   )
 }
 
-export const VCT_Skeleton = ({
-  width = '100%',
-  height = '20px',
-  radius,
-  borderRadius,
-  style,
-  className,
-}: VCTSkeletonProps) => (
-  <div
-    aria-hidden="true"
-    className={cn('animate-pulse bg-vct-input', className ?? '')}
-    style={{
-      width,
-      height,
-      borderRadius: radius ?? borderRadius ?? 8,
-      ...style,
-    }}
-  />
-)
 
 export const VCT_FilterChips = ({
   filters,
@@ -423,7 +408,7 @@ export const VCT_StatusPipeline = ({
         >
           <span
             className="h-2 w-2 rounded-full"
-            style={{ backgroundColor: stage.color ?? 'var(--vct-accent-cyan)' }}
+            {...{ style: { backgroundColor: stage.color ?? 'var(--vct-accent-cyan)' } }}
           />
           <span>{stage.label}</span>
           {typeof stage.count === 'number' ? (
@@ -494,17 +479,22 @@ export const VCT_ProgressBar = ({
       ) : null}
       <div
         className="w-full overflow-hidden rounded-full bg-vct-input"
-        style={{ height: `${height}px` }}
-        role="progressbar"
-        aria-valuemin={0}
-        aria-valuemax={max}
-        aria-valuenow={Math.round(value)}
+        {...{
+          style: { height: `${height}px` },
+          role: "progressbar",
+          "aria-valuemin": 0,
+          "aria-valuemax": max,
+          "aria-valuenow": Math.round(value)
+        }}
+        title={showLabel ? `${value}/${max}` : "Progress"}
       >
         <div
           className="h-full rounded-full transition-all duration-300"
-          style={{
-            width: `${percent}%`,
-            background: color,
+          {...{
+            style: {
+              width: `${percent}%`,
+              background: color,
+            }
           }}
         />
       </div>
@@ -540,7 +530,7 @@ export const VCT_Tabs = ({
             key={tabValue}
             type="button"
             role="tab"
-            aria-selected={active}
+            {...{ "aria-selected": active ? 'true' : 'false' }}
             onClick={() => onChange(tabValue)}
             className={cn(
               'inline-flex items-center gap-1.5 text-sm font-bold transition',
@@ -598,11 +588,13 @@ export const VCT_AvatarLetter = ({
         'inline-flex items-center justify-center rounded-full text-xs font-black text-white shadow-sm',
         className ?? ''
       )}
-      style={{
-        width: `${size}px`,
-        height: `${size}px`,
-        background,
-        ...style,
+      {...{
+        style: {
+          width: `${size}px`,
+          height: `${size}px`,
+          background,
+          ...style,
+        }
       }}
     >
       {initials}
@@ -614,7 +606,6 @@ export const VCTBadge = VCT_Badge as FC<VCTBadgeProps>
 export const VCTKpiCard = VCT_KpiCard as FC<VCTKpiCardProps>
 export const VCTTable = VCT_Table as FC<VCTTableProps>
 export const VCTAvatarGroup = VCT_AvatarGroup as FC<VCTAvatarGroupProps>
-export const VCTSkeleton = VCT_Skeleton as FC<VCTSkeletonProps>
 export const VCTFilterChips = VCT_FilterChips as FC<VCTFilterChipsProps>
 export const VCTStatusPipeline = VCT_StatusPipeline as FC<VCTStatusPipelineProps>
 export const VCTBulkActionsBar = VCT_BulkActionsBar as FC<VCTBulkActionsBarProps>

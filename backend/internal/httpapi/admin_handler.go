@@ -234,7 +234,17 @@ func (s *Server) handleAdminDashboardStats(w http.ResponseWriter, r *http.Reques
 			dbStatus = "online"
 		}
 		services = append(services, map[string]any{
-			"name": "PostgreSQL Database", "status": dbStatus, "latency": "—",
+			"name": "PostgreSQL Database (Master)", "status": dbStatus, "latency": "—",
+		})
+	}
+
+	replicaDbStatus := "offline"
+	if s.replicaDB != nil {
+		if err := s.replicaDB.PingContext(r.Context()); err == nil {
+			replicaDbStatus = "online"
+		}
+		services = append(services, map[string]any{
+			"name": "PostgreSQL Database (Replica)", "status": replicaDbStatus, "latency": "—",
 		})
 	}
 
@@ -309,6 +319,20 @@ func (s *Server) handleAdminHealth(w http.ResponseWriter, r *http.Request, p aut
 		}
 	}
 
+	replicaDbStatus := map[string]any{"status": "not_configured"}
+	if s.replicaDB != nil {
+		stats := s.replicaDB.Stats()
+		replicaDbStatus = map[string]any{
+			"status":           "connected",
+			"open_connections": stats.OpenConnections,
+			"in_use":           stats.InUse,
+			"idle":             stats.Idle,
+			"max_open":         stats.MaxOpenConnections,
+			"wait_count":       stats.WaitCount,
+			"wait_duration_ms": stats.WaitDuration.Milliseconds(),
+		}
+	}
+
 	cacheStats := map[string]any{}
 	if s.cachedStore != nil {
 		cacheStats = s.cachedStore.CacheStats()
@@ -327,8 +351,9 @@ func (s *Server) handleAdminHealth(w http.ResponseWriter, r *http.Request, p aut
 			"heap_inuse_mb":  memStats.HeapInuse / 1024 / 1024,
 			"stack_inuse_mb": memStats.StackInuse / 1024 / 1024,
 		},
-		"database": dbStatus,
-		"cache":    cacheStats,
+		"database_master":  dbStatus,
+		"database_replica": replicaDbStatus,
+		"cache":            cacheStats,
 		"realtime": map[string]any{
 			"connected_clients": s.realtimeHub.CountClients(),
 		},
@@ -380,12 +405,12 @@ func (s *Server) handleAdminFeatureFlags(w http.ResponseWriter, r *http.Request,
 		return
 	}
 
-	if s.sqlDB == nil {
+	if s.replicaDB == nil {
 		success(w, http.StatusOK, []map[string]any{})
 		return
 	}
 
-	rows, err := s.sqlDB.QueryContext(r.Context(),
+	rows, err := s.replicaDB.QueryContext(r.Context(),
 		`SELECT id, flag_key, COALESCE(description,''), 
 		        COALESCE(is_enabled, flag_value, false),
 		        COALESCE(rollout_pct, rollout_percent, 0),
@@ -475,11 +500,11 @@ func (s *Server) handleAdminUsers(w http.ResponseWriter, r *http.Request, p auth
 
 	switch r.Method {
 	case http.MethodGet:
-		if s.sqlDB == nil {
+		if s.replicaDB == nil {
 			success(w, http.StatusOK, []map[string]any{})
 			return
 		}
-		rows, err := s.sqlDB.QueryContext(r.Context(),
+		rows, err := s.replicaDB.QueryContext(r.Context(),
 			`SELECT id, username, COALESCE(full_name,''), role, is_active, created_at
 			 FROM core.users ORDER BY created_at DESC LIMIT 200`)
 		if err != nil {
@@ -541,14 +566,14 @@ func (s *Server) handleAdminUserDetail(w http.ResponseWriter, r *http.Request, p
 
 	switch r.Method {
 	case http.MethodGet:
-		if s.sqlDB == nil {
+		if s.replicaDB == nil {
 			apiError(w, http.StatusNotFound, CodeNotFound, "Không tìm thấy tài nguyên")
 			return
 		}
 		var id, username, fullName, role, email string
 		var active bool
 		var createdAt time.Time
-		err := s.sqlDB.QueryRowContext(r.Context(),
+		err := s.replicaDB.QueryRowContext(r.Context(),
 			`SELECT id, username, COALESCE(full_name,''), role, is_active, COALESCE(email,''), created_at
 			 FROM core.users WHERE id=$1`, userID).Scan(&id, &username, &fullName, &role, &active, &email, &createdAt)
 		if err != nil {

@@ -9,12 +9,13 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"encoding/json"
-	"fmt"
 	"log/slog"
 	"math"
 	"net/http"
 	"sync"
 	"time"
+
+	"vct-platform/backend/internal/apierror"
 )
 
 // ═══════════════════════════════════════════════════════════════
@@ -287,12 +288,12 @@ func (s *Service) deliver(ctx context.Context, task deliveryTask) {
 func (s *Service) send(sub Subscription, event Event) error {
 	payload, err := json.Marshal(event)
 	if err != nil {
-		return fmt.Errorf("marshal: %w", err)
+		return apierror.Wrap(err, "WEBHOOK_500_MARSHAL", "lỗi mã hóa dữ liệu webhook")
 	}
 
 	req, err := http.NewRequest("POST", sub.URL, bytes.NewReader(payload))
 	if err != nil {
-		return fmt.Errorf("request: %w", err)
+		return apierror.Wrap(err, "WEBHOOK_500_REQUEST", "lỗi tạo yêu cầu webhook")
 	}
 
 	req.Header.Set("Content-Type", "application/json")
@@ -308,14 +309,14 @@ func (s *Service) send(sub Subscription, event Event) error {
 
 	resp, err := s.client.Do(req)
 	if err != nil {
-		return fmt.Errorf("send: %w", err)
+		return apierror.Wrap(err, "WEBHOOK_500_SEND", "lỗi gửi yêu cầu webhook")
 	}
 	defer resp.Body.Close()
 
 	if resp.StatusCode >= 200 && resp.StatusCode < 300 {
 		return nil
 	}
-	return fmt.Errorf("HTTP %d", resp.StatusCode)
+	return apierror.Newf("WEBHOOK_ERR_RESPONSE", "phản hồi HTTP không hợp lệ: %d", resp.StatusCode)
 }
 
 func signPayload(payload []byte, secret string) string {

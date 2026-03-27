@@ -102,12 +102,14 @@ export function VCT_OfflineIndicator() {
                 >
                     <div
                         className="flex items-center gap-2 px-4 py-2 rounded-full"
-                        style={{
-                            background: isOnline ? 'var(--vct-success)' : 'var(--vct-danger)',
-                            color: 'var(--vct-bg-elevated)',
-                            boxShadow: '0 4px 20px rgba(0,0,0,0.3)',
-                            fontSize: 14,
-                            fontWeight: 600,
+                        {...{
+                            style: {
+                                background: isOnline ? 'var(--vct-success)' : 'var(--vct-danger)',
+                                color: 'var(--vct-bg-elevated)',
+                                boxShadow: '0 4px 20px rgba(0,0,0,0.3)',
+                                fontSize: 14,
+                                fontWeight: 600,
+                            }
                         }}
                     >
                         <span>{isOnline ? '🟢' : '🔴'}</span>

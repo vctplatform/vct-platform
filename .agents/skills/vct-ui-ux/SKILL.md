@@ -52,3 +52,19 @@ Monorepo, routing, state, API, i18n, testing → see `vct-frontend` SKILL / `doc
 | 6 | ✅ ALWAYS test both Light + Dark |
 | 7 | ✅ ALWAYS responsive 375/768/1024/1440 |
 | 8 | ✅ ALWAYS keyboard navigable + ARIA |
+
+---
+
+## Design System Federation (MFE)
+
+> **📖 MFE Reference**: [`vct-micro-frontend` SKILL](file:///d:/VCT%20PLATFORM/vct-platform/.agents/skills/vct-micro-frontend/SKILL.md) · [`micro-frontend-architecture.md`](file:///d:/VCT%20PLATFORM/vct-platform/docs/architecture/micro-frontend-architecture.md)
+
+`@vct/ui` là **federated design system** — shared across ALL 7 MFE domains:
+
+| Rule | Description |
+|------|-------------|
+| DSF-1 | `@vct/ui` components dùng cho **2+ domains** → PHẢI nằm trong `packages/ui/` |
+| DSF-2 | Component chỉ dùng trong **1 domain** → nằm trong `features/{domain}/components/` |
+| DSF-3 | Design tokens (`--vct-*`) là **shared contract** — thay đổi ảnh hưởng TẤT CẢ domains |
+| DSF-4 | Domain-local component PHẢI dùng `@vct/ui` primitives (VCT_Card, VCT_Button...) làm building blocks |
+| DSF-5 | Visual consistency check: mỗi domain PHẢI pass cùng Lighthouse Accessibility score ≥ 90 |

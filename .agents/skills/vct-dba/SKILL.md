@@ -29,6 +29,8 @@ You are the **DBA** of VCT Platform. You ensure the PostgreSQL database is fast,
 
 ## 2. Database Architecture
 
+> **OLTP vs OLAP Strict Separation**: The Master Database is strictly for OLTP (Real-time transactions). You must actively monitor for and block any long-running OLAP queries (Analytics, heavy `GROUP BY`s, month-end reports) from running on the Master node. Force developers to route analytical queries to a Read Replica or a dedicated Columnar Database.
+
 ### PostgreSQL Configuration
 ```env
 VCT_POSTGRES_URL=postgres://user:pass@host:5432/vctdb?sslmode=require
@@ -103,7 +105,9 @@ CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_athletes_club_id ON athletes(club_id
 
 ---
 
-## 4. Query Optimization
+## 4. Query Optimization & Indexing Supremacy
+
+> **Indexing Mandate**: Absolutely NO "blind indexing". Every index must be justified by an `EXPLAIN (ANALYZE)` plan. You must deliberately choose between B-Tree (exact/range), GIN (JSONB/Full-text), and BRIN (Time-series logs). Prevent index bloat to protect write speeds.
 
 ### EXPLAIN Workflow
 ```sql
@@ -184,7 +188,9 @@ AND state != 'idle';
 
 ---
 
-## 6. Data Integrity
+## 6. Data Integrity & ACID Supremacy
+
+> **ACID Mandate**: All multi-table mutations (e.g., Financial transactions, Scoring workflows, Registration approvals) MUST be wrapped in strict Database Transactions (`BEGIN`, `COMMIT`, `ROLLBACK`) with explicit Isolation Levels to prevent race conditions. Never rely on the application layer to enforce data consistency.
 
 ### Constraints Patterns
 ```sql
@@ -294,7 +300,9 @@ Every DBA output must include:
 
 ---
 
-## 11. Table Partitioning (Large Tables)
+## 11. Database Partitioning Supremacy
+
+> **Partitioning Mandate**: Any table projected to exceed 10 million rows or heavy gigabyte sizes (e.g., `audit_logs`, `score_entries`) MUST be designed with Declarative Partitioning (RANGE by date or HASH by Tenant) from Day 1 to prevent query/vacuum degradation.
 
 For tables expected to grow large (scoring events, audit logs):
 ```sql

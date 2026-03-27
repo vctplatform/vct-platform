@@ -9,7 +9,7 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { VCT_Text } from '..'
+import { VCT_Text } from './vct-ui-layout'
 
 /* ═══════════════════════════════════════════════════════════════
    TYPES
@@ -59,8 +59,8 @@ export function VCT_BarChart({ data, height = 200, showValues = true, title }: B
 
     return (
         <div>
-            {title && <VCT_Text variant="h3" style={{ marginBottom: 8 }}>{title}</VCT_Text>}
-            <div style={{ overflowX: 'auto' }}>
+            {title && <VCT_Text variant="h3" className="mb-2">{title}</VCT_Text>}
+            <div className="overflow-x-auto">
                 <svg width={svgWidth} height={height} viewBox={`0 0 ${svgWidth} ${height}`}>
                     {data.map((item, i) => {
                         const barH = (item.value / maxVal) * (chartH - 20)
@@ -123,16 +123,16 @@ export function VCT_HorizontalBarChart({ data, title }: HBarChartProps) {
 
     return (
         <div>
-            {title && <VCT_Text variant="h3" style={{ marginBottom: 8 }}>{title}</VCT_Text>}
+            {title && <VCT_Text variant="h3" className="mb-2">{title}</VCT_Text>}
             <div className="grid gap-2">
                 {data.map((item, i) => (
                     <div key={i} className="flex items-center gap-3">
-                        <div style={{ width: 80, textAlign: 'right', flexShrink: 0 }}>
-                            <VCT_Text variant="small" style={{ fontWeight: 600 }}>
+                        <div className="w-20 text-right shrink-0">
+                            <VCT_Text variant="small" className="font-semibold">
                                 {item.label}
                             </VCT_Text>
                         </div>
-                        <div className="flex-1 h-6 rounded-md overflow-hidden" style={{ background: 'var(--vct-bg-input)' }}>
+                        <div className="flex-1 h-6 rounded-md overflow-hidden bg-(--vct-bg-input)">
                             <motion.div
                                 className="h-full rounded-md flex items-center justify-end px-2"
                                 style={{ background: getColor(i, item.color) }}
@@ -140,7 +140,7 @@ export function VCT_HorizontalBarChart({ data, title }: HBarChartProps) {
                                 animate={{ width: `${(item.value / maxVal) * 100}%` }}
                                 transition={{ delay: i * 0.1, duration: 0.6, ease: 'easeOut' }}
                             >
-                                <span style={{ fontSize: 11, fontWeight: 700, color: '#fff' }}>
+                                <span className="text-[11px] font-bold text-white">
                                     {item.value}
                                 </span>
                             </motion.div>
@@ -170,9 +170,9 @@ export function VCT_DonutChart({ data, size = 180, title, centerLabel }: DonutCh
     let cumulativeOffset = 0
 
     return (
-        <div style={{ textAlign: 'center' }}>
-            {title && <VCT_Text variant="h3" style={{ marginBottom: 8 }}>{title}</VCT_Text>}
-            <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} style={{ margin: '0 auto' }}>
+        <div className="text-center">
+            {title && <VCT_Text variant="h3" className="mb-2">{title}</VCT_Text>}
+            <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} className="mx-auto">
                 {data.map((item, i) => {
                     const pct = total > 0 ? item.value / total : 0
                     const dashLen = pct * circumference
@@ -239,25 +239,21 @@ interface StatCardProps {
 export function VCT_StatCard({ label, value, icon, color = '#00bcd4', trend }: StatCardProps) {
     return (
         <motion.div
-            className="rounded-xl p-4"
-            style={{
-                background: 'var(--vct-bg-elevated)',
-                border: '1px solid var(--vct-border-subtle)',
-            }}
+            className="rounded-xl p-4 bg-(--vct-bg-elevated) border border-(--vct-border-subtle)"
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
         >
             <div className="flex items-center justify-between mb-1">
-                <VCT_Text variant="small" style={{ color: 'var(--vct-text-tertiary)' }}>{label}</VCT_Text>
-                {icon && <span style={{ fontSize: '1.25rem' }}>{icon}</span>}
+                <VCT_Text variant="small" className="text-(--vct-text-tertiary)">{label}</VCT_Text>
+                {icon && <span className="text-xl">{icon}</span>}
             </div>
-            <div style={{ fontSize: '1.75rem', fontWeight: 800, color, lineHeight: 1.2 }}>{value}</div>
+            <div className="text-3xl font-extrabold leading-tight" style={{ color }}>{value}</div>
             {trend && (
                 <div className="flex items-center gap-1 mt-1">
-                    <span style={{ color: trend.value >= 0 ? '#22c55e' : '#ef4444', fontSize: 12, fontWeight: 600 }}>
+                    <span className={`text-xs font-semibold ${trend.value >= 0 ? 'text-[#22c55e]' : 'text-[#ef4444]'}`}>
                         {trend.value >= 0 ? '↑' : '↓'} {Math.abs(trend.value)}%
                     </span>
-                    <VCT_Text variant="small" style={{ color: 'var(--vct-text-tertiary)' }}>{trend.label}</VCT_Text>
+                    <VCT_Text variant="small" className="text-(--vct-text-tertiary)">{trend.label}</VCT_Text>
                 </div>
             )}
         </motion.div>
@@ -282,11 +278,11 @@ export function VCT_ChartProgressBar({ value, max, label, color = '#00bcd4', sho
         <div>
             {(label || showPct) && (
                 <div className="flex items-center justify-between mb-1">
-                    {label && <VCT_Text variant="small" style={{ fontWeight: 600 }}>{label}</VCT_Text>}
-                    {showPct && <VCT_Text variant="small" style={{ color: 'var(--vct-text-tertiary)' }}>{pct}%</VCT_Text>}
+                    {label && <VCT_Text variant="small" className="font-semibold">{label}</VCT_Text>}
+                    {showPct && <VCT_Text variant="small" className="text-(--vct-text-tertiary)">{pct}%</VCT_Text>}
                 </div>
             )}
-            <div className="h-2 rounded-full overflow-hidden" style={{ background: 'var(--vct-bg-input)' }}>
+            <div className="h-2 rounded-full overflow-hidden bg-(--vct-bg-input)">
                 <motion.div
                     className="h-full rounded-full"
                     style={{ background: color }}

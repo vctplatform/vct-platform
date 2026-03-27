@@ -16,6 +16,7 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 	"golang.org/x/crypto/bcrypt"
 
+	"vct-platform/backend/internal/apierror"
 	"vct-platform/backend/internal/util"
 )
 
@@ -188,16 +189,23 @@ type AuditEntry struct {
 	Details   map[string]any `json:"details,omitempty"`
 }
 
+type CacheClient interface {
+	Get(ctx context.Context, key string) (string, error)
+	Set(ctx context.Context, key string, value any, ttl time.Duration) error
+	Delete(ctx context.Context, keys ...string) error
+	InvalidatePrefix(ctx context.Context, prefix string) error
+}
+
 type ServiceConfig struct {
 	Secret          string
 	Issuer          string
 	AccessTTL       time.Duration
 	RefreshTTL      time.Duration
 	AuditLimit      int
-	CleanupInterval time.Duration
 	AllowDemoUsers  bool
 	CredentialsJSON string
 	DB              *sql.DB // optional — enables persistent user storage in core.users
+	Cache           CacheClient
 }
 
 type userCredential struct {
@@ -248,27 +256,20 @@ type Service struct {
 	accessTTL         time.Duration
 	refreshTTL        time.Duration
 	auditLimit        int
-	cleanupInterval   time.Duration
-	lastCleanup       time.Time
 	credentials       map[string]userCredential
-	refreshSessions   map[string]*refreshSession
-	revokedAccessJTIs map[string]time.Time
 	audit             []AuditEntry
 	stopCh            chan struct{}
 	allowSelfRegister bool
 	roleBindings      *RoleBindingStore // Multi-role context support
 	otpStore          *OTPStore         // Pending OTP verifications
 	userStore         UserStore         // persistent user storage (nil = in-memory only)
+	cache             CacheClient
 }
 
 func NewService(config ServiceConfig) *Service {
 	auditLimit := config.AuditLimit
 	if auditLimit <= 0 {
 		auditLimit = 5000
-	}
-	cleanupInterval := config.CleanupInterval
-	if cleanupInterval <= 0 {
-		cleanupInterval = 5 * time.Minute
 	}
 
 	credentials, err := resolveCredentials(config.CredentialsJSON, config.AllowDemoUsers)
@@ -277,44 +278,24 @@ func NewService(config ServiceConfig) *Service {
 	}
 
 	svc := &Service{
-		secret:            []byte(strings.TrimSpace(config.Secret)),
-		issuer:            strings.TrimSpace(config.Issuer),
-		accessTTL:         config.AccessTTL,
-		refreshTTL:        config.RefreshTTL,
-		auditLimit:        auditLimit,
-		cleanupInterval:   cleanupInterval,
-		credentials:       credentials,
-		refreshSessions:   make(map[string]*refreshSession),
-		revokedAccessJTIs: make(map[string]time.Time),
-		audit:             make([]AuditEntry, 0, auditLimit),
-		stopCh:            make(chan struct{}),
-		roleBindings:      NewRoleBindingStore(),
-		otpStore:          NewOTPStore(),
+		secret:       []byte(strings.TrimSpace(config.Secret)),
+		issuer:       strings.TrimSpace(config.Issuer),
+		accessTTL:    config.AccessTTL,
+		refreshTTL:   config.RefreshTTL,
+		auditLimit:   auditLimit,
+		credentials:  credentials,
+		audit:        make([]AuditEntry, 0, auditLimit),
+		stopCh:       make(chan struct{}),
+		roleBindings: NewRoleBindingStore(),
+		otpStore:     NewOTPStore(config.Cache),
+		cache:        config.Cache,
 	}
 
-	// Wire PostgreSQL user store if DB connection is provided
 	if config.DB != nil {
 		svc.userStore = NewPgUserStore(config.DB)
 		slog.Info("PostgreSQL user store enabled", slog.String("table", "core.users"))
-		// Sync bootstrap/demo credentials to database
 		svc.syncCredentialsToDB(credentials)
 	}
-
-	// Background cleanup goroutine
-	go func() {
-		ticker := time.NewTicker(cleanupInterval)
-		defer ticker.Stop()
-		for {
-			select {
-			case <-svc.stopCh:
-				return
-			case now := <-ticker.C:
-				svc.mu.Lock()
-				svc.cleanupLocked(now.UTC())
-				svc.mu.Unlock()
-			}
-		}
-	}()
 
 	return svc
 }
@@ -340,10 +321,10 @@ func resolveCredentials(raw string, allowDemo bool) (map[string]userCredential, 
 
 	var seeds []credentialSeed
 	if err := json.Unmarshal([]byte(trimmed), &seeds); err != nil {
-		return nil, fmt.Errorf("parse VCT_BOOTSTRAP_USERS_JSON failed: %w", err)
+		return nil, apierror.Wrap(err, "AUTH_BOOTSTRAP_ERR", "lỗi phân tích VCT_BOOTSTRAP_USERS_JSON")
 	}
 	if len(seeds) == 0 {
-		return nil, fmt.Errorf("VCT_BOOTSTRAP_USERS_JSON must contain at least one credential")
+		return nil, apierror.New("AUTH_BOOTSTRAP_EMPTY", "VCT_BOOTSTRAP_USERS_JSON phải chứa ít nhất một tài khoản")
 	}
 
 	allowedRoles := map[UserRole]struct{}{
@@ -382,10 +363,10 @@ func resolveCredentials(raw string, allowDemo bool) (map[string]userCredential, 
 		password := strings.TrimSpace(seed.Password)
 		displayName := strings.TrimSpace(seed.DisplayName)
 		if username == "" || password == "" || displayName == "" {
-			return nil, fmt.Errorf("credential must include username/password/displayName")
+			return nil, apierror.New("AUTH_BOOTSTRAP_INVALID", "tài khoản phải bao gồm username/password/displayName")
 		}
 		if len(seed.Roles) == 0 {
-			return nil, fmt.Errorf("credential %q must include at least one role", username)
+			return nil, apierror.Newf("AUTH_BOOTSTRAP_ROLES", "tài khoản %q phải có ít nhất một vai trò", username)
 		}
 
 		roles := make([]UserRole, 0, len(seed.Roles))
@@ -404,7 +385,7 @@ func resolveCredentials(raw string, allowDemo bool) (map[string]userCredential, 
 		// Hash password with bcrypt
 		hash, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 		if err != nil {
-			return nil, fmt.Errorf("failed to hash password for %q: %w", username, err)
+			return nil, apierror.Wrap(err, "AUTH_BOOTSTRAP_HASH", "lỗi mã hóa mật khẩu cho tài khoản")
 		}
 
 		credentials[username] = userCredential{
@@ -608,7 +589,6 @@ func (s *Service) Login(input LoginRequest, requestCtx RequestContext) (LoginRes
 
 	s.mu.Lock()
 	defer s.mu.Unlock()
-	s.cleanupLocked(now)
 
 	sessionID := randomID(16)
 	refreshJTI := randomID(20)
@@ -617,7 +597,7 @@ func (s *Service) Login(input LoginRequest, requestCtx RequestContext) (LoginRes
 		return LoginResult{}, err
 	}
 
-	s.refreshSessions[sessionID] = &refreshSession{
+	sess := &refreshSession{
 		ID:                sessionID,
 		User:              user,
 		TournamentCode:    tournamentCode,
@@ -629,6 +609,7 @@ func (s *Service) Login(input LoginRequest, requestCtx RequestContext) (LoginRes
 		LastSeenIP:        requestCtx.IP,
 		LastSeenUA:        requestCtx.UserAgent,
 	}
+	s.saveSession(context.Background(), sess)
 
 	s.addAuditLocked("auth.login", true, requestCtx, user, map[string]any{
 		"sessionId":      sessionID,
@@ -672,20 +653,20 @@ func (s *Service) AuthenticateAccessToken(token string, requestCtx RequestContex
 	now := time.Now().UTC()
 	s.mu.Lock()
 	defer s.mu.Unlock()
-	s.cleanupLocked(now)
 
-	if revokedUntil, revoked := s.revokedAccessJTIs[claims.ID]; revoked && revokedUntil.After(now) {
+	if s.isAccessTokenRevoked(context.Background(), claims.ID) {
 		return Principal{}, wrapError(ErrUnauthorized, "token truy cập đã bị thu hồi")
 	}
 
-	session, ok := s.refreshSessions[claims.SessionID]
-	if !ok || session.RevokedAt != nil || session.ExpiresAt.Before(now) {
+	session, err := s.getSession(context.Background(), claims.UserID, claims.SessionID)
+	if err != nil || session == nil || session.RevokedAt != nil || session.ExpiresAt.Before(now) {
 		return Principal{}, wrapError(ErrUnauthorized, "phiên truy cập không hợp lệ")
 	}
 
 	session.LastSeenAt = now
 	session.LastSeenIP = requestCtx.IP
 	session.LastSeenUA = requestCtx.UserAgent
+	s.saveSession(context.Background(), session)
 
 	principal := Principal{
 		User: AuthUser{
@@ -718,10 +699,9 @@ func (s *Service) Refresh(input RefreshRequest, requestCtx RequestContext) (Logi
 	now := time.Now().UTC()
 	s.mu.Lock()
 	defer s.mu.Unlock()
-	s.cleanupLocked(now)
 
-	session, ok := s.refreshSessions[claims.SessionID]
-	if !ok {
+	session, err := s.getSession(context.Background(), claims.UserID, claims.SessionID)
+	if err != nil || session == nil {
 		return LoginResult{}, wrapError(ErrUnauthorized, "phiên refresh không tồn tại")
 	}
 
@@ -729,12 +709,12 @@ func (s *Service) Refresh(input RefreshRequest, requestCtx RequestContext) (Logi
 		return LoginResult{}, wrapError(ErrUnauthorized, "phiên refresh đã bị thu hồi")
 	}
 	if session.ExpiresAt.Before(now) {
-		s.revokeSessionLocked(session, "refresh_expired", now)
+		s.revokeSessionLocked(context.Background(), session, "refresh_expired", now)
 		return LoginResult{}, wrapError(ErrUnauthorized, "refresh token đã hết hạn")
 	}
 
 	if session.CurrentRefreshJTI != claims.ID {
-		s.revokeSessionLocked(session, "refresh_reuse_detected", now)
+		s.revokeSessionLocked(context.Background(), session, "refresh_reuse_detected", now)
 		s.addAuditLocked("auth.refresh", false, requestCtx, session.User, map[string]any{
 			"sessionId": session.ID,
 			"reason":    "token_reuse_detected",
@@ -760,6 +740,7 @@ func (s *Service) Refresh(input RefreshRequest, requestCtx RequestContext) (Logi
 	session.LastSeenIP = requestCtx.IP
 	session.LastSeenUA = requestCtx.UserAgent
 	session.ExpiresAt = response.RefreshExpiresAt
+	s.saveSession(context.Background(), session)
 
 	s.addAuditLocked("auth.refresh", true, requestCtx, session.User, map[string]any{
 		"sessionId": session.ID,
@@ -782,11 +763,10 @@ func (s *Service) Logout(principal Principal, requestCtx RequestContext) {
 	now := time.Now().UTC()
 	s.mu.Lock()
 	defer s.mu.Unlock()
-	s.cleanupLocked(now)
 
-	s.revokeAccessTokenLocked(principal.TokenID, principal.TokenExpiresAt)
-	if session, ok := s.refreshSessions[principal.SessionID]; ok {
-		s.revokeSessionLocked(session, "logout", now)
+	s.revokeAccessTokenLocked(context.Background(), principal.TokenID, principal.TokenExpiresAt)
+	if session, err := s.getSession(context.Background(), principal.User.ID, principal.SessionID); err == nil && session != nil {
+		s.revokeSessionLocked(context.Background(), session, "logout", now)
 	}
 	s.addAuditLocked("auth.logout", true, requestCtx, principal.User, map[string]any{
 		"sessionId": principal.SessionID,
@@ -797,7 +777,6 @@ func (s *Service) Revoke(principal Principal, input RevokeRequest, requestCtx Re
 	now := time.Now().UTC()
 	s.mu.Lock()
 	defer s.mu.Unlock()
-	s.cleanupLocked(now)
 
 	reason := strings.TrimSpace(input.Reason)
 	if reason == "" {
@@ -806,14 +785,9 @@ func (s *Service) Revoke(principal Principal, input RevokeRequest, requestCtx Re
 
 	revokedCount := 0
 	if input.RevokeAll {
-		for _, session := range s.refreshSessions {
-			if session.User.ID != principal.User.ID {
-				continue
-			}
-			if session.RevokedAt == nil {
-				s.revokeSessionLocked(session, reason, now)
-				revokedCount++
-			}
+		if s.cache != nil {
+			s.cache.InvalidatePrefix(context.Background(), sessionKeyPrefix+principal.User.ID+":")
+			revokedCount++
 		}
 		s.addAuditLocked("auth.revoke_all", true, requestCtx, principal.User, map[string]any{"revokedCount": revokedCount})
 		return revokedCount, nil
@@ -822,17 +796,17 @@ func (s *Service) Revoke(principal Principal, input RevokeRequest, requestCtx Re
 	if token := strings.TrimSpace(input.AccessToken); token != "" {
 		claims, err := s.parseToken(token, tokenUseAccess)
 		if err == nil && claims.UserID == principal.User.ID {
-			s.revokeAccessTokenLocked(claims.ID, claims.ExpiresAt.Time)
+			s.revokeAccessTokenLocked(context.Background(), claims.ID, claims.ExpiresAt.Time)
 			revokedCount++
 		}
 	}
 
 	if refreshToken := strings.TrimSpace(input.RefreshToken); refreshToken != "" {
 		claims, err := s.parseToken(refreshToken, tokenUseRefresh)
-		if err == nil {
-			if session, ok := s.refreshSessions[claims.SessionID]; ok && session.User.ID == principal.User.ID {
+		if err == nil && claims.UserID == principal.User.ID {
+			if session, err := s.getSession(context.Background(), principal.User.ID, claims.SessionID); err == nil && session != nil {
 				if session.RevokedAt == nil {
-					s.revokeSessionLocked(session, reason, now)
+					s.revokeSessionLocked(context.Background(), session, reason, now)
 					revokedCount++
 				}
 			}
@@ -840,13 +814,13 @@ func (s *Service) Revoke(principal Principal, input RevokeRequest, requestCtx Re
 	}
 
 	if revokedCount == 0 {
-		if session, ok := s.refreshSessions[principal.SessionID]; ok {
+		if session, err := s.getSession(context.Background(), principal.User.ID, principal.SessionID); err == nil && session != nil {
 			if session.RevokedAt == nil {
-				s.revokeSessionLocked(session, reason, now)
+				s.revokeSessionLocked(context.Background(), session, reason, now)
 				revokedCount++
 			}
 		}
-		s.revokeAccessTokenLocked(principal.TokenID, principal.TokenExpiresAt)
+		s.revokeAccessTokenLocked(context.Background(), principal.TokenID, principal.TokenExpiresAt)
 		revokedCount++
 	}
 
@@ -871,10 +845,8 @@ func (s *Service) Me(principal Principal) LoginResult {
 	result.Permissions = perms
 	result.Workspaces = ws
 
-	s.mu.RLock()
-	session, ok := s.refreshSessions[principal.SessionID]
-	s.mu.RUnlock()
-	if ok {
+	session, err := s.getSession(context.Background(), principal.User.ID, principal.SessionID)
+	if err == nil && session != nil {
 		result.TokenResponse.RefreshExpiresAt = session.ExpiresAt
 		if session.ExpiresAt.Before(now) {
 			result.TokenResponse.RefreshExpiresAt = now
@@ -1014,37 +986,68 @@ func (s *Service) parseToken(rawToken string, expectedUse string) (tokenClaims, 
 	return *claims, nil
 }
 
-func (s *Service) revokeSessionLocked(session *refreshSession, reason string, now time.Time) {
+const (
+	sessionKeyPrefix    = "auth:session:"
+	revokedJTIKeyPrefix = "auth:revoked_jti:"
+)
+
+func sessionKey(userID, sessionID string) string { return sessionKeyPrefix + userID + ":" + sessionID }
+
+func (s *Service) saveSession(ctx context.Context, session *refreshSession) error {
+	if s.cache == nil {
+		return nil
+	}
+	data, err := json.Marshal(session)
+	if err != nil {
+		return err
+	}
+	ttl := time.Until(session.ExpiresAt)
+	if ttl <= 0 {
+		return nil
+	}
+	return s.cache.Set(ctx, sessionKey(session.User.ID, session.ID), string(data), ttl)
+}
+
+func (s *Service) getSession(ctx context.Context, userID, sessionID string) (*refreshSession, error) {
+	if s.cache == nil {
+		return nil, errors.New("cache not configured")
+	}
+	data, err := s.cache.Get(ctx, sessionKey(userID, sessionID))
+	if err != nil {
+		return nil, err
+	}
+	var sess refreshSession
+	if err := json.Unmarshal([]byte(data), &sess); err != nil {
+		return nil, err
+	}
+	return &sess, nil
+}
+
+func (s *Service) revokeSessionLocked(ctx context.Context, session *refreshSession, reason string, now time.Time) {
 	if session.RevokedAt != nil {
 		return
 	}
 	session.RevokedAt = &now
 	session.RevokeReason = reason
+	s.saveSession(ctx, session)
 }
 
-func (s *Service) revokeAccessTokenLocked(jti string, expiresAt time.Time) {
-	if strings.TrimSpace(jti) == "" {
+func (s *Service) revokeAccessTokenLocked(ctx context.Context, jti string, expiresAt time.Time) {
+	if strings.TrimSpace(jti) == "" || s.cache == nil {
 		return
 	}
-	s.revokedAccessJTIs[jti] = expiresAt
+	ttl := time.Until(expiresAt)
+	if ttl > 0 {
+		s.cache.Set(ctx, revokedJTIKeyPrefix+jti, "1", ttl)
+	}
 }
 
-func (s *Service) cleanupLocked(now time.Time) {
-	if !s.lastCleanup.IsZero() && now.Sub(s.lastCleanup) < s.cleanupInterval {
-		return
+func (s *Service) isAccessTokenRevoked(ctx context.Context, jti string) bool {
+	if s.cache == nil {
+		return false
 	}
-	s.lastCleanup = now
-
-	for sessionID, session := range s.refreshSessions {
-		if session.ExpiresAt.Before(now.Add(-1 * time.Hour)) {
-			delete(s.refreshSessions, sessionID)
-		}
-	}
-	for jti, expire := range s.revokedAccessJTIs {
-		if expire.Before(now) {
-			delete(s.revokedAccessJTIs, jti)
-		}
-	}
+	_, err := s.cache.Get(ctx, revokedJTIKeyPrefix+jti)
+	return err == nil
 }
 
 func (s *Service) addAuditLocked(action string, success bool, requestCtx RequestContext, user AuthUser, details map[string]any) {
@@ -1104,13 +1107,12 @@ func randomID(size int) string {
 }
 
 func wrapError(base error, message string) error {
-	return fmt.Errorf("%w: %s", base, message)
+	return apierror.Wrap(base, "AUTH_ERR", message)
 }
 
 // wrapCodedError wraps an error with both a code and a human-readable message.
-// Format: "base: [CODE] message" — the code can be extracted by helpers.
 func wrapCodedError(base error, code string, message string) error {
-	return fmt.Errorf("%w: [%s] %s", base, code, message)
+	return apierror.Wrap(base, code, message)
 }
 
 // Register creates a new user credential with bcrypt-hashed password and UUID v7 ID.
@@ -1224,7 +1226,7 @@ func (s *Service) Register(input RegisterRequest, requestCtx RequestContext) (Lo
 		return LoginResult{}, issueErr
 	}
 
-	s.refreshSessions[sessionID] = &refreshSession{
+	sess := &refreshSession{
 		ID:                sessionID,
 		User:              user,
 		TournamentCode:    "VCT-2026",
@@ -1236,6 +1238,7 @@ func (s *Service) Register(input RegisterRequest, requestCtx RequestContext) (Lo
 		LastSeenIP:        requestCtx.IP,
 		LastSeenUA:        requestCtx.UserAgent,
 	}
+	s.saveSession(context.Background(), sess)
 
 	s.addAuditLocked("auth.register", true, requestCtx, user, map[string]any{"sessionId": sessionID})
 

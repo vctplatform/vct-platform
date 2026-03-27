@@ -1,0 +1,12 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - vct-configmap.yaml
+  - vct-secret.yaml
+  - vct-api-deployment.yaml
+  - vct-api-service.yaml
+  - vct-worker-deployment.yaml
+  - ingress.yaml
+  - vct-api-hpa.yaml
+  - vct-worker-hpa.yaml

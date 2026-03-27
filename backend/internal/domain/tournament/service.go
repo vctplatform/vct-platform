@@ -10,12 +10,19 @@ import (
 // ════════════════════════════════════════════════════════════════
 
 // Service contains the business logic for tournament operations.
+// ISP Enforcement: Service strictly depends only on Core and Event traits.
 type Service struct {
-	repo Repository
+	repo interface {
+		TournamentCoreRepository
+		EventSourcingRepository
+	}
 }
 
-// NewService creates a new tournament service with the given repository.
-func NewService(repo Repository) *Service {
+// NewService creates a new tournament service enforcing domain sub-capabilities.
+func NewService(repo interface {
+	TournamentCoreRepository
+	EventSourcingRepository
+}) *Service {
 	return &Service{repo: repo}
 }
 

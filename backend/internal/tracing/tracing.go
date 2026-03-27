@@ -13,6 +13,8 @@ import (
 	"strings"
 	"sync"
 	"time"
+
+	"vct-platform/backend/internal/apierror"
 )
 
 // ═══════════════════════════════════════════════════════════════
@@ -300,7 +302,7 @@ func newSpanID() SpanID {
 func parseTraceID(s string) (TraceID, error) {
 	b, err := hex.DecodeString(s)
 	if err != nil || len(b) != 16 {
-		return TraceID{}, fmt.Errorf("invalid trace ID: %s", s)
+		return TraceID{}, apierror.Newf("TRACE_INVALID_ID", "trace ID không hợp lệ: %s", s)
 	}
 	var id TraceID
 	copy(id[:], b)
@@ -310,7 +312,7 @@ func parseTraceID(s string) (TraceID, error) {
 func parseSpanID(s string) (SpanID, error) {
 	b, err := hex.DecodeString(s)
 	if err != nil || len(b) != 8 {
-		return SpanID{}, fmt.Errorf("invalid span ID: %s", s)
+		return SpanID{}, apierror.Newf("SPAN_INVALID_ID", "span ID không hợp lệ: %s", s)
 	}
 	var id SpanID
 	copy(id[:], b)

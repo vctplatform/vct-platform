@@ -4,11 +4,12 @@ import (
 	"net/http"
 	"time"
 
+	"vct-platform/backend/internal/auth"
 	"vct-platform/backend/internal/domain/activity"
 )
 
 // handlePortalActivities handles GET /api/v1/portal/activities
-func (s *Server) handlePortalActivities(w http.ResponseWriter, r *http.Request) {
+func (s *Server) handlePortalActivities(w http.ResponseWriter, r *http.Request, principal auth.Principal) {
 	// 1. Authenticate user
 	_, err := s.principalFromRequest(r)
 	if err != nil && !s.cfg.DisableAuthForData {
@@ -34,7 +35,7 @@ func (s *Server) handlePortalActivities(w http.ResponseWriter, r *http.Request) 
 			ID:          newUUID(),
 			Title:       "Truy cập gần đây",
 			Description: "Bạn vừa đăng nhập cách đây 1 giờ trên trình duyệt mới.",
-			Timestamp:   time.Now().Add(-1 * time.Hour - 5*time.Minute),
+			Timestamp:   time.Now().Add(-1*time.Hour - 5*time.Minute),
 			Type:        "update",
 		},
 		{

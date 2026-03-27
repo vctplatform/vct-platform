@@ -1,11 +1,11 @@
 ---
 name: vct-message-queue
-description: Asynchronous messaging for VCT Platform using NATS — pub/sub patterns, event streaming, background workers, and notification delivery.
+description: Asynchronous messaging for VCT Platform using Polyglot Brokers (NATS, Kafka, RabbitMQ) — pub/sub patterns, event streaming, task routing, background workers, and notification delivery.
 ---
 
-# VCT Platform Message Queue (NATS)
+# VCT Platform Message Queue (Polyglot Brokering)
 
-> **When to activate**: Implementing async event processing, background jobs, notification delivery, inter-service communication, or decoupling heavy operations.
+> **When to activate**: Implementing async event processing, background jobs, complex task routing, event sourcing, or evaluating between Kafka, RabbitMQ, and NATS.
 >
 > ⚠️ **Status**: Adapter stub exists at `backend/internal/adapter/nats/` — implementation pending. Currently using in-process `events.InMemoryBus`.
 

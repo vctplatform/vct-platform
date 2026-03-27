@@ -1,6 +1,8 @@
 package main
 
 import (
+	"context"
+	"database/sql"
 	"encoding/json"
 	"log/slog"
 	"os"
@@ -9,6 +11,8 @@ import (
 	"syscall"
 	"time"
 
+	_ "github.com/jackc/pgx/v5/stdlib"
+	natsadapter "vct-platform/backend/internal/adapter/nats"
 	"vct-platform/backend/internal/worker"
 )
 
@@ -48,12 +52,52 @@ func main() {
 		}
 	}
 
+	// Initialize NATS if configured
+	if natsURL := os.Getenv("VCT_NATS_URL"); natsURL != "" {
+		natsClient, err := natsadapter.NewClient(context.Background(), natsURL, slog.Default())
+		if err != nil {
+			slog.Error("failed to connect to NATS", "error", err)
+			os.Exit(1)
+		}
+		defer natsClient.Close()
+		config.NatsJS = natsClient.JetStream()
+		slog.Info("NATS JetStream enabled for background workers", slog.String("url", natsURL))
+	} else {
+		slog.Warn("VCT_NATS_URL not set, falling back to local memory queue")
+	}
+
 	cfgJSON, _ := json.Marshal(config)
 	slog.Info("worker config", slog.String("config", string(cfgJSON)))
 
+	// Connect to Database (OLAP Read-Replica preferred)
+	dbURL := os.Getenv("VCT_POSTGRES_REPLICA_URL")
+	mode := "read-replica (OLAP)"
+	if dbURL == "" {
+		slog.Warn("VCT_POSTGRES_REPLICA_URL not found, falling back to master DB (OLTP). Analytical tasks may impact performance.")
+		dbURL = os.Getenv("VCT_POSTGRES_URL")
+		mode = "master (OLTP)"
+	}
+
+	var db *sql.DB
+	if dbURL != "" {
+		var err error
+		db, err = sql.Open("pgx", dbURL)
+		if err != nil {
+			slog.Error("failed to open database connection", "error", err)
+			os.Exit(1)
+		}
+		if err = db.PingContext(context.Background()); err != nil {
+			slog.Error("failed to ping database", "error", err)
+			os.Exit(1)
+		}
+		slog.Info("database connected for async processing", slog.String("mode", mode))
+	} else {
+		slog.Warn("no database URL provided, handlers will run with nil DB")
+	}
+
 	// Create dispatcher and register all task handlers
 	dispatcher := worker.NewDispatcher(config)
-	worker.RegisterAll(dispatcher)
+	worker.RegisterCoreHandlers(dispatcher, db)
 
 	// Start the worker pool
 	dispatcher.Start()
@@ -81,5 +125,8 @@ func main() {
 	slog.Info("received shutdown signal", slog.String("signal", sig.String()))
 
 	dispatcher.Stop()
+	if db != nil {
+		_ = db.Close()
+	}
 	slog.Info("worker shutdown complete")
 }

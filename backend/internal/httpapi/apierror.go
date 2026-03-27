@@ -16,9 +16,12 @@ package httpapi
 // ═══════════════════════════════════════════════════════════════
 
 import (
+	"errors"
 	"log/slog"
 	"net/http"
 	"strings"
+
+	"vct-platform/backend/internal/apierror"
 )
 
 // APIError is the standard error envelope returned by all endpoints.
@@ -83,12 +86,27 @@ func apiValidationDetail(w http.ResponseWriter, message string, detail any) {
 
 // apiBadRequest writes a 400 for malformed requests.
 func apiBadRequest(w http.ResponseWriter, err error) {
+	var apiErr *apierror.Error
+	if errors.As(err, &apiErr) {
+		writeError(w, err)
+		return
+	}
 	apiError(w, http.StatusBadRequest, CodeBadRequest, err.Error())
 }
 
 // apiInternal writes a 500 and logs the error securely without exposing internals.
 func apiInternal(w http.ResponseWriter, err error) {
 	slog.Error("internal server error", "error", err)
+
+	var apiErr *apierror.Error
+	if errors.As(err, &apiErr) {
+		// If it has a code but was called as internal, we still use the structured info
+		// but consider if we should overwrite status to 500 if not already handled.
+		// For now, writeError handles mapping.
+		writeError(w, err)
+		return
+	}
+
 	apiError(w, http.StatusInternalServerError, CodeInternal, "Lỗi hệ thống nội bộ, vui lòng thử lại sau")
 }
 

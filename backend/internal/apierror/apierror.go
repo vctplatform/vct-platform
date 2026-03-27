@@ -1,79 +1,93 @@
-// Package apierror provides typed, sentinel error values for the VCT
-// Platform backend. All domain/store errors should use these constants
-// so that HTTP handlers can map them to the correct envelope error codes
-// and HTTP status codes consistently.
+// Package apierror provides typed, structured errors for the VCT Platform.
+// All errors follow GR-12, containing a machine-readable Code and a
+// human-readable Vietnamese Message.
 package apierror
 
-import "errors"
+import (
+	"errors"
+	"fmt"
+)
+
+// Error represents a structured, machine-readable error.
+type Error struct {
+	Code    string // Unique identifier (e.g., AUTH_001)
+	Message string // Human-readable Vietnamese message
+	Err     error  // Wrapped internal error (not exposed to client)
+}
+
+func (e *Error) Error() string {
+	if e.Err != nil {
+		return fmt.Sprintf("%s: %s (%v)", e.Code, e.Message, e.Err)
+	}
+	return fmt.Sprintf("%s: %s", e.Code, e.Message)
+}
+
+func (e *Error) Unwrap() error {
+	return e.Err
+}
+
+// Is implements error comparison based on the Code.
+// This allows errors.Is(err, apierror.ErrNotFound) to work even if wrapped.
+func (e *Error) Is(target error) bool {
+	t, ok := target.(*Error)
+	if !ok {
+		return false
+	}
+	return e.Code == t.Code
+}
+
+// ── Helpers ──────────────────────────────────────────────────
+
+// New creates a new structured error.
+func New(code, message string) *Error {
+	return &Error{Code: code, Message: message}
+}
+
+// Newf creates a formatted structured error.
+func Newf(code, format string, args ...any) *Error {
+	return &Error{Code: code, Message: fmt.Sprintf(format, args...)}
+}
+
+// Wrap wraps an existing error with a code and context.
+func Wrap(err error, code, message string) *Error {
+	return &Error{Code: code, Message: message, Err: err}
+}
 
 // ═══════════════════════════════════════════════════════════════
-// Sentinel Errors — Data Store
+// Sentinel Errors — Data Store (Codes prefix: STORE_)
 // ═══════════════════════════════════════════════════════════════
 
-// ErrNotFound is returned when a record does not exist.
-var ErrNotFound = errors.New("record not found")
-
-// ErrEntityNotFound is returned when the entity type bucket does not exist.
-var ErrEntityNotFound = errors.New("entity not found")
-
-// ErrMissingID is returned when a required "id" field is missing.
-var ErrMissingID = errors.New("missing required field: id")
-
-// ErrInvalidID is returned when the "id" field is empty or not a string.
-var ErrInvalidID = errors.New("invalid id: must be a non-empty string")
-
-// ErrDuplicateID is returned when trying to create a record with an existing ID.
-var ErrDuplicateID = errors.New("duplicate id: already exists")
+var ErrNotFound = New("STORE_404", "không tìm thấy dữ liệu")
+var ErrEntityNotFound = New("STORE_404_ENTITY", "không tìm thấy loại thực thể")
+var ErrMissingID = New("STORE_400_MISSING_ID", "thiếu mã định danh (id)")
+var ErrInvalidID = New("STORE_400_INVALID_ID", "mã định danh không hợp lệ")
+var ErrDuplicateID = New("STORE_409_DUPLICATE", "mã định danh đã tồn tại")
 
 // ═══════════════════════════════════════════════════════════════
-// Sentinel Errors — Authentication & Authorization
+// Sentinel Errors — Auth (Codes prefix: AUTH_)
 // ═══════════════════════════════════════════════════════════════
 
-// ErrUnauthorized is returned when authentication is required but missing/invalid.
-var ErrUnauthorized = errors.New("authentication required")
-
-// ErrForbidden is returned when the user lacks permission.
-var ErrForbidden = errors.New("permission denied")
-
-// ErrTokenExpired is returned when a JWT has expired.
-var ErrTokenExpired = errors.New("token expired")
-
-// ErrTokenInvalid is returned when a JWT is malformed or has invalid claims.
-var ErrTokenInvalid = errors.New("token invalid")
+var ErrUnauthorized = New("AUTH_401", "yêu cầu xác thực")
+var ErrForbidden = New("AUTH_403", "không có quyền truy cập")
+var ErrTokenExpired = New("AUTH_401_EXPIRED", "phiên đăng nhập đã hết hạn")
+var ErrTokenInvalid = New("AUTH_401_INVALID", "phiên đăng nhập không hợp lệ")
 
 // ═══════════════════════════════════════════════════════════════
-// Sentinel Errors — Validation
+// Sentinel Errors — Validation (Codes prefix: VAL_)
 // ═══════════════════════════════════════════════════════════════
 
-// ErrValidation is returned when input fails validation.
-var ErrValidation = errors.New("validation failed")
-
-// ErrInvalidInput is returned for malformed request bodies.
-var ErrInvalidInput = errors.New("invalid input")
+var ErrValidation = New("VAL_400", "dữ liệu không hợp lệ")
+var ErrInvalidInput = New("VAL_400_INPUT", "dữ liệu đầu vào không đúng định dạng")
 
 // ═══════════════════════════════════════════════════════════════
-// Sentinel Errors — Business Logic
+// Sentinel Errors — Business Logic (Codes prefix: BIZ_)
 // ═══════════════════════════════════════════════════════════════
 
-// ErrConflict is returned for state conflicts (e.g., duplicate registration).
-var ErrConflict = errors.New("resource conflict")
-
-// ErrStateTransition is returned when a state machine rejects a transition.
-var ErrStateTransition = errors.New("invalid state transition")
-
-// ErrQuotaExceeded is returned when a quota or rate limit is hit.
-var ErrQuotaExceeded = errors.New("quota exceeded")
-
-// ═══════════════════════════════════════════════════════════════
-// Error Helpers
-// ═══════════════════════════════════════════════════════════════
+var ErrConflict = New("BIZ_409", "xung đột dữ liệu")
+var ErrStateTransition = New("BIZ_400_STATE", "trạng thái chuyển đổi không hợp lệ")
+var ErrQuotaExceeded = New("BIZ_429_QUOTA", "vượt quá hạn mức cho phép")
 
 // Is checks whether err matches target using errors.Is.
 func Is(err, target error) bool {
 	return errors.Is(err, target)
-}
-
-// Wrap wraps an error with additional context.
-func Wrap(err error, msg string) error {
-	return errors.Join(err, errors.New(msg))
 }

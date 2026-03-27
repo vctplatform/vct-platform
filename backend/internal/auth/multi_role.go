@@ -1,6 +1,7 @@
 package auth
 
 import (
+	"context"
 	"fmt"
 	"sort"
 	"strings"
@@ -273,7 +274,7 @@ func (svc *Service) SwitchContext(principal Principal, req SwitchContextRequest,
 	}
 
 	// Update session
-	svc.refreshSessions[sessionID] = &refreshSession{
+	sess := &refreshSession{
 		ID:                sessionID,
 		User:              switchedUser,
 		TournamentCode:    principal.TournamentCode,
@@ -285,6 +286,7 @@ func (svc *Service) SwitchContext(principal Principal, req SwitchContextRequest,
 		LastSeenIP:        requestCtx.IP,
 		LastSeenUA:        requestCtx.UserAgent,
 	}
+	svc.saveSession(context.Background(), sess)
 
 	svc.addAuditLocked("auth.switch_context", true, requestCtx, switchedUser, map[string]any{
 		"from_role":       string(principal.User.Role),

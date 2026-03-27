@@ -123,16 +123,5 @@ export function useWards(provinceCode: number | null, searchQuery?: string) {
 
 // ── Address Value ────────────────────────────────────────────
 
-export interface AddressValue {
-    provinceCode: number | null
-    provinceName: string
-    wardCode: number | null
-    wardName: string
-}
-
-export const emptyAddress: AddressValue = {
-    provinceCode: null,
-    provinceName: '',
-    wardCode: null,
-    wardName: '',
-}
+export { emptyAddress } from '@vct/ui'
+export type { AddressValue } from '@vct/ui'

@@ -13,6 +13,7 @@ import (
 	"vct-platform/backend/internal/adapter"
 	"vct-platform/backend/internal/apiversioning"
 	"vct-platform/backend/internal/auth"
+	"vct-platform/backend/internal/cache"
 	"vct-platform/backend/internal/config"
 	"vct-platform/backend/internal/domain/approval"
 	"vct-platform/backend/internal/domain/athlete"
@@ -39,6 +40,8 @@ import (
 	"vct-platform/backend/internal/metrics"
 	"vct-platform/backend/internal/realtime"
 	"vct-platform/backend/internal/store"
+	"vct-platform/backend/internal/worker"
+	natsadapter "vct-platform/backend/internal/adapter/nats"
 )
 
 // New creates a fully wired Server, resolving storage, injecting all domain
@@ -46,6 +49,11 @@ import (
 func New(cfg config.Config, logger *slog.Logger) (*Server, error) {
 	if logger == nil {
 		logger = slog.Default()
+	}
+
+	redisCache, err := cache.NewRedisCache(cfg.RedisURL)
+	if err != nil {
+		return nil, fmt.Errorf("redis connection failed: %w", err)
 	}
 
 	originSet := make(map[string]struct{}, len(cfg.AllowedOrigins))
@@ -90,9 +98,9 @@ func New(cfg config.Config, logger *slog.Logger) (*Server, error) {
 			AccessTTL:       cfg.AccessTokenTTL,
 			RefreshTTL:      cfg.RefreshTokenTTL,
 			AuditLimit:      cfg.AuditLimit,
-			CleanupInterval: 5 * time.Minute,
 			AllowDemoUsers:  cfg.AllowDemoUsers,
 			CredentialsJSON: cfg.BootstrapUsersJSON,
+			Cache:           redisCache,
 		}),
 		store:            cachedStore,
 		cachedStore:      cachedStore,
@@ -259,7 +267,19 @@ func New(cfg config.Config, logger *slog.Logger) (*Server, error) {
 		},
 
 		eventBus:     events.NewBus(),
+		taskPublisher: worker.NewLogPublisher(logger),
 		emailService: email.NewResendProvider(cfg.ResendAPIKey, cfg.ResendFromEmail),
+	}
+
+	// Connect to NATS JetStream if provided
+	if cfg.NatsURL != "" {
+		natsClient, err := natsadapter.NewClient(context.Background(), cfg.NatsURL, logger)
+		if err != nil {
+			logger.Warn("Failed to connect to NATS, using fallback LogPublisher", "err", err)
+		} else {
+			s.taskPublisher = worker.NewNatsPublisher(natsClient.JetStream(), "vct_worker_tasks")
+			logger.Info("NATS Publisher wired to API Server", "stream", "vct_worker_tasks")
+		}
 	}
 
 	if s.realtimeHub != nil {
@@ -304,7 +324,25 @@ func New(cfg config.Config, logger *slog.Logger) (*Server, error) {
 		}
 
 		s.sqlDB = db
+		s.replicaDB = db
 		logger.Info("PG adapters connected — wiring PostgreSQL stores")
+
+		if cfg.PostgresReplicaURL != "" {
+			rdb, err := sql.Open("pgx", cfg.PostgresReplicaURL)
+			if err != nil {
+				logger.Warn("PG adapters: replica connection failed, falling back to master", "err", err)
+			} else {
+				ctxReplica, cancelReplica := context.WithTimeout(context.Background(), 5*time.Second)
+				defer cancelReplica()
+				if err := rdb.PingContext(ctxReplica); err != nil {
+					_ = rdb.Close()
+					logger.Warn("PG adapters: replica ping failed, falling back to master", "err", err)
+				} else {
+					s.replicaDB = rdb
+					logger.Info("PG adapters: replica DB connected for OLAP workloads")
+				}
+			}
+		}
 
 		// Re-create auth service with DB for persistent user storage
 		s.authService.Stop()
@@ -314,10 +352,10 @@ func New(cfg config.Config, logger *slog.Logger) (*Server, error) {
 			AccessTTL:       cfg.AccessTokenTTL,
 			RefreshTTL:      cfg.RefreshTokenTTL,
 			AuditLimit:      cfg.AuditLimit,
-			CleanupInterval: 5 * time.Minute,
 			AllowDemoUsers:  cfg.AllowDemoUsers,
 			CredentialsJSON: cfg.BootstrapUsersJSON,
 			DB:              db,
+			Cache:           redisCache,
 		})
 		logger.Info("auth service re-created with database user store")
 

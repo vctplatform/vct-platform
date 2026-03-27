@@ -5,7 +5,6 @@ import (
 	"encoding/csv"
 	"encoding/json"
 	"errors"
-	"fmt"
 	"strings"
 	"time"
 
@@ -26,7 +25,7 @@ func (s *PostgresStore) Pool() *pgxpool.Pool {
 func NewPostgresStore(connectionString string, autoMigrate bool) (*PostgresStore, error) {
 	cfg, err := pgxpool.ParseConfig(connectionString)
 	if err != nil {
-		return nil, fmt.Errorf("postgres parse config failed: %w", err)
+		return nil, apierror.Wrap(err, "STORE_SYS_001", "phân tích cấu hình postgres thất bại")
 	}
 	if cfg.MaxConns <= 0 {
 		cfg.MaxConns = 12
@@ -43,7 +42,7 @@ func NewPostgresStore(connectionString string, autoMigrate bool) (*PostgresStore
 
 	pool, err := pgxpool.NewWithConfig(ctx, cfg)
 	if err != nil {
-		return nil, fmt.Errorf("postgres connect failed: %w", err)
+		return nil, apierror.Wrap(err, "STORE_SYS_002", "kết nối postgres thất bại")
 	}
 
 	store := &PostgresStore{pool: pool}
@@ -71,7 +70,7 @@ CREATE INDEX IF NOT EXISTS idx_entity_records_entity_updated_at
 	ON entity_records(entity, updated_at DESC);
 `
 	if _, err := s.pool.Exec(context.Background(), eav); err != nil {
-		return fmt.Errorf("postgres eav migration failed: %w", err)
+		return apierror.Wrap(err, "STORE_SYS_003", "migration EAV postgres thất bại")
 	}
 
 	// Phase 2: Relational schema (typed tables for future per-entity repos)
@@ -389,7 +388,7 @@ CREATE INDEX IF NOT EXISTS idx_appeals_tournament ON appeals(tournament_id);
 CREATE INDEX IF NOT EXISTS idx_weigh_ins_athlete ON weigh_ins(athlete_id);
 `
 	if _, err := s.pool.Exec(context.Background(), relational); err != nil {
-		return fmt.Errorf("postgres relational migration failed: %w", err)
+		return apierror.Wrap(err, "STORE_SYS_004", "migration relational postgres thất bại")
 	}
 
 	const marketplaceSchema = `
@@ -466,7 +465,7 @@ CREATE INDEX IF NOT EXISTS idx_marketplace_order_items_order
   ON marketplace_order_items(order_id);
 `
 	if _, err := s.pool.Exec(context.Background(), marketplaceSchema); err != nil {
-		return fmt.Errorf("postgres marketplace migration failed: %w", err)
+		return apierror.Wrap(err, "STORE_SYS_005", "migration marketplace postgres thất bại")
 	}
 
 	return nil
@@ -518,7 +517,7 @@ func (s *PostgresStore) Create(entity string, item []byte) ([]byte, error) {
 	}
 
 	if _, exists := s.GetByID(entity, id); exists {
-		return nil, fmt.Errorf("%w: %s", apierror.ErrDuplicateID, id)
+		return nil, apierror.Newf("STORE_409_DUPLICATE", "mã định danh %s đã tồn tại", id)
 	}
 
 	_, err = s.pool.Exec(
@@ -726,7 +725,7 @@ func (s *PostgresStore) ExportCSV(entity string) (string, error) {
 func (s *PostgresStore) WithTransaction(ctx context.Context, fn func(tx DataStore) error) error {
 	pgTx, err := s.pool.Begin(ctx)
 	if err != nil {
-		return fmt.Errorf("begin transaction: %w", err)
+		return apierror.Wrap(err, "STORE_TX_001", "bắt đầu transaction thất bại")
 	}
 
 	txStore := &TxStore{tx: pgTx}
@@ -736,7 +735,7 @@ func (s *PostgresStore) WithTransaction(ctx context.Context, fn func(tx DataStor
 	}
 
 	if commitErr := pgTx.Commit(ctx); commitErr != nil {
-		return fmt.Errorf("commit transaction: %w", commitErr)
+		return apierror.Wrap(commitErr, "STORE_TX_002", "commit transaction thất bại")
 	}
 	return nil
 }

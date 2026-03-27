@@ -66,10 +66,12 @@ export const PortalFavorites = ({ cards, onClick }: Props) => {
                                 ) : (
                                     <div
                                         className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-(--card-bg) text-(--card-color)"
-                                        style={{ 
-                                            '--card-bg': `${card.color}20`,
-                                            '--card-color': card.color
-                                        } as React.CSSProperties}
+                                        {...{
+                                            style: { 
+                                                '--card-bg': `${card.color}20`,
+                                                '--card-color': card.color
+                                            } as React.CSSProperties
+                                        }}
                                     >
                                         <CardIcon size={16} />
                                     </div>

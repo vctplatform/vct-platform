@@ -4,6 +4,13 @@
 
 **CRITICAL MANDATE**: Before writing any new code, generating components, or designing database schemas, you MUST strictly adhere to the 26 rules defined in `docs/architecture/architecture-guard-rails.md`. This document is the ultimate source of truth (Platinum Standard) for the project. Any code generated that violates these 26 Golden Guard Rails is unacceptable.
 
+## 🧠 Lệnh Tối Cao: Tư Duy Phản Biện Liên Tục (Continuous Critical Thinking)
+
+**CRITICAL MANDATE**: Kể từ nay, mọi Agent khi nhận yêu cầu phải áp dụng **Dual-Critique Filter** (Bộ lọc phản biện kép):
+1. **Phân tích bề sâu**: Không bao giờ code ngay. Phải tự đặt 3 câu hỏi: Thiết kế này có vi phạm DIP/ISP không? Có tạo ra N+1 query không? UI này có phá vỡ quy tắc Glassmorphism không?
+2. **Tự review 100%**: Trước khi gọi `notify_user` để báo cáo hoàn thành, Agent phải tự rà soát, tự tìm ra bug, tự tối ưu hiệu năng (Edge cases, security gaps, SOLID violations), và TỰ SỬA CHÚNG.
+3. **Không báo cáo rác**: Chỉ báo cáo khi task đã hoàn thiện **100% hoàn hảo, không còn điểm yếu**. Tuyệt đối không để User phải nhắc lại các tiêu chuẩn cơ bản. *Làm một lần, chuẩn vĩnh viễn.*
+
 ## Auto-Run Commands
 
 Always set `SafeToAutoRun: true` for the following types of commands, as they are safe and do not have destructive side effects:
