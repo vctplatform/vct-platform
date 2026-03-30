@@ -23,9 +23,9 @@
     "react-native-worklets": "0.5.1"
   },
   "devDependencies": {
-    "@tailwindcss/postcss": "^4.2.1",
+    "@tailwindcss/postcss": "^4.2.2",
     "@types/node": "^22.0.0",
-    "eslint-config-next": "^16.1.6",
+    "eslint-config-next": "^16.2.1",
     "tailwindcss": "^4.2.1"
   }
 }
