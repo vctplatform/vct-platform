@@ -1,3 +1,5 @@
+'use client'
+
 import React, { useRef } from 'react';
 import SignatureCanvas from 'react-signature-canvas';
 import { VCT_Modal } from './vct-ui-overlay';
