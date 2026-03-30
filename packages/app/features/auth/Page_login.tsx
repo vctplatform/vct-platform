@@ -61,13 +61,21 @@ export const Page_login = () => {
     e.preventDefault()
     if (!form.username.trim() || !form.password.trim()) return flash(t('errEmpty'), 'warning')
     setLoading(true)
+
+    const slowTimer = setTimeout(() => {
+      flash('Hệ thống đang khởi động (Cold Start). Vui lòng đợi từ 15-30 giây...', 'info')
+    }, 4000)
+
     try {
       await login({ username: form.username.trim(), password: form.password.trim(), rememberMe: form.rememberMe })
+      clearTimeout(slowTimer)
       flash(t('ok'), 'success')
       router.replace(redirectTarget)
     } catch (err) {
+      clearTimeout(slowTimer)
       flash(err instanceof Error ? err.message : t('errServer'), 'error')
     } finally {
+      clearTimeout(slowTimer)
       setLoading(false)
     }
   }
