@@ -44,18 +44,27 @@ description: "Meta-orchestrator for VCT Platform. Routes requests to the correct
 Orchestrator định tuyến Task theo 3 **Pipeline Graphs** thay vì các workflow rời rạc.
 > Luôn gọi `view_file` tới đúng Graph tương ứng để đọc luồng xử lý chi tiết.
 
+### ⚠️ Engineering Discipline Gate (Adapted from superpowers)
+**TRƯỚC KHI vào bất kỳ Graph nào**, mọi task M/L PHẢI tuân thủ:
+1. Đọc `workflows/engineering_discipline.md` — 5 Iron Laws
+2. **Brainstorm** → Design approved → **Plan** → Tasks defined → **THEN** enter Graph
+3. Trong Graph: Áp dụng **TDD** + **Systematic Debugging** + **Verification Gate**
+
+Flow: `Request → Classify (S/M/L) → [M/L: Discipline Gate] → Select Graph → Execute → Verify`
+
 ### A. Chuẩn bị (Triage)
 - Đọc `AGENT_INDEX.md` nạp skill. Đánh giá Mức S, M hay L.
 
 ### B. Chọn Graph Workflow
-- **`workflows/engineering_graph.md`**: Feature (Analyze → Design → Code → Testing), Bug Fix (Root cause → Fix → Verify), Database Schema, Code review.
+- **`workflows/engineering_graph.md`**: Feature (Brainstorm → Design → Plan → Code → Test → Review), Bug Fix (Systematic Debug 4-phase), Database Schema, Code review (2-stage).
 - **`workflows/ops_graph.md`**: Deploy (Build → Migration → Up), Health (Ping), Release, Infra.
 - **`workflows/product_graph.md`**: PM (Docs), Translating (i18n), Team process, Admin tasks.
 
 ### C. Map-Reduce (Large Task)
 Nếu tác vụ là mức độ Large (VD: Tạo module mới toàn diện Backend+Frontend):
 - **BẮT BUỘC** Orchestrator phải ngắt luồng thành nhiều Node. 
-- Gọi Backend Skill hoàn thành → Ghi file JSON memory → Trả kết quả trung gian → Chuyển sang Data Layer/Frontend vòng kế tiếp. (Tránh LLM cạn kiệt bộ nhớ/Timeout).
+- Mỗi Node tuân thủ TDD Iron Law + Verification Gate.
+- Gọi Backend Skill hoàn thành → Ghi file JSON memory → Trả kết quả trung gian → Chuyển sang Data Layer/Frontend vòng kế tiếp.
 
 ## 4. MFE Domain Routing (Frontend)
 

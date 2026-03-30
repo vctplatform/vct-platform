@@ -85,9 +85,9 @@ export const PortalWorkspaceCard = ({ card, onClick }: Props) => {
                 onKeyDown={(e: React.KeyboardEvent) => {
                     if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onClick(card) }
                 }}
-                className="group relative flex min-h-[200px] cursor-pointer flex-col gap-3 overflow-hidden rounded-2xl border border-white/[0.08] bg-white/[0.04] p-5 shadow-[0_2px_20px_rgba(0,0,0,0.08)] ring-1 ring-inset ring-white/[0.05] backdrop-blur-2xl transition-all duration-300 hover:border-white/[0.15] hover:shadow-[var(--card-glow)] focus:outline-none focus-visible:ring-2 focus-visible:ring-vct-accent/40"
+                className="group relative flex min-h-[220px] cursor-pointer flex-col gap-4 overflow-hidden rounded-2xl border border-white/[0.06] bg-white/[0.03] p-6 shadow-[0_4px_30px_rgba(0,0,0,0.15)] ring-1 ring-inset ring-white/[0.04] backdrop-blur-3xl transition-all duration-400 hover:border-white/[0.18] hover:bg-white/[0.05] hover:shadow-[var(--card-glow)] focus:outline-none focus-visible:ring-2 focus-visible:ring-vct-accent/40"
                 style={{
-                    '--card-glow': `0 8px 40px ${card.color}20, 0 0 0 1px ${card.color}15`,
+                    '--card-glow': `0 12px 50px ${card.color}25, 0 0 0 1px ${card.color}20, 0 0 80px ${card.color}08`,
                 } as React.CSSProperties}
             >
                 {/* Spotlight radial gradient following cursor */}

@@ -14,6 +14,7 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
         <div className="flex items-center gap-6">
           <Link href="/public/provinces" className="text-sm font-semibold text-slate-400 hover:text-white transition">Tỉnh/Đơn vị</Link>
           <Link href="/public/clubs" className="text-sm font-semibold text-slate-400 hover:text-white transition">CLB/Võ đường</Link>
+          <Link href="/#contact" className="text-sm font-semibold text-slate-400 hover:text-white transition">Liên hệ</Link>
           <Link href="/login" className="px-4 py-2 rounded-full bg-emerald-500/10 text-emerald-400 text-sm font-bold hover:bg-emerald-500/20 transition">
             Đăng nhập
           </Link>

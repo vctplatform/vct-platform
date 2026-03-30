@@ -57,7 +57,7 @@ export function PortalActivityFeed() {
     }, [])
 
     return (
-        <div className="flex h-full flex-col gap-5 rounded-2xl border border-white/[0.08] bg-white/[0.03] p-5 backdrop-blur-2xl ring-1 ring-inset ring-white/[0.04]">
+        <div className="flex h-full flex-col gap-5 rounded-2xl border border-white/[0.06] bg-white/[0.02] p-6 backdrop-blur-3xl ring-1 ring-inset ring-white/[0.03] shadow-[0_8px_40px_rgba(0,0,0,0.2)]">
             {/* Header */}
             <div className="flex items-center justify-between">
                 <h3 className="flex items-center gap-2.5 text-sm font-bold text-vct-text">

@@ -1,13 +1,14 @@
 'use client'
 // ════════════════════════════════════════════════════════════════
-// VCT ECOSYSTEM — Portal Hub (v3 — Professional Edition)
-// Enterprise-grade workspace selector:
-//   • Instance-level cards (not type-level)
-//   • Favorites + Recent with localStorage persistence
+// VCT ECOSYSTEM — Portal Hub v4 (Grand Lobby Edition)
+// Enterprise-grade workspace selector — "Đại Sảnh" style:
+//   • Dramatic hero welcome with oversized typography
+//   • Spacious grand lobby layout
+//   • Instance-level cards with premium glass effects
+//   • Favorites + Recent with persistence
 //   • Vietnamese diacritics search + sort
-//   • Responsive: 1-col mobile, 2-col tablet, 3-col desktop
-//   • Composable sub-components (no monolith)
-//   • No mock data — uses resolveWorkspacesForUser
+//   • Responsive: full-width hero, 3-col grid below
+//   • Composable sub-components
 // ════════════════════════════════════════════════════════════════
 
 import React, { Suspense, useMemo, useRef, useCallback } from 'react'
@@ -52,12 +53,17 @@ const WORKSPACE_DESTINATIONS: Record<string, string> = {
 
 // ── Skeleton ──
 const PortalSkeleton = () => (
-    <div className="mx-auto max-w-6xl space-y-6 p-6">
-        <div className="h-8 w-48 rounded-lg vct-skeleton" />
-        <div className="h-11 w-full rounded-xl vct-skeleton" />
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+    <div className="mx-auto max-w-7xl space-y-8 p-8">
+        <div className="flex flex-col items-center gap-4 pt-16 pb-8">
+            <div className="h-10 w-32 rounded-full vct-skeleton" />
+            <div className="h-14 w-96 rounded-lg vct-skeleton" />
+            <div className="h-[1px] w-24 rounded vct-skeleton mt-4" />
+            <div className="h-5 w-64 rounded vct-skeleton" />
+        </div>
+        <div className="h-12 w-full max-w-xl mx-auto rounded-xl vct-skeleton" />
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {Array.from({ length: 6 }).map((_, i) => (
-                <div key={i} className="h-36 rounded-2xl vct-skeleton" />
+                <div key={i} className="h-[220px] rounded-2xl vct-skeleton" />
             ))}
         </div>
     </div>
@@ -93,7 +99,6 @@ function PortalHubContent() {
     const handleGridKeyDown = useCallback((e: React.KeyboardEvent<HTMLDivElement>) => {
         if (!['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.key)) return
 
-        // Find all focusable card containers within the grid
         const cards = Array.from(
             gridRef.current?.querySelectorAll('[role="button"][tabindex="0"]') || []
         ) as HTMLElement[]
@@ -103,15 +108,14 @@ function PortalHubContent() {
         const currentIndex = cards.findIndex(card => card === document.activeElement)
         if (currentIndex === -1) return
 
-        e.preventDefault() // Prevent page scroll
+        e.preventDefault()
 
-        // Calculate columns based on window width to handle responsive grid
         let cols = 1
         if (portal.viewMode === 'list') {
             cols = 1
         } else {
-            if (window.innerWidth >= 1280) cols = 3       // xl:grid-cols-3
-            else if (window.innerWidth >= 640) cols = 2   // sm:grid-cols-2
+            if (window.innerWidth >= 1280) cols = 3
+            else if (window.innerWidth >= 640) cols = 2
         }
 
         let nextIndex = currentIndex
@@ -136,12 +140,9 @@ function PortalHubContent() {
     // ── Navigate to workspace ──
     const handleCardClick = useCallback(
         (card: WorkspaceCard) => {
-            // Track access
             trackAccess(card.id)
-            // Enter workspace context in Zustand
             enterWorkspace(card)
             
-            // Sync with AuthProvider for legacy components (AppShell)
             setActiveWorkspace({
                 type: card.type,
                 scopeId: card.scope.id,
@@ -149,7 +150,6 @@ function PortalHubContent() {
                 role: currentUser.role,
             })
             
-            // Navigate
             const dest = WORKSPACE_DESTINATIONS[card.type] ?? '/dashboard'
             router.push(dest)
         },
@@ -161,7 +161,7 @@ function PortalHubContent() {
         return (
             <div className="relative min-h-screen w-full">
                 <PortalBackground />
-                <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6">
+                <div className="relative z-10 mx-auto max-w-4xl px-6 py-20">
                     <PortalWelcomeHeader name={currentUser.name} count={0} t={t} />
                     <PortalEmptyState variant="no-workspaces" />
                 </div>
@@ -179,74 +179,101 @@ function PortalHubContent() {
                 {t('portal.skipToMain') || 'Skip to main content'}
             </a>
             <PortalBackground />
+
             <motion.div 
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                transition={{ duration: 0.5 }}
-                className="relative z-10 mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:py-12"
+                transition={{ duration: 0.6 }}
+                className="relative z-10 mx-auto max-w-7xl px-6 pt-12 pb-20 sm:px-8 lg:pt-20"
             >
-                <div className="lg:grid lg:grid-cols-12 lg:items-start lg:gap-8">
-                    {/* Main Content Area */}
+                {/* ═══════════ HERO ZONE — Full-Width Grand Welcome ═══════════ */}
+                <PortalWelcomeHeader name={currentUser.name} count={portal.totalCount} t={t} />
+
+                {/* ═══════════ SEARCH BAR — Centered Grand Style ═══════════ */}
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.4, duration: 0.5 }}
+                    className="mx-auto max-w-2xl lg:mx-0 lg:max-w-xl"
+                >
+                    <PortalSearchBar
+                        searchQuery={portal.searchQuery}
+                        onSearchChange={portal.setSearchQuery}
+                        sortMode={portal.sortMode}
+                        onSortChange={portal.setSortMode}
+                        viewMode={portal.viewMode}
+                        onViewModeChange={portal.setViewMode}
+                        totalCount={portal.totalCount}
+                        filteredCount={portal.filteredCount}
+                    />
+                </motion.div>
+
+                {/* ═══════════ MAIN CONTENT — 2-Column Grand Layout ═══════════ */}
+                <div className="mt-12 lg:grid lg:grid-cols-12 lg:items-start lg:gap-10">
+                    {/* ── Main Cards Area ── */}
                     <div className="lg:col-span-8 xl:col-span-9">
-                        {/* Welcome */}
-                        <PortalWelcomeHeader name={currentUser.name} count={portal.totalCount} t={t} />
-
-                        {/* Search + Sort + View Toggle */}
-                        <div className="mt-6">
-                            <PortalSearchBar
-                                searchQuery={portal.searchQuery}
-                                onSearchChange={portal.setSearchQuery}
-                                sortMode={portal.sortMode}
-                                onSortChange={portal.setSortMode}
-                                viewMode={portal.viewMode}
-                                onViewModeChange={portal.setViewMode}
-                                totalCount={portal.totalCount}
-                                filteredCount={portal.filteredCount}
-                            />
-                        </div>
-
                         {/* Favorites */}
                         {!portal.searchQuery && portal.pinnedCards.length > 0 && (
-                            <div className="mt-6">
+                            <motion.div
+                                initial={{ opacity: 0, y: 15 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ delay: 0.5 }}
+                                className="mb-8"
+                            >
                                 <PortalFavorites
                                     cards={portal.pinnedCards}
                                     onClick={handleCardClick}
                                 />
-                            </div>
+                            </motion.div>
                         )}
 
                         {/* Recent */}
                         {!portal.searchQuery && portal.recentCards.length > 0 && (
-                            <div className="mt-6">
+                            <motion.div
+                                initial={{ opacity: 0, y: 15 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ delay: 0.55 }}
+                                className="mb-8"
+                            >
                                 <PortalRecent
                                     cards={portal.recentCards}
                                     onClick={handleCardClick}
                                 />
-                            </div>
+                            </motion.div>
                         )}
 
-                        {/* Divider */}
+                        {/* Divider — "All Workspaces" */}
                         {!portal.searchQuery && (portal.pinnedCards.length > 0 || portal.recentCards.length > 0) && (
-                            <div className="mt-8 mb-2 flex items-center gap-3">
-                                <h2 className="text-xs font-extrabold uppercase tracking-widest text-vct-text-muted">
-                                    {t('portal.allWorkspaces')}
+                            <motion.div
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                transition={{ delay: 0.6 }}
+                                className="mt-10 mb-4 flex items-center gap-4"
+                            >
+                                <h2 className="text-[11px] font-extrabold uppercase tracking-[0.2em] text-white/30">
+                                    {t('portal.allWorkspaces') || 'Tất cả Workspace'}
                                 </h2>
-                                <div className="h-px flex-1 bg-vct-border/50" />
-                            </div>
+                                <div className="h-px flex-1 bg-gradient-to-r from-white/[0.08] to-transparent" />
+                            </motion.div>
                         )}
 
                         {/* Category Tabs */}
                         {portal.searchFilteredCards.length > 0 && (
-                            <div className="mt-8 mb-6">
+                            <motion.div
+                                initial={{ opacity: 0, y: 10 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ delay: 0.65 }}
+                                className="mb-8"
+                            >
                                 <PortalCategoryTabs
                                     activeCategory={portal.activeCategory}
                                     onSelectCategory={portal.setActiveCategory}
                                     categoryCounts={portal.categoryCounts}
                                 />
-                            </div>
+                            </motion.div>
                         )}
 
-                        {/* Smart Unified Grid (All workspace cards) */}
+                        {/* ── Smart Unified Grid ── */}
                         {portal.filteredCards.length > 0 ? (
                             <motion.div
                                 id="portal-main-grid"
@@ -257,13 +284,13 @@ function PortalHubContent() {
                                 className={
                                     portal.viewMode === 'list'
                                         ? 'flex flex-col gap-2'
-                                        : 'grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3'
+                                        : 'grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-3'
                                 }
                                 variants={{
                                     hidden: { opacity: 0 },
                                     show: {
                                         opacity: 1,
-                                        transition: { staggerChildren: 0.05 },
+                                        transition: { staggerChildren: 0.06 },
                                     },
                                 }}
                                 initial="hidden"
@@ -273,8 +300,8 @@ function PortalHubContent() {
                                     <motion.div
                                         key={card.id}
                                         variants={{
-                                            hidden: { opacity: 0, scale: 0.95, y: 10 },
-                                            show: { opacity: 1, scale: 1, y: 0, transition: { type: 'spring', bounce: 0.4 } },
+                                            hidden: { opacity: 0, scale: 0.94, y: 15 },
+                                            show: { opacity: 1, scale: 1, y: 0, transition: { type: 'spring', bounce: 0.35, duration: 0.6 } },
                                         }}
                                     >
                                         {portal.viewMode === 'list' ? (
@@ -290,9 +317,15 @@ function PortalHubContent() {
                         ) : null}
                     </div>
 
-                    {/* Side Activity Feed */}
-                    <div className="mt-12 lg:mt-0 lg:col-span-4 xl:col-span-3 lg:sticky lg:top-24">
-                        <PortalActivityFeed />
+                    {/* ── Side Activity Feed — Info Kiosk ── */}
+                    <div className="mt-14 lg:mt-0 lg:col-span-4 xl:col-span-3 lg:sticky lg:top-20">
+                        <motion.div
+                            initial={{ opacity: 0, x: 20 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ delay: 0.7, duration: 0.5 }}
+                        >
+                            <PortalActivityFeed />
+                        </motion.div>
                     </div>
                 </div>
             </motion.div>
@@ -304,7 +337,7 @@ function PortalHubContent() {
 }
 
 
-// ── Exported Page with Suspense (for useSearchParams) ──
+// ── Exported Page with Suspense ──
 export default function Page_portal_hub() {
     return (
         <Suspense fallback={<PortalSkeleton />}>

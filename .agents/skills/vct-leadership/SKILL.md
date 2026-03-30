@@ -72,21 +72,68 @@ description: "VCT Platform technical leadership — architecture decisions, code
 - Abstraction layer with one implementation → **Inline it**
 - "We might need this later" → **YAGNI — delete it**
 
-## 5. Troubleshooting
+## 5. Systematic Debugging Protocol (Adapted from superpowers)
 
-### Systematic Debug Process
-1. **Reproduce**: Consistent steps to trigger the issue
-2. **Isolate**: Narrow down to specific module/layer
-3. **Hypothesize**: Form theory based on evidence
-4. **Verify**: Add logging/breakpoints to confirm
-5. **Fix**: Minimal change that resolves root cause
-6. **Prevent**: Add test, improve error message
+> `NO FIXES WITHOUT ROOT CAUSE INVESTIGATION FIRST`
+
+### 4 Phases (PHẢI hoàn thành theo thứ tự)
+
+**Phase 1 — Root Cause Investigation** (TRƯỚC mọi fix)
+1. Đọc kỹ error messages, stack traces, line numbers — chúng thường chứa lời giải
+2. Reproduce: Trigger lỗi đáng tin cậy, ghi steps chính xác
+3. Check recent changes: `git diff`, commits gần đây, config/env changes
+4. Trace data flow: Giá trị sai bắt đầu ở đâu? Trace ngược tới source
+
+**Phase 2 — Pattern Analysis**
+1. Tìm code tương tự ĐANG WORK trong cùng codebase
+2. So sánh mọi difference giữa working vs broken (dù nhỏ)
+3. Hiểu dependencies: Component này cần gì để hoạt động?
+
+**Phase 3 — Hypothesis & Test**
+1. Phát biểu rõ: "X là root cause vì Y"
+2. Test với thay đổi NHỎ NHẤT, 1 variable/lần
+3. Không work? → Hypothesis MỚI. **KHÔNG** thêm fix chồng lên
+
+**Phase 4 — Implementation**
+1. Viết failing test reproduce bug (áp dụng TDD Iron Law)
+2. Implement 1 fix duy nhất cho root cause
+3. Verify: Test pass, không test khác bị break
+
+### Escalation Rule
+**3+ fixes thất bại** → STOP → Question architecture → Discuss với user.
+Đây là dấu hiệu vấn đề kiến trúc, không phải vấn đề code.
+
+### Red Flags (STOP và quay lại Phase 1)
+- "Quick fix for now, investigate later"
+- "Just try changing X and see"
+- "I don't understand but this might work"
+- Fix nào cũng bật ra vấn đề mới ở chỗ khác
 
 ### Common Anti-Patterns to Catch
 - Swallowed errors (empty catch blocks)
 - Unbounded queries (missing LIMIT/pagination)
 - Race conditions (shared mutable state)
 - N+1 queries (loop with individual DB calls)
+
+## 5b. Code Review Protocol (Adapted from superpowers)
+
+### 2-Stage Review
+| Stage | Focus | Pass Criteria |
+|-------|-------|--------------|
+| **Stage 1: Spec Compliance** | Code matches spec/requirements? | ✅ Không thiếu requirement, không thêm ngoài spec |
+| **Stage 2: Code Quality** | Clean, maintainable, tested? | ✅ Review checklist (Section 2) pass |
+
+### When to Review
+- **Bắt buộc**: Sau task lớn, trước merge to main
+- **Khuyến khích**: Khi stuck (fresh perspective), trước refactor, sau fix bug phức tạp
+
+### Action on Feedback
+| Level | Action |
+|-------|--------|
+| 🔴 Critical | Fix NGAY, không tiếp tục |
+| 🟡 Major | Fix TRƯỚC KHI proceed |
+| 🔵 Minor | Note, fix khi phù hợp |
+| 💡 Suggestion | Cân nhắc, push back nếu có lý do kỹ thuật |
 
 ## 6. Skill Evolution (Self-Improvement)
 
