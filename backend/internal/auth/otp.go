@@ -158,7 +158,7 @@ func (svc *Service) SendOTP(input SendOTPRequest, emailService OTPSender) (SendO
 	if svc.userStore != nil {
 		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 		defer cancel()
-		existing, err := svc.userStore.FindByUsername(ctx, emailAddr)
+		existing, err := svc.userStore.FindByEmail(ctx, emailAddr)
 		if err != nil {
 			slog.Warn("DB lookup error during OTP", slog.String("email", emailAddr), slog.String("error", err.Error()))
 		}

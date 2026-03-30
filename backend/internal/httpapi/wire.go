@@ -371,7 +371,7 @@ func New(cfg config.Config, logger *slog.Logger, modules ...httputil.Module) (*S
 			AuditLimit:      cfg.AuditLimit,
 			AllowDemoUsers:  cfg.AllowDemoUsers,
 			CredentialsJSON: cfg.BootstrapUsersJSON,
-			DB:              db,
+			DBStore:         cachedStore.Base().(*store.PostgresStore),
 			Cache:           redisCache,
 		})
 		logger.Info("auth service re-created with database user store")
