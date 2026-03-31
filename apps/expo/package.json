@@ -2,7 +2,7 @@
   "dependencies": {
     "@expo/metro-runtime": "^55.0.6",
     "@expo/vector-icons": "^15.1.1",
-    "@react-navigation/bottom-tabs": "^7.15.5",
+    "@react-navigation/bottom-tabs": "^7.15.7",
     "app": "*",
     "expo": "^54.0.16",
     "expo-device": "^55.0.10",
