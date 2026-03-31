@@ -20,7 +20,7 @@
     "expo-task-manager": "^55.0.10",
     "file-saver": "^2.0.5",
     "html2canvas": "^1.4.1",
-    "jspdf": "^4.2.0",
+    "jspdf": "^4.2.1",
     "moti": "^0.30.0",
     "react-signature-canvas": "^1.1.0-alpha.2",
     "recharts": "^3.8.0",
