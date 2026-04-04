@@ -21,7 +21,7 @@ jobs:
     name: Container Image Scan
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Build backend image
         run: docker build -t vct-api:scan ./backend
@@ -45,7 +45,7 @@ jobs:
     name: K8s Manifest Security
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Install kubesec
         run: |
@@ -73,7 +73,7 @@ jobs:
     name: Network Policy Audit
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Verify default-deny exists
         run: |
